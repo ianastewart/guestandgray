@@ -11,6 +11,8 @@ from coderedcms.models import (
     CoderedWebPage
 )
 
+from shop.models import Section, Object, CustomImage
+
 
 class ArticlePage(CoderedArticlePage):
     """
@@ -79,3 +81,15 @@ class WebPage(CoderedWebPage):
         verbose_name = 'Web Page'
 
     template = 'coderedcms/pages/web_page.html'
+
+class CataloguePage(CoderedWebPage):
+
+    class meta:
+        verbose_name= "Catalogue Page"
+
+    template = 'website/catalogue.html'
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        context['sections'] = Section.objects.all().exclude(image=None)
+        return context

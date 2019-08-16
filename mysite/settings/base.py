@@ -25,8 +25,8 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 INSTALLED_APPS = [
     # This project
-    "website",
     "shop",
+    "website",
     "import_export",
     # CodeRed CMS
     "coderedcms",
