@@ -1,0 +1,20 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 %}
+{% load wagtailimages_tags %}
+{% block content %}
+  <div class="container bg-light">
+    <div class="row">
+      <div class="col">
+        <h1>Import Excel .xls file for {{ type }}</h1>
+        <br>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="file" name="myfile">
+          <button type="submit">Upload</button>
+          <br>
+          <h2>{{ result }}</h2>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

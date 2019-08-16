@@ -1,0 +1,16 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+  <div class="container bg-light">
+    <div class="row">
+      <div class="col-md-8">
+        <h1>Objects</h1>
+      <ul>
+        {% for object in object_list %}
+          <li><a href="{% url 'object_update' pk=object.pk %}">{{ object.name }}</a></li>
+        {% endfor %}
+      </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

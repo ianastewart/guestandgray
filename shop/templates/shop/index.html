@@ -1,0 +1,21 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 %}
+{% load wagtailimages_tags %}
+{% block content %}
+  <div class="container bg-light">
+    <div class="row">
+      <div class="col">
+        <h1>Build section index for objects</h1>
+        <br>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">start</button>
+          <br>
+          {% if count or errors %}
+          <h3>Success count: {{ count }} No section: {{ empty }} Section not found: {{ errors }}</h3>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
