@@ -256,7 +256,7 @@ def _install_gunicorn(venv, app, settings):
 def _configure_nginx(app, server):
     # create a site file for nginx based on a standard template
     print(yellow("Start configure Nginx"))
-    template = f"/home/django/{app}/deployment/nginx-site"
+    template = f"/home/django/{app}/deployment/nginx_site"
     output = f"/etc/nginx/sites-available/{app}"
     if not exists(output, use_sudo=True):
         print(cyan(f"Creating new nginx config for {app}"))

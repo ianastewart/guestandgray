@@ -1,9 +1,15 @@
-# template file before modification by certbot
+ template file before modification by certbot
 # XXapp is app name
 # XXserver is server name or ip
 
 upstream XXapp_server {
     server unix:/home/django/XXapp/run/gunicorn.sock fail_timeout=0;
+}
+
+server {
+    listen      80;
+    server_name "";
+    return      444;
 }
 
 server {
@@ -22,7 +28,6 @@ server {
 	    root /var/www/html;
     }
 
-    location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
         alias /home/django/XXapp/static/;
     }
@@ -30,4 +35,29 @@ server {
         autoindex on;
         alias /home/django/XXapp/media/;
 	}
+
+
+# checks for static file, if not found proxy to app
+# https://www.calazan.com/how-to-configure-nginx-so-you-can-quickly-put-your-website-into-maintenance-mode/
+    location / {
+        if (-f /home/django/XXapp/maintenance.html) {
+                return 503;
+                }
+        try_files $uri @proxy_to_app;
+    }
+
+    location @proxy_to_app {
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $host;
+      proxy_redirect off;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_pass http://XXapp_server;
+    }
+
+
+    # Error pages
+    error_page 503 /maintenance.html;
+    location = /maintenance.html {
+        root /home/django/XXapp/;
+    }
 }
