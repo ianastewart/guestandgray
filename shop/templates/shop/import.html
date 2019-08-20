@@ -1,20 +1,124 @@
 {% extends "shop/shop_base.html" %}
 {% load bootstrap4 %}
 {% load wagtailimages_tags %}
-{% block content %}
+{% block content_body %}
   <div class="container bg-light">
     <div class="row">
       <div class="col">
-        <h1>Import Excel .xls file for {{ type }}</h1>
+        <h1>Import objects from .xls file</h1>
         <br>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" action="/staff/import/" enctype="multipart/form-data" id="idForm">
           {% csrf_token %}
-          <input type="file" name="myfile">
-          <button type="submit">Upload</button>
-          <br>
-          <h2>{{ result }}</h2>
+          <!-- COMPONENT START -->
+          <div class="form-group">
+            <div class="input-group input-file" name="myfile">
+			        <span class="input-group-btn">
+        		    <button class="btn btn-outline-primary btn-choose" type="button">Choose</button>
+    		      </span>
+              <input type="text" class="form-control" placeholder='Choose a file...'/>
+              <span class="input-group-btn">
+       			    <button class="btn btn-warning btn-reset" type="button">Reset</button>
+    		      </span>
+            </div>
+          </div>
+          <!-- COMPONENT END -->
+          <button type="submit" class="btn btn-primary" id="idUpload" disabled>Upload</button>
         </form>
+        <div id="idStatus" style="display: None" class="mt-4">
+          <p id="idText"></p>
+          <div class="progress">
+            <div class="progress-bar" id="idProgress" style="width: 0%" role="progressbar"
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <div id="idResult">
+            <br>
+            <p>Processed: <span id="idProcessed"></span><br>
+              Empty records: <span id="idEmpty"></span><br>
+              Categories: <span id="idCategories"></span><br>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block custom_scripts %}
+  <script>
+      function bs_input_file() {
+          $(".input-file").before(
+              function () {
+                  if (!$(this).prev().hasClass('input-ghost')) {
+                      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
+                      element.attr("name", $(this).attr("name"));
+                      element.change(function () {
+                          element.next(element).find('input').val((element.val()).split('\\').pop());
+                          $('#idUpload').removeAttr('disabled');
+                      });
+                      $(this).find("button.btn-choose").click(function () {
+                          element.click();
+                      });
+                      $(this).find("button.btn-reset").click(function () {
+                          element.val(null);
+                          $('#idUpload').attr('disabled', 'disabled');
+                          $(this).parents(".input-file").find('input').val('');
+                      });
+                      $(this).find('input').css("cursor", "pointer");
+                      $(this).find('input').mousedown(function () {
+                          $(this).parents('.input-file').prev().click();
+                          return false;
+                      });
+                      return element;
+                  }
+              }
+          );
+      }
+
+      $(function () {
+          bs_input_file();
+      });
+
+
+      $('#idForm').submit(function (e) {
+          e.preventDefault();
+          $form = $(this)
+          var formData = new FormData(this);
+          startUpdate();
+          $.ajax({
+              url: window.location.pathname,
+              type: 'POST',
+              data: formData,
+              success: function (response) {
+                  alert("response received")
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+          });
+      });
+
+      function startUpdate() {
+          $("#idStatus").fadeIn();
+          var interval = setInterval(function () {
+              $.getJSON("/staff/import/progress", function (data) {
+                  console.log(data);
+                  showData(data);
+                  if (data['done']) {
+                      clearInterval(interval)
+                  }
+              });
+          }, 1000);
+      };
+
+      function showData(data) {
+          var percent = data["percent"];
+          $("#idProgress")
+              .css("width", percent + "%")
+              .attr("aria-valuenow", percent);
+          $('#idText').text(data['text']);
+          $('#idProcessed').text(data['count'] + " of " + data['max']);
+          $('#idEmpty').text(data['empty']);
+          $('#idCategories').text(data['categories']);
+      }
+  </script>
 {% endblock %}

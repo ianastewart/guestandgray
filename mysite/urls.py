@@ -5,7 +5,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from coderedcms import admin_urls as coderedadmin_urls
 from coderedcms import search_urls as coderedsearch_urls
 from coderedcms import urls as codered_urls
-from shop.urls import object_urls, section_urls
+from shop.urls import staff_urls
 
 urlpatterns = [
     # Admin
@@ -15,8 +15,7 @@ urlpatterns = [
     path("docs/", include(wagtaildocs_urls)),
     # Search
     path("search/", include(coderedsearch_urls)),
-    path("object/", include(object_urls)),
-    path("section/", include(section_urls)),
+    path("staff/", include(staff_urls)),
     # For anything not caught by a more specific rule above, hand over to
     # the page serving mechanism. This should be the last pattern in
     # the list:

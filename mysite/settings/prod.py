@@ -1,13 +1,12 @@
 from .base import *
+env_path = os.path.join(BASE_DIR, ".env")
+environ.Env.read_env(env_path)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'z+wk))(tp(46s)j5)yz*dcxxtx&tjl(7h)7vs%0fqcq*oif&mx'
-
-# Add your site's domain name(s) here.
-ALLOWED_HOSTS = ['localhost']
+SECRET_KEY = env.str("SECRET_KEY")
+ALLOWED_HOSTS = ['gray.iskt.co.uk']
 
 # To send email from the server, we recommend django_sendmail_backend
 # Or specify your own email backend such as an SMTP server.
@@ -19,7 +18,7 @@ DEFAULT_FROM_EMAIL = 'Guest and Gray <info@localhost>'
 
 # A list of people who get error notifications.
 ADMINS = [
-    ('Administrator', 'admin@localhost'),
+    ('Administrator', 'is@iskt.co.uk'),
 ]
 
 # A list in the same format as ADMINS that specifies who should get broken link
@@ -29,17 +28,7 @@ MANAGERS = ADMINS
 # Email address used to send error messages to ADMINS.
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'HOST': 'localhost',
-#        'NAME': 'mysite',
-#        'USER': 'mysite',
-#        'PASSWORD': '',
-#        # If using SSL to connect to a cloud mysql database, spedify the CA as so.
-#        'OPTIONS': { 'ssl': { 'ca': '/path/to/certificate-authority.pem' } },
-#    }
-#}
+DATABASES = {"default": env.db_url("DATABASE_URL")}
 
 # Use template caching to speed up wagtail admin and front-end.
 # Requires reloading web server to pick up template changes.
@@ -73,7 +62,3 @@ CACHES = {
     }
 }
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass

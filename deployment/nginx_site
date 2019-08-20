@@ -1,0 +1,33 @@
+# template file before modification by certbot
+# XXapp is app name
+# XXserver is server name or ip
+
+upstream XXapp_server {
+    server unix:/home/django/XXapp/run/gunicorn.sock fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name XXserver;
+
+    keepalive_timeout 5;
+    client_max_body_size 4G;
+
+    access_log /home/django/XXapp/logs/nginx-access.log;
+    error_log /home/django/XXapp/logs/nginx-error.log;
+
+# Required for LE certificate enrollment using certbot
+    location '/.well-known/acme-challenge' {
+	    default_type "text/plain";
+	    root /var/www/html;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        alias /home/django/XXapp/static/;
+    }
+    location /media {
+        autoindex on;
+        alias /home/django/XXapp/media/;
+	}
+}

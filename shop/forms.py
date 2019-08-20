@@ -1,12 +1,12 @@
 from django.forms import ModelForm, ModelChoiceField
-from shop.models import Object, Section
+from shop.models import Object, Category
 
 
-class SectionForm(ModelForm):
-    title = "Section"
+class CategoryForm(ModelForm):
+    title = "Category"
 
     class Meta:
-        model = Section
+        model = Category
         fields = ("name", "image",)
 
 
@@ -15,6 +15,6 @@ class ObjectForm(ModelForm):
 
     class Meta:
         model = Object
-        fields = ("name", "description", "price", "image_file", "section_text", "section")
+        fields = ("name", "ref", "description", "price", "image_file", "category_text", "category")
 
     # category = ModelChoiceField(queryset=Category.objects.all(), to_field_name="name")

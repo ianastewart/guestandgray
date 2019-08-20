@@ -25,7 +25,7 @@ class ModelEnum(IntEnum):
         return list((x.value, x.name.lower().capitalize().replace("_", " ")) for x in cls)
 
 
-class Section(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=200)
     image = models.ForeignKey(CustomImage, null=True, blank=True, on_delete=models.SET_NULL, related_name="sections")
 
@@ -40,7 +40,7 @@ class Object(models.Model):
         SOLD = 2
 
     name = models.CharField(max_length=200)
-    # ref = models.CharField(null=False, blank=False, max_length=10, default="AAA")
+    ref = models.CharField(null=False, blank=True, max_length=10, default="")
     description = models.TextField(null=True, blank=True)
     # dimensions = models.CharField(max_length=200, null=True, blank=True)
     # condition = models.CharField(max_length=200, null=True, blank=True)
@@ -48,11 +48,12 @@ class Object(models.Model):
     # extra = models.TextField(null=True, blank=True)
     price = models.SmallIntegerField(null=True, blank=True)
     image_file = models.CharField(max_length=50, null=True, blank=True)
-    section_text = models.CharField(max_length=100, null=True, blank=True)
+    has_image = models.NullBooleanField()
+    category_text = models.CharField(max_length=100, null=True, blank=True)
     # creation_date = models.DateTimeField(auto_now_add=True)
     # sold_date = models.DateTimeField(null=True, blank=True)
     # state = models.SmallIntegerField(choices=State.choices(), default=0)
-    section = models.ForeignKey(Section, null=True, blank=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

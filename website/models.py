@@ -8,10 +8,11 @@ from coderedcms.models import (
     CoderedArticleIndexPage,
     CoderedEmail,
     CoderedFormPage,
-    CoderedWebPage
+    CoderedWebPage,
 )
+from coderedcms.models.page_models import CoderedPage
 
-from shop.models import Section, Object, CustomImage
+from shop.models import Category, Object, CustomImage
 
 
 class ArticlePage(CoderedArticlePage):
@@ -82,12 +83,13 @@ class WebPage(CoderedWebPage):
 
     template = 'coderedcms/pages/web_page.html'
 
-class CataloguePage(CoderedWebPage):
+
+class CataloguePage(CoderedPage):
 
     class meta:
         verbose_name= "Catalogue Page"
 
-    template = 'website/catalogue.html'
+    template = 'website/pages/catalogue.html'
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
