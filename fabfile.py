@@ -121,18 +121,19 @@ def deploy_live(command=False):
     env.password = _read_env()["DJANGO"]
     fast = True if command == "fast" else False
     _deploy_helper(
-        "venv", app="gray", settings="live", branch="master", tasks="tasks", collect_static=True, fast=fast
+        "venv", app="gray", settings="prod", branch="master", collect_static=True, fast=fast
     )
 
 
 
-def _deploy_helper(venv, app, settings, branch, tasks, collect_static, fast=False):
+def _deploy_helper(venv, app, settings, branch, tasks=None, collect_static=True, fast=False):
     if exists(f"/home/django/{app}"):
        # _maintenance(app, show=True)
         sudo(f"supervisorctl stop {tasks}")
         sudo(f"supervisorctl stop {app}")
     _deploy_django(venv, app, settings, branch, collect_static, fast)
-    sudo(f"supervisorctl start {tasks}")
+    if tasks:
+        sudo(f"supervisorctl start {tasks}")
     sudo(f"supervisorctl start {app}")
    # _maintenance(app, show=False)
     status()
@@ -252,23 +253,28 @@ def _install_gunicorn(venv, app, settings):
         sudo(f">{output} && sed -e 's/XXapp/{app}/; s/XXvenv/{venv}/' {template} > {output}")
     print(green("End install Gunicorn"))
 
+@hosts("46.101.88.176")
+def configure_nginx():
+    dot_env = _read_env()
+    env.user = "django"
+    env.password = dot_env["DJANGO"]
+    _configure_nginx('gray', 'www.iskt.co.uk')
 
 def _configure_nginx(app, server):
     # create a site file for nginx based on a standard template
     print(yellow("Start configure Nginx"))
     template = f"/home/django/{app}/deployment/nginx_site"
     output = f"/etc/nginx/sites-available/{app}"
-    if not exists(output, use_sudo=True):
-        print(cyan(f"Creating new nginx config for {app}"))
-        sudo(f"sed -e 's/XXapp/{app}/; s/XXserver/{server}/' {template} > {output}")
-        sudo(f"rm -f /etc/nginx/sites-enabled/{app}")
-        sudo(f"ln -d {output} /etc/nginx/sites-enabled/{app}")
-        sudo(f"rm -f /etc/nginx/sites-enabled/default")
-        sudo("nginx -t")
-        sudo("service nginx restart")
-    else:
-        sudo("nginx -t")
-        print(cyan(f"Existing nginx config for {app} has not been changed"))
+    enabled = "/etc/nginx/sites-enabled/"
+    if exists(output, use_sudo=True):
+        sudo(f"rm {output}")
+    print(cyan(f"Creating new nginx config for {app}"))
+    sudo(f"sed -e 's/XXapp/{app}/; s/XXserver/{server}/' {template} > {output}")
+    sudo(f"rm -f {enabled}{app}")
+    sudo(f"ln -s {output} {enabled}{app}")
+    # sudo(f"rm -f /etc/nginx/sites-enabled/default")
+    sudo("nginx -t")
+    sudo("service nginx restart")
     print(green(f"End configure Nginx"))
 
 

@@ -1,15 +1,9 @@
- template file before modification by certbot
+# template file before modification by certbot
 # XXapp is app name
 # XXserver is server name or ip
 
 upstream XXapp_server {
     server unix:/home/django/XXapp/run/gunicorn.sock fail_timeout=0;
-}
-
-server {
-    listen      80;
-    server_name "";
-    return      444;
 }
 
 server {
