@@ -258,7 +258,7 @@ def configure_nginx():
     dot_env = _read_env()
     env.user = "django"
     env.password = dot_env["DJANGO"]
-    _configure_nginx('gray', 'www.iskt.co.uk')
+    _configure_nginx('gray', 'gray.iskt.co.uk')
 
 def _configure_nginx(app, server):
     # create a site file for nginx based on a standard template

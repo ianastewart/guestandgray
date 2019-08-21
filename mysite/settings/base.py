@@ -30,7 +30,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 INSTALLED_APPS = [
     # This project
     "shop",
-   # "website",
+    "website",
     "import_export",
     "keyvaluestore",
     # CodeRed CMS

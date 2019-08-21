@@ -30,13 +30,7 @@ server {
         alias /home/django/XXapp/media/;
 	}
 
-
-# checks for static file, if not found proxy to app
-# https://www.calazan.com/how-to-configure-nginx-so-you-can-quickly-put-your-website-into-maintenance-mode/
     location / {
-        if (-f /home/django/XXapp/maintenance.html) {
-                return 503;
-                }
         try_files $uri @proxy_to_app;
     }
 
@@ -46,12 +40,5 @@ server {
       proxy_redirect off;
       proxy_set_header X-Forwarded-Proto $scheme;
       proxy_pass http://XXapp_server;
-    }
-
-
-    # Error pages
-    error_page 503 /maintenance.html;
-    location = /maintenance.html {
-        root /home/django/XXapp/;
     }
 }
