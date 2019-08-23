@@ -5,7 +5,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from coderedcms import admin_urls as coderedadmin_urls
 from coderedcms import search_urls as coderedsearch_urls
 from coderedcms import urls as codered_urls
-from shop.urls import staff_urls
+from shop.urls import staff_urls, public_urls
 
 urlpatterns = [
     # Admin
@@ -16,13 +16,12 @@ urlpatterns = [
     # Search
     path("search/", include(coderedsearch_urls)),
     path("staff/", include(staff_urls)),
+    # public
+    path("", include(public_urls)),
     # For anything not caught by a more specific rule above, hand over to
     # the page serving mechanism. This should be the last pattern in
     # the list:
-    re_path(r"", include(codered_urls)),
-    # Alternatively, if you want CMS pages to be served from a subpath
-    # of your site, rather than the site root:
-    #    re_path(r'^pages/', include(codered_urls)),
+    path("pages/", include(codered_urls)),
 ]
 
 

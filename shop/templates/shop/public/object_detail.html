@@ -1,0 +1,43 @@
+{% extends 'coderedcms/pages/web_page_notitle.html' %}
+{% load wagtailimages_tags %}
+{% block content_body %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col mt-4">
+        <h2>{{ object.name }}</h2>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-6 text-center">
+        {% image images.0 max-500x500 %}
+        <div class="container mt-3">
+          <div class="row">
+            <div class="col my-2">
+              <img src="https://via.placeholder.com/100">
+            </div>
+            <div class="col my-2">
+              <img src="https://via.placeholder.com/100">
+            </div>
+            <div class="col my-2">
+              <img src="https://via.placeholder.com/100">
+            </div>
+            <div class="col my-2">
+              <img src="https://via.placeholder.com/100">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-5">
+        <p class="text-muted">Ref: {{ object.ref }}</p>
+        <p class="my-5">{{ object.description }}</p>
+        <h5>Price: £{{ object.price }}</h5>
+        <div class="mt-4">
+          {% if request.user %}
+            <a class="btn btn-outline-secondary" role="button" href="{% url 'object_update' pk=object.id %}">Edit</a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

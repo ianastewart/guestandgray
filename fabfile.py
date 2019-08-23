@@ -49,6 +49,7 @@ def provision():
     _install_system_software()
     _install_app()
 
+
 @hosts("46.101.88.176")
 def install_app(app="gray", settings="prod", branch="master"):
     """ Install application, defaults to sandbox """
@@ -72,7 +73,9 @@ def download():
 def upload_dev():
     """ Replace database and media on dev system"""
     upload_dev_db()
-    os.system(f'C:/"Program Files"/7-Zip/7z.exe x -y {_local_backup_folder()}/{MEDIA_FILE} -o{_local_dev_folder()}/')
+    os.system(
+        f'C:/"Program Files"/7-Zip/7z.exe x -y {_local_backup_folder()}/{MEDIA_FILE} -o{_local_dev_folder()}/'
+    )
 
 
 @hosts("gray.iskt.co.uk")
@@ -82,7 +85,9 @@ def upload_dev_db():
     os.system(f'psql -U postgres -c "CREATE DATABASE admin WITH OWNER django"')
     os.system(f"pg_restore -U postgres -d admin {_local_backup_folder()}/{BACKUP_FILE}")
     venv = f"{_local_dev_folder()}/venv/Scripts/python.exe"
-    os.system(f"{venv} manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev")
+    os.system(
+        f"{venv} manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev"
+    )
 
 
 @hosts("django.iskt.co.uk")
@@ -102,8 +107,8 @@ def manage(app, command):
     """ Example fab manage:sandbox,migrate """
     env.user = "django"
     env.password = _read_env()["DJANGO"]
-    app = 'gray'
-    settings = 'prod'
+    app = "gray"
+    settings = "prod"
     site_folder = f"/home/django/{app}"
     prefix = f"./venv/bin/"
     django_settings = f"mysite.settings.{settings}"
@@ -121,21 +126,27 @@ def deploy_live(command=False):
     env.password = _read_env()["DJANGO"]
     fast = True if command == "fast" else False
     _deploy_helper(
-        "venv", app="gray", settings="prod", branch="master", collect_static=True, fast=fast
+        "venv",
+        app="gray",
+        settings="prod",
+        branch="master",
+        collect_static=True,
+        fast=fast,
     )
 
 
-
-def _deploy_helper(venv, app, settings, branch, tasks=None, collect_static=True, fast=False):
+def _deploy_helper(
+    venv, app, settings, branch, tasks=None, collect_static=True, fast=False
+):
     if exists(f"/home/django/{app}"):
-       # _maintenance(app, show=True)
+        # _maintenance(app, show=True)
         sudo(f"supervisorctl stop {tasks}")
         sudo(f"supervisorctl stop {app}")
     _deploy_django(venv, app, settings, branch, collect_static, fast)
     if tasks:
         sudo(f"supervisorctl start {tasks}")
     sudo(f"supervisorctl start {app}")
-   # _maintenance(app, show=False)
+    # _maintenance(app, show=False)
     status()
 
 
@@ -180,7 +191,10 @@ def _create_venv(venv, app, repo=REPO_URL):
     if not exists(f"{site_folder}/.git"):
         sudo(f"git clone {repo} {site_folder}", user="django")
     sudo(f"python3 -m venv {site_folder}/{venv}", user="django")
-    sudo(f"mkdir -p {site_folder}/logs && touch {site_folder}/logs/django.log", user="django")
+    sudo(
+        f"mkdir -p {site_folder}/logs && touch {site_folder}/logs/django.log",
+        user="django",
+    )
 
 
 def _install_app(app="gray", settings="prod", branch="master"):
@@ -194,7 +208,7 @@ def _install_app(app="gray", settings="prod", branch="master"):
     user, pw, db = _parse_db_settings(dot_env[db_url])
     # virtual environment
     _create_venv(venv, app)
-    _create_database('gray', 'guest', 'gray')
+    _create_database("gray", "guest", "gray")
     # _upload_database(app, user, pw, db)
     # _upload_media(app)
     _deploy_django(venv, app, settings, branch)
@@ -226,7 +240,9 @@ def _deploy_django(venv, app, settings, branch, collect_static=True, fast=False)
         run(f"{prefix}pip install wheel")
         run(f"{prefix}pip install -r requirements.txt")
         if collect_static:
-            run(f"{prefix}python manage.py collectstatic --noinput --settings={django_settings}")
+            run(
+                f"{prefix}python manage.py collectstatic --noinput --settings={django_settings}"
+            )
         run(f"{prefix}python manage.py migrate --noinput --settings={django_settings}")
         run(f"{prefix}python manage.py clearsessions --settings={django_settings}")
     print(green("End deploy Django"))
@@ -242,7 +258,9 @@ def _install_gunicorn(venv, app, settings):
         run(f"{prefix}pip install gunicorn")
         template = "./deployment/gunicorn_start"
         output = f"{prefix}gunicorn_start"
-        run(f"sed -e 's/XXapp/{app}/; s/XXsettings/{settings}/ ;s/XXvenv/{venv}/' {template} > {output}")
+        run(
+            f"sed -e 's/XXapp/{app}/; s/XXsettings/{settings}/ ;s/XXvenv/{venv}/' {template} > {output}"
+        )
         run(f"chmod u+x {output}")
         # directory for the unix socket file
         run("mkdir -p run")
@@ -250,15 +268,19 @@ def _install_gunicorn(venv, app, settings):
         # configure supervisor for gunicorn
         template = "./deployment/gunicorn.conf"
         output = f"/etc/supervisor/conf.d/{app}.conf"
-        sudo(f">{output} && sed -e 's/XXapp/{app}/; s/XXvenv/{venv}/' {template} > {output}")
+        sudo(
+            f">{output} && sed -e 's/XXapp/{app}/; s/XXvenv/{venv}/' {template} > {output}"
+        )
     print(green("End install Gunicorn"))
+
 
 @hosts("46.101.88.176")
 def configure_nginx():
     dot_env = _read_env()
     env.user = "django"
     env.password = dot_env["DJANGO"]
-    _configure_nginx('gray', 'gray.iskt.co.uk')
+    _configure_nginx("gray", "gray.iskt.co.uk")
+
 
 def _configure_nginx(app, server):
     # create a site file for nginx based on a standard template
@@ -281,10 +303,19 @@ def _configure_nginx(app, server):
 def _create_database(user, pw, db):
     """Creates role and database"""
     print(yellow(f"Start create database {db}"))
-    db_users = sudo("psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (user), user="postgres")
+    db_users = sudo(
+        "psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (user),
+        user="postgres",
+    )
     if not user in db_users:
-        sudo("psql -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\"" % (user, pw), user="postgres")
-    databases = sudo('psql -c "SELECT datname FROM pg_database WHERE datistemplate = false;"', user="postgres")
+        sudo(
+            "psql -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\"" % (user, pw),
+            user="postgres",
+        )
+    databases = sudo(
+        'psql -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
+        user="postgres",
+    )
     if db in databases:
         print(cyan(f"Dropping existing database {db}"))
         sudo(f"dropdb {db}", user="postgres")
@@ -332,7 +363,9 @@ def _download_database(app):
         # but overwrite any backups already made today
         t = time.localtime(os.path.getmtime(local_path))
         f = BACKUP_FILE.split(".")
-        new_path = f"{_local_backup_folder()}/{f[0]}_{t.tm_year}-{t.tm_mon}-{t.tm_mday}.{f[1]}"
+        new_path = (
+            f"{_local_backup_folder()}/{f[0]}_{t.tm_year}-{t.tm_mon}-{t.tm_mday}.{f[1]}"
+        )
         if os.path.exists(new_path):
             os.remove(new_path)
         os.rename(local_path, new_path)

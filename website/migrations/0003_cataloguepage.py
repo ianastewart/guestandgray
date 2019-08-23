@@ -7,19 +7,27 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('coderedcms', '0015_coderedsessionformsubmission_coderedsubmissionrevision'),
-        ('website', '0002_initial_data'),
+        ("coderedcms", "0015_coderedsessionformsubmission_coderedsubmissionrevision"),
+        ("website", "0002_initial_data"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CataloguePage',
+            name="CataloguePage",
             fields=[
-                ('coderedpage_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='coderedcms.CoderedPage')),
+                (
+                    "coderedpage_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="coderedcms.CoderedPage",
+                    ),
+                )
             ],
-            options={
-                'abstract': False,
-            },
-            bases=('coderedcms.coderedpage',),
-        ),
+            options={"abstract": False},
+            bases=("coderedcms.coderedpage",),
+        )
     ]

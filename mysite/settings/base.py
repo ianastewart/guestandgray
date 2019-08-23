@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.settings",
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.table_block",
+    "wagtail.contrib.routable_page",
     "wagtail.admin",
     # Django
     "django.contrib.admin",
@@ -108,14 +109,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -183,4 +183,3 @@ BOOTSTRAP4 = {
 # Tags
 
 TAGGIT_CASE_INSENSITIVE = True
-

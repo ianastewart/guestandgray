@@ -1,30 +1,42 @@
 {% extends "shop/shop_base.html" %}
 {% load bootstrap4 %}
 {% load wagtailimages_tags %}
-{% block content_body%}
-  <div class="container-fluid bg-light">
+{% block body_class %}bg-light{% endblock %}
+{% block content_body %}
+  <div class="container">
     <div class="row">
-      <div class="col">
-        <h1>{{ form.title }}</h1>
-        <form method="post" class="form">
-          {% csrf_token %}
-          {% bootstrap_form form layout="horizontal" %}
-          {% buttons %}
-            <button type="submit" class="btn btn-primary" name="save">
-              Save
-            </button>
-            <button type="save" class="btn btn-primary" name="load">
-              Load image
-            </button>
-          {% endbuttons %}
-        </form>
-      </div>
-      <div class="col">
-        {% for photo in photos %}
-        {% image photo width-400 %}
-        {% endfor %}
+      <div class="col my-4">
+        {% if object %}
+          {% if object.slug %}
+            <h3>{{ object.slug }},{{ object.id }}</h3>{% else %}<h3>No slug</h3>
+          {% endif %}
+        {% else %}
+          <h3>New object</h3>
+        {% endif %}
       </div>
     </div>
+    <form method="post" class="form">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col">
+          {% bootstrap_form form layout="horizontal" %}
+          {% buttons %}
+            <button type="submit" class="btn btn-primary" name="save">Save</button>
+            <button type="submit" class="btn btn-secondary" name="view">View on site</button>
+          {% endbuttons %}
+        </div>
+        <div class="col">
+          {% for photo in photos %}
+            {% image photo width-400 %}
+          {% endfor %}
+          <div class="mt-4">
+            <button type="submit" class="btn btn-secondary" name="category_image">
+              Use as category image
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 
 {% endblock %}

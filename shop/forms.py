@@ -7,7 +7,7 @@ class CategoryForm(ModelForm):
 
     class Meta:
         model = Category
-        fields = ("name", "image",)
+        fields = ("name", "image")
 
 
 class ObjectForm(ModelForm):
@@ -15,6 +15,14 @@ class ObjectForm(ModelForm):
 
     class Meta:
         model = Object
-        fields = ("name", "ref", "description", "price", "image_file", "category_text", "category")
+        fields = (
+            "name",
+            "ref",
+            "description",
+            "price",
+            "image_file",
+            "category_text",
+            "category",
+        )
 
     # category = ModelChoiceField(queryset=Category.objects.all(), to_field_name="name")

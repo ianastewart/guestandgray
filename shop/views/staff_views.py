@@ -1,10 +1,17 @@
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
-from django.views.generic import View, TemplateView, CreateView, UpdateView, ListView, DetailView
-from .models import Object, Category, CustomImage
-from .forms import ObjectForm, CategoryForm
-from .import_data import load_image
+from django.views.generic import (
+    View,
+    TemplateView,
+    CreateView,
+    UpdateView,
+    ListView,
+    DetailView,
+)
+from shop.models import Object, Category, CustomImage
+from shop.forms import ObjectForm, CategoryForm
+
 
 class StaffHomeView(TemplateView):
     template_name = "shop/staff_home.html"
@@ -12,30 +19,32 @@ class StaffHomeView(TemplateView):
 
 class ObjectClearView(View):
     """ Clears all objects from the database """
+
     def get(self, request):
-        #Object.objects.all().delete()
+        # Object.objects.all().delete()
         messages.add_message(request, messages.INFO, "All objects cleared")
-        return redirect('staff_home')
+        return redirect("staff_home")
 
 
 class ObjectCreateView(CreateView):
     model = Object
     form_class = ObjectForm
     template_name = "shop/object_form.html"
-    success_url = reverse_lazy("object_list")
 
     def post(self, request, *args, **kwargs):
         result = super().post(request, *args, **kwargs)
-        if 'load' in request.POST:
+        if "load" in request.POST:
             pass
         return result
+
+    def get_success_url(self):
+        return reverse("category_detail", kwargs={"pk": self.object.category.id})
 
 
 class ObjectUpdateView(UpdateView):
     model = Object
     form_class = ObjectForm
     template_name = "shop/object_form.html"
-    success_url = reverse_lazy("object_list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,9 +53,20 @@ class ObjectUpdateView(UpdateView):
 
     def post(self, request, *args, **kwargs):
         result = super().post(request, *args, **kwargs)
-        if 'load' in request.POST:
-            load_image(self.object)
+        if "view" in request.POST:
+            return redirect(
+                "public_object_detail", slug=self.object.slug, id=self.object.id
+            )
+        if "category_image" in request.POST:
+            self.object.category.image = CustomImage.objects.filter(
+                object_id=self.object.id
+            )[0]
+            self.object.category.save()
+            return redirect("category_detail", pk=self.object.category.pk)
         return result
+
+    def get_success_url(self):
+        return reverse("category_detail", kwargs={"pk": self.object.category.id})
 
 
 class ObjectListView(ListView):
@@ -54,7 +74,7 @@ class ObjectListView(ListView):
     template_name = "shop/object_list.html"
 
     def get_queryset(self):
-        return Object.objects.all()
+        return Object.objects.all().order_by("name")
 
 
 class CategoryClearView(View):
@@ -63,7 +83,8 @@ class CategoryClearView(View):
     def get(self, request):
         Category.objects.all().delete()
         messages.add_message(request, messages.INFO, "All categories cleared")
-        return redirect('staff_home')
+        return redirect("staff_home")
+
 
 class CategoryCreateView(CreateView):
     model = Category
@@ -84,7 +105,7 @@ class CategoryListView(ListView):
     template_name = "shop/category_list.html"
 
     def get_queryset(self):
-        return Category.objects.all()
+        return Category.objects.all().order_by("name")
 
 
 class CategoryDetailView(DetailView):
@@ -94,5 +115,5 @@ class CategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object_list"] = self.object.object_set.all()
+        context["object_list"] = self.object.object_set.all().order_by("name")
         return context
