@@ -1,3 +1,4 @@
+import logging
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -11,6 +12,8 @@ from django.views.generic import (
 )
 from shop.models import Object, Category, CustomImage
 from shop.forms import ObjectForm, CategoryForm
+
+logger = logging.getLogger(__name__)
 
 
 class StaffHomeView(TemplateView):

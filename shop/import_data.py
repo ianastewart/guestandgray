@@ -1,3 +1,4 @@
+import logging
 import os.path
 import requests
 import shutil
@@ -8,6 +9,8 @@ from import_export import resources
 from import_export.fields import Field
 from tablib import Dataset
 from .models import Object, Category, CustomImage
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectResource(resources.ModelResource):

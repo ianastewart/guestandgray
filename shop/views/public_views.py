@@ -5,6 +5,8 @@ from shop.models import Object, Category
 from wagtail.core.models import Page
 from django.http import Http404, HttpResponse
 
+logger = logging.getLogger(__name__)
+
 # Url structure from https://wellfire.co/learn/fast-and-beautiful-urls-with-django/
 
 
