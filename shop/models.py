@@ -78,9 +78,7 @@ class Object(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse(
-            "public_object_detail", kwargs={"slug": self.slug, "id": self.id}
-        )
+        return reverse("public_object", kwargs={"slug": self.slug, "pk": self.id})
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

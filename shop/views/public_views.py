@@ -1,4 +1,6 @@
+import logging
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
 from shop.models import Object, Category
 from wagtail.core.models import Page
 from django.http import Http404, HttpResponse
@@ -17,15 +19,20 @@ def get_redirected(queryset_or_class, lookups, validators):
     return obj, None
 
 
+def home_view(request):
+    return redirect("/pages/")
+
+
 def object_view(request, slug, pk):
     """ Public view of a single object """
 
     template_name = "shop/public/object_detail.html"
-    context = get_host_context("object")
+    context = get_host_context("catalogue")
     obj, obj_url = get_redirected(Object, {"pk": pk}, {"slug": slug})
     if obj_url:
         return redirect(obj_url)
     context["object"] = obj
+    context["price"] = int(obj.price / 100)
     context["images"] = obj.images.all()
     return render(request, template_name, context)
 
@@ -36,8 +43,14 @@ def category_view(request, pk):
     template_name = "shop/public/category_grid.html"
     context = get_host_context("catalogue")
     category = get_object_or_404(Category, pk=pk)
+    objects = category.object_set.filter(image__isnull=False).order_by("-price")
+    paginator = Paginator(objects, 8)
+    page = request.GET.get("page")
+    if paginator.num_pages > 1 and not page:
+        page = 1
+    context["page_number"] = f"Page {page} of {paginator.num_pages}"
     context["category"] = category
-    context["objects"] = category.object_set.all().order_by("-price")
+    context["objects"] = paginator.get_page(page)
     return render(request, template_name, context)
 
 

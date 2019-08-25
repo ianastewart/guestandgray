@@ -2,7 +2,7 @@ import os.path
 import requests
 import shutil
 from keyvaluestore.utils import get_value_for_key, set_key_value
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from import_export import resources
 from import_export.fields import Field
@@ -73,7 +73,7 @@ def index_objects(request):
     """
     Process imported objects
     Create or link to the associated category
-    Dowload the associated image adn cross link it
+    Dowload the associated image and cross link it
     """
     objects = Object.objects.all()
     max = len(objects)
@@ -236,6 +236,17 @@ def set_image_status(max=0, count=0, not_found=0, done=False):
 
 
 def delete_all(cls):
+    """ For sqlite that cannot handle 1000 parameters """
     while cls.objects.count():
         ids = cls.objects.values_list("pk", flat=True)[:500]
         cls.objects.filter(pk__in=ids).delete()
+
+
+def set_category_images_view(request):
+    cats = Category.objects.all()
+    for cat in cats:
+        objects = cat.object_set.filter(image__isnull=False)
+        if objects:
+            cat.image = objects[0].image
+            cat.save()
+    return redirect("public_catalogue")

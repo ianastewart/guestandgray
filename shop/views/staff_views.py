@@ -54,9 +54,7 @@ class ObjectUpdateView(UpdateView):
     def post(self, request, *args, **kwargs):
         result = super().post(request, *args, **kwargs)
         if "view" in request.POST:
-            return redirect(
-                "public_object_detail", slug=self.object.slug, id=self.object.id
-            )
+            return redirect("public_object", slug=self.object.slug, pk=self.object.id)
         if "category_image" in request.POST:
             self.object.category.image = CustomImage.objects.filter(
                 object_id=self.object.id

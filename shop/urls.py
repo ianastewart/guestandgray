@@ -11,12 +11,18 @@ from shop.views.staff_views import (
     CategoryListView,
     CategoryDetailView,
 )
-from shop.views.public_views import object_view, catalogue_view, category_view
+from shop.views.public_views import (
+    home_view,
+    object_view,
+    catalogue_view,
+    category_view,
+)
 from shop.import_data import (
     import_objects_view,
     import_progress_view,
     import_images_view,
     import_images_progress_view,
+    set_category_images_view,
 )
 
 staff_urls = [
@@ -28,6 +34,11 @@ staff_urls = [
     path("import/", import_objects_view, name="import_objects"),
     path("import/progress/", import_progress_view, name="import_progress"),
     path("import/images/", import_images_view, name="import_images"),
+    path(
+        "import/category-images/",
+        set_category_images_view,
+        name="import_category_images",
+    ),
     path(
         "import/images/progress/",
         import_images_progress_view,
@@ -49,6 +60,7 @@ staff_urls = [
 ]
 
 public_urls = [
+    path("", home_view, name="public_home"),
     path("catalogue/", catalogue_view, name="public_catalogue"),
     path("object/<slug:slug>,<int:pk>/", object_view, name="public_object"),
     path("category/<int:pk>/", category_view, name="public_category"),
