@@ -188,16 +188,16 @@ def load_image(obj, user, collection=None):
         images_path = "images/" + file_name
         media_path = "media/original_images/" + file_name
         loaded = False
-        try:
-            shutil.copy(images_path, media_path)
+        # try:
+        #     shutil.copy(images_path, media_path)
+        #     loaded = True
+        # except FileNotFoundError:
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(media_path, "wb") as out_file:
+                shutil.copyfileobj(response.raw, out_file)
             loaded = True
-        except FileNotFoundError:
-            response = requests.get(url, stream=True)
-            if response.status_code == 200:
-                with open(media_path, "wb") as out_file:
-                    shutil.copyfileobj(response.raw, out_file)
-                loaded = True
-            del response
+        del response
         if loaded:
             new_image = CustomImage.objects.create(
                 file="original_images/" + file_name,
