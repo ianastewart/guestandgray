@@ -19,12 +19,11 @@
         <div id="idResult">
           <br>
           <p>Processed: <span id="idProcessed"></span><br>
-            Categories: <span id="idCategories"></span>
-            Not found: <span id="idNotFound"></span><br>
-            Image count: <span id="idImageCount"></span><br>
+            <span id="idCategories" style="display:none;"></span><br>
+            <span id="idImageCount" style="display:none;"></span><br>
           </p>
         </div>
-        <p id="idDone" style="display:None;">All records processed</p>
+        <p id="idDone" style="display:none;">All records processed</p>
         </div>
       </div>
     </div>
@@ -44,6 +43,7 @@
               type: 'POST',
               data: formData,
               success: function (response) {
+                  console.log('POST response received')
               },
               cache: false,
               contentType: false,
@@ -73,8 +73,14 @@
           $('#idProcessed').text(data['count'] + " of " + data['max']);
           $('#idEmpty').text(data['empty']);
           $('#idNotFound').text(data['not_found']);
-          $('#idCategories').text(data['categories']);
-          $('#idImageCount').text(data['image_count']);
+          cat = data['categories']
+          if (cat > 0) {
+              $('#idCategories').show().text('Categories: ' + cat);
+          }
+          images = data['image_count']
+          if (images > 0) {
+              $('#idImageCount').show().text('Image count: ' + images);
+          }
       }
   </script>
 {% endblock %}
