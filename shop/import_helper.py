@@ -162,7 +162,6 @@ def process_images(user):
                     image_count=image_count,
                 )
                 i = 0
-            print(f"{obj.name} {loaded}")
         set_status(
             "Done", max, count, empty=not_found, image_count=image_count, done=True
         )
