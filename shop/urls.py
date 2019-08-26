@@ -17,11 +17,12 @@ from shop.views.public_views import (
     catalogue_view,
     category_view,
 )
-from shop.import_data import (
+from shop.views.import_views import (
     import_objects_view,
+    import_process_view,
     import_progress_view,
     import_images_view,
-    import_images_progress_view,
+    # import_images_progress_view,
     set_category_images_view,
 )
 
@@ -32,17 +33,13 @@ staff_urls = [
     path("object/update/<int:pk>/", ObjectUpdateView.as_view(), name="object_update"),
     path("object/list/", ObjectListView.as_view(), name="object_list"),
     path("import/", import_objects_view, name="import_objects"),
+    path("import/process/", import_process_view, name="import_process"),
     path("import/progress/", import_progress_view, name="import_progress"),
     path("import/images/", import_images_view, name="import_images"),
     path(
         "import/category-images/",
         set_category_images_view,
         name="import_category_images",
-    ),
-    path(
-        "import/images/progress/",
-        import_images_progress_view,
-        name="import_images_progress",
     ),
     path("category/create/", CategoryClearView.as_view(), name="category_clear"),
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),

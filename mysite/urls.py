@@ -7,7 +7,13 @@ from coderedcms import search_urls as coderedsearch_urls
 from coderedcms import urls as codered_urls
 from shop.urls import staff_urls, public_urls
 
+
+def trigger_error(request):
+    div = 1 / 0
+
+
 urlpatterns = [
+    path("sentry-debug/", trigger_error),
     # Admin
     path("django-admin/", admin.site.urls),
     path("admin/", include(coderedadmin_urls)),

@@ -2,6 +2,7 @@ import logging
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
     View,
     TemplateView,
@@ -16,11 +17,11 @@ from shop.forms import ObjectForm, CategoryForm
 logger = logging.getLogger(__name__)
 
 
-class StaffHomeView(TemplateView):
+class StaffHomeView(LoginRequiredMixin, TemplateView):
     template_name = "shop/staff_home.html"
 
 
-class ObjectClearView(View):
+class ObjectClearView(LoginRequiredMixin, View):
     """ Clears all objects from the database """
 
     def get(self, request):
@@ -29,7 +30,7 @@ class ObjectClearView(View):
         return redirect("staff_home")
 
 
-class ObjectCreateView(CreateView):
+class ObjectCreateView(LoginRequiredMixin, CreateView):
     model = Object
     form_class = ObjectForm
     template_name = "shop/object_form.html"
@@ -44,7 +45,7 @@ class ObjectCreateView(CreateView):
         return reverse("category_detail", kwargs={"pk": self.object.category.id})
 
 
-class ObjectUpdateView(UpdateView):
+class ObjectUpdateView(LoginRequiredMixin, UpdateView):
     model = Object
     form_class = ObjectForm
     template_name = "shop/object_form.html"
@@ -70,7 +71,7 @@ class ObjectUpdateView(UpdateView):
         return reverse("category_detail", kwargs={"pk": self.object.category.id})
 
 
-class ObjectListView(ListView):
+class ObjectListView(LoginRequiredMixin, ListView):
     model = Object
     template_name = "shop/object_list.html"
 
@@ -78,7 +79,7 @@ class ObjectListView(ListView):
         return Object.objects.all().order_by("name")
 
 
-class CategoryClearView(View):
+class CategoryClearView(LoginRequiredMixin, View):
     """ Clears all objects from the database """
 
     def get(self, request):
@@ -87,21 +88,21 @@ class CategoryClearView(View):
         return redirect("staff_home")
 
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = "shop/bootstrap_form.html"
     success_url = reverse_lazy("category_list")
 
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = "shop/bootstrap_form.html"
     success_url = reverse_lazy("category_list")
 
 
-class CategoryListView(ListView):
+class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = "shop/category_list.html"
 
@@ -109,7 +110,7 @@ class CategoryListView(ListView):
         return Category.objects.all().order_by("name")
 
 
-class CategoryDetailView(DetailView):
+class CategoryDetailView(LoginRequiredMixin, DetailView):
     model = Category
     template_name = "shop/category_detail.html"
     context_object_name = "category"

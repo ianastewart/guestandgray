@@ -1,14 +1,18 @@
 from .base import *
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 env_path = os.path.join(BASE_DIR, ".env")
 environ.Env.read_env(env_path)
 
+sentry_sdk.init(dsn=env.str("SENTRY"), integrations=[DjangoIntegration()])
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 SECRET_KEY = env.str("SECRET_KEY")
 ALLOWED_HOSTS = ["gray.iskt.co.uk"]
 
+INSTALLED_APPS += ["raven.contrib.django.raven_compat"]
 # To send email from the server, we recommend django_sendmail_backend
 # Or specify your own email backend such as an SMTP server.
 # https://docs.djangoproject.com/en/2.2/ref/settings/#email-backend
@@ -64,7 +68,6 @@ CACHES = {
     }
 }
 
-RAVEN_CONFIG = {"dsn": env.str("RAVEN")}
 
 # https://www.webforefront.com/django/setupdjangologging.html
 LOGGING = {
@@ -109,7 +112,7 @@ LOGGING = {
     },
     "root": {"level": "DEBUG", "handlers": ["console"]},
     "loggers": {
-        "members": {"handlers": ["production_logfile", "sentry"]},
+        "root": {"handlers": ["production_logfile", "sentry"]},
         "django": {"handlers": ["console", "sentry"], "propagate": True},
         # stop sentry logging disallowed host
         "django.security.DisallowedHost": {"handlers": ["console"], "propagate": False},
