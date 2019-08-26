@@ -43,7 +43,7 @@ def import_objects(excel_file):
     delete_all(Object)
     delete_all(Category)
     delete_all(CustomImage)
-    set_status("Reading Excell file")
+    set_status("Reading Excel file")
     object_resource = ObjectResource()
     dataset = Dataset()
     dataset.load(excel_file.read())
@@ -69,7 +69,7 @@ def process_objects(user, link_images=True):
     Optionally find the associated image and cross link it
     """
     try:
-        objects = Object.objects.all()[:101]
+        objects = Object.objects.all()
         max = len(objects)
         count = 0
         empty = 0
@@ -125,7 +125,7 @@ def set_status(text, max=0, count=0, empty=0, categories=0, image_count=0, done=
             "count": count,
             "empty": empty,
             "categories": categories,
-            "images": image_count,
+            "image_count": image_count,
             "done": done,
         },
     )
@@ -146,6 +146,7 @@ def process_images(user):
     set_status("Processing images", max)
     try:
         for obj in objects:
+            a = 1 / 0
             loaded = load_image(obj, user)
             count += 1
             if loaded:
@@ -163,9 +164,12 @@ def process_images(user):
                 )
                 i = 0
             print(f"{obj.name} {loaded}")
+        set_status(
+            "Done", max, count, empty=not_found, image_count=image_count, done=True
+        )
         return True
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Import images error: {str(e)} object = {obj.name}")
         return False
 
 
