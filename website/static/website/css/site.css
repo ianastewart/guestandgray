@@ -3,6 +3,8 @@
   background-color: #819B80;
 }
 
+/* ie11 fix for stretched images */
+.card > * { flex: 0 0 auto; }
 
 /* Style the Image Used to Trigger the Modal */
 #myImg {
