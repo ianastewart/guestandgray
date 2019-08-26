@@ -146,7 +146,6 @@ def process_images(user):
     set_status("Processing images", max)
     try:
         for obj in objects:
-            a = 1 / 0
             loaded = load_image(obj, user)
             count += 1
             if loaded:
