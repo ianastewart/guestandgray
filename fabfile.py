@@ -10,10 +10,10 @@ from fabric.context_managers import hide
 # ssh.util.log_to_file("paramiko.log", 10)
 
 REPO_URL = "https://github.com/ianastewart/guestandgray"
-# LOCAL_BACKUP_FOLDER = "D:/Django/DatabaseBackups"
+BACKUP_FOLDER = "GuestAndGray/Backup"
 # LOCAL_DEV_FOLDER = "D:/Django/admin/"
 BACKUP_FOLDER = "database_backup"
-BACKUP_FILE = "admin.dump"
+BACKUP_FILE = "gray.dump"
 MEDIA_FILE = "media.zip"
 
 
@@ -24,15 +24,15 @@ def _local_path():
         return "C:/Users/is"
 
 
-def _local_backup_folder():
-    return f"{_local_path()}/GuestAndGray/DatabaseBackups"
-
-
 def _local_dev_folder():
     if os.path.exists("D:/Django"):
         return "D:/Django/GuestAndGray"
     else:
         return "C:/Users/is/PycharmProjects/GuestAndGray"
+
+
+def _local_backup_folder():
+    return f"{_local_path()}/{BACKUP_FOLDER}"
 
 
 @hosts("46.101.88.176")
@@ -66,7 +66,7 @@ def download():
     env.password = _read_env()["DJANGO"]
     app = "gray"
     _download_database(app)
-    _download_media(app)
+    # _download_media(app)
 
 
 @hosts("gray.iskt.co.uk")
@@ -357,7 +357,7 @@ def _read_env():
 def _download_database(app):
     print(yellow("Start download database"))
     site_folder = f"/home/django/{app}/"
-    local_path = f"{_local_backup_folder()}/{BACKUP_FILE}"
+    local_path = f"{_local_dev_folder()}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     if os.path.exists(local_path):
         # rename the backup file to include the modification date
         # but overwrite any backups already made today

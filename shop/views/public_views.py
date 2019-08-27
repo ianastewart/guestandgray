@@ -46,7 +46,7 @@ def category_view(request, pk):
     context = get_host_context("catalogue")
     category = get_object_or_404(Category, pk=pk)
     objects = category.object_set.filter(image__isnull=False).order_by("-price")
-    paginator = Paginator(objects, 8)
+    paginator = Paginator(objects, 16)
     page = request.GET.get("page")
     if paginator.num_pages > 1 and not page:
         page = 1

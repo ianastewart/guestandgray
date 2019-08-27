@@ -10,7 +10,7 @@ sentry_sdk.init(dsn=env.str("SENTRY"), integrations=[DjangoIntegration()])
 DEBUG = False
 
 SECRET_KEY = env.str("SECRET_KEY")
-ALLOWED_HOSTS = ["gray.iskt.co.uk"]
+ALLOWED_HOSTS = ["gray.iskt.co.uk", "localhost"]
 
 INSTALLED_APPS += ["raven.contrib.django.raven_compat"]
 # To send email from the server, we recommend django_sendmail_backend
