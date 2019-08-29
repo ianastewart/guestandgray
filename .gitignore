@@ -395,5 +395,5 @@ protected/
 
 # if you want to store original uploaded media files in version control,
 # replace "media/" with "media/images/"
-#media/
-media/images/
+media/
+#media/images/

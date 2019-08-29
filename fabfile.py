@@ -6,6 +6,16 @@ from fabric.colors import red, green, yellow, cyan
 from fabric.api import hosts, cd, env, run, sudo, put, get
 from fabric.context_managers import hide
 
+from deployment.database_helper import (
+    create_database,
+    upload_database,
+    download_database,
+    upload_dev_db,
+    upload_media,
+    download_media,
+    upload_media_dev,
+)
+
 # from fabric.network import ssh
 # ssh.util.log_to_file("paramiko.log", 10)
 
@@ -29,10 +39,6 @@ def _local_dev_folder():
         return "D:/Django/GuestAndGray"
     else:
         return "C:/Users/is/PycharmProjects/GuestAndGray"
-
-
-def _local_backup_folder():
-    return f"{_local_path()}/{BACKUP_FOLDER}"
 
 
 @hosts("46.101.88.176")
@@ -65,29 +71,15 @@ def download():
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     app = "gray"
-    _download_database(app)
-    # _download_media(app)
+    db = "gray"
+    download_database(_local_dev_folder(), app, db)
+    download_media(_local_dev_folder(), app)
 
 
-@hosts("gray.iskt.co.uk")
 def upload_dev():
     """ Replace database and media on dev system"""
-    upload_dev_db()
-    os.system(
-        f'C:/"Program Files"/7-Zip/7z.exe x -y {_local_backup_folder()}/{MEDIA_FILE} -o{_local_dev_folder()}/'
-    )
-
-
-@hosts("gray.iskt.co.uk")
-def upload_dev_db():
-    """ Replace database only dev system"""
-    os.system(f'psql -U postgres -c "DROP DATABASE admin"')
-    os.system(f'psql -U postgres -c "CREATE DATABASE admin WITH OWNER django"')
-    os.system(f"pg_restore -U postgres -d admin {_local_backup_folder()}/{BACKUP_FILE}")
-    venv = f"{_local_dev_folder()}/venv/Scripts/python.exe"
-    os.system(
-        f"{venv} manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev"
-    )
+    upload_dev_db(_local_dev_folder(), "gray")
+    upload_media_dev(_local_dev_folder())
 
 
 @hosts("django.iskt.co.uk")
@@ -208,13 +200,12 @@ def _install_app(app="gray", settings="prod", branch="master"):
     user, pw, db = _parse_db_settings(dot_env[db_url])
     # virtual environment
     _create_venv(venv, app)
-    _create_database("gray", "guest", "gray")
+    create_database("gray", "guest", "gray")
     # _upload_database(app, user, pw, db)
     # _upload_media(app)
     _deploy_django(venv, app, settings, branch)
     _install_gunicorn(venv, app, settings)
-    # tasks = "tasks-sandbox" if settings == "sandbox" else "tasks"
-    # _install_tasks(venv, app, settings, tasks)
+
     server = env.host
     _configure_nginx(app, server)
     sudo("supervisorctl reread")
@@ -300,40 +291,6 @@ def _configure_nginx(app, server):
     print(green(f"End configure Nginx"))
 
 
-def _create_database(user, pw, db):
-    """Creates role and database"""
-    print(yellow(f"Start create database {db}"))
-    db_users = sudo(
-        "psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (user),
-        user="postgres",
-    )
-    if not user in db_users:
-        sudo(
-            "psql -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\"" % (user, pw),
-            user="postgres",
-        )
-    databases = sudo(
-        'psql -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
-        user="postgres",
-    )
-    if db in databases:
-        print(cyan(f"Dropping existing database {db}"))
-        sudo(f"dropdb {db}", user="postgres")
-    sudo('psql -c "CREATE DATABASE %s WITH OWNER %s"' % (db, user), user="postgres")
-    print(green(f"End create database {db}"))
-
-
-def _upload_database(app, user, pw, db):
-    site_folder = f"/home/django/{app}"
-    print(yellow(f"Start upload database {db} to {site_folder}"))
-    with cd(site_folder):
-        sudo(f"mkdir -p {BACKUP_FOLDER}", user="django")
-        put(f"{_local_backup_folder()}/{BACKUP_FILE}", f"{BACKUP_FOLDER}/{BACKUP_FILE}")
-        _create_database(user, pw, db)
-        sudo(f"pg_restore -d {db} {BACKUP_FOLDER}/{BACKUP_FILE}", user="postgres")
-    print(green(f"End upload database {db}"))
-
-
 def _parse_db_settings(value):
     parts = value.split(":")
     user = parts[1][2:]
@@ -352,45 +309,3 @@ def _read_env():
             if match is not None:
                 result[match.group(1)] = match.group(2)
     return result
-
-
-def _download_database(app):
-    print(yellow("Start download database"))
-    site_folder = f"/home/django/{app}/"
-    local_path = f"{_local_dev_folder()}/{BACKUP_FOLDER}/{BACKUP_FILE}"
-    if os.path.exists(local_path):
-        # rename the backup file to include the modification date
-        # but overwrite any backups already made today
-        t = time.localtime(os.path.getmtime(local_path))
-        f = BACKUP_FILE.split(".")
-        new_path = (
-            f"{_local_backup_folder()}/{f[0]}_{t.tm_year}-{t.tm_mon}-{t.tm_mday}.{f[1]}"
-        )
-        if os.path.exists(new_path):
-            os.remove(new_path)
-        os.rename(local_path, new_path)
-    sudo(f"mkdir -p {site_folder}/{BACKUP_FOLDER}", user="django")
-    source_path = f"{site_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
-    sudo(f"pg_dump admin  -Fc -x >{source_path}", user="django")
-    get(source_path, local_path)
-    print(green("End download database"))
-
-
-def _download_media(app):
-    print(yellow("Start download media"))
-    site_folder = f"/home/django/{app}"
-    with cd(site_folder):
-        sudo(f"zip -r {MEDIA_FILE} media", user="django")
-        get(MEDIA_FILE, f"{_local_backup_folder()}/{MEDIA_FILE}")
-    print(green("End download media"))
-
-
-def _upload_media(app):
-    print(yellow("Start upload media"))
-    site_folder = f"/home/django/{app}"
-    sudo(f"mkdir -p {site_folder}", user="django")
-    with cd(site_folder):
-        run("rm -rf media")
-        put(f"{_local_backup_folder()}/{MEDIA_FILE}", MEDIA_FILE)
-        sudo(f"unzip {MEDIA_FILE}", user="django")
-    print(green("End upload media"))
