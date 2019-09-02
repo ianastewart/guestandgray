@@ -99,8 +99,8 @@
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="coderedcms-{{page.content_type.model}} {% if page.get_parent %}parent-page-{{page.get_parent.id}}{% endif %} {% block body_class %}{% endblock %}" id="page-{{page.id}}">
-
+    <body class="d-flex flex-column coderedcms-{{page.content_type.model}} {% if page.get_parent %}parent-page-{{page.get_parent.id}}{% endif %} {% block body_class %}{% endblock %}" id="page-{{page.id}}">
+      <div id="page-content"> <!-- For sticky footer -->
         {% include "coderedcms/includes/codered_banner.html" %}
 
         {% wagtailuserbar %}
@@ -159,7 +159,7 @@
                 {% endfor %}
             {% endblock %}
         </div>
-
+      </div>
         {% block footer %}{% endblock %}
 
         {% block required_scripts %}

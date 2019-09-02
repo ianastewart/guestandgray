@@ -6,6 +6,23 @@
 /* ie11 fix for stretched images */
 .card > * { flex: 0 0 auto; }
 
+/*  https://startbootstrap.com/snippets/sticky-footer-flexbox/ */
+html,
+body {
+  height: 100%;
+}
+
+#page-content {
+  flex: 1 0 auto;
+}
+
+#sticky-footer {
+  flex-shrink: 0;
+}
+/* --------- */
+
+
+
 /* Style the Image Used to Trigger the Modal */
 #myImg {
   border-radius: 5px;
