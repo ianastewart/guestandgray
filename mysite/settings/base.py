@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "website",
     "import_export",
     "keyvaluestore",
+    "treebeard",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",

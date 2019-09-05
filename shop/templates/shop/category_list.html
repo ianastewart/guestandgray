@@ -6,10 +6,9 @@
       <div class="col-md-8">
         <h1>Categories</h1>
       <ul>
-        {% for object in object_list %}
-          <li><a href="{% url 'category_detail' pk=object.pk %}">{{ object.name }}</a></li>
+        {% for category in categories %}
+            {% include "shop/includes/category_node.html" %}
         {% endfor %}
-
       </ul>
       </div>
     </div>

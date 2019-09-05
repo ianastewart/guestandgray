@@ -5,8 +5,9 @@ from keyvaluestore.utils import get_value_for_key, set_key_value
 from django.shortcuts import render, redirect
 from import_export import resources
 from import_export.fields import Field
+from treebeard.mp_tree import MP_Node
 from tablib import Dataset
-from .models import Object, Category, CustomImage
+from .models import Object, Category, OldCategory, CustomImage
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +35,14 @@ class ObjectResource(resources.ModelResource):
 
 class CategoryResource(resources.ModelResource):
     class Meta:
-        model = Category
+        model = OldCategory
         fields = ("id", "name")
 
 
 def import_objects(excel_file):
 
     delete_all(Object)
-    delete_all(Category)
+    delete_all(OldCategory)
     delete_all(CustomImage)
     set_status("Reading Excel file")
     object_resource = ObjectResource()
@@ -87,12 +88,12 @@ def process_objects(user, link_images=True):
                 else:
                     key = item.category_text
                 try:
-                    category = Category.objects.get(name=key)
-                except Category.DoesNotExist:
+                    OldCategory = OldCategory.objects.get(name=key)
+                except OldCategory.DoesNotExist:
                     categories += 1
-                    category = Category(name=key)
+                    category = OldCategory(name=key)
                     category.save()
-                item.category_id = category.id
+                item.OldCategory_id = OldCategory.id
                 item.save()
             else:
                 empty += 1
@@ -129,6 +130,49 @@ def set_status(text, max=0, count=0, empty=0, categories=0, image_count=0, done=
             "done": done,
         },
     )
+
+
+def process_categories():
+    """
+    Create fixed top level categories under root catalogue
+    Process all objects assigning the category derived from the category_text field
+    Create new categories under the top level categories according to simple matching rules
+    :return: count of assigned objects and count of object without category
+    """
+    Category.objects.all().delete()
+    get = lambda node_id: Category.objects.get(pk=node_id)
+    root = Category.add_root(name="Catalogue")
+    chinese = get(root.pk).add_child(name="Chinese")
+    japanese = get(root.pk).add_child(name="Japanese")
+    european = get(root.pk).add_child(name="European")
+    other = get(root.pk).add_child(name="Other")
+    objects = Object.objects.all()
+    assigned = 0
+    empty = 0
+    for item in objects:
+        if item.category_text:
+            sep = item.category_text.find("|")
+            if sep > 0:
+                key = item.category_text[0:sep]
+            else:
+                key = item.category_text
+            try:
+                cat = Category.objects.get(name=key)
+            except Category.DoesNotExist:
+                if "Chinese" in key:
+                    cat = get(chinese.pk).add_child(name=key)
+                elif "Japanese" in key:
+                    cat = get(japanese.pk).add_child(name=key)
+                elif "European" in key or "Dutch" in key:
+                    cat = get(european.pk).add_child(name=key)
+                else:
+                    cat = get(other.pk).add_child(name=key)
+            item.new_category_id = cat.id
+            item.save()
+            assigned += 1
+        else:
+            empty += 1
+        return assigned, empty
 
 
 def process_images(user):

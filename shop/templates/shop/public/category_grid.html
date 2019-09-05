@@ -1,62 +1,42 @@
-{% extends 'coderedcms/pages/web_page_notitle.html' %}
-{% load wagtailimages_tags %}
+{% extends 'coderedcms/pages/web_page.html' %}
+{% load wagtailimages_tags shop_tags%}
 {% block body_class %}bg-light{% endblock %}
-{% block content_body %}
+{% block content %}
   <div class="container">
-    <div class="row">
-      <div class="col my-4">
-        <h3>{{ category.name }}</h3>
-        {% if page_number %}<span class="text-black-50">{{ page_number }}</span>{% endif %}
-      </div>
-    </div>
-    <div class="row">
-      {% for object in objects %}
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          {% image object.image width-250 as card_image %}
+    {{ category.breadcrumb_nodes|breadcrumb }}
+    <h1 class="mt-4">{{ category.name }}</h1>
+    <div class="row mt-4">
+      {% for category in categories %}
+        {% image category.image width-250 as card_image %}
+        <div class="col-sm-6 col-md-4 col-lg-3 d-none d-sm-block">
           <div class="card mb-2 text-center border-0 bg-light" style="height:330px; position: relative">
-            <a href="{% url "public_object" slug='x' pk=object.pk %}">
-              {% if card_image.height > 250 %}
-                <img src="{{ card_image.url }}" alt="{{ object.name }}" height="250px">
+            <a href="{{ category.get_absolute_url }}">
+              {% if card_image.height > 260 %}
+                <img src="{{ card_image.url }}" alt="{{ category.name }}" height="250px">
               {% else %}
-              <img class="card-img-top" src="{{ card_image.url }}" alt="{{ object.name }}" height="{{ card_image.height }}">
+                <img class="card-img-top" src="{{ card_image.url }}" alt="{{ category.name }}">
+                {#                     height="{{ card_image.height }}">#}
               {% endif %}
               <div class="card-body text-center m-0 pt-2 px-0 d-none d-xl-block" style="position: absolute; top:250px;">
-                <p class="text-black-50">{{ object.name }}</p>
+                <p class="text-black-50">{{ category.name }}</p>
               </div>
               <div class="card-body text-center m-0 pt-2 px-0 d-none d-md-block d-xl-none" style="position: absolute; top:220px;">
-                <p class="text-black-50">{{ object.name }}</p>
+                <p class="text-black-50">{{ category.name }}</p>
               </div>
               <div class="card-body text-center m-0 pt-2 px-0 d-none d-sm-block d-md-none" style="position: absolute; top:250px;">
-                <p class="text-black-50">{{ object.name }}</p>
+                <p class="text-black-50">{{ category.name }}</p>
               </div>
             </a>
           </div>
         </div>
+{#        Mobile only #}
+        <div class="col-12 d-block d-sm-none mb-2 text-center">
+            <a href="{{ category.get_absolute_url }}">
+              <img src="{{ card_image.url }}" alt="{{ category.name }}">
+              <p class="text-black-50">{{ category.name }}</p>
+          </a>
+        </div>
       {% endfor %}
-  </div>
-  {% if objects.has_other_pages %}
-    <nav aria-label="Page navigation">
-      <ul class="pagination">
-        {% if objects.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ objects.previous_page_number }}">&laquo;</a></li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
-        {% endif %}
-        {% for i in objects.paginator.page_range %}
-          {% if objects.number == i %}
-            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
-            </li>
-          {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-          {% endif %}
-        {% endfor %}
-        {% if objects.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ objects.next_page_number }}">&raquo;</a></li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+    </div>
   </div>
 {% endblock %}

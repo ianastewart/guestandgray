@@ -1,0 +1,13 @@
+<li> <a href="{% url 'category_detail' pk=category.pk %}">{{ category.name }}</a>
+  {% with children=category.get_children %}
+    {% if children %}
+      <ul>
+        {% for child in children %}
+          {% with category=child %}
+            {% include "shop/includes/category_node.html" %}
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+</li>

@@ -1,6 +1,6 @@
 {% extends "shop/shop_base.html" %}
 {% load bootstrap4 %}
-{% load wagtailimages_tags %}
+{% load wagtailimages_tags static %}
 {% block body_class %}bg-light{% endblock %}
 {% block content_body %}
   <div class="container">
@@ -15,7 +15,7 @@
         {% endif %}
       </div>
     </div>
-    <form method="post" class="form">
+    <form method="post">
       {% csrf_token %}
       <div class="row">
         <div class="col">
@@ -30,13 +30,57 @@
             {% image photo width-400 %}
           {% endfor %}
           <div class="mt-4">
-            <button type="submit" class="btn btn-secondary" name="category_image">
-              Use as category image
+            <button type="submit" class="btn btn-secondary" name="category_image">Use as category image</button>
+            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#uploadModal">Upload an
+              image
             </button>
           </div>
         </div>
       </div>
     </form>
   </div>
+{% endblock %}
+{% block content_walls %}
+  <!-- Modal -->
+  <div class="modal fade" id="uploadModal" data-backdrop="false" tabindex="-1" role="dialog"
+       aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="post" enctype="multipart/form-data" id="idForm">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">Upload an image</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
 
+            {% csrf_token %}
+            <!-- COMPONENT START -->
+            <div class="form-group">
+              <div class="input-group input-file" name="myfile">
+			        <span class="input-group-btn">
+        		    <button class="btn btn-outline-primary btn-choose" type="button">Choose</button>
+    		      </span>
+                <input type="text" class="form-control" placeholder='Choose an image file...'/>
+                <span class="input-group-btn">
+       			    <button class="btn btn-warning btn-reset" type="button">Reset</button>
+    		      </span>
+              </div>
+            </div>
+            <!-- COMPONENT END -->
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="idUpload" name="upload" disabled>Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+{% block custom_scripts %}
+  <script src="{% static 'website/js/file_upload.js' %}"></script>
 {% endblock %}

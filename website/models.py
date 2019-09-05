@@ -13,7 +13,7 @@ from coderedcms.models import (
 from django.http import Http404
 from coderedcms.models.page_models import CoderedPage
 
-from shop.models import Category, Object, CustomImage
+from shop.models import OldCategory, Object, CustomImage
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 
 
@@ -102,8 +102,8 @@ class CataloguePage(RoutablePageMixin, CoderedPage):
     @route(r"^catalogue/(\d+)/$")
     def cat_page(self, request, cat_id=None, *args, **kwargs):
         try:
-            self.category = Category.objects.get(pk=cat_id)
-        except Category.DoesNotExist:
+            self.category = OldCategory.objects.get(pk=cat_id)
+        except OldCategory.DoesNotExist:
             raise Http404
         return CoderedPage.serve(self, request, *args, **kwargs)
 
@@ -111,7 +111,7 @@ class CataloguePage(RoutablePageMixin, CoderedPage):
         context = super().get_context(request, *args, **kwargs)
         if hasattr(self, "catgeory"):
             context["category"] = self.category
-        context["categories"] = Category.objects.all().exclude(image=None)
+        context["categories"] = OldCategory.objects.all().exclude(image=None)
         return context
 
 

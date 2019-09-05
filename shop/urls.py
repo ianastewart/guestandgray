@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from shop.views.staff_views import (
     StaffHomeView,
     ObjectClearView,
@@ -11,12 +11,7 @@ from shop.views.staff_views import (
     CategoryListView,
     CategoryDetailView,
 )
-from shop.views.public_views import (
-    home_view,
-    object_view,
-    catalogue_view,
-    category_view,
-)
+from shop.views.public_views import home_view, object_view, catalogue_view
 from shop.views.import_views import (
     import_objects_view,
     import_process_view,
@@ -33,7 +28,7 @@ staff_urls = [
     path("object/update/<int:pk>/", ObjectUpdateView.as_view(), name="object_update"),
     path("object/list/", ObjectListView.as_view(), name="object_list"),
     path("import/", import_objects_view, name="import_objects"),
-    path("import/process/", import_process_view, name="import_process"),
+    path("import/categories/", import_process_view, name="import_categories"),
     path("import/progress/", import_progress_view, name="import_progress"),
     path("import/images/", import_images_view, name="import_images"),
     path(
@@ -58,7 +53,9 @@ staff_urls = [
 
 public_urls = [
     path("", home_view, name="public_home"),
-    path("catalogue/", catalogue_view, name="public_catalogue"),
+    path("catalogue/", catalogue_view, name="public_catalogue_root"),
+    re_path(
+        r"catalogue/(?P<slugs>[\w_/-]+)/$", catalogue_view, name="public_catalogue"
+    ),
     path("object/<slug:slug>,<int:pk>/", object_view, name="public_object"),
-    path("category/<int:pk>/", category_view, name="public_category"),
 ]

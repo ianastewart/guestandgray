@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from enum import IntEnum
+from treebeard.mp_tree import MP_Node
 from wagtail.images.models import Image, AbstractImage, AbstractRendition
 
 
@@ -33,7 +34,53 @@ class ModelEnum(IntEnum):
         )
 
 
-class Category(models.Model):
+class Category(MP_Node):
+    name = models.CharField(max_length=100)
+    # Slug contains the full path slugified
+    # We don't use a SlugField because the slug can contain / characters
+    # and Django admin's validation would reject such entries
+    slug = models.CharField(max_length=400)
+    short_name = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    image = models.ForeignKey(
+        CustomImage,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="linked_category",
+    )
+    node_order_by = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.short_name:
+            self.short_name = self.name[:50]
+        if self.is_root():
+            self.slug = slugify(self.short_name)
+        else:
+            self.slug = self.get_parent().slug + "/" + slugify(self.short_name)
+        super().save(*args, **kwargs)
+        for child in self.get_children():
+            child.save()
+
+    def breadcrumb_nodes(self):
+        breadcrumb = []
+        self.active = True
+        breadcrumb.append(self)
+        parent = self.get_parent()
+        while parent:
+            parent.active = False
+            breadcrumb.insert(0, parent)
+            parent = parent.get_parent()
+        return breadcrumb
+
+    def get_absolute_url(self):
+        return "/" + self.slug + "/"
+
+
+class OldCategory(models.Model):
     name = models.CharField(max_length=200)
     image = models.ForeignKey(
         CustomImage,
@@ -71,6 +118,9 @@ class Object(models.Model):
     # sold_date = models.DateTimeField(null=True, blank=True)
     # state = models.SmallIntegerField(choices=State.choices(), default=0)
     category = models.ForeignKey(
+        OldCategory, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    new_category = models.ForeignKey(
         Category, null=True, blank=True, on_delete=models.SET_NULL
     )
 
