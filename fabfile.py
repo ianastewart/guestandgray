@@ -14,6 +14,7 @@ from deployment.database_helper import (
     upload_media,
     download_media,
     upload_media_dev,
+    dump_dev_db,
 )
 
 # from fabric.network import ssh
@@ -76,10 +77,24 @@ def download():
     download_media(_local_dev_folder(), app)
 
 
+@hosts("gray.iskt.co.uk")
+def upload_db():
+    """ Upload database to live site"""
+    env.user = "django"
+    env.password = _read_env()["DJANGO"]
+    dbuser, pw, db = _parse_db_settings()
+    upload_database(_local_dev_folder(), app="gray", dbuser=dbuser, pw=pw, db=db)
+
+
 def upload_dev():
     """ Replace database and media on dev system"""
     upload_dev_db(_local_dev_folder(), "gray")
     upload_media_dev(_local_dev_folder())
+
+
+def dump_dev():
+    dbuser, pw, db = _parse_db_settings()
+    dump_dev_db(_local_dev_folder(), dbuser, pw, db)
 
 
 @hosts("django.iskt.co.uk")
@@ -195,12 +210,10 @@ def _install_app(app="gray", settings="prod", branch="master"):
     Install gunicorn and configure nginx to support it
     """
     venv = "venv"
-    dot_env = _read_env()
-    db_url = "DATABASE_URL"
-    user, pw, db = _parse_db_settings(dot_env[db_url])
+    dbuser, pw, db = _parse_db_settings()
     # virtual environment
     _create_venv(venv, app)
-    create_database("gray", "guest", "gray")
+    create_database(dbuser=dbuser, pw=pw, db=db)
     # _upload_database(app, user, pw, db)
     # _upload_media(app)
     _deploy_django(venv, app, settings, branch)
@@ -291,12 +304,15 @@ def _configure_nginx(app, server):
     print(green(f"End configure Nginx"))
 
 
-def _parse_db_settings(value):
-    parts = value.split(":")
-    user = parts[1][2:]
+def _parse_db_settings():
+
+    dot_env = _read_env()
+    db_url = "DATABASE_URL"
+    parts = dot_env[db_url].split(":")
+    dbuser = parts[1][2:]
     pw = parts[2].split("@")[0]
     db = parts[3].split("/")[1]
-    return user, pw, db
+    return dbuser, pw, db
 
 
 def _read_env():

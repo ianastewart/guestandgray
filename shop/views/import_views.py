@@ -4,7 +4,7 @@ from keyvaluestore.utils import get_value_for_key, set_key_value
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from shop.models import Object, OldCategory, CustomImage
+from shop.models import Object, Category, CustomImage
 from shop.import_helper import (
     import_objects,
     process_objects,
@@ -69,10 +69,10 @@ def import_images_view(request):
 @login_required
 def set_category_images_view(request):
     """ set default category image to be first associated object that has an image"""
-    cats = OldCategory.objects.all()
+    cats = Category.objects.all()
     for cat in cats:
         objects = cat.object_set.filter(image__isnull=False)
         if objects:
             cat.image = objects[0].image
             cat.save()
-    return redirect("public_catalogue")
+    return redirect("public_catalogue_root")
