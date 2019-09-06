@@ -46,7 +46,7 @@ def grant_priviliges(dbuser, db):
 def download_database(local_dev_folder, app, db):
     print(yellow("Start download database"))
     site_folder = f"/home/django/{app}/"
-    dbuser = "djangofab dowfab"
+    dbuser = "django"
     local_path = f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     if os.path.exists(local_path):
         # rename the backup file to include the modification date
@@ -65,7 +65,7 @@ def download_database(local_dev_folder, app, db):
     print(green("End download database"))
 
 
-def upload_database(local_dev_folder, app, user, pw, db):
+def upload_database(local_dev_folder, app, dbuser, pw, db):
     site_folder = f"/home/django/{app}"
     print(yellow(f"Start upload database {db} to {site_folder}"))
     with cd(site_folder):
@@ -74,7 +74,7 @@ def upload_database(local_dev_folder, app, user, pw, db):
             f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}",
             f"{BACKUP_FOLDER}/{BACKUP_FILE}",
         )
-        create_database(user, pw, db)
+        create_database(dbuser, pw, db)
         sudo(f"pg_restore -d {db} {BACKUP_FOLDER}/{BACKUP_FILE}", user="postgres")
     print(green(f"End upload database {db}"))
 
@@ -91,6 +91,15 @@ def upload_dev_db(local_dev_folder, db):
     os.system(
         f"{venv} manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev"
     )
+
+
+def dump_dev_db(local_dev_folder, dbuser, pw, db):
+    local_path = f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
+    if os.path.exists(local_path):
+        os.remove(local_path)
+    os.system(f"SET PGPASSWORD={pw}")
+    os.system(f"pg_dump -Fc -U {dbuser} --file={local_path} {db} ")
+    print(f"Local database dumped to {local_path}")
 
 
 def download_media(local_dev_folder, app):
