@@ -1,5 +1,4 @@
 from django.forms import ModelForm, ModelChoiceField, ValidationError
-from treebeard.exceptions import InvalidMoveToDescendant
 from shop.models import Object, Category
 
 
@@ -30,14 +29,4 @@ class ObjectForm(ModelForm):
 
     class Meta:
         model = Object
-        fields = (
-            "name",
-            "ref",
-            "description",
-            "price",
-            "image_file",
-            "category_text",
-            "category",
-        )
-
-    # category = ModelChoiceField(queryset=Category.objects.all(), to_field_name="name")
+        fields = ("name", "ref", "description", "price", "new_category")

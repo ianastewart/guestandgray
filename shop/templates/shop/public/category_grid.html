@@ -3,7 +3,7 @@
 {% block body_class %}bg-light{% endblock %}
 {% block content %}
   <div class="container">
-    {{ category.breadcrumb_nodes|breadcrumb }}
+    {{ breadcrumb|breadcrumb }}
     <h1 class="mt-4">{{ category.name }}</h1>
     <div class="row mt-4">
       {% for category in categories %}

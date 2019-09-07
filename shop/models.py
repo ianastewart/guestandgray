@@ -65,9 +65,9 @@ class Category(MP_Node):
         for child in self.get_children():
             child.save()
 
-    def breadcrumb_nodes(self):
+    def breadcrumb_nodes(self, object_view=False):
         breadcrumb = []
-        self.active = True
+        self.active = not object_view
         breadcrumb.append(self)
         parent = self.get_parent()
         while parent:

@@ -43,6 +43,9 @@ $('#idForm').submit(function (e) {
         data: formData,
         success: function (response) {
             console.log('POST response received')
+            if (response['success']){
+                location.reload(true)
+            }
         },
         cache: false,
         contentType: false,

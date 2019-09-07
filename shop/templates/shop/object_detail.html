@@ -1,0 +1,42 @@
+{% extends "shop/shop_base.html" %}
+{% load wagtailimages_tags static %}
+{% block body_class %}bg-light{% endblock %}
+{% block content_body %}
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h3 class="my-3">{{ object.name }}</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-7">
+        <p>Stock reference: <b>{{ object.ref }}</b></p>
+        <p> {{ object.description }}</p>
+        <p>Price: <b>£ {{ price }}</b></p>
+        <p>Category<br> {{ object.category.name }}</p>
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-4">
+        <div class="card">
+          {% if object and object.image %}
+            {% image object.image width-250 as card_image %}
+            <img class="card-img-top" src="{{ card_image.url }}">
+          {% else %}
+            <div class="card-body bg-white text-center" style="height:400px;">
+              <i>No image</i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="row my-3">
+      <div class="col-md-8">
+        <a href="{% url 'object_update' pk=object.pk %}" class="btn btn-primary">Update object</a>
+        <a href="{% url 'public_object' slug='x' pk=object.pk %}" class="btn btn-secondary">View on site</a>
+      </div>
+      <div class="col">
+        <a href="{% url 'object_images' pk=object.pk %}" class="btn btn-primary">Update images</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

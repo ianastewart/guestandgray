@@ -1,0 +1,42 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 %}
+{% load wagtailimages_tags static %}
+{% block body_class %}bg-light{% endblock %}
+{% block content_body %}
+  <div class="container">
+    <div class="row">
+      <div class="col my-4">
+        {% if object %}
+          <h3>Update object</h3>
+        {% else %}
+          <h3>New object</h3>
+        {% endif %}
+      </div>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-8">
+          {% bootstrap_form form layout="horizontal" %}
+        </div>
+      <div class="col-md-4">
+        <div class="card">
+          {% if object and object.image %}
+            {% image object.image width-250 as card_image %}
+            <img class="card-img-top" src="{{ card_image.url }}">
+          {% else %}
+            <div class="card-body bg-white text-center" style="height:400px;">
+              <i>No image</i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      </div>
+      <div class="row my-3">
+        {% buttons %}
+          <button type="submit" class="btn btn-primary" name="save">Save</button>
+        {% endbuttons %}
+      </div>
+    </form>
+  </div>
+{% endblock %}

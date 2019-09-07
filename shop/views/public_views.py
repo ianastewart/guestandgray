@@ -29,11 +29,13 @@ def object_view(request, slug, pk):
     """ Public view of a single object """
 
     template_name = "shop/public/object_detail.html"
-    context = get_host_context("catalogue")
     obj, obj_url = get_redirected(Object, {"pk": pk}, {"slug": slug})
     if obj_url:
         return redirect(obj_url)
-    context["category"] = get_object_or_404(Category, id=obj.new_category_id)
+    context = get_host_context("catalogue")
+    category = get_object_or_404(Category, id=obj.new_category_id)
+    context["category"] = category
+    context["breadcrumb"] = category.breadcrumb_nodes(object_view=True)
     context["object"] = obj
     context["price"] = int(obj.price / 100)
     context["images"] = obj.images.all()
@@ -44,9 +46,10 @@ def catalogue_view(request, slugs=None):
     slug = "catalogue"
     if slugs:
         slug += "/" + slugs
-    category = get_object_or_404(Category, slug=slug)
     context = get_host_context("catalogue")
+    category = get_object_or_404(Category, slug=slug)
     context["category"] = category
+    context["breadcrumb"] = category.breadcrumb_nodes()
     child_categories = category.get_children()
     if child_categories:
         # category has sub categories

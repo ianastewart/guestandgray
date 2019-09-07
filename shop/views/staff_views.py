@@ -1,9 +1,12 @@
 import logging
+import os.path
+from django.conf import settings
+from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage
 from django.views.generic import (
     View,
     TemplateView,
@@ -12,7 +15,7 @@ from django.views.generic import (
     ListView,
     DetailView,
 )
-from wagtail.images.views.chooser import chooser
+from wagtail.core.models import Collection
 from shop.models import Object, Category, CustomImage
 from shop.forms import ObjectForm, CategoryForm
 
@@ -35,7 +38,7 @@ class ObjectClearView(LoginRequiredMixin, View):
 class ObjectCreateView(LoginRequiredMixin, CreateView):
     model = Object
     form_class = ObjectForm
-    template_name = "shop/object_form.html"
+    template_name = "shop/object_update.html"
 
     def post(self, request, *args, **kwargs):
         result = super().post(request, *args, **kwargs)
@@ -44,48 +47,70 @@ class ObjectCreateView(LoginRequiredMixin, CreateView):
         return result
 
     def get_success_url(self):
-        return reverse("category_detail", kwargs={"pk": self.object.category.id})
+        return reverse("object_detail", kwargs={"pk": self.object.pk})
 
 
 class ObjectUpdateView(LoginRequiredMixin, UpdateView):
     model = Object
     form_class = ObjectForm
-    template_name = "shop/object_form.html"
+    template_name = "shop/object_update.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["photos"] = CustomImage.objects.filter(object_id=self.object.id)
         return context
 
-    def post(self, request, *args, **kwargs):
-        result = super().post(request, *args, **kwargs)
-        if "view" in request.POST:
-            return redirect("public_object", slug=self.object.slug, pk=self.object.id)
-        if "category_image" in request.POST:
-            category = self.object.new_category
-            category.image = CustomImage.objects.filter(object_id=self.object.id)[0]
-            category.save()
-            return redirect("category_detail", pk=category.pk)
-        elif request.FILES["myfile"]:
-            obj = self.get_object()
-            # myfile = request.FILES["myfile"]
-            # fs = FileSystemStorage()
-            # temp_filename = fs.save(myfile.name, myfile)
-            # filename = temp_filename.split(".")[0] + ".jpg"
-            # images_path = "images/" + filename
-            # media_path = "media/original_images/" + filename
-            # new_image = CustomImage.objects.create(
-            #     file="original_images/" + filename,
-            #     title=obj.name,
-            #     collection_id=collection_id,
-            #     uploaded_by_user=request.user,
-            #     object=obj,
-            # )
-            # uploaded_file_url = fs.url(filename)
-        return result
-
     def get_success_url(self):
-        return reverse("category_detail", kwargs={"pk": self.object.new_category.id})
+        return reverse("object_detail", kwargs={"pk": self.object.pk})
+
+
+class ObjectImagesView(LoginRequiredMixin, DetailView):
+    model = Object
+    template_name = "shop/object_images.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["images"] = CustomImage.objects.filter(object_id=self.object.id)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Ajax response to upload request
+        if request.FILES["myfile"]:
+            obj = self.get_object()
+            myfile = request.FILES["myfile"]
+            names = myfile.name.split(".")
+            error = ""
+            if names[1] != "jpg":
+                error = "File is not a jpg"
+            media_path = os.path.join(
+                settings.MEDIA_ROOT, "original_images", myfile.name
+            )
+            if os.path.exists(media_path):
+                error = "Image already exists"
+            if error:
+                return JsonResponse({"error": error})
+            collection_id = Collection.objects.get(name="Root").id
+            path = default_storage.save(media_path, myfile)
+            new_image = CustomImage.objects.create(
+                file="original_images/" + myfile.name,
+                title=obj.name,
+                collection_id=collection_id,
+                uploaded_by_user=request.user,
+                object=obj,
+            )
+            return JsonResponse({"success": new_image.title})
+        return JsonResponse({"error": "No file"})
+
+
+class ObjectDetailView(DetailView):
+    model = Object
+    template_name = "shop/object_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["price"] = int(self.object.price / 100)
+        context["photos"] = CustomImage.objects.filter(object_id=self.object.id)
+        return context
 
 
 class ObjectListView(LoginRequiredMixin, ListView):
