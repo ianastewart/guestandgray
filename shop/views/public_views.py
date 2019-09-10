@@ -28,7 +28,7 @@ def home_view(request):
 def object_view(request, slug, pk):
     """ Public view of a single object """
 
-    template_name = "shop/public/object_detail.html"
+    template_name = "shop/public/object_detail1.html"
     obj, obj_url = get_redirected(Object, {"pk": pk}, {"slug": slug})
     if obj_url:
         return redirect(obj_url)
@@ -38,7 +38,7 @@ def object_view(request, slug, pk):
     context["breadcrumb"] = category.breadcrumb_nodes(object_view=True)
     context["object"] = obj
     context["price"] = int(obj.price / 100)
-    context["images"] = obj.images.all()
+    context["images"] = obj.images.all().exclude(id=obj.image_id)
     return render(request, template_name, context)
 
 

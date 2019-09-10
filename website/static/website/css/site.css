@@ -28,6 +28,30 @@ body {
 #sticky-footer {
   flex-shrink: 0;
 }
+
+.cinzel {
+  font-family: 'Cinzel';
+}
+
+.card-thumb {
+  background-color: white;
+  border-color: orange;
+  border: none;
+  text-align: center;
+  font-family: 'Cinzel';
+  margin-bottom: 2rem;
+  border-radius: 0px;
+  height: 375px;
+}
+.thumbnail > a {
+    display: block;
+    background-color: #716F6A;
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 250px;
+}
+
 /* --------- */
 
 

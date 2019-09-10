@@ -13,29 +13,46 @@
     <div class="row">
       {% for object in objects %}
         <div class="col-sm-6 col-md-4 col-lg-3">
-          {% image object.image width-250 as card_image %}
-          <div class="card mb-2 text-center border-0 bg-light" style="height:330px; position: relative">
-            <a href="{% url "public_object" slug='x' pk=object.pk %}">
-              {% if card_image.height > 250 %}
-                <img src="{{ card_image.url }}" alt="{{ object.name }}" height="250px">
-              {% else %}
-                <img class="card-img-top" src="{{ card_image.url }}" alt="{{ object.name }}"
-                     height="{{ card_image.height }}">
-              {% endif %}
-              <div class="card-body text-center m-0 pt-2 px-0 d-none d-xl-block" style="position: absolute; top:250px;">
-                <p class="text-black-50">{{ object.name }}</p>
-              </div>
-              <div class="card-body text-center m-0 pt-2 px-0 d-none d-md-block d-xl-none"
-                   style="position: absolute; top:220px;">
-                <p class="text-black-50">{{ object.name }}</p>
-              </div>
-              <div class="card-body text-center m-0 pt-2 px-0 d-none d-sm-block d-md-none"
-                   style="position: absolute; top:250px;">
-                <p class="text-black-50">{{ object.name }}</p>
-              </div>
+          {% image object.image height-250 as card_image %}
+          <div class="card card-thumb shadow d-none d-sm-block">
+            <div class="thumbnail" href="#">
+              <a href="{% url "public_object" slug='x' pk=object.pk %}"
+                 style="background-image: url({{ card_image.url }});"></a>
+            </div>
+            <div class="card-body px-2">
+              <a href="{% url 'public_object' slug='x' pk=object.pk %}"><span class="text-dark">{{ object.name }}</span></a>
+            </div>
+          </div>
+          <div class="d-xs-block d-sm-none text-center">
+            <a href="{% url 'public_object' slug='x' pk=object.pk %}">
+              <img src="{{ card_image.url }}">
+              <p><span class="text-dark cinzel">{{ object.name }}</span></p>
             </a>
           </div>
         </div>
+        {#          <div class="card mb-2 text-center border-0 bg-light" style="height:330px; position: relative">#}
+        {#            <a href="{% url "public_object" slug='x' pk=object.pk %}">#}
+        {#              <img src="{{ card_image.url }}" class="img-thumbnail">#}
+        {#              {% if card_image.height > 250 %}#}
+        {#                <img src="{{ card_image.url }}" alt="{{ object.name }}" height="250px">#}
+        {#              {% else %}#}
+        {#                <img class="card-img-top" src="{{ card_image.url }}" alt="{{ object.name }}"#}
+        {#                     height="{{ card_image.height }}">#}
+        {#              {% endif %}#}
+        {#              <div class="card-body text-center m-0 pt-2 px-0 d-none d-xl-block" style="position: absolute; top:250px;">#}
+        {#                <p class="text-black-50">{{ object.name }}</p>#}
+        {#              </div>#}
+        {#              <div class="card-body text-center m-0 pt-2 px-0 d-none d-md-block d-xl-none"#}
+        {#                   style="position: absolute; top:220px;">#}
+        {#                <p class="text-black-50">{{ object.name }}</p>#}
+        {#              </div>#}
+        {#              <div class="card-body text-center m-0 pt-2 px-0 d-none d-sm-block d-md-none"#}
+        {#                   style="position: absolute; top:250px;">#}
+        {#                <p class="text-black-50">{{ object.name }}</p>#}
+        {#              </div>#}
+        {#            </a>#}
+        {#          </div>#}
+        {#        </div>#}
       {% endfor %}
     </div>
     {% if objects.has_other_pages %}

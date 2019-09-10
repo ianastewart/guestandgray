@@ -70,36 +70,84 @@ class ObjectImagesView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["images"] = CustomImage.objects.filter(object_id=self.object.id)
+        # primary image always first in list
+        images = [self.object.image]
+        for image in CustomImage.objects.filter(object_id=self.object.id):
+            if image.id != self.object.image_id:
+                images.append(image)
+        context["images"] = images
         return context
 
     def post(self, request, *args, **kwargs):
-        # Ajax response to upload request
-        if request.FILES["myfile"]:
-            obj = self.get_object()
+        self.object = self.get_object()
+        result = {"error": "Bad command"}
+        if "action" in request.POST:
+            action = request.POST["action"]
+            id = request.POST["id"]
+            try:
+                image = CustomImage.objects.get(id=id)
+            except CustomImage.DoesNotExist:
+                result = {"error": "Bad image id"}
+                return JsonResponse(result)
+
+            if action == "delete":
+                primary = self.object.image_id == image.id
+                # Just remove the reference to the object, leaving image in the database
+                image.object = None
+                image.save()
+                if primary:
+                    # if we delete the primary, try to make first remaining image primary
+                    images = CustomImage.objects.filter(object_id=self.object.id)
+                    if images:
+                        self.object.image = images[0]
+                    else:
+                        self.object = None
+                    self.object.save()
+                result = {"success": "deleted"}
+
+            elif action == "primary":
+                self.object.image = image
+                self.object.save()
+                result = {"success": "Made primary"}
+
+        elif request.FILES["myfile"]:
             myfile = request.FILES["myfile"]
             names = myfile.name.split(".")
             error = ""
-            if names[1] != "jpg":
-                error = "File is not a jpg"
-            media_path = os.path.join(
-                settings.MEDIA_ROOT, "original_images", myfile.name
-            )
-            if os.path.exists(media_path):
-                error = "Image already exists"
+            if names[len(names) - 1] == "jpg":
+                short_path = os.path.join("original_images", myfile.name)
+                full_path = os.path.join(settings.MEDIA_ROOT, short_path)
+                if os.path.exists(full_path):
+
+                    try:
+                        existing = CustomImage.objects.get(file=short_path)
+                        error = "Image already in the database. "
+                        if existing.object:
+                            if existing.object.id == self.object.id:
+                                error += "It is linked to this object."
+                            else:
+                                error += f"It is linked to Ref: {existing.object.ref }, {existing.title}."
+                        else:
+                            error += "It is not linked to an object but may be used elsewhere."
+                    except CustomImage.DoesNotExist:
+                        # if file exists but is not used vy a CustomImage, overwrite it
+                        os.remove(full_path)
+            else:
+                error = "File is not an image. Please select a .jpg"
             if error:
-                return JsonResponse({"error": error})
-            collection_id = Collection.objects.get(name="Root").id
-            path = default_storage.save(media_path, myfile)
-            new_image = CustomImage.objects.create(
-                file="original_images/" + myfile.name,
-                title=obj.name,
-                collection_id=collection_id,
-                uploaded_by_user=request.user,
-                object=obj,
-            )
-            return JsonResponse({"success": new_image.title})
-        return JsonResponse({"error": "No file"})
+                result = {"error": error}
+            else:
+                collection_id = Collection.objects.get(name="Root").id
+                path = default_storage.save(full_path, myfile)
+                new_image = CustomImage.objects.create(
+                    file=short_path,
+                    title=self.object.name,
+                    collection_id=collection_id,
+                    uploaded_by_user=request.user,
+                    object=self.object,
+                )
+                result = {"success": new_image.title}
+        return JsonResponse(result)
 
 
 class ObjectDetailView(DetailView):

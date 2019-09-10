@@ -1,4 +1,26 @@
-// code to handle file upload
+// code to handle image file management
+
+$(function () {
+    bs_input_file();
+
+    $(".js-action").click(function () {
+        var form = $("#action-form");
+        var dataset = $(this)[0].dataset;
+        $('#idAction').val(dataset.action);
+        $('#idId').val(dataset.id);
+    $.ajax({
+      url: window.location.pathname,
+      type: form.attr("method"),
+      data: form.serialize(),
+      success: function (data) {
+        location.reload(true);
+      }
+    });
+    return false;
+  });
+});
+
+
 function bs_input_file() {
     $(".input-file").before(
         function () {
@@ -16,6 +38,7 @@ function bs_input_file() {
                     element.val(null);
                     $('#idUpload').attr('disabled', 'disabled');
                     $(this).parents(".input-file").find('input').val('');
+                    $('#idFeedback').text('')
                 });
                 $(this).find('input').css("cursor", "pointer");
                 $(this).find('input').mousedown(function () {
@@ -28,10 +51,6 @@ function bs_input_file() {
     );
 }
 
-$(function () {
-    bs_input_file();
-});
-
 
 $('#idForm').submit(function (e) {
     e.preventDefault();
@@ -42,9 +61,12 @@ $('#idForm').submit(function (e) {
         type: 'POST',
         data: formData,
         success: function (response) {
-            console.log('POST response received')
-            if (response['success']){
+            console.log(response);
+            if (response.success) {
                 location.reload(true)
+            }else{
+                $('#idFeedback').text(response.error)
+                $('#idUpload').attr('disabled', 'disabled')
             }
         },
         cache: false,

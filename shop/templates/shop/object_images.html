@@ -20,6 +20,13 @@
                 <img class="card-img-top" src="{{ card_image.url }}" alt="{{ object.name }}"
                      height="{{ card_image.height }}">
               {% endif %}
+            <div class="card-body">
+              {% if object.image.id == image.id %}Primary{% endif %}<br>
+              <button class="btn btn-sm btn-danger js-action" data-action="delete" data-id="{{ image.id }}">Delete</button>
+              {% if object.image.id != image.id %}
+              <button class="btn btn-sm btn-primary js-action" data-action="primary" data-id="{{ image.id }}">Make primary</button>
+              {% endif %}
+            </div>
           </div>
         </div>
       {% endfor %}
@@ -33,7 +40,7 @@
   </div>
 {% endblock %}
 {% block content_walls %}
-  <!-- Modal -->
+  <!-- Modal to load an image-->
   <div class="modal fade" id="uploadModal" data-backdrop="false" tabindex="-1" role="dialog"
        aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -47,8 +54,6 @@
             </button>
           </div>
           <div class="modal-body">
-
-            {% csrf_token %}
             <!-- COMPONENT START -->
             <div class="form-group">
               <div class="input-group input-file" name="myfile">
@@ -62,7 +67,7 @@
               </div>
             </div>
             <!-- COMPONENT END -->
-
+            <span id="idFeedback" class="text-error"></span>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary" id="idUpload" name="upload" disabled>Upload</button>
@@ -71,8 +76,13 @@
       </div>
     </div>
   </div>
+  <form id="action-form" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="idAction">
+    <input type="hidden" name="id" id="idId">
+  </form>
 
 {% endblock %}
 {% block custom_scripts %}
-  <script src="{% static 'website/js/file_upload.js' %}"></script>
+  <script src="{% static 'shop/js/image_management.js' %}"></script>
 {% endblock %}
