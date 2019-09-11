@@ -15,10 +15,10 @@
       </div>
     </div>
     <div class="row mt-5">
-      <div class="col-md-6 text-center">
+      <div class="col-xs col-md-6">
         <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
           {% image object.image original as full_image %}
-          <a href="{{ full_image.url }}" itemprop="contentUrl">{% image object.image max-500x500 %}</a>
+          <a href="{{ full_image.url }}" itemprop="contentUrl">{% image object.image max-500x500 class="img-fluid"%}</a>
         </figure>
         <div class="container mt-3">
           <div class="row">
@@ -33,9 +33,8 @@
           </div>
         </div>
       </div>
-      <div class="col-md-1"></div>
-      <div class="col-md-5">
-        <p class="my-5">{{ object.description }}</p>
+      <div class="col-xs col-md-6">
+        <p>{{ object.description }}</p>
         <p class="text-muted my-2">Ref: {{ object.ref }}</p>
         <h5>Price: £ {{ price }}</h5>
         <div class="mt-4">

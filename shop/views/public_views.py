@@ -1,9 +1,9 @@
 import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from shop.models import Object, Category, OldCategory
+from shop.models import Object, Category
 from wagtail.core.models import Page
-from django.http import Http404, HttpResponse
+from django.http import Http404
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def object_view(request, slug, pk):
     if obj_url:
         return redirect(obj_url)
     context = get_host_context("catalogue")
-    category = get_object_or_404(Category, id=obj.new_category_id)
+    category = get_object_or_404(Category, id=obj.category_id)
     context["category"] = category
     context["breadcrumb"] = category.breadcrumb_nodes(object_view=True)
     context["object"] = obj

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.table_block",
     "wagtail.contrib.routable_page",
+    "wagtail.contrib.postgres_search",
     "wagtail.admin",
     # Django
     "django.contrib.admin",
@@ -159,6 +160,12 @@ WAGTAIL_ENABLE_UPDATE_CHECK = False
 # Our custom image model
 WAGTAILIMAGES_IMAGE_MODEL = "shop.CustomImage"
 
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail.contrib.postgres_search.backend",
+        "SEARCH_CONFIG": "english",
+    }
+}
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 BASE_URL = "http://localhost"

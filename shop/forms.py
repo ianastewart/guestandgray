@@ -29,4 +29,4 @@ class ObjectForm(ModelForm):
 
     class Meta:
         model = Object
-        fields = ("name", "ref", "description", "price", "new_category")
+        fields = ("name", "ref", "description", "price", "category")

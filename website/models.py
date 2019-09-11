@@ -10,11 +10,8 @@ from coderedcms.models import (
     CoderedFormPage,
     CoderedWebPage,
 )
-from django.http import Http404
 from coderedcms.models.page_models import CoderedPage
-
-from shop.models import OldCategory, Object, CustomImage
-from wagtail.contrib.routable_page.models import RoutablePageMixin, route
+from shop.models import Object, CustomImage
 
 
 class ArticlePage(CoderedArticlePage):
@@ -91,43 +88,3 @@ class WebPage(CoderedWebPage):
         verbose_name = "Web Page"
 
     template = "coderedcms/pages/web_page.html"
-
-
-class CataloguePage(RoutablePageMixin, CoderedPage):
-    class meta:
-        verbose_name = "Catalogue Page"
-
-    template = "website/pages/catalogue.html"
-
-    @route(r"^catalogue/(\d+)/$")
-    def cat_page(self, request, cat_id=None, *args, **kwargs):
-        try:
-            self.category = OldCategory.objects.get(pk=cat_id)
-        except OldCategory.DoesNotExist:
-            raise Http404
-        return CoderedPage.serve(self, request, *args, **kwargs)
-
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
-        if hasattr(self, "catgeory"):
-            context["category"] = self.category
-        context["categories"] = OldCategory.objects.all().exclude(image=None)
-        return context
-
-
-# class CatalogueListPage(RoutablePageMixin, CoderedPage):
-#
-#     template = 'website/pages/catalogue_list.html'
-#
-#     @route(r'^cat_id/(\d+)/$')
-#     def cat_page(self, request, cat_id=None, *args, **kwargs):
-#         try:
-#             self.category = Category.objects.get(pk=cat_id)
-#         except Category.DoesNotExist:
-#             raise Http404
-#         return CoderedPage.serve(self, request, *args, **kwargs)
-#
-#     def get_context(self, request, *args, **kwargs):
-#         context=super().get_context(request, *args, **kwargs)
-#         context['category'] = self.category
-#         return context

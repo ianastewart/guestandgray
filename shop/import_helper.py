@@ -7,7 +7,7 @@ from import_export import resources
 from import_export.fields import Field
 from treebeard.mp_tree import MP_Node
 from tablib import Dataset
-from .models import Object, Category, OldCategory, CustomImage
+from .models import Object, Category, CustomImage
 
 logger = logging.getLogger(__name__)
 
@@ -33,16 +33,10 @@ class ObjectResource(resources.ModelResource):
     category_text = Field(attribute="category_text", column_name="Section Text")
 
 
-class CategoryResource(resources.ModelResource):
-    class Meta:
-        model = OldCategory
-        fields = ("id", "name")
-
-
 def import_objects(excel_file):
 
     delete_all(Object)
-    delete_all(OldCategory)
+    delete_all(Category)
     delete_all(CustomImage)
     set_status("Reading Excel file")
     object_resource = ObjectResource()
@@ -69,47 +63,48 @@ def process_objects(user, link_images=True):
     Create or link to the associated category
     Optionally find the associated image and cross link it
     """
-    try:
-        objects = Object.objects.all()
-        max = len(objects)
-        count = 0
-        empty = 0
-        categories = 0
-        image_count = 0
-        update_threshold = 50
-        set_status("Processing objects", max, count, empty, categories)
-        i = 0
-        for item in objects:
-            # Link category
-            if item.category_text:
-                sep = item.category_text.find("|")
-                if sep > 0:
-                    key = item.category_text[0:sep]
-                else:
-                    key = item.category_text
-                try:
-                    OldCategory = OldCategory.objects.get(name=key)
-                except OldCategory.DoesNotExist:
-                    categories += 1
-                    category = OldCategory(name=key)
-                    category.save()
-                item.OldCategory_id = OldCategory.id
-                item.save()
-            else:
-                empty += 1
-            count += 1
-            if link_images:
-                if load_image(item, user):
-                    image_count += 1
-            i += 1
-            if i >= update_threshold:
-                set_status(
-                    "Processing objects", max, count, empty, categories, image_count
-                )
-                i = 0
-        set_status("Done", max, count, empty, categories, image_count, done=True)
-    except Exception as e:
-        set_status(e)
+    pass
+    # try:
+    #     objects = Object.objects.all()
+    #     max = len(objects)
+    #     count = 0
+    #     empty = 0
+    #     categories = 0
+    #     image_count = 0
+    #     update_threshold = 50
+    #     set_status("Processing objects", max, count, empty, categories)
+    #     i = 0
+    #     for item in objects:
+    #         # Link category
+    #         if item.category_text:
+    #             sep = item.category_text.find("|")
+    #             if sep > 0:
+    #                 key = item.category_text[0:sep]
+    #             else:
+    #                 key = item.category_text
+    #             try:
+    #                 category = Category.objects.get(name=key)
+    #             except Category.DoesNotExist:
+    #                 categories += 1
+    #                 category = Category(name=key)
+    #                 category.save()
+    #             item.category_id = category.id
+    #             item.save()
+    #         else:
+    #             empty += 1
+    #         count += 1
+    #         if link_images:
+    #             if load_image(item, user):
+    #                 image_count += 1
+    #         i += 1
+    #         if i >= update_threshold:
+    #             set_status(
+    #                 "Processing objects", max, count, empty, categories, image_count
+    #             )
+    #             i = 0
+    #     set_status("Done", max, count, empty, categories, image_count, done=True)
+    # except Exception as e:
+    #     set_status(e)
 
 
 def set_status(text, max=0, count=0, empty=0, categories=0, image_count=0, done=False):
@@ -167,7 +162,7 @@ def process_categories():
                     cat = get(european.pk).add_child(name=key)
                 else:
                     cat = get(other.pk).add_child(name=key)
-            item.new_category_id = cat.id
+            item.category_id = cat.id
             item.save()
             assigned += 1
         else:

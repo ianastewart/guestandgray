@@ -80,20 +80,6 @@ class Category(MP_Node):
         return "/" + self.slug + "/"
 
 
-class OldCategory(models.Model):
-    name = models.CharField(max_length=200)
-    image = models.ForeignKey(
-        CustomImage,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="sections",
-    )
-
-    def __str__(self):
-        return self.name
-
-
 class Object(models.Model):
     class State(ModelEnum):
         NOT_FOR_SALE = 0
@@ -117,10 +103,8 @@ class Object(models.Model):
     # creation_date = models.DateTimeField(auto_now_add=True)
     # sold_date = models.DateTimeField(null=True, blank=True)
     # state = models.SmallIntegerField(choices=State.choices(), default=0)
+
     category = models.ForeignKey(
-        OldCategory, null=True, blank=True, on_delete=models.SET_NULL
-    )
-    new_category = models.ForeignKey(
         Category, null=True, blank=True, on_delete=models.SET_NULL
     )
 
