@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col">
         <h2 class="my-3">Update images</h2>
-        <h3 class="my-3">{{ object.name }}</h3>
+        <h3 class="my-3">{{ item.name }}</h3>
       </div>
     </div>
     <div class="row">
@@ -15,15 +15,15 @@
           {% image image width-250 as card_image %}
           <div class="card mb-2 text-center border-0 bg-light" style="height:330px; position: relative">
               {% if card_image.height > 250 %}
-                <img src="{{ card_image.url }}" alt="{{ object.name }}" height="250px">
+                <img src="{{ card_image.url }}" alt="{{ item.name }}" height="250px">
               {% else %}
-                <img class="card-img-top" src="{{ card_image.url }}" alt="{{ object.name }}"
+                <img class="card-img-top" src="{{ card_image.url }}" alt="{{ item.name }}"
                      height="{{ card_image.height }}">
               {% endif %}
             <div class="card-body">
-              {% if object.image.id == image.id %}Primary{% endif %}<br>
+              {% if item.image.id == image.id %}Primary{% endif %}<br>
               <button class="btn btn-sm btn-danger js-action" data-action="delete" data-id="{{ image.id }}">Delete</button>
-              {% if object.image.id != image.id %}
+              {% if item.image.id != image.id %}
               <button class="btn btn-sm btn-primary js-action" data-action="primary" data-id="{{ image.id }}">Make primary</button>
               {% endif %}
             </div>
@@ -33,7 +33,7 @@
     </div>
     <div class="row my-3">
       <div class="col-md-8">
-        <a href="{% url 'object_detail' pk=object.pk %}" class="btn btn-primary">Done</a>
+        <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
         <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Add an image</button>
       </div>
     </div>

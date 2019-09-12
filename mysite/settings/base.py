@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "import_export",
     "keyvaluestore",
     "treebeard",
+    "django_tables2",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",

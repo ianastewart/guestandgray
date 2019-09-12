@@ -40,7 +40,7 @@
         <div class="mt-4">
           {% if request.user.is_authenticated %}
             <a class="btn btn-outline-secondary" role="button"
-               href="{% url 'object_detail' pk=object.id %}">Edit</a>{% endif %}
+               href="{% url 'item_detail' pk=object.id %}">Edit</a>{% endif %}
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ from keyvaluestore.utils import get_value_for_key, set_key_value
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from shop.models import Object, Category, CustomImage
+from shop.models import Item, Category, CustomImage
 from shop.import_helper import (
     import_objects,
     process_objects,

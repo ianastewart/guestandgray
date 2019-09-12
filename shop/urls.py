@@ -1,19 +1,18 @@
 from django.urls import path, re_path
 from shop.views.staff_views import (
     StaffHomeView,
-    ObjectClearView,
-    ObjectCreateView,
-    ObjectDetailView,
-    ObjectUpdateView,
-    ObjectListView,
-    ObjectImagesView,
+    ItemCreateView,
+    ItemDetailView,
+    ItemUpdateView,
+    ItemListView,
+    ItemImagesView,
     CategoryClearView,
     CategoryCreateView,
     CategoryUpdateView,
     CategoryListView,
     CategoryDetailView,
 )
-from shop.views.public_views import home_view, object_view, catalogue_view
+from shop.views.public_views import home_view, item_view, catalogue_view, search_view
 from shop.views.import_views import (
     import_objects_view,
     import_process_view,
@@ -25,12 +24,11 @@ from shop.views.import_views import (
 
 staff_urls = [
     path("", StaffHomeView.as_view(), name="staff_home"),
-    path("object/clear/", ObjectClearView.as_view(), name="object_clear"),
-    path("object/create/", ObjectCreateView.as_view(), name="object_create"),
-    path("object/detail/<int:pk>/", ObjectDetailView.as_view(), name="object_detail"),
-    path("object/update/<int:pk>/", ObjectUpdateView.as_view(), name="object_update"),
-    path("object/list/", ObjectListView.as_view(), name="object_list"),
-    path("object/images/<int:pk>/", ObjectImagesView.as_view(), name="object_images"),
+    path("item/create/", ItemCreateView.as_view(), name="item_create"),
+    path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
+    path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
+    path("item/list/", ItemListView.as_view(), name="item_list"),
+    path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("import/", import_objects_view, name="import_objects"),
     path("import/categories/", import_process_view, name="import_categories"),
     path("import/progress/", import_progress_view, name="import_progress"),
@@ -57,9 +55,10 @@ staff_urls = [
 
 public_urls = [
     path("", home_view, name="public_home"),
+    path("search/", search_view, name="codered_search"),
     path("catalogue/", catalogue_view, name="public_catalogue_root"),
     re_path(
         r"catalogue/(?P<slugs>[\w_/-]+)/$", catalogue_view, name="public_catalogue"
     ),
-    path("object/<slug:slug>,<int:pk>/", object_view, name="public_object"),
+    path("item/<slug:slug>,<int:pk>/", item_view, name="public_item"),
 ]

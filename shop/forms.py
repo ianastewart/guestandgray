@@ -1,5 +1,5 @@
 from django.forms import ModelForm, ModelChoiceField, ValidationError
-from shop.models import Object, Category
+from shop.models import Item, Category
 
 
 class CategoryForm(ModelForm):
@@ -24,9 +24,9 @@ class CategoryForm(ModelForm):
         return self.cleaned_data
 
 
-class ObjectForm(ModelForm):
-    title = "Object"
+class ItemForm(ModelForm):
+    title = "Item"
 
     class Meta:
-        model = Object
+        model = Item
         fields = ("name", "ref", "description", "price", "category")

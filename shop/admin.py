@@ -1,7 +1,7 @@
 from django.contrib import admin
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
-from shop.models import Category, Object
+from shop.models import Category, Item
 
 
 class CategoryAdmin(TreeAdmin):
@@ -9,4 +9,4 @@ class CategoryAdmin(TreeAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Object)
+admin.site.register(Item)

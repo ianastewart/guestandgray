@@ -1,6 +1,6 @@
 # set_categories command
 from django.core.management.base import BaseCommand, CommandError
-from shop.models import Object, Category
+from shop.models import Item, Category
 
 
 class Command(BaseCommand):
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         japanese = get(root.pk).add_child(name="Japanese")
         european = get(root.pk).add_child(name="European")
         other = get(root.pk).add_child(name="Other")
-        objects = Object.objects.all()
+        objects = Item.objects.all()
         assigned = 0
         empty = 0
         created = {}

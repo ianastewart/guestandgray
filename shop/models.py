@@ -4,26 +4,7 @@ from django.utils.text import slugify
 from enum import IntEnum
 from treebeard.mp_tree import MP_Node
 from wagtail.images.models import Image, AbstractImage, AbstractRendition
-
-
-class CustomImage(AbstractImage):
-
-    primary_image = models.BooleanField(default=False)
-    ref = models.CharField(max_length=10, null=True, blank=True)
-    object = models.ForeignKey(
-        "Object", null=True, blank=True, on_delete=models.CASCADE, related_name="images"
-    )
-
-    admin_form_fields = Image.admin_form_fields + ("ref", "primary_image", "object")
-
-
-class CustomRendition(AbstractRendition):
-    image = models.ForeignKey(
-        CustomImage, on_delete=models.CASCADE, related_name="renditions"
-    )
-
-    class Meta:
-        unique_together = (("image", "filter_spec", "focal_point_key"),)
+from wagtail.search import index
 
 
 class ModelEnum(IntEnum):
@@ -43,7 +24,7 @@ class Category(MP_Node):
     short_name = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     image = models.ForeignKey(
-        CustomImage,
+        "CustomImage",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -65,9 +46,9 @@ class Category(MP_Node):
         for child in self.get_children():
             child.save()
 
-    def breadcrumb_nodes(self, object_view=False):
+    def breadcrumb_nodes(self, item_view=False):
         breadcrumb = []
-        self.active = not object_view
+        self.active = not item_view
         breadcrumb.append(self)
         parent = self.get_parent()
         while parent:
@@ -80,7 +61,7 @@ class Category(MP_Node):
         return "/" + self.slug + "/"
 
 
-class Object(models.Model):
+class Item(index.Indexed, models.Model):
     class State(ModelEnum):
         NOT_FOR_SALE = 0
         ON_SALE = 1
@@ -97,7 +78,10 @@ class Object(models.Model):
     price = models.IntegerField(null=True, blank=True)
     image_file = models.CharField(max_length=50, null=True, blank=True)
     image = models.ForeignKey(
-        CustomImage, null=True, on_delete=models.SET_NULL, related_name="parent_object"
+        "CustomImage",
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="parent_object",
     )
     category_text = models.CharField(max_length=100, null=True, blank=True)
     # creation_date = models.DateTimeField(auto_now_add=True)
@@ -108,12 +92,33 @@ class Object(models.Model):
         Category, null=True, blank=True, on_delete=models.SET_NULL
     )
 
+    search_fields = [index.SearchField("name", boost=3)]
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("public_object", kwargs={"slug": self.slug, "pk": self.id})
+        return reverse("public_item", kwargs={"slug": self.slug, "pk": self.id})
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+
+class CustomImage(AbstractImage):
+    primary_image = models.BooleanField(default=False)
+    ref = models.CharField(max_length=10, null=True, blank=True)
+    item = models.ForeignKey(
+        Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images"
+    )
+
+    admin_form_fields = Image.admin_form_fields + ("ref", "primary_image", "object")
+
+
+class CustomRendition(AbstractRendition):
+    image = models.ForeignKey(
+        CustomImage, on_delete=models.CASCADE, related_name="renditions"
+    )
+
+    class Meta:
+        unique_together = (("image", "filter_spec", "focal_point_key"),)

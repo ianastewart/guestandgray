@@ -7,14 +7,14 @@ from import_export import resources
 from import_export.fields import Field
 from treebeard.mp_tree import MP_Node
 from tablib import Dataset
-from .models import Object, Category, CustomImage
+from .models import Item, Category, CustomImage
 
 logger = logging.getLogger(__name__)
 
 
 class ObjectResource(resources.ModelResource):
     class Meta:
-        model = Object
+        model = Item
         fields = (
             "id",
             "name",
@@ -35,7 +35,7 @@ class ObjectResource(resources.ModelResource):
 
 def import_objects(excel_file):
 
-    delete_all(Object)
+    delete_all(Item)
     delete_all(Category)
     delete_all(CustomImage)
     set_status("Reading Excel file")
@@ -141,7 +141,7 @@ def process_categories():
     japanese = get(root.pk).add_child(name="Japanese")
     european = get(root.pk).add_child(name="European")
     other = get(root.pk).add_child(name="Other")
-    objects = Object.objects.all()
+    objects = Item.objects.all()
     assigned = 0
     empty = 0
     for item in objects:
@@ -175,7 +175,7 @@ def process_images(user):
     # delete all using workaround for sqlite limit
     set_status("Clearing images")
     delete_all(CustomImage)  # deletes original_images too!
-    objects = Object.objects.all()
+    objects = Item.objects.all()
     count = 0
     max = len(objects)
     image_count = 0

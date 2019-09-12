@@ -1,0 +1,12 @@
+{% load wagtailimages_tags %}
+<div class="row">
+<div class="col-2">
+  <a href="{% url 'public_item' slug='x' pk=item.pk %}">
+  {% image item.image max-100x100 class="img-fluid"%}
+  </a>
+</div>
+<div class="col">
+    <a href="{% url 'public_item' slug='x' pk=item.pk %}"><h4>{{ item.name}}</h4></a>
+    <p>{{ item.description|truncatewords:30}}</p>
+  </div>
+</div>

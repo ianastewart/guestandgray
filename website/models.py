@@ -11,7 +11,7 @@ from coderedcms.models import (
     CoderedWebPage,
 )
 from coderedcms.models.page_models import CoderedPage
-from shop.models import Object, CustomImage
+from shop.models import Item, CustomImage
 
 
 class ArticlePage(CoderedArticlePage):

@@ -20,7 +20,7 @@ urlpatterns = [
     # Documents
     path("docs/", include(wagtaildocs_urls)),
     # Search
-    path("search/", include(coderedsearch_urls)),
+    # path("search/", include(coderedsearch_urls)),
     path("staff/", include(staff_urls)),
     # public
     path("", include(public_urls)),

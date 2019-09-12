@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from shop.import_helper import load_image, delete_all
-from shop.models import Object, CustomImage
+from shop.models import Item, CustomImage
 from django.contrib.auth.models import User
 
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         user = User.objects.all().first()
         delete_all(CustomImage)  # deletes original_images too!
-        objects = Object.objects.all()
+        objects = Item.objects.all()
         count = 0
         max = len(objects)
         image_count = 0

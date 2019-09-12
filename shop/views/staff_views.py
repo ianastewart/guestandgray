@@ -15,9 +15,11 @@ from django.views.generic import (
     ListView,
     DetailView,
 )
+from django_tables2 import SingleTableView
 from wagtail.core.models import Collection
-from shop.models import Object, Category, CustomImage
-from shop.forms import ObjectForm, CategoryForm
+from shop.models import Item, Category, CustomImage
+from shop.forms import ItemForm, CategoryForm
+from shop.tables import ItemTable
 
 logger = logging.getLogger(__name__)
 
@@ -26,19 +28,10 @@ class StaffHomeView(LoginRequiredMixin, TemplateView):
     template_name = "shop/staff_home.html"
 
 
-class ObjectClearView(LoginRequiredMixin, View):
-    """ Clears all objects from the database """
-
-    def get(self, request):
-        # Object.objects.all().delete()
-        messages.add_message(request, messages.INFO, "All objects cleared")
-        return redirect("staff_home")
-
-
-class ObjectCreateView(LoginRequiredMixin, CreateView):
-    model = Object
-    form_class = ObjectForm
-    template_name = "shop/object_update.html"
+class ItemCreateView(LoginRequiredMixin, CreateView):
+    model = Item
+    form_class = ItemForm
+    template_name = "shop/item_update.html"
 
     def post(self, request, *args, **kwargs):
         result = super().post(request, *args, **kwargs)
@@ -47,57 +40,57 @@ class ObjectCreateView(LoginRequiredMixin, CreateView):
         return result
 
     def get_success_url(self):
-        return reverse("object_detail", kwargs={"pk": self.object.pk})
+        return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
-class ObjectUpdateView(LoginRequiredMixin, UpdateView):
-    model = Object
-    form_class = ObjectForm
-    template_name = "shop/object_update.html"
+class ItemUpdateView(LoginRequiredMixin, UpdateView):
+    model = Item
+    form_class = ItemForm
+    template_name = "shop/item_update.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["photos"] = CustomImage.objects.filter(object_id=self.object.id)
+        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 
     def get_success_url(self):
-        return reverse("object_detail", kwargs={"pk": self.object.pk})
+        return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
-class ObjectImagesView(LoginRequiredMixin, DetailView):
-    model = Object
-    template_name = "shop/object_images.html"
+class ItemImagesView(LoginRequiredMixin, DetailView):
+    model = Item
+    template_name = "shop/item_images.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # primary image always first in list
         images = [self.object.image]
-        for image in CustomImage.objects.filter(object_id=self.object.id):
+        for image in CustomImage.objects.filter(item_id=self.object.id):
             if image.id != self.object.image_id:
                 images.append(image)
         context["images"] = images
         return context
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object = self.get_item()
         result = {"error": "Bad command"}
         if "action" in request.POST:
             action = request.POST["action"]
             id = request.POST["id"]
             try:
-                image = CustomImage.objects.get(id=id)
+                image = CustomImage.object.get(id=id)
             except CustomImage.DoesNotExist:
                 result = {"error": "Bad image id"}
                 return JsonResponse(result)
 
             if action == "delete":
                 primary = self.object.image_id == image.id
-                # Just remove the reference to the object, leaving image in the database
-                image.object = None
+                # Just remove the reference to the item, leaving image in the database
+                image.item = None
                 image.save()
                 if primary:
                     # if we delete the primary, try to make first remaining image primary
-                    images = CustomImage.objects.filter(object_id=self.object.id)
+                    images = CustomImage.objects.filter(item_id=self.object.id)
                     if images:
                         self.object.image = images[0]
                     else:
@@ -122,13 +115,15 @@ class ObjectImagesView(LoginRequiredMixin, DetailView):
                     try:
                         existing = CustomImage.objects.get(file=short_path)
                         error = "Image already in the database. "
-                        if existing.object:
-                            if existing.object.id == self.object.id:
-                                error += "It is linked to this object."
+                        if existing.item:
+                            if existing.item.id == self.object.id:
+                                error += "It is linked to this item."
                             else:
-                                error += f"It is linked to Ref: {existing.object.ref }, {existing.title}."
+                                error += f"It is linked to Ref: {existing.item.ref }, {existing.title}."
                         else:
-                            error += "It is not linked to an object but may be used elsewhere."
+                            error += (
+                                "It is not linked to an item but may be used elsewhere."
+                            )
                     except CustomImage.DoesNotExist:
                         # if file exists but is not used vy a CustomImage, overwrite it
                         os.remove(full_path)
@@ -144,29 +139,30 @@ class ObjectImagesView(LoginRequiredMixin, DetailView):
                     title=self.object.name,
                     collection_id=collection_id,
                     uploaded_by_user=request.user,
-                    object=self.object,
+                    item=self.object,
                 )
                 result = {"success": new_image.title}
         return JsonResponse(result)
 
 
-class ObjectDetailView(DetailView):
-    model = Object
-    template_name = "shop/object_detail.html"
+class ItemDetailView(DetailView):
+    model = Item
+    template_name = "shop/item_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["price"] = int(self.object.price / 100)
-        context["photos"] = CustomImage.objects.filter(object_id=self.object.id)
+        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 
 
-class ObjectListView(LoginRequiredMixin, ListView):
-    model = Object
-    template_name = "shop/object_list.html"
+class ItemListView(LoginRequiredMixin, SingleTableView):
+    model = Item
+    template_name = "shop/item_list.html"
+    table_class = ItemTable
 
-    def get_queryset(self):
-        return Object.objects.all().order_by("name")
+    # def get_queryset(self):
+    #     return Item.objects.all().order_by("name")
 
 
 class CategoryClearView(LoginRequiredMixin, View):
@@ -225,5 +221,5 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object_list"] = self.object.object_set.all().order_by("name")
+        context["item_list"] = self.object.item_set.all().order_by("name")
         return context
