@@ -1,10 +1,12 @@
 {% extends "shop/shop_base.html" %}
+{% load static %}
 {% load render_table from django_tables2 %}
   {% block body_class %}bg-guest{% endblock %}
 {% block content_body%}
-
-  <div class="container bg-light">
-  {% render_table table %}
+  <div class="container bg-light mt-2">
+    {% render_table table 'django_tables2/bootstrap4.html' %}
   </div>
-  </div>
+{% endblock %}
+{% block custom_scripts %}
+  <script src="{% static "shop/js/table_checkboxes.js" %}"></script>
 {% endblock %}
