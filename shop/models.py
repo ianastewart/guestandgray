@@ -112,7 +112,7 @@ class CustomImage(AbstractImage):
         Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images"
     )
 
-    admin_form_fields = Image.admin_form_fields + ("ref", "primary_image", "object")
+    admin_form_fields = Image.admin_form_fields + ("ref", "primary_image", "item")
 
 
 class CustomRendition(AbstractRendition):
