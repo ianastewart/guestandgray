@@ -1,0 +1,25 @@
+{% extends 'coderedcms/pages/web_page.html' %}
+{% block content %}
+  <div class="container">
+  <h1 class="mt-4">{{ category.name }}</h1>
+  <div class="row mt-4">
+  <ul>
+
+  {% for object in category.objects %}
+    <li>{{ object.name }}</li>
+{#    <div class="col-sm-6 col-md-4 col-lg-3">#}
+{#      <div class="card mb-2" style="height:350px">#}
+{#        <a href="{% url "category_detail" pk=category.pk %}">#}
+{#        <img class="card-img-top" src="{{ category.image.file.url }}" alt="category.name">#}
+{#        <div class="card-body">#}
+{#          <p class="card-text">{{ category.name }}</p>#}
+{#        </div>#}
+{#        </a>#}
+{#      </div>#}
+{#    </div>#}
+  {% endfor %}
+  </ul>
+  </div>>
+
+  </div>
+{% endblock %}
