@@ -181,6 +181,8 @@ def _install_system_software():
     # install certbot from certbot maintained repository
     sudo("sudo add-apt-repository -y ppa:certbot/certbot")
     sudo("apt-get -y install python-certbot-nginx")
+    # install git
+    sudo("apt-get -y install git")
     print(green("End install system software"))
 
 

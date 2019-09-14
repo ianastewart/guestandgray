@@ -57,7 +57,7 @@ class Command(BaseCommand):
         top_cats = Category.objects.get(name="Catalogue").get_children()
         for top_cat in top_cats:
             for cat in top_cat.get_children():
-                objects = cat.object_set.filter(image__isnull=False)
+                objects = cat.item_set.filter(image__isnull=False)
                 if objects:
                     cat.image = objects[0].image
                     cat.save()
