@@ -103,12 +103,12 @@ LOGGING = {
             "backupCount": 5,
             "formatter": "simple",
         },
-        "sentry": {
-            "level": "ERROR",  # To capture more than ERROR, change to WARNING, INFO, etc.
-            "filters": ["require_debug_false"],
-            "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-            "tags": {"custom-tag": "GuestAndGray"},
-        },
+        # "sentry": {
+        #     "level": "ERROR",  # To capture more than ERROR, change to WARNING, INFO, etc.
+        #     "filters": ["require_debug_false"],
+        #     "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
+        #     "tags": {"custom-tag": "GuestAndGray"},
+        # },
     },
     "root": {"level": "DEBUG", "handlers": ["console"]},
     "loggers": {
