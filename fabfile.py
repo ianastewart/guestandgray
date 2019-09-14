@@ -42,7 +42,8 @@ def _local_dev_folder():
         return "C:/Users/is/PycharmProjects/GuestAndGray"
 
 
-@hosts("46.101.88.176")
+# @hosts("46.101.88.176")
+@hosts("77.68.81.128")
 def provision():
     """
     Provision a new site with live data. Does everything except install certificate.
@@ -57,7 +58,8 @@ def provision():
     _install_app()
 
 
-@hosts("46.101.88.176")
+# @hosts("46.101.88.176")
+@hosts("77.68.81.128")
 def install_app(app="gray", settings="prod", branch="master"):
     """ Install application, defaults to sandbox """
     dot_env = _read_env()
@@ -126,7 +128,8 @@ def manage(app, command):
         )
 
 
-@hosts("gray.iskt.co.uk")
+# @hosts("gray.iskt.co.uk")
+@hosts("77.68.81.128")
 def deploy_live(command=False):
     """ Deploy application changes to live server """
     env.user = "django"

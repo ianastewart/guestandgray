@@ -1,12 +1,13 @@
 import logging
 import os.path
+
 from django.conf import settings
-from django.http import JsonResponse
-from django.urls import reverse, reverse_lazy
-from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     View,
     TemplateView,
@@ -15,11 +16,13 @@ from django.views.generic import (
     ListView,
     DetailView,
 )
-from django_tables2 import SingleTableView
 from wagtail.core.models import Collection
-from shop.models import Item, Category, CustomImage
+
 from shop.forms import ItemForm, CategoryForm
+from shop.models import Item, Category, CustomImage
 from shop.tables import ItemTable
+from shop.views.generic_views import FilteredTableView
+from shop.filters import ItemFilter
 
 logger = logging.getLogger(__name__)
 
@@ -156,10 +159,11 @@ class ItemDetailView(DetailView):
         return context
 
 
-class ItemListView(LoginRequiredMixin, SingleTableView):
+class ItemListView(LoginRequiredMixin, FilteredTableView):
     model = Item
-    template_name = "shop/item_list.html"
+    template_name = "shop/generic_table.html"
     table_class = ItemTable
+    filter_class = ItemFilter
 
     # def get_queryset(self):
     #     return Item.objects.all().order_by("name")

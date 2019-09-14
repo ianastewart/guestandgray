@@ -15,6 +15,7 @@ Django==2.2.4
 django-bootstrap4==0.0.8
 django-environ==0.4.5
 django-eventtools==0.9.11
+django-filter==2.2.0
 django-import-export==1.2.0
 django-keyvaluestore==0.3
 django-modelcluster==4.4
