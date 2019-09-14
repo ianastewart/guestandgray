@@ -10,16 +10,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         user = User.objects.all().first()
         delete_all(CustomImage)  # deletes original_images too!
-        objects = Item.objects.all()
+        items = Item.objects.all()
         count = 0
-        max = len(objects)
+        max = len(items)
         image_count = 0
         not_found = 0
         threshold = 10
         i = 0
         try:
-            for obj in objects:
-                loaded = load_image(obj, user)
+            for item in items:
+                loaded = load_image(item, user)
                 count += 1
                 if loaded:
                     image_count += 1
@@ -36,6 +36,6 @@ class Command(BaseCommand):
 
         except Exception as e:
             self.stdout.write(
-                self.style.ERROR(f"Import images error: {str(e)} object = {obj.name}")
+                self.style.ERROR(f"Import images error: {str(e)} item = {item.name}")
             )
             return False

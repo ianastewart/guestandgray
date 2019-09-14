@@ -175,16 +175,16 @@ def process_images(user):
     # delete all using workaround for sqlite limit
     set_status("Clearing images")
     delete_all(CustomImage)  # deletes original_images too!
-    objects = Item.objects.all()
+    items = Item.objects.all()
     count = 0
-    max = len(objects)
+    max = len(items)
     image_count = 0
     not_found = 0
     threshold = 10
     i = 0
     set_status("Processing images", max)
     try:
-        for obj in objects:
+        for item in items:
             loaded = load_image(obj, user)
             count += 1
             if loaded:
@@ -210,7 +210,7 @@ def process_images(user):
         return False
 
 
-def load_image(obj, user, collection=None):
+def load_image(item, user, collection=None):
     """
     Try to load the image for an object.
     Check if file already in /images first
@@ -218,9 +218,9 @@ def load_image(obj, user, collection=None):
     else return False
     """
     collection_id = collection.id if collection else 1
-    if obj.image_file:
+    if item.image_file:
         base_url = "https://chinese-porcelain-art.com/acatalog/"
-        name = obj.image_file.split("\\")
+        name = item.image_file.split("\\")
         url = base_url + name[1]
         file_name = name[1].split(".")[0] + ".jpg"
         images_path = "images/" + file_name
@@ -239,15 +239,15 @@ def load_image(obj, user, collection=None):
         if loaded:
             new_image = CustomImage.objects.create(
                 file="original_images/" + file_name,
-                title=obj.name,
+                title=item.name,
                 collection_id=collection_id,
                 uploaded_by_user=user,
-                object=obj,
+                item=item,
             )
-            obj.image = new_image
-            obj.save()
+            item.image = new_image
+            item.save()
             return True
-    obj.image = None
+    item.image = None
     return False
 
 
