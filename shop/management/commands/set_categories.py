@@ -47,7 +47,7 @@ class Command(BaseCommand):
                         cat = get(other.pk).add_child(name=key)
                     created[key] = cat.id
                     cat_id = cat.id
-                item.new_category_id = cat_id
+                item.category_id = cat_id
                 item.save()
                 assigned += 1
             else:
