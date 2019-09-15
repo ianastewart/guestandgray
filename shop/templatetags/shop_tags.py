@@ -19,7 +19,11 @@ def breadcrumb(node_list):
 @register.simple_tag(takes_context=True)
 def shop_is_active_page(context, curr_page, other_page):
     # special handling for catalogue menu item, because it is a link, not a page
-    if curr_page.slug == "catalogue" and other_page == "":
+    if (
+        hasattr(curr_page, "slug")
+        and curr_page.slug == "catalogue"
+        and other_page == ""
+    ):
         return True
     if hasattr(curr_page, "get_url") and hasattr(other_page, "get_url"):
         curr_url = curr_page.get_url(context["request"])
