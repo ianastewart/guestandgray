@@ -4,15 +4,20 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
-@register.filter()
-def breadcrumb(node_list):
+@register.simple_tag(takes_context=False)
+def breadcrumb(node_list, archive=False):
     output = '<nav aria-label="breadcrumb"><ol class="breadcrumb">'
     for node in node_list:
         if node.active:
             output += f'<li class="breadcrumb-item active" aria-current="page">{node.name}</li>'
         else:
-            output += f'<li class="breadcrumb-item"><a href="{node.get_absolute_url()}">{node.name}</a></li>'
+            url = node.get_archive_url() if archive else node.get_absolute_url()
+            output += (
+                f'<li class="breadcrumb-item"><a href="{url}">{node.name}</a></li>'
+            )
     output += "</ol>"
+    if archive:
+        output = output.replace("Catalogue", "Archive")
     return mark_safe(output)
 
 

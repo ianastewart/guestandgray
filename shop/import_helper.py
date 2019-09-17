@@ -54,57 +54,8 @@ def import_objects(excel_file):
     else:
         set_status("Loading database", max=dataset.height)
         object_resource.import_data(dataset, dry_run=False)  # Actually import now
+        set_status("Objects loaded", max=dataset.height, done=True)
     return True
-
-
-def process_objects(user, link_images=True):
-    """
-    Process imported objects
-    Create or link to the associated category
-    Optionally find the associated image and cross link it
-    """
-    pass
-    # try:
-    #     objects = Object.objects.all()
-    #     max = len(objects)
-    #     count = 0
-    #     empty = 0
-    #     categories = 0
-    #     image_count = 0
-    #     update_threshold = 50
-    #     set_status("Processing objects", max, count, empty, categories)
-    #     i = 0
-    #     for item in objects:
-    #         # Link category
-    #         if item.category_text:
-    #             sep = item.category_text.find("|")
-    #             if sep > 0:
-    #                 key = item.category_text[0:sep]
-    #             else:
-    #                 key = item.category_text
-    #             try:
-    #                 category = Category.objects.get(name=key)
-    #             except Category.DoesNotExist:
-    #                 categories += 1
-    #                 category = Category(name=key)
-    #                 category.save()
-    #             item.category_id = category.id
-    #             item.save()
-    #         else:
-    #             empty += 1
-    #         count += 1
-    #         if link_images:
-    #             if load_image(item, user):
-    #                 image_count += 1
-    #         i += 1
-    #         if i >= update_threshold:
-    #             set_status(
-    #                 "Processing objects", max, count, empty, categories, image_count
-    #             )
-    #             i = 0
-    #     set_status("Done", max, count, empty, categories, image_count, done=True)
-    # except Exception as e:
-    #     set_status(e)
 
 
 def set_status(text, max=0, count=0, empty=0, categories=0, image_count=0, done=False):
@@ -127,49 +78,6 @@ def set_status(text, max=0, count=0, empty=0, categories=0, image_count=0, done=
     )
 
 
-def process_categories():
-    """
-    Create fixed top level categories under root catalogue
-    Process all objects assigning the category derived from the category_text field
-    Create new categories under the top level categories according to simple matching rules
-    :return: count of assigned objects and count of object without category
-    """
-    Category.objects.all().delete()
-    get = lambda node_id: Category.objects.get(pk=node_id)
-    root = Category.add_root(name="Catalogue")
-    chinese = get(root.pk).add_child(name="Chinese")
-    japanese = get(root.pk).add_child(name="Japanese")
-    european = get(root.pk).add_child(name="European")
-    other = get(root.pk).add_child(name="Other")
-    objects = Item.objects.all()
-    assigned = 0
-    empty = 0
-    for item in objects:
-        if item.category_text:
-            sep = item.category_text.find("|")
-            if sep > 0:
-                key = item.category_text[0:sep]
-            else:
-                key = item.category_text
-            try:
-                cat = Category.objects.get(name=key)
-            except Category.DoesNotExist:
-                if "Chinese" in key:
-                    cat = get(chinese.pk).add_child(name=key)
-                elif "Japanese" in key:
-                    cat = get(japanese.pk).add_child(name=key)
-                elif "European" in key or "Dutch" in key:
-                    cat = get(european.pk).add_child(name=key)
-                else:
-                    cat = get(other.pk).add_child(name=key)
-            item.category_id = cat.id
-            item.save()
-            assigned += 1
-        else:
-            empty += 1
-        return assigned, empty
-
-
 def process_images(user):
 
     # delete all using workaround for sqlite limit
@@ -185,7 +93,7 @@ def process_images(user):
     set_status("Processing images", max)
     try:
         for item in items:
-            loaded = load_image(obj, user)
+            loaded = load_image(item, user)
             count += 1
             if loaded:
                 image_count += 1
@@ -206,7 +114,7 @@ def process_images(user):
         )
         return True
     except Exception as e:
-        logger.error(f"Import images error: {str(e)} object = {obj.name}")
+        logger.error(f"Import images error: {str(e)} object = {item.name}")
         return False
 
 
@@ -219,10 +127,17 @@ def load_image(item, user, collection=None):
     """
     collection_id = collection.id if collection else 1
     if item.image_file:
-        base_url = "https://chinese-porcelain-art.com/acatalog/"
-        name = item.image_file.split("\\")
-        url = base_url + name[1]
-        file_name = name[1].split(".")[0] + ".jpg"
+        if "http" not in item.image_file:
+            # from excel file
+            base_url = "https://chinese-porcelain-art.com/acatalog/"
+            name = item.image_file.split("\\")
+            url = base_url + name[1]
+            file_name = name[1].split(".")[0] + ".jpg"
+        else:
+            # called by scrape process
+            parts = item.image_file.split("/")
+            file_name = parts[len(parts) - 1]
+            url = item.image_file
         images_path = "images/" + file_name
         media_path = "media/original_images/" + file_name
         loaded = False

@@ -5,12 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from shop.models import Item, Category, CustomImage
-from shop.import_helper import (
-    import_objects,
-    process_objects,
-    process_images,
-    set_status,
-)
+from shop.import_helper import import_objects, process_images, set_status
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +23,6 @@ def import_objects_view(request):
             process_objects(request.user)
 
     return render(request, template_name, context={})
-
-
-@login_required
-def import_process_view(request):
-    template_name = "shop/import_process.html"
-
-    if request.method == "POST":
-        process_objects(request.user, link_images=False)
-    return render(request, template_name, context={"title": "Process objects"})
 
 
 @login_required

@@ -4,8 +4,11 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        {{ breadcrumb|breadcrumb }}
-        <h3 class="my-4">{{ category.name }}</h3>
+    {% breadcrumb breadcrumb archive %}
+        <h2 class="my-4">
+      {% if archive %}Archive: {% endif %}
+      {{ category.name }}
+    </h2>
         {% if page_number %}<span class="text-black-50">{{ page_number }}</span>{% endif %}
       </div>
     </div>

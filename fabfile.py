@@ -11,6 +11,8 @@ from deployment.database_helper import (
     upload_database,
     download_database,
     upload_dev_db,
+    create_user,
+    grant_priviliges,
     upload_media,
     download_media,
     upload_media_dev,
@@ -68,7 +70,8 @@ def install_app(app="gray", settings="prod", branch="master"):
     _install_app(app, settings, branch)
 
 
-@hosts("gray.iskt.co.uk")
+# @hosts("gray.iskt.co.uk")
+@hosts("77.68.81.128")
 def download():
     """ Download database and media from live site"""
     env.user = "django"
@@ -97,6 +100,15 @@ def upload_dev():
 def dump_dev():
     dbuser, pw, db = _parse_db_settings()
     dump_dev_db(_local_dev_folder(), dbuser, pw, db)
+
+
+@hosts("77.68.81.128")
+def create_dbuser():
+    """ Create django as dbuser """
+    dbuser, pw, db = _parse_db_settings()
+    dbuser = "django"
+    create_user(dbuser, pw)
+    grant_priviliges(dbuser, db)
 
 
 @hosts("django.iskt.co.uk")

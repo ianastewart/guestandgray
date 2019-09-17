@@ -34,6 +34,19 @@ def create_database(dbuser, pw, db):
     print(green(f"End create database {db}"))
 
 
+def create_user(dbuser, pw):
+    db_users = sudo(
+        "psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (dbuser),
+        user="postgres",
+    )
+    if not dbuser in db_users:
+        sudo(
+            "psql -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\"" % (dbuser, pw),
+            user="postgres",
+        )
+    print(green(f"User {dbuser} created"))
+
+
 def grant_priviliges(dbuser, db):
     sudo(
         f'psql -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"',
@@ -60,7 +73,7 @@ def download_database(local_dev_folder, app, db):
     sudo(f"mkdir -p {site_folder}/{BACKUP_FOLDER}", user="django")
     source_path = f"{site_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     grant_priviliges("django", "gray")
-    sudo(f"pg_dump {db} -Fc -x >{source_path}", user="django")
+    sudo(f"pg_dump {db} -h localhost -Fc -x -U gray >{source_path}", user="django")
     get(source_path, local_path)
     print(green("End download database"))
 

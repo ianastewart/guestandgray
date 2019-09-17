@@ -15,44 +15,60 @@ class Command(BaseCommand):
         """
         Category.objects.all().delete()
         get = lambda node_id: Category.objects.get(pk=node_id)
-        # top level categories
         root = Category.add_root(name="Catalogue")
         chinese = get(root.pk).add_child(name="Chinese")
         japanese = get(root.pk).add_child(name="Japanese")
         european = get(root.pk).add_child(name="European")
+        pottery = european.add_child(name="Pottery")
+        pottery.add_child(name="English Pottery")
+        pottery.add_child(name="Italian Pottery")
+        pottery.add_child(name="Spanish Pottery")
+        pottery.add_child(name="French/German Pottery")
         other = get(root.pk).add_child(name="Other")
         objects = Item.objects.all()
         assigned = 0
         empty = 0
-        created = {}
         for item in objects:
             if item.category_text:
-                sep = item.category_text.find("|")
-                if sep > 0:
-                    key = item.category_text[0:sep]
-                else:
-                    key = item.category_text
-                cat_id = created.get(key, None)
-                if not cat_id:
-                    self.stdout.write(f"Creating category: {key}")
-                    if "Chinese" in key:
-                        cat = get(chinese.pk).add_child(name=key[8:])
-                    elif "Japanese" in key:
-                        cat = get(japanese.pk).add_child(name=key[9:])
-                    elif "European" in key:
-                        cat = get(european.pk).add_child(name=key[9:])
+                parts = item.category_text.split("|")
+                china = False
+                japan = False
+                europe = False
+                key = parts[0]
+                if "Chinese" in key:
+                    key = key[8:]
+                    china = True
+                elif "Japanese" in key:
+                    key = key[9:]
+                    japan = True
+                elif "European Pottery" in key:
+                    key = parts[1]
+                    p = key.find(" Page")
+                    if p > 0:
+                        key = key[:p]
+                elif "European" in key:
+                    key = key[9:]
+                    europe = True
+                try:
+                    cat = Category.objects.get(name=key)
+                except Category.DoesNotExist:
+                    if china:
+                        cat = get(chinese.pk).add_child(name=key)
+                    elif japan:
+                        cat = get(japanese.pk).add_child(name=key)
+                    elif europe:
+                        cat = get(european.pk).add_child(name=key)
                     elif "Dutch" in key:
                         cat = get(european.pk).add_child(name=key)
                     else:
                         cat = get(other.pk).add_child(name=key)
-                    created[key] = cat.id
-                    cat_id = cat.id
-                item.category_id = cat_id
+                item.category_id = cat.id
                 item.save()
                 assigned += 1
             else:
                 empty += 1
-        # Assign category image
+
+            # Assign category image
         no_image = 0
         top_cats = Category.objects.get(name="Catalogue").get_children()
         for top_cat in top_cats:
@@ -65,8 +81,20 @@ class Command(BaseCommand):
                         top_cat.image = cat.image
                         top_cat.save()
                 else:
-                    self.stdout.write(f"No image for {cat.name}")
-                    no_image += 1
+                    for cat1 in cat.get_children():
+                        objects = cat1.item_set.filter(image__isnull=False)
+                        if objects:
+                            cat1.image = objects[0].image
+                            cat1.save()
+                            if not cat.image:
+                                cat.image = cat1.image
+                                cat.save()
+                            if not top_cat.image:
+                                top_cat.image = cat.image
+                                top_cat.save()
+                        else:
+                            self.stdout.write(f"No image for {cat.name}")
+                            no_image += 1
         self.stdout.write(
             f"Assigned category to {assigned} objects. {empty} had no category."
         )

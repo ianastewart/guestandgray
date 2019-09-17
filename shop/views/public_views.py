@@ -40,7 +40,7 @@ def home_view(request):
 def item_view(request, slug, pk):
     """ Public view of a single object """
 
-    template_name = "shop/public/item_detail1.html"
+    template_name = "shop/public/item_detail.html"
     item, item_url = get_redirected(Item, {"pk": pk}, {"slug": slug})
     if item_url:
         return redirect(item_url)
@@ -54,13 +54,14 @@ def item_view(request, slug, pk):
     return render(request, template_name, context)
 
 
-def catalogue_view(request, slugs=None):
+def catalogue_view(request, slugs=None, archive=False):
     slug = "catalogue"
     if slugs:
         slug += "/" + slugs
     context = get_host_context("catalogue")
     category = get_object_or_404(Category, slug=slug)
     context["category"] = category
+    context["archive"] = archive
     context["breadcrumb"] = category.breadcrumb_nodes()
     child_categories = category.get_children()
     if child_categories:
@@ -70,13 +71,16 @@ def catalogue_view(request, slugs=None):
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"
-        objects = category.item_set.filter(image__isnull=False).order_by("-price")
+        objects = category.item_set.filter(
+            image__isnull=False, archive=archive
+        ).order_by("-price")
         paginator = Paginator(objects, 16)
         page = request.GET.get("page")
-        if paginator.num_pages > 1 and not page:
+        if paginator.num_pages >= 1 and not page:
             page = 1
         context["page_number"] = f"Page {page} of {paginator.num_pages}"
         context["items"] = paginator.get_page(page)
+
     return render(request, template_name, context)
 
 

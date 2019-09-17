@@ -1,27 +1,42 @@
 {% extends 'coderedcms/pages/web_page.html' %}
-{% load wagtailimages_tags shop_tags%}
+{% load wagtailimages_tags shop_tags %}
 {% block content %}
   <div class="container">
-    {{ breadcrumb|breadcrumb }}
-    <h1 class="mt-4">{{ category.name }}</h1>
+    {% breadcrumb breadcrumb archive %}
+    <h2 class="my-4">
+      {% if archive %}Archive: {% endif %}
+      {{ category.name }}
+    </h2>
     <div class="row mt-4">
       {% for category in categories %}
         {% image category.image width-250 as card_image %}
         <div class="col-sm-6 col-md-4 col-lg-3 d-none d-sm-block">
           <div class="card card-thumb card-thumb-cat shadow d-none d-sm-block">
             <div class="thumbnail" href="#">
-              <a href="{{ category.get_absolute_url }}" style="background-image: url({{ card_image.url }});"></a>
+              {% if archive %}
+                <a href="{{ category.get_archive_url }}" style="background-image: url({{ card_image.url }});"></a>
+              {% else %}
+                <a href="{{ category.get_absolute_url }}" style="background-image: url({{ card_image.url }});"></a>
+              {% endif %}
             </div>
             <div class="card-body px-2">
-              <a href="{{ category.get_absolute_url }}"><span class="text-dark">{{ category.name }}</span></a>
+              {% if archive %}
+                <a href="{{ category.get_archive_url }}"><span class="text-dark">{{ category.name }}</span></a>
+              {% else %}
+                <a href="{{ category.get_absolute_url }}"><span class="text-dark">{{ category.name }}</span></a>
+              {% endif %}
             </div>
           </div>
         </div>
-{#        Mobile only #}
+        {#        Mobile only #}
         <div class="col-12 d-block d-sm-none mb-2 text-center">
+          {% if archive %}
+            <a href="{{ category.get_archive_url }}">
+          {% else %}
             <a href="{{ category.get_absolute_url }}">
-              <img src="{{ card_image.url }}" alt="{{ category.name }}">
-              <p class="text-black-50">{{ category.name }}</p>
+          {% endif %}
+          <img src="{{ card_image.url }}" alt="{{ category.name }}">
+          <p class="text-black-50">{{ category.name }}</p>
           </a>
         </div>
       {% endfor %}

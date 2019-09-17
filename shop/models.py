@@ -60,6 +60,10 @@ class Category(MP_Node):
     def get_absolute_url(self):
         return "/" + self.slug + "/"
 
+    def get_archive_url(self):
+        url = self.get_absolute_url()
+        return url.replace("/catalogue/", "/archive/")
+
 
 class Item(index.Indexed, models.Model):
     class State(ModelEnum):
@@ -69,14 +73,16 @@ class Item(index.Indexed, models.Model):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(null=True, blank=True, max_length=200)
-    ref = models.CharField(null=False, blank=True, max_length=10, default="")
+    ref = models.CharField(
+        null=False, blank=True, max_length=10, default="", db_index=True
+    )
     description = models.TextField(null=True, blank=True)
-    # dimensions = models.CharField(max_length=200, null=True, blank=True)
-    # condition = models.CharField(max_length=200, null=True, blank=True)
-    # provenance = models.CharField(max_length=200, null=True, blank=True)
-    # extra = models.TextField(null=True, blank=True)
+    dimensions = models.CharField(max_length=200, null=True, blank=True)
+    condition = models.CharField(max_length=200, null=True, blank=True)
+    provenance = models.CharField(max_length=500, null=True, blank=True)
+    # notes = models.TextField(null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
-    image_file = models.CharField(max_length=50, null=True, blank=True)
+    image_file = models.CharField(max_length=100, null=True, blank=True)
     image = models.ForeignKey(
         "CustomImage",
         null=True,
@@ -91,8 +97,10 @@ class Item(index.Indexed, models.Model):
     category = models.ForeignKey(
         Category, null=True, blank=True, on_delete=models.SET_NULL
     )
+    visible = models.BooleanField(default=True)
+    archive = models.BooleanField(default=False)
 
-    search_fields = [index.SearchField("name", boost=3)]
+    search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
 
     def __str__(self):
         return self.name

@@ -15,7 +15,6 @@ from shop.views.staff_views import (
 from shop.views.public_views import home_view, item_view, catalogue_view, search_view
 from shop.views.import_views import (
     import_objects_view,
-    import_process_view,
     import_progress_view,
     import_images_view,
     # import_images_progress_view,
@@ -30,7 +29,6 @@ staff_urls = [
     path("item/list/", ItemListView.as_view(), name="item_list"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("import/", import_objects_view, name="import_objects"),
-    path("import/categories/", import_process_view, name="import_categories"),
     path("import/progress/", import_progress_view, name="import_progress"),
     path("import/images/", import_images_view, name="import_images"),
     path(
@@ -56,9 +54,21 @@ staff_urls = [
 public_urls = [
     path("", home_view, name="public_home"),
     path("search/", search_view, name="codered_search"),
-    path("catalogue/", catalogue_view, name="public_catalogue_root"),
+    path(
+        "catalogue/", catalogue_view, {"archive": False}, name="public_catalogue_root"
+    ),
     re_path(
-        r"catalogue/(?P<slugs>[\w_/-]+)/$", catalogue_view, name="public_catalogue"
+        r"catalogue/(?P<slugs>[\w_/-]+)/$",
+        catalogue_view,
+        {"archive": False},
+        name="public_catalogue",
+    ),
+    path("archive/", catalogue_view, {"archive": True}, name="public_catalogue_root"),
+    re_path(
+        r"archive/(?P<slugs>[\w_/-]+)/$",
+        catalogue_view,
+        {"archive": True},
+        name="public_catalogue",
     ),
     path("item/<slug:slug>,<int:pk>/", item_view, name="public_item"),
 ]
