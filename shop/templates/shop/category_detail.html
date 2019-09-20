@@ -17,8 +17,8 @@
         <div class="my-2">
         </div>
         <ul>
-          {% for object in object_list %}
-            <li><a href="{% url 'item_detail' pk=object.pk %}">{{ object.name }}</a></li>
+          {% for item in item_list %}
+            <li><a href="{% url 'item_detail' pk=item.pk %}">{{ item.ref }} {{ item.name }}</a></li>
           {% endfor %}
         </ul>
       </div>

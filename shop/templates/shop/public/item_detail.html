@@ -124,7 +124,7 @@
       $("figure").on("click", function (event) {
           event.preventDefault();
           var options = {
-              index: this.dataset.index,
+              index: parseInt(this.dataset.index),
               bgOpacity: 0.85,
               showHideOpacity: true
           }

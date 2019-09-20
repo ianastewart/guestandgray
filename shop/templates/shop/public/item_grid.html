@@ -9,7 +9,10 @@
       {% if archive %}Archive: {% endif %}
       {{ category.name }}
     </h2>
-        {% if page_number %}<span class="text-black-50">{{ page_number }}</span>{% endif %}
+      <p class="text-black-50">
+        {% if page_number %}{{ page_number }}&nbsp;&nbsp;{% endif %}
+      Displaying {{ items|length }} of {{ count }} objects
+      </p>
       </div>
     </div>
     <div class="row">

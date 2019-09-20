@@ -6,7 +6,6 @@ from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
 
-
 from wagtail.core.models import Page
 from wagtail.search.backends import db, get_search_backend
 from wagtail.search.models import Query
@@ -16,8 +15,8 @@ from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
 from shop.models import Item, Category
 
-
 logger = logging.getLogger(__name__)
+
 
 # Url structure from https://wellfire.co/learn/fast-and-beautiful-urls-with-django/
 
@@ -68,13 +67,20 @@ def catalogue_view(request, slugs=None, archive=False):
         # category has sub categories
         template_name = "shop/public/category_grid.html"
         context["categories"] = child_categories.exclude(image=None)
+        for cat in context["categories"]:
+            cat.count = cat.item_set.filter(
+                image__isnull=False, archive=archive
+            ).count()
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"
+        context["count"] = category.item_set.filter(
+            image__isnull=False, archive=archive
+        ).count()
         objects = category.item_set.filter(
             image__isnull=False, archive=archive
         ).order_by("-price")
-        paginator = Paginator(objects, 16)
+        paginator = Paginator(objects, 32)
         page = request.GET.get("page")
         if paginator.num_pages >= 1 and not page:
             page = 1

@@ -21,9 +21,9 @@
             </div>
             <div class="card-body px-2">
               {% if archive %}
-                <a href="{{ category.get_archive_url }}"><span class="text-dark">{{ category.name }}</span></a>
+                <a href="{{ category.get_archive_url }}"><span class="text-dark">{{ category.name }} ({{ category.count }})</span></a>
               {% else %}
-                <a href="{{ category.get_absolute_url }}"><span class="text-dark">{{ category.name }}</span></a>
+                <a href="{{ category.get_absolute_url }}"><span class="text-dark">{{ category.name }} ({{ category.count }})</span></a>
               {% endif %}
             </div>
           </div>
