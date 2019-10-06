@@ -8,13 +8,13 @@ certifi==2019.6.16
 cffi==1.12.3
 chardet==3.0.4
 Click==7.0
-coderedcms==0.16.2
+coderedcms==0.16.3
 cryptography==2.7
 cssselect==1.1.0
 decorator==4.4.0
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==2.2.4
+Django==2.2.6
 django-bootstrap4==0.0.8
 django-environ==0.4.5
 django-eventtools==0.9.11
@@ -24,7 +24,7 @@ django-keyvaluestore==0.3
 django-modelcluster==4.4
 django-sass==0.1.2
 django-sendmail-backend==0.1.2
-django-tables2==2.1.0
+django-tables2==2.1.1
 django-taggit==0.24.0
 django-treebeard==4.3
 djangorestframework==3.10.2
@@ -65,7 +65,7 @@ tqdm==4.35.0
 Unidecode==1.1.1
 urllib3==1.25.3
 w3lib==1.21.0
-wagtail==2.6.1
+wagtail==2.6.2
 wagtail-cache==0.5.2
 wagtail-import-export==0.2
 wagtailfontawesome==1.1.4
