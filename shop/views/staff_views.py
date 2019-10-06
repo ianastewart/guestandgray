@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -20,9 +20,10 @@ from wagtail.core.models import Collection
 
 from shop.forms import ItemForm, CategoryForm
 from shop.models import Item, Category, CustomImage
-from shop.tables import ItemTable
+from shop.tables import ItemTable, ItemNameTable
 from shop.views.generic_views import FilteredTableView
 from shop.filters import ItemFilter
+from shop.truncater import truncate
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,13 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        if "truncate" in self.request.POST:
+            self.object.name = truncate(self.object.description)
+            self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse("item_detail", kwargs={"pk": self.object.pk})
@@ -165,8 +173,12 @@ class ItemListView(LoginRequiredMixin, FilteredTableView):
     table_class = ItemTable
     filter_class = ItemFilter
 
-    # def get_queryset(self):
-    #     return Item.objects.all().order_by("name")
+
+class ItemNameListView(LoginRequiredMixin, FilteredTableView):
+    model = Item
+    template_name = "shop/generic_table.html"
+    table_class = ItemNameTable
+    filter_class = ItemFilter
 
 
 class CategoryClearView(LoginRequiredMixin, View):

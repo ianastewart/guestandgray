@@ -30,6 +30,7 @@ class Category(MP_Node):
         on_delete=models.SET_NULL,
         related_name="linked_category",
     )
+    count = models.IntegerField(default=0)
     node_order_by = ["name"]
 
     def __str__(self):

@@ -67,10 +67,12 @@ def catalogue_view(request, slugs=None, archive=False):
         # category has sub categories
         template_name = "shop/public/category_grid.html"
         context["categories"] = child_categories.exclude(image=None)
-        for cat in context["categories"]:
-            cat.count = cat.item_set.filter(
-                image__isnull=False, archive=archive
-            ).count()
+        counter = Counter(category, archive)
+        counter.count()
+        # for cat in context["categories"]:
+        #     cat.count = cat.item_set.filter(
+        #         image__isnull=False, archive=archive
+        #     ).count()
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"
@@ -88,6 +90,34 @@ def catalogue_view(request, slugs=None, archive=False):
         context["items"] = paginator.get_page(page)
 
     return render(request, template_name, context)
+
+
+class Counter:
+    def __init__(self, root, archive=False, exclude_no_image=True):
+        self.total = 0
+        self.root = root
+        self.archive = archive
+        self.exclude = exclude_no_image
+
+    def count(self):
+        return self._count(self.root)
+
+    def _count(self, cat):
+        print(f"Start {cat.name}")
+        items = cat.item_set.filter(archive=self.archive)
+        if self.exclude:
+            items = items.filter(image__isnull=False)
+        total = items.count()
+        child_cats = cat.get_children()
+        if self.exclude:
+            child_cats = child_cats.filter(image__isnull=False)
+        if child_cats:
+            for cat1 in child_cats:
+                total += self._count(cat1)
+        cat.count = total
+        cat.save()
+        print(f"{cat.name} {cat.count}")
+        return total
 
 
 def get_host_context(slug):

@@ -19,23 +19,26 @@
         <div class="col-md-8">
           {% bootstrap_form form layout="horizontal" %}
         </div>
-      <div class="col-md-4">
-        <div class="card">
-          {% if item and item.image %}
-            {% image item.image width-250 as card_image %}
-            <img class="card-img-top" src="{{ card_image.url }}">
-          {% else %}
-            <div class="card-body bg-white text-center" style="height:400px;">
-              <i>No image</i>
-            </div>
-          {% endif %}
+        <div class="col-md-4">
+          <div class="card">
+            {% if item and item.image %}
+              {% image item.image width-250 as card_image %}
+              <img class="card-img-top" src="{{ card_image.url }}">
+            {% else %}
+              <div class="card-body bg-white text-center" style="height:400px;">
+                <i>No image</i>
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
-      </div>
       <div class="row my-3">
-        {% buttons %}
-          <button type="submit" class="btn btn-primary" name="save">Save</button>
-        {% endbuttons %}
+        <div class="col">
+          {% buttons %}
+            <button type="submit" class="btn btn-primary" name="save">Save</button>
+            <button type="submit" class="btn btn-primary" name="truncate">Truncate</button>
+          {% endbuttons %}
+        </div>
       </div>
     </form>
   </div>

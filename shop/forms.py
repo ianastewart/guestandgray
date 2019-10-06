@@ -17,7 +17,7 @@ class CategoryForm(ModelForm):
         current_parent = self.instance.get_parent()
         new_parent = self.cleaned_data["parent_category"]
         if current_parent.id != new_parent.id:
-            if self.instance.is_descendant_of(new_parent):
+            if new_parent.is_descendant_of(self.instance):
                 raise ValidationError(
                     "You cannot make a category report to one of its children"
                 )

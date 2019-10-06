@@ -5,6 +5,7 @@ from shop.views.staff_views import (
     ItemDetailView,
     ItemUpdateView,
     ItemListView,
+    ItemNameListView,
     ItemImagesView,
     CategoryClearView,
     CategoryCreateView,
@@ -27,6 +28,7 @@ staff_urls = [
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/list/", ItemListView.as_view(), name="item_list"),
+    path("item/namelist/", ItemNameListView.as_view(), name="itemname_list"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("import/", import_objects_view, name="import_objects"),
     path("import/progress/", import_progress_view, name="import_progress"),
@@ -36,7 +38,6 @@ staff_urls = [
         set_category_images_view,
         name="import_category_images",
     ),
-    path("category/create/", CategoryClearView.as_view(), name="category_clear"),
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
     path(
         "category/update/<int:pk>/",

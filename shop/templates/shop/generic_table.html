@@ -3,7 +3,7 @@
 {% load render_table querystring from django_tables2 %}
 
 {% block content_body %}
-  <div class="container">
+  <div class="container-fluid">
 {% if filter %}
   <div class="card card-body py-0 my-2">
     {{ filter.form.media }}

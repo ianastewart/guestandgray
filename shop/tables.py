@@ -1,6 +1,7 @@
 import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
+from shop.truncater import truncate
 
 
 from django.utils.html import escape
@@ -31,3 +32,20 @@ class ItemTable(tables.Table):
         template_name="django_tables2/custom_checkbox.html",
         verbose_name="Select",
     )
+
+
+class ItemNameTable(tables.Table):
+    class Meta:
+        model = Item
+        fields = ("name", "description", "ref")
+
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {
+            "data-url": lambda record: reverse("item_update", kwargs={"pk": record.pk}),
+            "class": "table-row pl-4",
+        }
+
+    name = tables.Column(accessor="description", attrs={"td": {"width": "33%"}})
+
+    def render_name(self, value):
+        return truncate(value, 60)

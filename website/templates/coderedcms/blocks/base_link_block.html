@@ -1,11 +1,11 @@
-{#Override codered block so we call the shop_is_active_page tag to handle active catalogue page#}
+{# Override codered block so we call the shop_is_active_page tag to handle active catalogue page #}
 {% load coderedcms_tags wagtailcore_tags wagtailimages_tags shop_tags%}
 
 {% block menu_item %}
     {% if value.page.live or value.link or value.document %}
     {% is_menu_item_dropdown value as has_dropdown %}
     <li class="{{liclass}} {% if has_dropdown %}dropdown{% endif %}">
-        {% shop_is_active_page page value.page as is_active_url %}
+        {% shop_is_active_page value.page value.link as is_active_url %}
         <a href="{% block url %}#{% endblock %}"
         {% if value.settings.custom_id %}id="{{value.settings.custom_id}}"{% endif %}
         class="{{aclass}} {% if has_dropdown %}dropdown-toggle{% endif %} {% if is_active_url %}active{% endif %} {{value.settings.custom_css_class}}"
