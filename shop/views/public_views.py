@@ -44,9 +44,10 @@ def item_view(request, slug, pk):
     if item_url:
         return redirect(item_url)
     context = get_host_context("catalogue")
-    category = get_object_or_404(Category, id=item.category_id)
-    context["category"] = category
-    context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
+    if item.category_id:
+        category = get_object_or_404(Category, id=item.category_id)
+        context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
+        context["category"] = category
     context["item"] = item
     context["price"] = int(item.price / 100)
     context["images"] = item.images.all().exclude(id=item.image_id)

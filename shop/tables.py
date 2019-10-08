@@ -2,12 +2,30 @@ import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
 from shop.truncater import truncate
+from shop.models import Category, Item
 
 
-from django.utils.html import escape
+class CategoryTable(tables.Table):
+    class Meta:
+        model = Category
+        fields = ("name", "parent", "description", "image", "count")
+        # sequence = ("name", "description", "image", "count", "dad")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {
+            "data-url": lambda record: reverse(
+                "category_detail", kwargs={"pk": record.pk}
+            ),
+            "class": "table-row pl-4",
+        }
 
+    parent = tables.Column(empty_values=())
 
-from shop.models import Item
+    def render_description(self, value):
+        if len(value) > 80:
+            return value[:80] + "..."
+
+    def render_parent(self, record):
+        return record.get_parent().name
 
 
 class ImageColumn(tables.Column):

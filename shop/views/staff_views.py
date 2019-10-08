@@ -20,7 +20,7 @@ from wagtail.core.models import Collection
 
 from shop.forms import ItemForm, CategoryForm
 from shop.models import Item, Category, CustomImage
-from shop.tables import ItemTable, ItemNameTable
+from shop.tables import ItemTable, ItemNameTable, CategoryTable
 from shop.views.generic_views import FilteredTableView
 from shop.filters import ItemFilter
 from shop.truncater import truncate
@@ -181,15 +181,6 @@ class ItemNameListView(LoginRequiredMixin, FilteredTableView):
     filter_class = ItemFilter
 
 
-class CategoryClearView(LoginRequiredMixin, View):
-    """ Clears all objects from the database """
-
-    def get(self, request):
-        Category.objects.all().delete()
-        messages.add_message(request, messages.INFO, "All categories cleared")
-        return redirect("staff_home")
-
-
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
@@ -220,14 +211,25 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class CategoryListView(LoginRequiredMixin, ListView):
+class CategoryTreeView(LoginRequiredMixin, ListView):
     model = Category
-    template_name = "shop/category_list.html"
+    template_name = "shop/category_tree.html"
     context_object_name = "categories"
 
     def get_queryset(self):
         root = Category.objects.get(name="Catalogue")
         return root.get_children().order_by("name")
+
+
+class CategoryListView(LoginRequiredMixin, FilteredTableView):
+    model = Category
+    template_name = "shop/generic_table.html"
+    table_class = CategoryTable
+    table_pagination = {"per_page": 100}
+
+    def get_queryset(self):
+        root = Category.objects.get(name="Catalogue")
+        return root.get_descendants().order_by("name")
 
 
 class CategoryDetailView(LoginRequiredMixin, DetailView):

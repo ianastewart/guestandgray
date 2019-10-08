@@ -10,18 +10,14 @@ class CategoryForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["parent_category"] = ModelChoiceField(
-            queryset=Category.objects.all().order_by("depth", "name")
+            empty_label=None,
+            queryset=Category.objects.all()
+            .exclude(
+                pk__in=self.instance.get_descendants().values_list("pk", flat=True)
+            )
+            .exclude(pk__in=[self.instance.pk])
+            .order_by("name"),
         )
-
-    def clean(self):
-        current_parent = self.instance.get_parent()
-        new_parent = self.cleaned_data["parent_category"]
-        if current_parent.id != new_parent.id:
-            if new_parent.is_descendant_of(self.instance):
-                raise ValidationError(
-                    "You cannot make a category report to one of its children"
-                )
-        return self.cleaned_data
 
 
 class ItemForm(ModelForm):

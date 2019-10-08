@@ -15,9 +15,9 @@
           Items
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'item_list' %}">Item list</a>
+          <a class="dropdown-item" href="{% url 'itemname_list' %}">Item name list</a>
           <a class="dropdown-item" href="{% url 'item_create' %}">Create new item</a>
-          <a class="dropdown-item" href="{% url 'item_list' %}">List items</a>
-          <a class="dropdown-item" href="{% url 'itemname_list' %}">List item names</a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -26,8 +26,9 @@
           Categories
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'category_list' %}">Category list</a>
+          <a class="dropdown-item" href="{% url 'category_tree' %}">Category tree</a>
           <a class="dropdown-item" href="{% url 'category_create' %}">Create new category</a>
-          <a class="dropdown-item" href="{% url 'category_list' %}">List categories</a>
         </div>
       </li>
       <li class="nav-item dropdown">

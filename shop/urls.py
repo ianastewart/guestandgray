@@ -7,9 +7,9 @@ from shop.views.staff_views import (
     ItemListView,
     ItemNameListView,
     ItemImagesView,
-    CategoryClearView,
     CategoryCreateView,
     CategoryUpdateView,
+    CategoryTreeView,
     CategoryListView,
     CategoryDetailView,
 )
@@ -44,6 +44,7 @@ staff_urls = [
         CategoryUpdateView.as_view(),
         name="category_update",
     ),
+    path("category/tree/", CategoryTreeView.as_view(), name="category_tree"),
     path("category/list/", CategoryListView.as_view(), name="category_list"),
     path(
         "category/detail/<int:pk>/",
