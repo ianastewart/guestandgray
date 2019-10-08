@@ -7,16 +7,16 @@ from fabric.api import hosts, cd, env, run, sudo, put, get
 from fabric.context_managers import hide
 
 from deployment.database_helper import (
-    create_database,
-    upload_database,
-    download_database,
-    upload_dev_db,
-    create_user,
-    grant_priviliges,
-    upload_media,
-    download_media,
-    upload_media_dev,
-    dump_dev_db,
+    _create_database,
+    _upload_database,
+    _download_database,
+    _upload_dev_db,
+    _create_user,
+    _grant_priviliges,
+    _upload_media,
+    _download_media,
+    _upload_media_dev,
+    _dump_dev_db,
 )
 
 # from fabric.network import ssh
@@ -28,6 +28,8 @@ BACKUP_FOLDER = "GuestAndGray/Backup"
 BACKUP_FOLDER = "database_backup"
 BACKUP_FILE = "gray.dump"
 MEDIA_FILE = "media.zip"
+HOST = "77.68.81.128"
+# HOST = "iskt.co.uk"
 
 
 def _local_path():
@@ -44,8 +46,7 @@ def _local_dev_folder():
         return "C:/Users/is/PycharmProjects/GuestAndGray"
 
 
-# @hosts("46.101.88.176")
-@hosts("77.68.81.128")
+@hosts(HOST)
 def provision():
     """
     Provision a new site with live data. Does everything except install certificate.
@@ -60,8 +61,7 @@ def provision():
     _install_app()
 
 
-# @hosts("46.101.88.176")
-@hosts("77.68.81.128")
+@hosts(HOST)
 def install_app(app="gray", settings="prod", branch="master"):
     """ Install application, defaults to sandbox """
     dot_env = _read_env()
@@ -70,48 +70,56 @@ def install_app(app="gray", settings="prod", branch="master"):
     _install_app(app, settings, branch)
 
 
-# @hosts("gray.iskt.co.uk")
-@hosts("77.68.81.128")
+@hosts(HOST)
 def download():
     """ Download database and media from live site"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     app = "gray"
     db = "gray"
-    download_database(_local_dev_folder(), app, db)
-    download_media(_local_dev_folder(), app)
+    _download_database(_local_dev_folder(), app, db)
+    _download_media(_local_dev_folder(), app)
 
 
-@hosts("gray.iskt.co.uk")
+@hosts(HOST)
+def download_media():
+    """ Download media from live site"""
+    env.user = "django"
+    env.password = _read_env()["DJANGO"]
+    app = "gray"
+    _download_media(_local_dev_folder(), app)
+
+
+@hosts(HOST)
 def upload_db():
     """ Upload database to live site"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     dbuser, pw, db = _parse_db_settings()
-    upload_database(_local_dev_folder(), app="gray", dbuser=dbuser, pw=pw, db=db)
+    _upload_database(_local_dev_folder(), app="gray", dbuser=dbuser, pw=pw, db=db)
 
 
 def upload_dev():
     """ Replace database and media on dev system"""
-    upload_dev_db(_local_dev_folder(), "gray")
-    upload_media_dev(_local_dev_folder())
+    _upload_dev_db(_local_dev_folder(), "gray")
+    _upload_media_dev(_local_dev_folder())
 
 
 def dump_dev():
     dbuser, pw, db = _parse_db_settings()
-    dump_dev_db(_local_dev_folder(), dbuser, pw, db)
+    _dump_dev_db(_local_dev_folder(), dbuser, pw, db)
 
 
-@hosts("77.68.81.128")
+@hosts(HOST)
 def create_dbuser():
     """ Create django as dbuser """
     dbuser, pw, db = _parse_db_settings()
     dbuser = "django"
-    create_user(dbuser, pw)
-    grant_priviliges(dbuser, db)
+    _create_user(dbuser, pw)
+    _grant_priviliges(dbuser, db)
 
 
-@hosts("django.iskt.co.uk")
+@hosts(HOST)
 def status():
     """ Status of live site """
     with hide("output"):
@@ -123,7 +131,7 @@ def status():
         print(result2)
 
 
-@hosts("gray.iskt.co.uk")
+@hosts(HOST)
 def manage(app, command):
     """ Example fab manage:sandbox,migrate """
     env.user = "django"
@@ -141,7 +149,7 @@ def manage(app, command):
 
 
 # @hosts("gray.iskt.co.uk")
-@hosts("77.68.81.128")
+@hosts(HOST)
 def deploy_live(command=False):
     """ Deploy application changes to live server """
     env.user = "django"
@@ -162,7 +170,8 @@ def _deploy_helper(
 ):
     if exists(f"/home/django/{app}"):
         # _maintenance(app, show=True)
-        sudo(f"supervisorctl stop {tasks}")
+        if tasks:
+            sudo(f"supervisorctl stop {tasks}")
         sudo(f"supervisorctl stop {app}")
     _deploy_django(venv, app, settings, branch, collect_static, fast)
     if tasks:
@@ -230,7 +239,7 @@ def _install_app(app="gray", settings="prod", branch="master"):
     dbuser, pw, db = _parse_db_settings()
     # virtual environment
     _create_venv(venv, app)
-    create_database(dbuser=dbuser, pw=pw, db=db)
+    _create_database(dbuser=dbuser, pw=pw, db=db)
     # _upload_database(app, user, pw, db)
     # _upload_media(app)
     _deploy_django(venv, app, settings, branch)

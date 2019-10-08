@@ -10,7 +10,7 @@ BACKUP_FILE = "gray.dump"
 MEDIA_FILE = "media.zip"
 
 
-def create_database(dbuser, pw, db):
+def _create_database(dbuser, pw, db):
     """Creates role and database"""
     print(yellow(f"Start create database {db}"))
     db_users = sudo(
@@ -30,11 +30,11 @@ def create_database(dbuser, pw, db):
         print(cyan(f"Dropping existing database {db}"))
         sudo(f"dropdb {db}", user="postgres")
     sudo('psql -c "CREATE DATABASE %s WITH OWNER %s"' % (db, dbuser), user="postgres")
-    grant_priviliges(dbuser, db)
+    _grant_priviliges(dbuser, db)
     print(green(f"End create database {db}"))
 
 
-def create_user(dbuser, pw):
+def _create_user(dbuser, pw):
     db_users = sudo(
         "psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (dbuser),
         user="postgres",
@@ -47,7 +47,7 @@ def create_user(dbuser, pw):
     print(green(f"User {dbuser} created"))
 
 
-def grant_priviliges(dbuser, db):
+def _grant_priviliges(dbuser, db):
     sudo(
         f'psql -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"',
         f'psql -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"',
@@ -56,7 +56,7 @@ def grant_priviliges(dbuser, db):
     )
 
 
-def download_database(local_dev_folder, app, db):
+def _download_database(local_dev_folder, app, db):
     print(yellow("Start download database"))
     site_folder = f"/home/django/{app}/"
     dbuser = "django"
@@ -72,13 +72,13 @@ def download_database(local_dev_folder, app, db):
         os.rename(local_path, new_path)
     sudo(f"mkdir -p {site_folder}/{BACKUP_FOLDER}", user="django")
     source_path = f"{site_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
-    grant_priviliges("django", "gray")
+    _grant_priviliges("django", "gray")
     sudo(f"pg_dump {db} -h localhost -Fc -x -U gray >{source_path}", user="django")
     get(source_path, local_path)
     print(green("End download database"))
 
 
-def upload_database(local_dev_folder, app, dbuser, pw, db):
+def _upload_database(local_dev_folder, app, dbuser, pw, db):
     site_folder = f"/home/django/{app}"
     print(yellow(f"Start upload database {db} to {site_folder}"))
     with cd(site_folder):
@@ -87,12 +87,12 @@ def upload_database(local_dev_folder, app, dbuser, pw, db):
             f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}",
             f"{BACKUP_FOLDER}/{BACKUP_FILE}",
         )
-        create_database(dbuser, pw, db)
+        _create_database(dbuser, pw, db)
         sudo(f"pg_restore -d {db} {BACKUP_FOLDER}/{BACKUP_FILE}", user="postgres")
     print(green(f"End upload database {db}"))
 
 
-def upload_dev_db(local_dev_folder, db):
+def _upload_dev_db(local_dev_folder, db):
     """ Replace database only dev system"""
     print(f"Replace dev database {db}")
     os.system(f'psql -U postgres -c "DROP DATABASE {db}"')
@@ -106,7 +106,7 @@ def upload_dev_db(local_dev_folder, db):
     )
 
 
-def dump_dev_db(local_dev_folder, dbuser, pw, db):
+def _dump_dev_db(local_dev_folder, dbuser, pw, db):
     local_path = f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     if os.path.exists(local_path):
         os.remove(local_path)
@@ -115,16 +115,18 @@ def dump_dev_db(local_dev_folder, dbuser, pw, db):
     print(f"Local database dumped to {local_path}")
 
 
-def download_media(local_dev_folder, app):
+def _download_media(local_dev_folder, app):
+    # Only original_images
     print(yellow("Start download media"))
     site_folder = f"/home/django/{app}"
     with cd(site_folder):
-        sudo(f"zip -r {MEDIA_FILE} media", user="django")
+        sudo(f"zip -r {MEDIA_FILE} media/original_images", user="django")
         get(MEDIA_FILE, f"{local_dev_folder}/{BACKUP_FOLDER}/{MEDIA_FILE}")
+        sudo(f"rm {MEDIA_FILE}")
     print(green("End download media"))
 
 
-def upload_media(local_dev_folder, app):
+def _upload_media(local_dev_folder, app):
     print(yellow("Start upload media"))
     site_folder = f"/home/django/{app}"
     sudo(f"mkdir -p {site_folder}", user="django")
@@ -135,7 +137,7 @@ def upload_media(local_dev_folder, app):
     print(green("End upload media"))
 
 
-def upload_media_dev(local_dev_folder):
+def _upload_media_dev(local_dev_folder):
     os.system(
         f'C:/"Program Files"/7-Zip/7z.exe x -y {local_dev_folder}/{BACKUP_FOLDER}/{MEDIA_FILE} -o{local_dev_folder}/"gray"'
     )
