@@ -144,3 +144,18 @@ body {
     background-repeat: no-repeat;
     height: 250px;
 }
+
+@media (min-width: 500px) {
+  .modal-dialog.wide {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+
+@media (min-width: 1200px) {
+  .modal-dialog.wide {
+    max-width: 100%;
+    width: 75%;
+  }
+}

@@ -114,6 +114,42 @@ class Item(index.Indexed, models.Model):
         super().save(*args, **kwargs)
 
 
+class Address(models.Model):
+    address1 = models.CharField(max_length=50)
+    address2 = models.CharField(max_length=50, blank=True, null=True)
+    address3 = models.CharField(max_length=50, blank=True, null=True)
+    town = models.CharField(max_length=50)
+    post_code = models.CharField(max_length=15, blank=True, null=True)
+    country = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.address1}, {self.address2}, {self.town}"
+
+
+class Contact(models.Model):
+    title = models.CharField(max_length=20, blank=True, null=True)
+    first_name = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30)
+    company = models.CharField(max_length=50, blank=True, null=True)
+    work_phone = models.CharField(max_length=20, blank=True, null=True)
+    mobile_phone = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(max_length=80, blank=True, null=True)
+    notes = models.CharField(max_length=1000)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    mail_consent = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class Enquiry(models.Model):
+    date = models.DateField(auto_now_add=True)
+    message = models.TextField()
+    items = models.ManyToManyField(Item)
+    contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
+    closed = models.BooleanField(default=False)
+
+
 class CustomImage(AbstractImage):
     primary_image = models.BooleanField(default=False)
     ref = models.CharField(max_length=10, null=True, blank=True)

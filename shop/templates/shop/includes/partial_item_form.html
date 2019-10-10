@@ -1,0 +1,42 @@
+{% load bootstrap4 wagtailimages_tags %}
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ form_title }}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-8">
+        {% bootstrap_form form layout="horizontal" %}
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          {% if object and object.image %}
+            {% image object.image width-250 as card_image %}
+            <img class="card-img-top" src="{{ card_image.url }}">
+          {% else %}
+            <div class="card-body bg-white text-center" style="height:400px;">
+              <i>No image</i>
+            </div>
+          {% endif %}
+        </div>
+          <p class="my-2"><button type="button" class="btn btn-secondary">Manage images</button></p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row my-3">
+      <div class="col">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      {%  if allow_delete %}
+      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
+      {% endif %}
+      <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</form>

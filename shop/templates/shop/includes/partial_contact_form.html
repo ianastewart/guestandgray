@@ -1,0 +1,24 @@
+{% load bootstrap4 %}
+<form method="post" action="{{ path }}" class="js-form">
+  {% csrf_token %}
+  <input type="hidden" id="pk" name="pk" value="{{ pk }}">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ form_title }}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    {% bootstrap_form form layout="horizontal" set_placeholder=False %}
+  </div>
+  <div class="modal-footer">
+    {% buttons %}
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      {%  if allow_delete %}
+      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
+      {% endif %}
+      <button type="submit" class="btn btn-primary">Save</button>
+    {% endbuttons %}
+  </div>
+</form>

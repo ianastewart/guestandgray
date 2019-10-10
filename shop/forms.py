@@ -1,5 +1,5 @@
 from django.forms import ModelForm, ModelChoiceField, ValidationError
-from shop.models import Item, Category
+from shop.models import Item, Category, Contact, Address
 
 
 class CategoryForm(ModelForm):
@@ -26,3 +26,30 @@ class ItemForm(ModelForm):
     class Meta:
         model = Item
         fields = ("name", "ref", "description", "price", "category")
+
+
+class ContactForm(ModelForm):
+    class Meta:
+        model = Contact
+        fields = (
+            "title",
+            "first_name",
+            "last_name",
+            "company",
+            "work_phone",
+            "mobile_phone",
+            "email",
+            "notes",
+        )
+
+
+class EnquiryForm(ModelForm):
+    class Meta:
+        model = Contact
+        fields = ("first_name", "last_name", "mobile_phone", "email")
+
+
+class AddressForm(ModelForm):
+    class Meta:
+        model = Address
+        fields = ("address1", "address2", "address3", "town", "post_code", "country")

@@ -7,6 +7,68 @@ $(document).ready(function () {
 
     $("body").css("cursor", "default");
 
+    $(".js-create").click(function () {
+        $.ajax({
+            url: 'create/',
+            type: 'get',
+            dataType: 'json',
+            beforeSend: function () {
+                $("#modal-form").modal("show");
+            },
+            success: function (data) {
+                $("#modal-form .modal-content").html(data.html_form);
+            }
+        });
+    })
+
+    $(".js-delete").click(function () {
+        var pk = $('#pk').val();
+        $.ajax({
+            url: 'update/'+pk+'/',
+            data: 'delete',
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                $("#modal-form").modal("hide");
+                location.reload(true)
+            }
+        });
+    })
+
+    $("#modal-form").on("submit", ".js-form", function () {
+        var form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
+            dataType: 'json',
+            success: function (data) {
+                if (data.valid) {
+                    $("#modal-form").modal("hide");
+                    location.reload(true)
+                } else {
+                    $("#modal-form .modal-content").html(data.html_form);
+                }
+            }
+        });
+        return false;
+    });
+
+    function ajax_update(pk) {
+        $.ajax({
+            url: 'update/' + pk + '/',
+            type: 'get',
+            dataType: 'json',
+            beforeSend: function () {
+                $("#modal-form").modal("show");
+            },
+            success: function (data) {
+                $("#modal-form .modal-content").html(data.html_form);
+            }
+        });
+    }
+
+
     if ($('#select_all').prop('checked')) {
         select_all(true);
     } else {
@@ -51,6 +113,10 @@ $(document).ready(function () {
             if (typeof e.target.parentNode.dataset.url !== 'undefined') {
                 window.document.location = e.target.parentNode.dataset.url;
             }
+            if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
+                ajax_update(e.target.parentNode.dataset.pk)
+            }
+
         }
     });
 

@@ -1,5 +1,8 @@
-from django.http import QueryDict
+from django.http import QueryDict, JsonResponse, HttpResponse
 from django_tables2 import SingleTableView
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
+from django.views.generic import View
 
 
 class FilteredTableView(SingleTableView):
@@ -13,6 +16,7 @@ class FilteredTableView(SingleTableView):
     context_filter_name = "filter"
     table_pagination = {"per_page": 10}
     as_list = False
+    modal_class = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -81,6 +85,7 @@ class FilteredTableView(SingleTableView):
             context["first_run"] = self.first_run
         if self.total:
             context["total"] = self.total
+        context["modal_class"] = self.modal_class
         return context
 
     def post_query_set(self, request):
@@ -104,3 +109,56 @@ class FilteredTableView(SingleTableView):
                     query_set = filter.qs
                 return self.process_table_data(query_set, no_list=True)
         return None
+
+
+class JsonCrudView(View):
+    """ Generic view that handles creation, update and delete in a modal triggered by a FileteredListView """
+
+    model = None
+    object = None
+    update = False
+    allow_delete = False
+
+    def get_object(self, **kwargs):
+        if self.update and self.model:
+            self.object = get_object_or_404(self.model, pk=kwargs["pk"])
+        return self.object
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            self.form = self.form_class(instance=self.get_object(**kwargs))
+            data = {}
+            data["html_form"] = render_to_string(
+                self.template_name, self.get_context_data(), request
+            )
+            return JsonResponse(data)
+        return HttpResponse("Not ajax get request")
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            instance = self.get_object(**kwargs)
+            data = {}
+            if "delete" in request.POST:
+                instance.delete()
+            else:
+                self.form = self.form_class(request.POST, instance=instance)
+                if self.form.is_valid():
+                    self.form.save()
+                    data["valid"] = True
+                else:
+                    data["valid"] = False
+            return JsonResponse(data)
+        return HttpResponse("Not ajax post request")
+
+    def get_context_data(self):
+        name = self.model._meta.object_name
+        context = {
+            "form": self.form,
+            "path": self.request.path,
+            "object_name": name,
+            "form_title": f"Update {name}" if self.update else "Create {name}",
+            "allow_delete": self.allow_delete,
+        }
+        if self.object:
+            context["object"] = self.object
+        return context

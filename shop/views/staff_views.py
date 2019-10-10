@@ -5,8 +5,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
-from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     View,
@@ -18,10 +19,10 @@ from django.views.generic import (
 )
 from wagtail.core.models import Collection
 
-from shop.forms import ItemForm, CategoryForm
-from shop.models import Item, Category, CustomImage
-from shop.tables import ItemTable, ItemNameTable, CategoryTable
-from shop.views.generic_views import FilteredTableView
+from shop.forms import ItemForm, CategoryForm, ContactForm
+from shop.models import Item, Category, CustomImage, Contact, Address
+from shop.tables import ItemTable, ItemNameTable, CategoryTable, ContactTable
+from shop.views.generic_views import FilteredTableView, JsonCrudView
 from shop.filters import ItemFilter
 from shop.truncater import truncate
 
@@ -32,40 +33,51 @@ class StaffHomeView(LoginRequiredMixin, TemplateView):
     template_name = "shop/staff_home.html"
 
 
-class ItemCreateView(LoginRequiredMixin, CreateView):
+class ItemNameListView(LoginRequiredMixin, FilteredTableView):
+    model = Item
+    template_name = "shop/generic_table.html"
+    table_class = ItemNameTable
+    filter_class = ItemFilter
+
+
+class ItemCreateView(LoginRequiredMixin, JsonCrudView):
     model = Item
     form_class = ItemForm
-    template_name = "shop/item_update.html"
+    template_name = "shop/includes/partial_item_form.html"
 
-    def post(self, request, *args, **kwargs):
-        result = super().post(request, *args, **kwargs)
-        if "load" in request.POST:
-            pass
-        return result
+    # def post(self, request, *args, **kwargs):
+    #     result = super().post(request, *args, **kwargs)
+    #     if "load" in request.POST:
+    #         pass
+    #     return result
+    #
+    # def get_success_url(self):
+    #     return reverse("item_detail", kwargs={"pk": self.object.pk})
 
-    def get_success_url(self):
-        return reverse("item_detail", kwargs={"pk": self.object.pk})
 
-
-class ItemUpdateView(LoginRequiredMixin, UpdateView):
+class ItemUpdateView(LoginRequiredMixin, JsonCrudView):
     model = Item
     form_class = ItemForm
-    template_name = "shop/item_update.html"
+    template_name = "shop/includes/partial_item_form.html"
+    update = True
+    allow_delete = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
+        # context["object"] = self.object.image
+        # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 
-    def form_valid(self, form):
-        super().form_valid(form)
-        if "truncate" in self.request.POST:
-            self.object.name = truncate(self.object.description)
-            self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse("item_detail", kwargs={"pk": self.object.pk})
+    #
+    # def form_valid(self, form):
+    #     super().form_valid(form)
+    #     if "truncate" in self.request.POST:
+    #         self.object.name = truncate(self.object.description)
+    #         self.object.save()
+    #     return HttpResponseRedirect(self.get_success_url())
+    #
+    # def get_success_url(self):
+    #     return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
 class ItemImagesView(LoginRequiredMixin, DetailView):
@@ -169,16 +181,10 @@ class ItemDetailView(DetailView):
 
 class ItemListView(LoginRequiredMixin, FilteredTableView):
     model = Item
-    template_name = "shop/generic_table.html"
+    template_name = "shop/contact_table.html"
     table_class = ItemTable
     filter_class = ItemFilter
-
-
-class ItemNameListView(LoginRequiredMixin, FilteredTableView):
-    model = Item
-    template_name = "shop/generic_table.html"
-    table_class = ItemNameTable
-    filter_class = ItemFilter
+    modal_class = "wide"
 
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
@@ -241,3 +247,27 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["item_list"] = self.object.item_set.all().order_by("ref")
         return context
+
+
+class ContactListView(LoginRequiredMixin, FilteredTableView):
+    model = Contact
+    template_name = "shop/contact_table.html"
+    table_class = ContactTable
+    table_pagination = {"per_page": 100}
+
+    def get_queryset(self):
+        return Contact.objects.all().order_by("last_name")
+
+
+class ContactCreateView(LoginRequiredMixin, JsonCrudView):
+    form_class = ContactForm
+    template_name = "shop/includes/partial_contact_form.html"
+    model = Contact
+
+
+class ContactUpdateView(LoginRequiredMixin, JsonCrudView):
+    model = Contact
+    form_class = ContactForm
+    template_name = "shop/includes/partial_contact_form.html"
+    update = True
+    allow_delete = True

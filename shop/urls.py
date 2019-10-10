@@ -12,6 +12,9 @@ from shop.views.staff_views import (
     CategoryTreeView,
     CategoryListView,
     CategoryDetailView,
+    ContactCreateView,
+    ContactListView,
+    ContactUpdateView,
 )
 from shop.views.public_views import home_view, item_view, catalogue_view, search_view
 from shop.views.import_views import (
@@ -28,6 +31,8 @@ staff_urls = [
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/list/", ItemListView.as_view(), name="item_list"),
+    path("item/list/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
+    path("item/list/create/", ItemCreateView.as_view(), name="item_create"),
     path("item/namelist/", ItemNameListView.as_view(), name="itemname_list"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("import/", import_objects_view, name="import_objects"),
@@ -50,6 +55,13 @@ staff_urls = [
         "category/detail/<int:pk>/",
         CategoryDetailView.as_view(),
         name="category_detail",
+    ),
+    path("contact/list/", ContactListView.as_view(), name="contact_list"),
+    path("contact/list/create/", ContactCreateView.as_view(), name="contact_create"),
+    path(
+        "contact/list/update/<int:pk>/",
+        ContactUpdateView.as_view(),
+        name="contact_update",
     ),
 ]
 

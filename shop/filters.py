@@ -9,15 +9,7 @@ from django_filters import (
 )
 from shop.models import Item, Category
 
-PER_PAGE_CHOICES = (
-    (10, "10"),
-    (15, "15"),
-    (20, "20"),
-    (50, "50"),
-    (100, "100"),
-    (500, "500"),
-    (100000, "All"),
-)
+PER_PAGE_CHOICES = ((10, "10"), (15, "15"), (20, "20"), (50, "50"), (100, "100"))
 
 
 class ItemFilter(FilterSet):
