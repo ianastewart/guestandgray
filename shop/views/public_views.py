@@ -241,7 +241,7 @@ def search_view(request):
     )
 
 
-class EnquiryView(FormView):
+class ContactView(FormView):
     form_class = EnquiryForm
     template_name = "shop/public/enquiry_form.html"
     success_url = reverse_lazy("public_enquiry_submitted")
@@ -267,7 +267,7 @@ class EnquiryView(FormView):
         return redirect(self.success_url)
 
 
-class EnquirySubmittedView(TemplateView):
+class ContactSubmittedView(TemplateView):
     template_name = "shop/public/enquiry_submitted.html"
 
     def get_context_data(self, **kwargs):

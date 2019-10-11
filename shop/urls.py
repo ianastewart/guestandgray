@@ -22,8 +22,8 @@ from shop.views.public_views import (
     item_view,
     catalogue_view,
     search_view,
-    EnquiryView,
-    EnquirySubmittedView,
+    ContactView,
+    ContactSubmittedView,
 )
 from shop.views.import_views import (
     import_objects_view,
@@ -97,10 +97,10 @@ public_urls = [
         name="public_catalogue",
     ),
     path("item/<slug:slug>,<int:pk>/", item_view, name="public_item"),
-    path("enquiry/", EnquiryView.as_view(), name="public_enquiry"),
+    path("contact/", ContactView.as_view(), name="public_contact"),
     path(
-        "enquiry/submitted/",
-        EnquirySubmittedView.as_view(),
-        name="public_enquiry_submitted",
+        "contact/submitted/",
+        ContactSubmittedView.as_view(),
+        name="public_contact_submitted",
     ),
 ]
