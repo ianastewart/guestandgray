@@ -118,6 +118,7 @@ class JsonCrudView(View):
     object = None
     update = False
     allow_delete = False
+    success_url = "https://www.bbc.co.uk"
 
     def get_object(self, **kwargs):
         if self.update and self.model:
@@ -147,12 +148,15 @@ class JsonCrudView(View):
                     data["valid"] = True
                 else:
                     data["valid"] = False
+            if "redirect" in request.POST:
+                data["url"] = self.success_url
             return JsonResponse(data)
         return HttpResponse("Not ajax post request")
 
     def get_context_data(self):
         name = self.model._meta.object_name
         context = {
+            "modal": True,
             "form": self.form,
             "path": self.request.path,
             "object_name": name,

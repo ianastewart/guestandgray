@@ -1,3 +1,4 @@
+{% load coderedcms_tags i18n  %}
 <div class="bg-guest-dark">
   <div class="container">
 <nav class="navbar navbar-expand-lg navbar-dark bg-guest-dark">
@@ -54,6 +55,14 @@
 {#          <a class="dropdown-item" href="{% url 'object_clear' %}">Clear objects</a>#}
         </div>
       </li>
+      <form class="form-inline ml-auto" action="{% url 'codered_search' %}" method="GET">
+          {% load bootstrap4 %}
+          {% get_searchform request as form %}
+          {% bootstrap_form form layout='inline' %}
+          <div class="form-group">
+            <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">
+          </div>
+      </form>
     </ul>
   </div>
 </nav>

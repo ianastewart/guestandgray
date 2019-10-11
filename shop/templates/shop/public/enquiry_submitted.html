@@ -1,0 +1,23 @@
+{% extends 'coderedcms/pages/web_page_notitle.html' %}
+{% load bootstrap4 %}
+{% load wagtailimages_tags shop_tags %}
+{% block content_body %}
+  <div class="container">
+
+    <div class="row mt-2">
+      <div class="col col-md-8 col-lg-6 bg-white shadow">
+        <h3 class="mt-4">Thank you</h3>
+        {% if enquiry.subject %}
+        <p>Your message with subject:<br>"{{ enquiry.subject }}"<br>has been received.<p>
+        <p>We will get back to you shortly.</p>
+        {% endif %}
+        {% if enquiry.contact.mail_consent %}
+        <p>You are on our mailing list.</p>
+          {% else %}
+          <p>You are not on our mailing list</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

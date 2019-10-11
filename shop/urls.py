@@ -4,6 +4,7 @@ from shop.views.staff_views import (
     ItemCreateView,
     ItemDetailView,
     ItemUpdateView,
+    ItemUpdateViewAjax,
     ItemListView,
     ItemNameListView,
     ItemImagesView,
@@ -16,7 +17,14 @@ from shop.views.staff_views import (
     ContactListView,
     ContactUpdateView,
 )
-from shop.views.public_views import home_view, item_view, catalogue_view, search_view
+from shop.views.public_views import (
+    home_view,
+    item_view,
+    catalogue_view,
+    search_view,
+    EnquiryView,
+    EnquirySubmittedView,
+)
 from shop.views.import_views import (
     import_objects_view,
     import_progress_view,
@@ -31,8 +39,12 @@ staff_urls = [
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/list/", ItemListView.as_view(), name="item_list"),
-    path("item/list/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
-    path("item/list/create/", ItemCreateView.as_view(), name="item_create"),
+    path(
+        "item/list/update/<int:pk>/",
+        ItemUpdateViewAjax.as_view(),
+        name="item_update_Ajax",
+    ),
+    path("item/list/create/", ItemCreateView.as_view(), name="item_create_json"),
     path("item/namelist/", ItemNameListView.as_view(), name="itemname_list"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("import/", import_objects_view, name="import_objects"),
@@ -85,4 +97,10 @@ public_urls = [
         name="public_catalogue",
     ),
     path("item/<slug:slug>,<int:pk>/", item_view, name="public_item"),
+    path("enquiry/", EnquiryView.as_view(), name="public_enquiry"),
+    path(
+        "enquiry/submitted/",
+        EnquirySubmittedView.as_view(),
+        name="public_enquiry_submitted",
+    ),
 ]

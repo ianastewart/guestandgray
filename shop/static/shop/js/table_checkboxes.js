@@ -24,7 +24,7 @@ $(document).ready(function () {
     $(".js-delete").click(function () {
         var pk = $('#pk').val();
         $.ajax({
-            url: 'update/'+pk+'/',
+            url: 'update/' + pk + '/',
             data: 'delete',
             type: 'post',
             dataType: 'json',
@@ -45,13 +45,32 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.valid) {
                     $("#modal-form").modal("hide");
-                    location.reload(true)
+                    if (data.url) {
+                        location.replace(data.url);
+                    } else {
+                        location.reload(true)
+                    }
                 } else {
                     $("#modal-form .modal-content").html(data.html_form);
                 }
             }
         });
         return false;
+    });
+
+    // Clicking the manage-image button loads second modal
+    $("#modal-form").on("click", ".js-image", function () {
+        var pk = $('#pk').val();
+        $.ajax({
+            url: 'images/'+pk+'/',
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                $("#modal-form").modal("hide");
+                $("#modal-form-2").modal("show");
+                $("#modal-form-2 .modal-content").html(data.html_form);
+            }
+        });
     });
 
     function ajax_update(pk) {
@@ -67,7 +86,6 @@ $(document).ready(function () {
             }
         });
     }
-
 
     if ($('#select_all').prop('checked')) {
         select_all(true);
@@ -170,4 +188,5 @@ $(document).ready(function () {
         $('#search_form').submit();
         $("html").addClass("wait");
     }
-});
+})
+;

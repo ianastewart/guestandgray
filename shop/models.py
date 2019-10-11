@@ -144,7 +144,8 @@ class Contact(models.Model):
 
 class Enquiry(models.Model):
     date = models.DateField(auto_now_add=True)
-    message = models.TextField()
+    subject = models.CharField(max_length=80, blank=False, null=True)
+    message = models.TextField(blank=False, null=True)
     items = models.ManyToManyField(Item)
     contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
     closed = models.BooleanField(default=False)

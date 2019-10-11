@@ -24,7 +24,6 @@ from shop.models import Item, Category, CustomImage, Contact, Address
 from shop.tables import ItemTable, ItemNameTable, CategoryTable, ContactTable
 from shop.views.generic_views import FilteredTableView, JsonCrudView
 from shop.filters import ItemFilter
-from shop.truncater import truncate
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +54,22 @@ class ItemCreateView(LoginRequiredMixin, JsonCrudView):
     #     return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
-class ItemUpdateView(LoginRequiredMixin, JsonCrudView):
+class ItemUpdateView(LoginRequiredMixin, UpdateView):
+    model = Item
+    form_class = ItemForm
+    template_name = "shop/item_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object"] = self.object
+        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
+        return context
+
+    def get_success_url(self):
+        return reverse("item_detail", kwargs={"pk": self.object.pk})
+
+
+class ItemUpdateViewAjax(LoginRequiredMixin, JsonCrudView):
     model = Item
     form_class = ItemForm
     template_name = "shop/includes/partial_item_form.html"
@@ -68,17 +82,6 @@ class ItemUpdateView(LoginRequiredMixin, JsonCrudView):
         # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 
-    #
-    # def form_valid(self, form):
-    #     super().form_valid(form)
-    #     if "truncate" in self.request.POST:
-    #         self.object.name = truncate(self.object.description)
-    #         self.object.save()
-    #     return HttpResponseRedirect(self.get_success_url())
-    #
-    # def get_success_url(self):
-    #     return reverse("item_detail", kwargs={"pk": self.object.pk})
-
 
 class ItemImagesView(LoginRequiredMixin, DetailView):
     model = Item
@@ -87,21 +90,27 @@ class ItemImagesView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # primary image always first in list
-        images = [self.object.image]
-        for image in CustomImage.objects.filter(item_id=self.object.id):
-            if image.id != self.object.image_id:
+        images = []
+        exclude = 0
+        if self.object.image:
+            images.append(self.object.image)
+            exclude = self.object.image.id
+        for image in CustomImage.objects.filter(item_id=self.object.id).order_by(
+            "title"
+        ):
+            if image.id != exclude:
                 images.append(image)
         context["images"] = images
         return context
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_item()
+        self.object = self.get_object()
         result = {"error": "Bad command"}
         if "action" in request.POST:
             action = request.POST["action"]
             id = request.POST["id"]
             try:
-                image = CustomImage.object.get(id=id)
+                image = CustomImage.objects.get(id=id)
             except CustomImage.DoesNotExist:
                 result = {"error": "Bad image id"}
                 return JsonResponse(result)
@@ -117,7 +126,7 @@ class ItemImagesView(LoginRequiredMixin, DetailView):
                     if images:
                         self.object.image = images[0]
                     else:
-                        self.object = None
+                        self.object.image = None
                     self.object.save()
                 result = {"success": "deleted"}
 
@@ -136,19 +145,22 @@ class ItemImagesView(LoginRequiredMixin, DetailView):
                 if os.path.exists(full_path):
 
                     try:
-                        existing = CustomImage.objects.get(file=short_path)
-                        error = "Image already in the database. "
-                        if existing.item:
-                            if existing.item.id == self.object.id:
-                                error += "It is linked to this item."
-                            else:
-                                error += f"It is linked to Ref: {existing.item.ref }, {existing.title}."
+                        existing_set = CustomImage.objects.filter(file=short_path)
+                        if len(existing_set) > 1:
+                            error = "Multiple copies already in database."
+                        elif len(existing_set) == 1:
+                            existing = existing_set[0]
+                            if existing.item:
+                                error = "Image already in the database. "
+                                if existing.item.id == self.object.id:
+                                    error += "It is linked to this item."
+                                else:
+                                    error += f"It is linked to Ref: {existing.item.ref }, {existing.title}."
                         else:
-                            error += (
-                                "It is not linked to an item but may be used elsewhere."
-                            )
+
+                            os.remove(full_path)
                     except CustomImage.DoesNotExist:
-                        # if file exists but is not used vy a CustomImage, overwrite it
+                        # if file exists but is not used by a CustomImage, overwrite it
                         os.remove(full_path)
             else:
                 error = "File is not an image. Please select a .jpg"
@@ -174,7 +186,10 @@ class ItemDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["price"] = int(self.object.price / 100)
+        price = 0
+        if self.object.price:
+            price = int(self.object.price / 100)
+        context["price"] = price
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 

@@ -5,6 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
+from django.views.generic import FormView, TemplateView
+from django.urls import reverse_lazy
 
 from wagtail.core.models import Page
 from wagtail.search.backends import db, get_search_backend
@@ -13,7 +15,8 @@ from wagtail.search.models import Query
 from coderedcms.forms import SearchForm
 from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
-from shop.models import Item, Category
+from shop.models import Item, Category, Contact, Enquiry
+from shop.forms import EnquiryForm
 
 logger = logging.getLogger(__name__)
 
@@ -123,17 +126,24 @@ class Counter:
 
 def get_host_context(slug):
     """ Create context with wagtail host page in it. Raise 404 if slug not found """
+    context = {}
+    return add_page_context(context, slug)
 
+
+def add_page_context(context, slug):
+    """ add wagtail host page to context. Raise 404 if slug not found """
     try:
-        return {"page": Page.objects.get(slug=slug, live=True)}
+        page = Page.objects.get(slug=slug, live=True)
     except Page.DoesNotExist:
         raise Http404
+    context["page"] = page
+    return context
 
 
 def search_view(request):
     """
     Searches pages across the entire site.
-    Replaces the codered serach view
+    Replaces the codered search view
     """
     search_form = SearchForm(request.GET)
     pagetypes = []
@@ -214,9 +224,13 @@ def search_view(request):
         Query.get(search_query).add_hit()
 
     # Render template
+    template = (
+        "shop/public/search.html" if "staff" in request.GET else "shop/search.html"
+    )
+
     return render(
         request,
-        "shop/public/search.html",
+        template,
         {
             "request": request,
             "pagetypes": pagetypes,
@@ -225,3 +239,38 @@ def search_view(request):
             "results_paginated": results_paginated,
         },
     )
+
+
+class EnquiryView(FormView):
+    form_class = EnquiryForm
+    template_name = "shop/public/enquiry_form.html"
+    success_url = reverse_lazy("public_enquiry_submitted")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return add_page_context(context, "contact")
+
+    def form_valid(self, form):
+
+        contacts = Contact.objects.filter(email=form.cleaned_data["email"])
+        count = len(contacts)
+        if count == 0:
+            contact = form.save()
+        else:
+            contact = contacts[0]
+        enquiry = Enquiry.objects.create(
+            subject=form.cleaned_data["subject"],
+            message=form.cleaned_data["message"],
+            contact=contact,
+        )
+        self.request.session["enquiry_pk"] = enquiry.pk
+        return redirect(self.success_url)
+
+
+class EnquirySubmittedView(TemplateView):
+    template_name = "shop/public/enquiry_submitted.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["enquiry"] = Enquiry.objects.get(pk=self.request.session["enquiry_pk"])
+        return context

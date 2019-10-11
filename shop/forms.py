@@ -1,3 +1,4 @@
+import django.forms as forms
 from django.forms import ModelForm, ModelChoiceField, ValidationError
 from shop.models import Item, Category, Contact, Address
 
@@ -47,6 +48,12 @@ class EnquiryForm(ModelForm):
     class Meta:
         model = Contact
         fields = ("first_name", "last_name", "mobile_phone", "email")
+
+    subject = forms.CharField(max_length=50)
+    message = forms.CharField(max_length=2000, widget=forms.Textarea(attrs={"rows": 3}))
+    mail_consent = forms.BooleanField(
+        required=False, label="Please add me to your mailing list"
+    )
 
 
 class AddressForm(ModelForm):

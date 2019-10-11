@@ -1,6 +1,6 @@
 {% extends "shop/shop_base.html" %}
 {% load wagtailimages_tags static %}
-{% block body_class %}bg-light{% endblock %}
+{% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
   <div class="container my-2 py-2 bg-light">
     <div class="row">
@@ -10,33 +10,37 @@
       </div>
     </div>
     <div class="row">
-    {% for image in images %}
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          {% image image width-250 as card_image %}
-          <div class="card mb-2 text-center border-0 bg-light" style="height:330px; position: relative">
-              {% if card_image.height > 250 %}
-                <img src="{{ card_image.url }}" alt="{{ item.name }}" height="250px">
-              {% else %}
-                <img class="card-img-top" src="{{ card_image.url }}" alt="{{ item.name }}"
-                     height="{{ card_image.height }}">
-              {% endif %}
-            <div class="card-body">
-              {% if item.image.id == image.id %}Primary{% endif %}<br>
-              <button class="btn btn-sm btn-danger js-action" data-action="delete" data-id="{{ image.id }}">Delete</button>
-              {% if item.image.id != image.id %}
-              <button class="btn btn-sm btn-primary js-action" data-action="primary" data-id="{{ image.id }}">Make primary</button>
-              {% endif %}
+      {% if images %}
+        {% for image in images %}
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            {% image image height-250 as card_image %}
+            <div class="card card-thumb shadow d-none d-sm-block">
+              <div class="thumbnail" >
+                <a style="background-image: url({{ card_image.url }});"></a>
+              </div>
+              <div class="card-body px-2" style="font-family: Lato">
+                <h5>{% if item.image.id == image.id %}Primary{% else %}&nbsp;{% endif %}</h5>
+                <button class="btn btn btn-danger js-action" data-action="delete" data-id="{{ image.id }}">Delete
+                </button>
+                {% if item.image.id != image.id %}
+                  <button class="btn btn btn-primary js-action" data-action="primary" data-id="{{ image.id }}">Make
+                    primary
+                  </button>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      {% else %}
+        <p class="m-5">There are no images for this item.</p>
+      {% endif %}
+  </div>
+  <div class="row my-3">
+    <div class="col-md-8">
+      <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Add an image</button>
     </div>
-    <div class="row my-3">
-      <div class="col-md-8">
-        <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Add an image</button>
-      </div>
-    </div>
+  </div>
   </div>
 {% endblock %}
 {% block content_walls %}
