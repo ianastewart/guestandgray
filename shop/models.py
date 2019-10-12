@@ -152,6 +152,13 @@ class Enquiry(models.Model):
     closed = models.BooleanField(default=False)
 
 
+class Book(models.Model):
+    title = models.CharField(max_length=200, blank=False, null=False)
+    author = models.CharField(max_length=100, blank=False, null=False)
+    info = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+
 class CustomImage(AbstractImage):
     # primary_image = models.BooleanField(default=False)
     # ref = models.CharField(max_length=10, null=True, blank=True)

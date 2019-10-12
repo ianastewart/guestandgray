@@ -16,13 +16,14 @@ from django.views.generic import (
 from wagtail.core.models import Collection
 
 from shop.forms import ItemForm, CategoryForm, ContactForm
-from shop.models import Item, Category, CustomImage, Contact, Address, Enquiry
+from shop.models import Item, Category, CustomImage, Contact, Address, Enquiry, Book
 from shop.tables import (
     ItemTable,
     ItemNameTable,
     CategoryTable,
     ContactTable,
     EnquiryTable,
+    BookTable,
 )
 from shop.views.generic_views import FilteredTableView, JsonCrudView
 from shop.filters import ItemFilter
@@ -298,3 +299,13 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
 
     def get_queryset(self):
         return Enquiry.objects.all().order_by("-date")
+
+
+class BookListView(LoginRequiredMixin, FilteredTableView):
+    model = Book
+    template_name = "shop/contact_table.html"
+    table_class = BookTable
+    table_pagination = {"per_page": 10}
+
+    def get_queryset(self):
+        return Book.objects.all().order_by("title")

@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
 from shop.truncater import truncate
-from shop.models import Category, Item, Contact, Enquiry
+from shop.models import Category, Item, Contact, Enquiry, Book
 
 
 class CategoryTable(tables.Table):
@@ -107,3 +107,9 @@ class EnquiryTable(tables.Table):
 
     def render_mail_consent(self, value):
         return "Yes" if value else ""
+
+
+class BookTable(tables.Table):
+    class Meta:
+        model = Book
+        fields = ("title", "author", "info", "description")

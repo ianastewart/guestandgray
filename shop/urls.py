@@ -17,6 +17,7 @@ from shop.views.staff_views import (
     ContactListView,
     ContactUpdateView,
     EnquiryListView,
+    BookListView,
 )
 from shop.views.public_views import (
     home_view,
@@ -77,6 +78,7 @@ staff_urls = [
         name="contact_update",
     ),
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
+    path("book/list/", BookListView.as_view(), name="book_list"),
     path("search/", search_view, {"public": False}, name="search"),
 ]
 
