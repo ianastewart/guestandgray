@@ -2,7 +2,6 @@
 <div class="bg-guest-dark">
   <div class="container">
 <nav class="navbar navbar-expand-lg navbar-dark bg-guest-dark">
-  <a class="navbar-brand" href="#">Administration</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -11,59 +10,54 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Items
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
           <a class="dropdown-item" href="{% url 'item_list' %}">Item list</a>
           <a class="dropdown-item" href="{% url 'itemname_list' %}">Item name list</a>
           <a class="dropdown-item" href="{% url 'item_create' %}">Create new item</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Categories
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
           <a class="dropdown-item" href="{% url 'category_list' %}">Category list</a>
           <a class="dropdown-item" href="{% url 'category_tree' %}">Category tree</a>
           <a class="dropdown-item" href="{% url 'category_create' %}">Create new category</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Contacts
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown3">
           <a class="dropdown-item" href="{% url 'contact_list' %}">Contact list</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
-          Import
+          Enquiries
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'import_objects' %}">Import objects</a>
-{#          <a class="dropdown-item" href="{% url 'import_categories' %}">Create categories </a>#}
-{#          <a class="dropdown-item" href="{% url 'import_images' %}">Process images</a>#}
-{#          <a class="dropdown-item" href="{% url 'import_category_images' %}">Set category images</a>#}
-{#          <a class="dropdown-item" href="{% url 'category_clear' %}">Clear categories</a>#}
-{#          <a class="dropdown-item" href="{% url 'object_clear' %}">Clear objects</a>#}
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown4">
+          <a class="dropdown-item" href="{% url 'enquiry_list' %}">Enquiry list</a>
         </div>
       </li>
-      <form class="form-inline ml-auto" action="{% url 'codered_search' %}" method="GET">
-          {% load bootstrap4 %}
-          {% get_searchform request as form %}
-          {% bootstrap_form form layout='inline' %}
-          <div class="form-group">
-            <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">
-          </div>
-      </form>
     </ul>
+    <form class="form-inline ml-auto" action="{% url 'codered_search' %}" method="GET">
+        {% load bootstrap4 %}
+        {% get_searchform request as form %}
+        {% bootstrap_form form layout='inline' %}
+        <div class="form-group">
+          <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">
+        </div>
+    </form>
   </div>
 </nav>
 </div>

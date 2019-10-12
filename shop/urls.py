@@ -16,6 +16,7 @@ from shop.views.staff_views import (
     ContactCreateView,
     ContactListView,
     ContactUpdateView,
+    EnquiryListView,
 )
 from shop.views.public_views import (
     home_view,
@@ -75,11 +76,13 @@ staff_urls = [
         ContactUpdateView.as_view(),
         name="contact_update",
     ),
+    path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
+    path("search/", search_view, {"public": False}, name="search"),
 ]
 
 public_urls = [
     path("", home_view, name="public_home"),
-    path("search/", search_view, name="codered_search"),
+    path("search/", search_view, {"public": True}, name="codered_search"),
     path(
         "catalogue/", catalogue_view, {"archive": False}, name="public_catalogue_root"
     ),

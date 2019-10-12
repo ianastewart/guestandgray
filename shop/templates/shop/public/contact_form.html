@@ -26,7 +26,7 @@
       <div class="col-12 col-lg-6 mt-4">
         <p>Use the form below to sign up to our mailing list or to make an enquiry.</p>
         <div class="bg-light px-4 pt-4 pb-2 border">
-          <form action="/enquiry/" method="post" class="form">
+          <form action="{% url 'public_contact' %}" method="post" class="form">
             {% csrf_token %}
             {% bootstrap_field form.first_name layout='horizontal' %}
             {% bootstrap_field form.last_name layout='horizontal' %}
@@ -44,6 +44,7 @@
               <button type="submit" class="btn btn-primary">Submit</button>
             {% endbuttons %}
           </form>
+          <p class="small"> Your details will not be sold or passed on to any third parties.</p>
         </div>
         <br>
       </div>

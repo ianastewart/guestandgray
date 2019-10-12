@@ -1,5 +1,5 @@
 {% extends 'coderedcms/pages/web_page_notitle.html' %}
-{% load static wagtailimages_tags shop_tags %}
+{% load static wagtailimages_tags shop_tags bootstrap4 %}
 {% block extra_head %}
   <link rel="stylesheet" href="{% static 'website/css/site.css' %}">
   <link rel="stylesheet" href="{% static 'shop/css/photoswipe.css' %}">
@@ -11,7 +11,7 @@
     <div class="row">
       <div class="col">
     {% breadcrumb breadcrumb item.archive %}
-        <h2 class="mt-4">{{ item.name }}</h2>
+        <h2 class="mt-4 font-georgia">{{ item.name }}</h2>
       </div>
     </div>
     <div class="row mt-5">
@@ -34,13 +34,38 @@
           </div>
         </div>
       </div>
-      <div class="col-xs col-md-6 bg-white p-3">
+      <div class="col-xs col-md-6 bg-white p-3 mb-4 px-4 shadow">
         <p>{{ item.description }}</p>
-        <p class="text-muted my-2">Ref: {{ item.ref }}</p>
+        {% if item.condition %}
+          <div class="row">
+          <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
+          <p class="col-12 col-lg-9">{{ item.condition }}</p>
+          </div>
+        {% endif %}
+        {% if item.dimensions %}
+          <div class="row">
+          <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
+          <p class="col-12 col-lg-9">{{ item.dimensions}}</p>
+          </div>
+        {% endif %}
+          <div class="row">
+          <p class="col-12 col-lg-3 text-muted mb-1">Reference: </p>
+          <p class="col-12 col-lg-9">{{ item.ref }}</p>
+          </div>
         {% if item.archive %}
           <p>ARCHIVE - Not For Sale</p>
         {% else %}
+          <div class="row">
+          <div class="col-12 col-lg-4 py-2">
           <h5>Price: £ {{ price }}</h5>
+          </div>
+          <div class="col-6 ">
+          <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#modal-form">Enquire</button>
+          </div>
+          </div>
+        {% endif %}
+        {% if item.provenance %}
+          <p class="mt-4">{{ item.provenance }}</p>
         {% endif %}
         <div class="mt-4">
           {% if request.user.is_authenticated %}
@@ -96,6 +121,36 @@
       </div>
     </div>
   </div>
+
+    <!-- Modal to hold form -->
+  <div class="modal fade " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
+    <div class="modal-dialog {{ modal_class }}" role="document">
+      <div class="modal-content bg-guest-light">
+
+
+                <div class="bg-light px-4 pt-4 pb-2 border">
+          <form action="{% url 'public_contact' %}" method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_field form.first_name layout='horizontal' %}
+            {% bootstrap_field form.last_name layout='horizontal' %}
+            {% bootstrap_field form.email layout='horizontal' %}
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="customCheck1" name="mail_consent">
+              <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
+            </div>
+            {% bootstrap_field form.subject layout='horizontal' %}
+            {% bootstrap_field form.message layout='horizontal' %}
+            <p class="text-danger">ToDo: Add recaptcha</p>
+            {% buttons %}
+              <button type="submit" class="btn btn-primary">Enquire</button>
+            {% endbuttons %}
+          </form>
+          <p class="small"> Your details will not be sold or passed on to any third parties.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block custom_scripts %}
@@ -133,6 +188,5 @@
           lightBox.init();
       });
   </script>
-
 
 {% endblock %}

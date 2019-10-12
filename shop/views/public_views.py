@@ -54,6 +54,9 @@ def item_view(request, slug, pk):
     context["item"] = item
     context["price"] = int(item.price / 100)
     context["images"] = item.images.all().exclude(id=item.image_id)
+    form = EnquiryForm()
+    form.fields["subject"].initial = f"{item.name} ({item.ref})"
+    context["form"] = form
     return render(request, template_name, context)
 
 
@@ -97,6 +100,8 @@ def catalogue_view(request, slugs=None, archive=False):
 
 
 class Counter:
+    """ Traverse a hierarchical category tree and append the total count of items under each node """
+
     def __init__(self, root, archive=False, exclude_no_image=True):
         self.total = 0
         self.root = root
@@ -107,6 +112,7 @@ class Counter:
         return self._count(self.root)
 
     def _count(self, cat):
+        # recursive count function
         print(f"Start {cat.name}")
         items = cat.item_set.filter(archive=self.archive)
         if self.exclude:
@@ -140,10 +146,11 @@ def add_page_context(context, slug):
     return context
 
 
-def search_view(request):
+def search_view(request, public):
     """
     Searches pages across the entire site.
     Replaces the codered search view
+    Also used for staff search if public=False
     """
     search_form = SearchForm(request.GET)
     pagetypes = []
@@ -199,12 +206,6 @@ def search_view(request):
                 # Custom code for shop
                 results = backend.search(search_query, Item)
 
-                # results = (
-                #     CoderedPage.objects.live()
-                #     .order_by("-last_published_at")
-                #     .search(search_query)
-                # )  # noqa
-
         # paginate results
         if results:
             paginator = Paginator(
@@ -224,9 +225,7 @@ def search_view(request):
         Query.get(search_query).add_hit()
 
     # Render template
-    template = (
-        "shop/public/search.html" if "staff" in request.GET else "shop/search.html"
-    )
+    template = "shop/public/search.html" if public else "shop/search.html"
 
     return render(
         request,
@@ -243,8 +242,8 @@ def search_view(request):
 
 class ContactView(FormView):
     form_class = EnquiryForm
-    template_name = "shop/public/enquiry_form.html"
-    success_url = reverse_lazy("public_enquiry_submitted")
+    template_name = "shop/public/contact_form.html"
+    success_url = reverse_lazy("public_contact_submitted")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -268,7 +267,7 @@ class ContactView(FormView):
 
 
 class ContactSubmittedView(TemplateView):
-    template_name = "shop/public/enquiry_submitted.html"
+    template_name = "shop/public/contact_submitted.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

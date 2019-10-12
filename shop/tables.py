@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
 from shop.truncater import truncate
-from shop.models import Category, Item, Contact
+from shop.models import Category, Item, Contact, Enquiry
 
 
 class CategoryTable(tables.Table):
@@ -37,7 +37,7 @@ class ImageColumn(tables.Column):
 class ItemTable(tables.Table):
     class Meta:
         model = Item
-        fields = ("selection", "name", "ref", "category.name", "price")
+        fields = ("selection", "name", "ref", "category.name", "price", "archive")
         attrs = {"class": "table table-sm table-hover hover-link"}
         # row_attrs = {
         #     "data-url": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
@@ -82,7 +82,28 @@ class ContactTable(tables.Table):
             "work_phone",
             "mobile_phone",
             "email",
+            "mail_consent",
             "notes",
         )
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+    def render_mail_consent(self, value):
+        return "Yes" if value else ""
+
+    def render_notes(self, value):
+        return "Yes" if value else ""
+
+
+class EnquiryTable(tables.Table):
+    class Meta:
+        model = Enquiry
+        fields = ("date", "subject", "message")
+
+    first_name = tables.Column(accessor="contact.first_name")
+    last_name = tables.Column(accessor="contact.last_name")
+    email = tables.Column(accessor="contact.email")
+    mail_consent = tables.Column(accessor="contact.mail_consent")
+
+    def render_mail_consent(self, value):
+        return "Yes" if value else ""

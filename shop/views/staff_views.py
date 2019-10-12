@@ -2,15 +2,11 @@ import logging
 import os.path
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from django.template.loader import render_to_string
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
-    View,
     TemplateView,
     CreateView,
     UpdateView,
@@ -20,8 +16,14 @@ from django.views.generic import (
 from wagtail.core.models import Collection
 
 from shop.forms import ItemForm, CategoryForm, ContactForm
-from shop.models import Item, Category, CustomImage, Contact, Address
-from shop.tables import ItemTable, ItemNameTable, CategoryTable, ContactTable
+from shop.models import Item, Category, CustomImage, Contact, Address, Enquiry
+from shop.tables import (
+    ItemTable,
+    ItemNameTable,
+    CategoryTable,
+    ContactTable,
+    EnquiryTable,
+)
 from shop.views.generic_views import FilteredTableView, JsonCrudView
 from shop.filters import ItemFilter
 
@@ -286,3 +288,13 @@ class ContactUpdateView(LoginRequiredMixin, JsonCrudView):
     template_name = "shop/includes/partial_contact_form.html"
     update = True
     allow_delete = True
+
+
+class EnquiryListView(LoginRequiredMixin, FilteredTableView):
+    model = Enquiry
+    template_name = "shop/contact_table.html"
+    table_class = EnquiryTable
+    table_pagination = {"per_page": 10}
+
+    def get_queryset(self):
+        return Enquiry.objects.all().order_by("-date")

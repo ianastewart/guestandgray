@@ -3,7 +3,7 @@
 {% load render_table querystring from django_tables2 %}
 
 {% block content_body %}
-  <div class="container-fluid">
+  <div class="container mt-2">
     {% if filter %}
       <div class="card card-body py-0 my-2">
         {{ filter.form.media }}
@@ -11,7 +11,7 @@
 
           <div class="row">
             {% for field in filter.form.visible_fields %}
-              <div class="col-4">
+              <div class="col">
                 {% bootstrap_field field %}
               </div>
             {% endfor %}
@@ -75,7 +75,7 @@
         </form>
       {% else %}
         <p>
-          <button type="button" class="btn btn-primary js-create">
+          <button type="button" class="btn btn-primary js-create ml-2 mt-2">
             <span class="glyphicon glyphicon-plus"></span>
             New {{ object_name }}
           </button>

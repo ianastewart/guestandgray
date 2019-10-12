@@ -5,7 +5,7 @@
     <div class="row">
       <div class="col">
     {% breadcrumb breadcrumb archive %}
-        <h2 class="my-4">
+        <h2 class="my-4 font-georgia">
       {% if archive %}Archive: {% endif %}
       {{ category.name }}
     </h2>
@@ -19,7 +19,7 @@
       {% for item in items %}
         <div class="col-sm-6 col-md-4 col-lg-3">
           {% image item.image height-250 as card_image %}
-          <div class="card card-thumb shadow d-none d-sm-block">
+          <div class="card card-thumb shadow d-none d-sm-block font-georgia">
             <div class="thumbnail" href="#">
               <a href="{% url "public_item" slug='x' pk=item.pk %}"
                  style="background-image: url({{ card_image.url }});"></a>
@@ -31,7 +31,7 @@
           <div class="d-xs-block d-sm-none text-center">
             <a href="{% url 'public_item' slug='x' pk=item.pk %}">
               <img src="{{ card_image.url }}">
-              <p><span class="text-dark cinzel">{{ item.name }}</span></p>
+              <p><span class="text-dark">{{ item.name }}</span></p>
             </a>
           </div>
         </div>

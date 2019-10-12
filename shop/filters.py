@@ -21,6 +21,13 @@ class ItemFilter(FilterSet):
         to_field_name="name",
         empty_label="No filter",
     )
+    archive = BooleanFilter(field_name="archive")
+
+    archive = ChoiceFilter(
+        field_name="archive",
+        empty_label=None,
+        choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
+    )
     per_page = ChoiceFilter(
         field_name="id",
         label="Lines per page",

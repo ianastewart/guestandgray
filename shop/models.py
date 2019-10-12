@@ -134,9 +134,10 @@ class Contact(models.Model):
     work_phone = models.CharField(max_length=20, blank=True, null=True)
     mobile_phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=80, blank=True, null=True)
-    notes = models.CharField(max_length=1000)
+    notes = models.CharField(max_length=1000, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     mail_consent = models.BooleanField(default=False)
+    consent_date = models.DateField(null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -152,13 +153,13 @@ class Enquiry(models.Model):
 
 
 class CustomImage(AbstractImage):
-    primary_image = models.BooleanField(default=False)
-    ref = models.CharField(max_length=10, null=True, blank=True)
+    # primary_image = models.BooleanField(default=False)
+    # ref = models.CharField(max_length=10, null=True, blank=True)
     item = models.ForeignKey(
         Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images"
     )
 
-    admin_form_fields = Image.admin_form_fields + ("ref", "primary_image", "item")
+    admin_form_fields = Image.admin_form_fields + ("item",)
 
 
 class CustomRendition(AbstractRendition):

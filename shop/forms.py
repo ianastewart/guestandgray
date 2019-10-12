@@ -26,7 +26,16 @@ class ItemForm(ModelForm):
 
     class Meta:
         model = Item
-        fields = ("name", "ref", "description", "price", "category")
+        fields = (
+            "name",
+            "ref",
+            "description",
+            "price",
+            "category",
+            "dimensions",
+            "condition",
+            "provenance",
+        )
 
 
 class ContactForm(ModelForm):
@@ -49,8 +58,10 @@ class EnquiryForm(ModelForm):
         model = Contact
         fields = ("first_name", "last_name", "mobile_phone", "email")
 
-    subject = forms.CharField(max_length=50)
-    message = forms.CharField(max_length=2000, widget=forms.Textarea(attrs={"rows": 3}))
+    subject = forms.CharField(max_length=50, required=False)
+    message = forms.CharField(
+        max_length=2000, required=False, widget=forms.Textarea(attrs={"rows": 3})
+    )
     mail_consent = forms.BooleanField(
         required=False, label="Please add me to your mailing list"
     )
