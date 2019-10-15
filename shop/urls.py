@@ -116,4 +116,9 @@ public_urls = [
         name="public_contact_submitted",
     ),
     path("bibliography/", BibliographyView.as_view(), name="bibliography"),
+    path(
+        "/pages/information/bibliography/",
+        BibliographyView.as_view(),
+        name="bibliography",
+    ),
 ]
