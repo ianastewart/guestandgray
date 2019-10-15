@@ -117,7 +117,7 @@ public_urls = [
     ),
     path("bibliography/", BibliographyView.as_view(), name="bibliography"),
     path(
-        "/pages/information/bibliography/",
+        "pages/information/bibliography/",
         BibliographyView.as_view(),
         name="bibliography",
     ),
