@@ -18,6 +18,8 @@ from shop.views.staff_views import (
     ContactUpdateView,
     EnquiryListView,
     BookListView,
+    BookCreateView,
+    BookUpdateView,
 )
 from shop.views.public_views import (
     home_view,
@@ -26,6 +28,7 @@ from shop.views.public_views import (
     search_view,
     ContactView,
     ContactSubmittedView,
+    BibliographyView,
 )
 from shop.views.import_views import (
     import_objects_view,
@@ -78,7 +81,11 @@ staff_urls = [
         name="contact_update",
     ),
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
-    path("book/list/", BookListView.as_view(), name="book_list"),
+    # Books
+    path("books/", BookListView.as_view(), name="book_list"),
+    path("books/create/", BookCreateView.as_view(), name="book_create"),
+    path("books/update/<int:pk>/", BookUpdateView.as_view(), name="book_update"),
+    # Search
     path("search/", search_view, {"public": False}, name="search"),
 ]
 
@@ -108,4 +115,5 @@ public_urls = [
         ContactSubmittedView.as_view(),
         name="public_contact_submitted",
     ),
+    path("bibliography/", BibliographyView.as_view(), name="bibliography"),
 ]

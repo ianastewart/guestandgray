@@ -15,8 +15,10 @@ from wagtail.search.models import Query
 from coderedcms.forms import SearchForm
 from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
-from shop.models import Item, Category, Contact, Enquiry
+from shop.models import Item, Category, Contact, Enquiry, Book
 from shop.forms import EnquiryForm
+from shop.tables import BookTable
+from shop.views.generic_views import FilteredTableView
 
 logger = logging.getLogger(__name__)
 
@@ -273,3 +275,18 @@ class ContactSubmittedView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["enquiry"] = Enquiry.objects.get(pk=self.request.session["enquiry_pk"])
         return context
+
+
+class BibliographyView(FilteredTableView):
+    model = Book
+    template_name = "shop/public/public_table.html"
+    table_class = BookTable
+    table_pagination = {"per_page": 100}
+
+    def get_queryset(self):
+        return Book.objects.all().order_by("title")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["heading"] = "Bibiliography"
+        return add_page_context(context, "bibliography")

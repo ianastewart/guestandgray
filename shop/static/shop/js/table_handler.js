@@ -1,12 +1,12 @@
-// Handle checkboxes in tables to select rows
+// Handle checkboxes in tables, and modal forms
 $(document).ready(function () {
     'use strict';
     var lastChecked = null;
     var chkboxes = $('.tr-checkbox');
     var MAX = 1000;
-
     $("body").css("cursor", "default");
 
+    // request and show the modal create form
     $(".js-create").click(function () {
         $.ajax({
             url: 'create/',
@@ -17,10 +17,11 @@ $(document).ready(function () {
             },
             success: function (data) {
                 $("#modal-form .modal-content").html(data.html_form);
-            }
+                }
         });
     })
 
+    // called by update form to delete record
     $(".js-delete").click(function () {
         var pk = $('#pk').val();
         $.ajax({
@@ -35,6 +36,7 @@ $(document).ready(function () {
         });
     })
 
+    // submit the modal form
     $("#modal-form").on("submit", ".js-form", function () {
         var form = $(this);
         $.ajax({
@@ -58,21 +60,7 @@ $(document).ready(function () {
         return false;
     });
 
-    // Clicking the manage-image button loads second modal
-    $("#modal-form").on("click", ".js-image", function () {
-        var pk = $('#pk').val();
-        $.ajax({
-            url: 'images/'+pk+'/',
-            type: 'get',
-            dataType: 'json',
-            success: function (data) {
-                $("#modal-form").modal("hide");
-                $("#modal-form-2").modal("show");
-                $("#modal-form-2 .modal-content").html(data.html_form);
-            }
-        });
-    });
-
+    // called by table click to load update form
     function ajax_update(pk) {
         $.ajax({
             url: 'update/' + pk + '/',
@@ -128,13 +116,16 @@ $(document).ready(function () {
             }
             countChecked();
         } else if (e.target.tagName === 'TD') {
+            // redirect when click on row
             if (typeof e.target.parentNode.dataset.url !== 'undefined') {
                 window.document.location = e.target.parentNode.dataset.url;
             }
-            if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
-                ajax_update(e.target.parentNode.dataset.pk)
+            // ajax update form when click on row
+            if (document.getElementById("allow_update")) {
+                if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
+                    ajax_update(e.target.parentNode.dataset.pk)
+                }
             }
-
         }
     });
 

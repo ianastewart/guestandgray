@@ -155,7 +155,6 @@ class Enquiry(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=200, blank=False, null=False)
     author = models.CharField(max_length=100, blank=False, null=False)
-    info = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
 

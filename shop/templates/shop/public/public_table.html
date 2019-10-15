@@ -1,0 +1,11 @@
+{% extends 'coderedcms/pages/web_page_notitle.html' %}
+{% load render_table querystring from django_tables2 %}
+
+{% block content_body %}
+  <div class="container mt-2">
+    <div class="card px-4">
+      {% if heading %}<h4>{{ heading }}</h4>{% endif %}
+        {% render_table table 'django_tables2/bootstrap4.html' %}
+    </div>
+  </div>
+{% endblock %}

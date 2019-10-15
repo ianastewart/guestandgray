@@ -15,7 +15,7 @@ from django.views.generic import (
 )
 from wagtail.core.models import Collection
 
-from shop.forms import ItemForm, CategoryForm, ContactForm
+from shop.forms import ItemForm, CategoryForm, ContactForm, BookForm
 from shop.models import Item, Category, CustomImage, Contact, Address, Enquiry, Book
 from shop.tables import (
     ItemTable,
@@ -199,7 +199,7 @@ class ItemDetailView(DetailView):
 
 class ItemListView(LoginRequiredMixin, FilteredTableView):
     model = Item
-    template_name = "shop/contact_table.html"
+    template_name = "shop/generic_table.html"
     table_class = ItemTable
     filter_class = ItemFilter
     modal_class = "wide"
@@ -269,33 +269,38 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
 
 class ContactListView(LoginRequiredMixin, FilteredTableView):
     model = Contact
-    template_name = "shop/contact_table.html"
+    template_name = "shop/generic_table.html"
     table_class = ContactTable
     table_pagination = {"per_page": 100}
+    allow_create = True
+    allow_update = True
 
     def get_queryset(self):
         return Contact.objects.all().order_by("last_name")
 
 
 class ContactCreateView(LoginRequiredMixin, JsonCrudView):
-    form_class = ContactForm
-    template_name = "shop/includes/partial_contact_form.html"
     model = Contact
+    form_class = ContactForm
+    template_name = "shop/includes/generic_modal_form.html"
+    horizontal_form = True
 
 
 class ContactUpdateView(LoginRequiredMixin, JsonCrudView):
     model = Contact
     form_class = ContactForm
-    template_name = "shop/includes/partial_contact_form.html"
+    template_name = "shop/includes/generic_modal_form.html"
+    horizontal_form = True
     update = True
     allow_delete = True
 
 
 class EnquiryListView(LoginRequiredMixin, FilteredTableView):
     model = Enquiry
-    template_name = "shop/contact_table.html"
+    template_name = "shop/generic_table.html"
     table_class = EnquiryTable
     table_pagination = {"per_page": 10}
+    allow_update = True
 
     def get_queryset(self):
         return Enquiry.objects.all().order_by("-date")
@@ -303,9 +308,22 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
 
 class BookListView(LoginRequiredMixin, FilteredTableView):
     model = Book
-    template_name = "shop/contact_table.html"
+    template_name = "shop/generic_table.html"
     table_class = BookTable
-    table_pagination = {"per_page": 10}
+    table_pagination = {"per_page": 100}
+    allow_create = True
+    allow_update = True
 
     def get_queryset(self):
         return Book.objects.all().order_by("title")
+
+
+class BookCreateView(LoginRequiredMixin, JsonCrudView):
+    model = Book
+    form_class = BookForm
+    template_name = "shop/includes/generic_modal_form.html"
+
+
+class BookUpdateView(BookCreateView):
+    update = True
+    allow_delete = True

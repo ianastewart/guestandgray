@@ -3,6 +3,7 @@ from django_tables2 import SingleTableView
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from django.views.generic import View
+from django.template import TemplateDoesNotExist, TemplateSyntaxError
 
 
 class FilteredTableView(SingleTableView):
@@ -17,6 +18,9 @@ class FilteredTableView(SingleTableView):
     table_pagination = {"per_page": 10}
     as_list = False
     modal_class = None
+    horizontal_form = False
+    allow_create = False
+    allow_update = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -86,6 +90,10 @@ class FilteredTableView(SingleTableView):
         if self.total:
             context["total"] = self.total
         context["modal_class"] = self.modal_class
+        context["object_name"] = self.model._meta.object_name
+        context["allow_create"] = self.allow_create
+        context["allow_update"] = self.allow_update
+        context["horizontal_form"] = self.horizontal_form
         return context
 
     def post_query_set(self, request):
@@ -118,7 +126,8 @@ class JsonCrudView(View):
     object = None
     update = False
     allow_delete = False
-    success_url = "https://www.bbc.co.uk"
+    success_url = ""
+    horizontal_form = False
 
     def get_object(self, **kwargs):
         if self.update and self.model:
@@ -127,13 +136,18 @@ class JsonCrudView(View):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            self.form = self.form_class(instance=self.get_object(**kwargs))
-            data = {}
-            data["html_form"] = render_to_string(
-                self.template_name, self.get_context_data(), request
-            )
+            try:
+                self.form = self.form_class(instance=self.get_object(**kwargs))
+                data = {}
+                data["html_form"] = render_to_string(
+                    self.template_name, self.get_context_data(), request
+                )
+            except TemplateDoesNotExist as e:
+                data["html_form"] = f"<h3>Template not found: {str(e)}</h3>"
+            except TemplateSyntaxError as e:
+                data["html_form"] = f"<h3>Template syntax error: {str(e)}</h3>"
             return JsonResponse(data)
-        return HttpResponse("Not ajax get request")
+        return HttpResponse("<h3>Not ajax get request</h3>")
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -160,7 +174,8 @@ class JsonCrudView(View):
             "form": self.form,
             "path": self.request.path,
             "object_name": name,
-            "form_title": f"Update {name}" if self.update else "Create {name}",
+            "form_title": f"Update {name}" if self.update else f"Create {name}",
+            "horizontal_form": self.horizontal_form,
             "allow_delete": self.allow_delete,
         }
         if self.object:

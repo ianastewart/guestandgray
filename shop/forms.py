@@ -1,6 +1,6 @@
 import django.forms as forms
 from django.forms import ModelForm, ModelChoiceField, ValidationError
-from shop.models import Item, Category, Contact, Address
+from shop.models import Item, Category, Contact, Address, Book
 
 
 class CategoryForm(ModelForm):
@@ -71,3 +71,9 @@ class AddressForm(ModelForm):
     class Meta:
         model = Address
         fields = ("address1", "address2", "address3", "town", "post_code", "country")
+
+
+class BookForm(ModelForm):
+    class Meta:
+        model = Book
+        fields = ("title", "author", "description")

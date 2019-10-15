@@ -99,6 +99,8 @@ class EnquiryTable(tables.Table):
     class Meta:
         model = Enquiry
         fields = ("date", "subject", "message")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     first_name = tables.Column(accessor="contact.first_name")
     last_name = tables.Column(accessor="contact.last_name")
@@ -112,4 +114,10 @@ class EnquiryTable(tables.Table):
 class BookTable(tables.Table):
     class Meta:
         model = Book
-        fields = ("title", "author", "info", "description")
+        fields = ("title", "author", "description")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+    title = tables.Column(attrs={"td": {"width": "25%"}})
+    author = tables.Column(attrs={"td": {"width": "25%"}})
+    description = tables.Column(orderable=False)
