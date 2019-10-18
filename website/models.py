@@ -11,6 +11,24 @@ from coderedcms.models import (
     CoderedWebPage,
 )
 from coderedcms.models.page_models import CoderedPage
+
+
+from django.db import models
+from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
+from modelcluster.models import ClusterableModel
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    InlinePanel,
+    MultiFieldPanel,
+    StreamFieldPanel,
+)
+from wagtail.core.fields import StreamField
+from wagtail.core.models import Orderable
+
+from wagtail.snippets.models import register_snippet
+
+
 from shop.models import Item, CustomImage
 
 

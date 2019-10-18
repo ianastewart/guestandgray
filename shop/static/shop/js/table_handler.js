@@ -6,6 +6,37 @@ $(document).ready(function () {
     var MAX = 1000;
     $("body").css("cursor", "default");
 
+    // set clicked attr on button that submitted the form
+    $("#modal-form").on("click", ".js-submit", function () {
+        console.log("js-submit")
+        var form = $(this).parents("form");
+        var submitter = $(this).attr("name")
+        submit(form, submitter)
+    });
+
+    function submit(form, submitter){
+        var data = form.serialize();
+        data += '&' + encodeURIComponent(submitter) + '=';
+        $.ajax({
+            url: form.attr("action"),
+            data: data,
+            type: form.attr("method"),
+            dataType: 'json',
+            success: function (data) {
+                if (data.valid) {
+                    $("#modal-form").modal("hide");
+                    if (data.url) {
+                        location.replace(data.url);
+                    } else {
+                        location.reload(true)
+                    }
+                } else {
+                    $("#modal-form .modal-content").html(data.html_form);
+                }
+            }
+        });
+    }
+
     // request and show the modal create form
     $(".js-create").click(function () {
         $.ajax({
@@ -17,7 +48,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 $("#modal-form .modal-content").html(data.html_form);
-                }
+            }
         });
     })
 
@@ -36,27 +67,9 @@ $(document).ready(function () {
         });
     })
 
-    // submit the modal form
+    // normal submit button is ignored
     $("#modal-form").on("submit", ".js-form", function () {
-        var form = $(this);
-        $.ajax({
-            url: form.attr("action"),
-            data: form.serialize(),
-            type: form.attr("method"),
-            dataType: 'json',
-            success: function (data) {
-                if (data.valid) {
-                    $("#modal-form").modal("hide");
-                    if (data.url) {
-                        location.replace(data.url);
-                    } else {
-                        location.reload(true)
-                    }
-                } else {
-                    $("#modal-form .modal-content").html(data.html_form);
-                }
-            }
-        });
+        console.log("ignore submit")
         return false;
     });
 

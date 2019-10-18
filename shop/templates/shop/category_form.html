@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col">
+      <div class="col col-lg-8">
         <form method="post" class="form">
           {% csrf_token %}
           {% bootstrap_form form layout="horizontal" %}
@@ -19,12 +19,28 @@
           {% endbuttons %}
         </form>
       </div>
-      <div class="col">
-        {% image category.image width-300 %}
-        <br> {{ category.image.object.name }} <br>
+      <div class="col col-lg-4">
+        {% if category.image %}
+          {% image category.image width-300 %}
+          <br> Item ref: {{ category.image.item.ref }} <br><br>
+        {% else %}:
+          <div class="card card-body bg-white text-center" style="width:300px; height:250px">
+            <i>No category image</i>
+          </div>
+        {% endif %}
+        {% if category.archive_image %}
+          {% image category.image width-300 %}
+          <br> {{ category.archive_image.item.ref }} <br>
+        {% else %}
+          <div class="card card-body bg-white text-center" style="width:300px; height:200px">
+            <i>No archive image</i>
+          </div>
+        {% endif %}
         <p><i>To change the category's image, edit the desired object in that category.</i></p>
       </div>
     </div>
   </div>
+
+
 
 {% endblock %}

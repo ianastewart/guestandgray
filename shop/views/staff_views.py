@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     TemplateView,
@@ -17,14 +18,7 @@ from wagtail.core.models import Collection
 
 from shop.forms import ItemForm, CategoryForm, ContactForm, BookForm
 from shop.models import Item, Category, CustomImage, Contact, Address, Enquiry, Book
-from shop.tables import (
-    ItemTable,
-    ItemNameTable,
-    CategoryTable,
-    ContactTable,
-    EnquiryTable,
-    BookTable,
-)
+from shop.tables import ItemTable, CategoryTable, ContactTable, EnquiryTable, BookTable
 from shop.views.generic_views import FilteredTableView, JsonCrudView
 from shop.filters import ItemFilter
 
@@ -35,26 +29,23 @@ class StaffHomeView(LoginRequiredMixin, TemplateView):
     template_name = "shop/staff_home.html"
 
 
-class ItemNameListView(LoginRequiredMixin, FilteredTableView):
+class ItemListView(LoginRequiredMixin, FilteredTableView):
     model = Item
     template_name = "shop/generic_table.html"
-    table_class = ItemNameTable
+    table_class = ItemTable
     filter_class = ItemFilter
+    modal_class = "wide"
+    allow_create = True
+    allow_update = True
+
+    def get_queryset(self):
+        return Item.objects.all().order_by("ref")
 
 
 class ItemCreateView(LoginRequiredMixin, JsonCrudView):
     model = Item
     form_class = ItemForm
     template_name = "shop/includes/partial_item_form.html"
-
-    # def post(self, request, *args, **kwargs):
-    #     result = super().post(request, *args, **kwargs)
-    #     if "load" in request.POST:
-    #         pass
-    #     return result
-    #
-    # def get_success_url(self):
-    #     return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
 class ItemUpdateView(LoginRequiredMixin, UpdateView):
@@ -71,6 +62,23 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse("item_detail", kwargs={"pk": self.object.pk})
 
+    def post(self, request, *args, **kwargs):
+        item = self.get_object()
+        category = item.category
+        reshow = False
+        if "assign_category" in request.POST:
+            category.image = item.image
+            category.save()
+            reshow = True
+        elif "assign_archive" in request.POST:
+            category.archive_image = item.image
+            category.save()
+            reshow = True
+        response = super().post(request, *args, **kwargs)
+        if reshow:
+            return redirect("item_update", item.pk)
+        return response
+
 
 class ItemUpdateViewAjax(LoginRequiredMixin, JsonCrudView):
     model = Item
@@ -84,6 +92,23 @@ class ItemUpdateViewAjax(LoginRequiredMixin, JsonCrudView):
         # context["object"] = self.object.image
         # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
+
+    def post(self, request, *args, **kwargs):
+        item = self.get_object(**kwargs)
+        category = item.category
+        reshow = False
+        if "assign_category" in request.POST:
+            category.image = item.image
+            category.save()
+            reshow = True
+        elif "assign_archive" in request.POST:
+            category.archive_image = item.image
+            category.save()
+            reshow = True
+        response = super().post(request, *args, **kwargs)
+        if reshow:
+            return redirect("item_update_ajax", item.pk)
+        return response
 
 
 class ItemImagesView(LoginRequiredMixin, DetailView):
@@ -195,14 +220,6 @@ class ItemDetailView(DetailView):
         context["price"] = price
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
-
-
-class ItemListView(LoginRequiredMixin, FilteredTableView):
-    model = Item
-    template_name = "shop/generic_table.html"
-    table_class = ItemTable
-    filter_class = ItemFilter
-    modal_class = "wide"
 
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):

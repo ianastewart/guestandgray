@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, ListView
 from django.urls import reverse_lazy
 
 from wagtail.core.models import Page
@@ -19,6 +19,7 @@ from shop.models import Item, Category, Contact, Enquiry, Book
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.views.generic_views import FilteredTableView
+from shop.filters import BookCompilerFilter
 
 logger = logging.getLogger(__name__)
 
@@ -277,10 +278,11 @@ class ContactSubmittedView(TemplateView):
         return context
 
 
-class BibliographyView(FilteredTableView):
+class BibliographyView(ListView):
     model = Book
-    template_name = "shop/public/public_table.html"
+    template_name = "shop/public/book_list.html"
     table_class = BookTable
+    filter_class = BookCompilerFilter
     table_pagination = {"per_page": 100}
 
     def get_queryset(self):
@@ -289,4 +291,8 @@ class BibliographyView(FilteredTableView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["heading"] = "Bibiliography"
-        return add_page_context(context, "bibliography")
+        context["filter"] = BookCompilerFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
+        context = add_page_context(context, "bibliography")
+        return context

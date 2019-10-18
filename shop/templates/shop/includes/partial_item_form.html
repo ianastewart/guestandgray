@@ -1,3 +1,4 @@
+<!-- Form works for both modal and non modal usage -->
 {% load bootstrap4 wagtailimages_tags %}
 <form method="post" action="{{ path }}" class="js-form">
   {% csrf_token %}
@@ -28,23 +29,38 @@
             </div>
           {% endif %}
         </div>
-        <p class="my-2">
-          {% if object.pk %}
-            <a class="btn btn-secondary" href="{% url 'item_images' pk=object.pk %}">Manage images</a></p>
-          {% else %}
-            You can add an image after you have saved the item.
+        {% if object %}
+          {% if object.image %}
+            {% if object.category.image == object.image %}<p>Image is used as the category image</p>{% endif %}
+            {% if object.category.archive_image == object.image %}<p>Image is used as the archive image</p>{% endif %}
+            <a class="btn btn-secondary mt-3" style="width:210px" href="{% url 'item_images' pk=object.pk %}">Manage
+              images</a><br>
+            {% if object.category.image != object.image %}
+              <button type="submit" class="btn btn-secondary mt-3 mr-2 js-submit" style="width:210px" name="assign_category">Use as
+                category image
+              </button>
+            {% endif %}
+            {% if object.category.archive_image != object.image %}
+              <button type="submit" class="btn btn-secondary mt-3 js-submit" style="width:210px" name="assign_archive">Use as
+                archive image
+              </button>
+            {% endif %}
           {% endif %}
+        {% else %}
+          You can add an image after you have saved the item.
+        {% endif %}
       </div>
     </div>
   </div>
   <div {% if modal %}class="modal-footer"{% endif %}>
     <div class="row my-3">
       <div class="col">
-        {% if modal %}<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>{% endif %}
+        {% if modal %}
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>{% endif %}
         {% if allow_delete %}
           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
         {% endif %}
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary js-submit">Save</button>
       </div>
     </div>
   </div>

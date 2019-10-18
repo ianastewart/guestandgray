@@ -30,6 +30,13 @@ class Category(MP_Node):
         on_delete=models.SET_NULL,
         related_name="linked_category",
     )
+    archive_image = models.ForeignKey(
+        "CustomImage",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="archive_category",
+    )
     count = models.IntegerField(default=0)
     node_order_by = ["name"]
 
@@ -154,8 +161,13 @@ class Enquiry(models.Model):
 
 class Book(models.Model):
     title = models.CharField(max_length=200, blank=False, null=False)
+    subtitle = models.CharField(max_length=100, blank=True, null=True)
+    detail_1 = models.CharField(max_length=100, blank=True, null=True)
+    detail_2 = models.CharField(max_length=100, blank=True, null=True)
+    detail_3 = models.CharField(max_length=100, blank=True, null=True)
     author = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
+    compiler = models.CharField(max_length=100, blank=True, null=True)
 
 
 class CustomImage(AbstractImage):

@@ -53,24 +53,6 @@ class ItemTable(tables.Table):
     )
 
 
-class ItemNameTable(tables.Table):
-    class Meta:
-        model = Item
-        fields = ("name", "description", "ref")
-
-        attrs = {"class": "table table-sm table-hover hover-link"}
-        # row_attrs = {
-        #             "data-url": lambda record: reverse("item_update", kwargs={"pk": record.pk}),
-        #             "class": "table-row pl-4",
-        #         }
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
-
-    name = tables.Column(accessor="description", attrs={"td": {"width": "33%"}})
-
-    def render_name(self, value):
-        return truncate(value, 60)
-
-
 class ContactTable(tables.Table):
     class Meta:
         model = Contact
@@ -114,10 +96,10 @@ class EnquiryTable(tables.Table):
 class BookTable(tables.Table):
     class Meta:
         model = Book
-        fields = ("title", "author", "description")
+        fields = ("title", "author", "compiler", "description")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
-    title = tables.Column(attrs={"td": {"width": "25%"}})
-    author = tables.Column(attrs={"td": {"width": "25%"}})
+    title = tables.Column(attrs={"td": {"width": "20%"}})
+    author = tables.Column(attrs={"td": {"width": "20%"}})
     description = tables.Column(orderable=False)

@@ -1,0 +1,45 @@
+{% extends 'coderedcms/pages/web_page.html' %}
+{% load bootstrap4 %}
+{% block content_post_body %}
+  <div class="container bg-white shadow p-5">
+    <div class="row">
+    <div class="col-4 float-right">
+      <form action="." method="get" id="filter_form">
+      {% bootstrap_form filter.form %}
+    </form>
+    </div>
+    </div>
+    {% for book in filter.qs %}
+      <div class="row mt-2">
+        <div class="col px-0">
+          <p class="mb-2"><b>{{ book.title }}</b><span class="text-muted float-right"><i>{{ book.compiler }}</i></span>
+            {% if book.subtitle %}<br>{{ book.subtitle }}{% endif %}</p>
+        </div>
+      </div>
+      <div class="row border-bottom">
+        <div class="col-3 px-0 pb-2">
+          {{ book.author }}
+
+          {% if book.detail_1 %}<br>{{ book.detail_1 }}{% endif %}
+          {% if book.detail_2 %}<br>{{ book.detail_2 }}{% endif %}
+          {% if book.detail_3 %}<br>{{ book.detail_3 }}{% endif %}
+        </div>
+        <div class="col-9 pb-2">
+          {{ book.description|linebreaks }}
+        </div>
+      </div>
+
+    {% endfor %}
+  </div>
+{% endblock %}
+{% block custom_scripts %}
+    <script type="text/javascript">
+      $(function () {
+          $("#id_compiler").change(function () {
+              $("#filter_form").submit();
+          });
+      });
+  </script>
+{% endblock %}
+
+

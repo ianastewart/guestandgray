@@ -7,7 +7,7 @@ from django_filters import (
     DateFilter,
     BooleanFilter,
 )
-from shop.models import Item, Category
+from shop.models import Item, Category, Book
 
 PER_PAGE_CHOICES = ((10, "10"), (15, "15"), (20, "20"), (50, "50"), (100, "100"))
 
@@ -33,4 +33,23 @@ class ItemFilter(FilterSet):
         label="Lines per page",
         empty_label=None,
         choices=PER_PAGE_CHOICES,
+    )
+
+
+def compilers():
+    return [
+        (c, c)
+        for c in Book.objects.values_list("compiler", flat=True)
+        .order_by("compiler")
+        .distinct()
+    ]
+
+
+class BookCompilerFilter(FilterSet):
+
+    compiler = ChoiceFilter(
+        choices=compilers(),
+        label="Compiler",
+        field_name="compiler",
+        empty_label="All compilers",
     )
