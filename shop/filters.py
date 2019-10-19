@@ -36,20 +36,20 @@ class ItemFilter(FilterSet):
     )
 
 
-def compilers():
-    return [
-        (c, c)
-        for c in Book.objects.values_list("compiler", flat=True)
-        .order_by("compiler")
-        .distinct()
-    ]
+# def compilers():
+#     return [
+#         (c, c)
+#         for c in Book.objects.values_list("compiler", flat=True)
+#         .order_by("compiler")
+#         .distinct()
+#     ]
 
 
 class BookCompilerFilter(FilterSet):
-
-    compiler = ChoiceFilter(
-        choices=compilers(),
-        label="Compiler",
-        field_name="compiler",
-        empty_label="All compilers",
-    )
+    pass
+    # compiler = ChoiceFilter(
+    #     choices=compilers(),
+    #     label="Compiler",
+    #     field_name="compiler",
+    #     empty_label="All compilers",
+    # )
