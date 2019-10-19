@@ -53,3 +53,8 @@ class BookCompilerFilter(FilterSet):
         field_name="compiler",
         empty_label="All compilers",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filters["compiler"].extra["choices"] = compilers()
+        return
