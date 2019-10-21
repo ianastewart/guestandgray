@@ -12,7 +12,7 @@
     {% for book in filter.qs %}
       <div class="row mt-2">
         <div class="col px-0">
-          <p class="mb-2"><b>{{ book.title }}</b><span class="text-muted float-right"><i>{{ book.compiler }}</i></span>
+          <p class="mb-2"><b>{{ book.title }}</b><span class="text-muted float-right"><i>{{ book.compiler.name }}</i></span>
             {% if book.subtitle %}<br>{{ book.subtitle }}{% endif %}</p>
         </div>
       </div>

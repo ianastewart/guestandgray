@@ -7,7 +7,7 @@ from django_filters import (
     DateFilter,
     BooleanFilter,
 )
-from shop.models import Item, Category, Book
+from shop.models import Item, Category, Compiler
 
 PER_PAGE_CHOICES = ((10, "10"), (15, "15"), (20, "20"), (50, "50"), (100, "100"))
 
@@ -39,22 +39,22 @@ class ItemFilter(FilterSet):
 def compilers():
     return [
         (c, c)
-        for c in Book.objects.values_list("compiler", flat=True)
-        .order_by("compiler")
+        for c in Compiler.objects.values_list("name", flat=True)
+        .order_by("name")
         .distinct()
     ]
 
 
-class BookCompilerFilter(FilterSet):
-
-    compiler = ChoiceFilter(
-        choices=compilers(),
-        label="Compiler",
-        field_name="compiler",
-        empty_label="All compilers",
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.filters["compiler"].extra["choices"] = compilers()
-        return
+class CompilerFilter(FilterSet):
+    pass
+    # compiler = ChoiceFilter(
+    #     choices=compilers(),
+    #     label="Compiler",
+    #     field_name="compiler",
+    #     empty_label="All compilers",
+    # )
+    #
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.filters["compiler"].extra["choices"] = compilers()
+    #     return

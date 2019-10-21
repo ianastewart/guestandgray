@@ -1,6 +1,6 @@
 from requests_html import HTMLSession
 from django.core.management.base import BaseCommand
-from shop.models import Book
+from shop.models import Book, Compiler
 
 
 class Command(BaseCommand):
@@ -12,19 +12,30 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.create = options["create"]
         if self.create:
-            print("Deleting all books")
+            print("Deleting all books and compilers")
             Book.objects.all().delete()
+            Compiler.objects.all().delete()
         else:
             print("Testing book scraping")
 
         self.session = HTMLSession()
         count = 0
+        compiler = None
+        if self.create:
+            compiler = Compiler.objects.create(name="Margaret Medley", description="")
         url = "https://chinese-porcelain-art.com/annotated-bibliographies/compiled-by-margaret-medley/"
-        count += self.scrape_url(url, "Margaret Medley")
+        count += self.scrape_url(url, compiler)
+
+        if self.create:
+            compiler = Compiler.objects.create(name="Cyril Beecher", description="")
         url = "https://chinese-porcelain-art.com/annotated-bibliographies/cyril-beecher-update-on-margaret-medleys-bibliography/"
-        count += self.scrape_url(url, "Cyril Beecher")
+        count += self.scrape_url(url, compiler)
+
+        if self.create:
+            compiler = Compiler.objects.create(name="Hanshan Tang", description="")
         url = "https://chinese-porcelain-art.com/annotated-bibliographies/hanshan-tang-books-ltd/"
-        count += self.scrape_url(url, "Hanshan Tang")
+        count += self.scrape_url(url, compiler)
+
         books = len(Book.objects.all())
         print(f"Processed {count} rows. There are {books} books in the database.")
 
