@@ -15,7 +15,7 @@ from wagtail.search.models import Query
 from coderedcms.forms import SearchForm
 from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
-from shop.models import Item, Category, Contact, Enquiry, Book
+from shop.models import Item, Category, Contact, Enquiry, Book, Compiler
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.views.generic_views import FilteredTableView
@@ -294,5 +294,6 @@ class BibliographyView(ListView):
         context["filter"] = CompilerFilter(
             self.request.GET, queryset=self.get_queryset()
         )
+        context["compilers"] = Compiler.objects.order_by("name")
         context = add_page_context(context, "bibliography")
         return context

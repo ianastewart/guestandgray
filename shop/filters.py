@@ -36,25 +36,8 @@ class ItemFilter(FilterSet):
     )
 
 
-def compilers():
-    return [
-        (c, c)
-        for c in Compiler.objects.values_list("name", flat=True)
-        .order_by("name")
-        .distinct()
-    ]
-
-
 class CompilerFilter(FilterSet):
-    pass
-    # compiler = ChoiceFilter(
-    #     choices=compilers(),
-    #     label="Compiler",
-    #     field_name="compiler",
-    #     empty_label="All compilers",
-    # )
-    #
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.filters["compiler"].extra["choices"] = compilers()
-    #     return
+
+    compiler = ModelChoiceFilter(
+        queryset=Compiler.objects.order_by("name"), empty_label="All compilers"
+    )

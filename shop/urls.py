@@ -19,6 +19,9 @@ from shop.views.staff_views import (
     BookListView,
     BookCreateView,
     BookUpdateView,
+    CompilerListView,
+    CompilerCreateView,
+    CompilerUpdateView,
 )
 from shop.views.public_views import (
     home_view,
@@ -79,6 +82,14 @@ staff_urls = [
         name="contact_update",
     ),
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
+    # Compilers
+    path("compilers/", CompilerListView.as_view(), name="compiler_list"),
+    path("compilers/create/", CompilerCreateView.as_view(), name="compiler_create"),
+    path(
+        "compilers/update/<int:pk>/",
+        CompilerUpdateView.as_view(),
+        name="compiler_update",
+    ),
     # Books
     path("books/", BookListView.as_view(), name="book_list"),
     path("books/create/", BookCreateView.as_view(), name="book_create"),

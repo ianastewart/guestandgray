@@ -78,6 +78,10 @@ class BookForm(ModelForm):
         model = Book
         fields = ("title", "author", "description", "subtitle", "compiler")
 
-    compiler = ModelChoiceField(
-        queryset=Compiler.objects.all().order_by("name"), required=False
-    )
+    compiler = ModelChoiceField(queryset=Compiler.objects.all(), required=False)
+
+
+class CompilerForm(ModelForm):
+    class Meta:
+        model = Compiler
+        fields = ("name", "description")

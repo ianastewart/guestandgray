@@ -158,10 +158,16 @@ class Enquiry(models.Model):
     contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
     closed = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.date
+
 
 class Compiler(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Book(models.Model):
@@ -173,6 +179,9 @@ class Book(models.Model):
     author = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     compiler = models.ForeignKey(Compiler, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.title
 
 
 class CustomImage(AbstractImage):

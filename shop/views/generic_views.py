@@ -146,6 +146,8 @@ class JsonCrudView(View):
                 data["html_form"] = f"<h3>Template not found: {str(e)}</h3>"
             except TemplateSyntaxError as e:
                 data["html_form"] = f"<h3>Template syntax error: {str(e)}</h3>"
+            except Exception as e:
+                data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
             return JsonResponse(data)
         return HttpResponse("<h3>Not ajax get request</h3>")
 
@@ -162,6 +164,9 @@ class JsonCrudView(View):
                     data["valid"] = True
                 else:
                     data["valid"] = False
+                    data["html_form"] = render_to_string(
+                        self.template_name, self.get_context_data(), request
+                    )
             if "redirect" in request.POST:
                 data["url"] = self.success_url
             return JsonResponse(data)

@@ -16,9 +16,25 @@ from django.views.generic import (
 )
 from wagtail.core.models import Collection
 
-from shop.forms import ItemForm, CategoryForm, ContactForm, BookForm
-from shop.models import Item, Category, CustomImage, Contact, Address, Enquiry, Book
-from shop.tables import ItemTable, CategoryTable, ContactTable, EnquiryTable, BookTable
+from shop.forms import ItemForm, CategoryForm, ContactForm, BookForm, CompilerForm
+from shop.models import (
+    Item,
+    Category,
+    CustomImage,
+    Contact,
+    Address,
+    Enquiry,
+    Book,
+    Compiler,
+)
+from shop.tables import (
+    ItemTable,
+    CategoryTable,
+    ContactTable,
+    EnquiryTable,
+    BookTable,
+    CompilerTable,
+)
 from shop.views.generic_views import FilteredTableView, JsonCrudView
 from shop.filters import ItemFilter
 
@@ -321,6 +337,29 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
 
     def get_queryset(self):
         return Enquiry.objects.all().order_by("-date")
+
+
+class CompilerListView(LoginRequiredMixin, FilteredTableView):
+    model = Compiler
+    template_name = "shop/generic_table.html"
+    table_class = CompilerTable
+    table_pagination = {"per_page": 100}
+    allow_create = True
+    allow_update = True
+
+    def get_queryset(self):
+        return Compiler.objects.all().order_by("name")
+
+
+class CompilerCreateView(LoginRequiredMixin, JsonCrudView):
+    model = Compiler
+    form_class = CompilerForm
+    template_name = "shop/includes/generic_modal_form.html"
+
+
+class CompilerUpdateView(CompilerCreateView):
+    update = True
+    allow_delete = True
 
 
 class BookListView(LoginRequiredMixin, FilteredTableView):

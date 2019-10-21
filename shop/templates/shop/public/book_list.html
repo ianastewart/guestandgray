@@ -1,23 +1,37 @@
-{% extends 'coderedcms/pages/web_page.html' %}
+{% extends 'coderedcms/pages/web_page_notitle.html' %}
 {% load bootstrap4 %}
 {% block content_post_body %}
-  <div class="container bg-white shadow p-5">
+  <div class="container bg-white shadow p-5 my-2">
     <div class="row">
-    <div class="col-4 float-right">
+      <div class="col">
+      <h1>Bibliography</h1>
+      </div>
+    </div>
+    <div class="row">
+
+        <p class="col-12 col-md-7 col-lg-8">Our bibliography has been compiled by {{ compilers|length }} people:
+
+          {% for comp in compilers %}
+            {% if forloop.first %}{% elif forloop.last %} and {% else %}, {% endif %}
+            <a href="#" data-toggle="modal" data-target="#modal-{{ comp.id }}">{{ comp.name }}</a>{% endfor %}.
+        You can filter the books by the compiler.
+        </p>
+    <div class="col-md-1"></div>
+    <div class="col col-md-4 col-lg-3">
       <form action="." method="get" id="filter_form">
-      {% bootstrap_form filter.form %}
+      {% bootstrap_field filter.form.compiler %}
     </form>
     </div>
     </div>
     {% for book in filter.qs %}
       <div class="row mt-2">
-        <div class="col px-0">
+        <div class="col">
           <p class="mb-2"><b>{{ book.title }}</b><span class="text-muted float-right"><i>{{ book.compiler.name }}</i></span>
             {% if book.subtitle %}<br>{{ book.subtitle }}{% endif %}</p>
         </div>
       </div>
       <div class="row border-bottom">
-        <div class="col-3 px-0 pb-2">
+        <div class="col-3 pb-2">
           {{ book.author }}
 
           {% if book.detail_1 %}<br>{{ book.detail_1 }}{% endif %}
@@ -31,6 +45,31 @@
 
     {% endfor %}
   </div>
+{% for comp in compilers %}
+<!-- Modal -->
+<div class="modal fade" id="modal-{{ comp.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel-{{ comp.id }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalLabel-{{ comp.id }}">{{ comp.name }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ comp.description }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+  {% endfor %}
+
+
+
+
 {% endblock %}
 {% block custom_scripts %}
     <script type="text/javascript">

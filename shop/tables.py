@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
 from shop.truncater import truncate
-from shop.models import Category, Item, Contact, Enquiry, Book
+from shop.models import Category, Item, Contact, Enquiry, Book, Compiler
 
 
 class CategoryTable(tables.Table):
@@ -96,10 +96,17 @@ class EnquiryTable(tables.Table):
 class BookTable(tables.Table):
     class Meta:
         model = Book
-        fields = ("title", "author", "compiler", "description")
+        fields = ("title", "author", "description", "compiler.name")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     title = tables.Column(attrs={"td": {"width": "20%"}})
     author = tables.Column(attrs={"td": {"width": "20%"}})
     description = tables.Column(orderable=False)
+
+
+class CompilerTable(tables.Table):
+    class Meta:
+        model = Compiler
+        fields = ("name", "description")
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
