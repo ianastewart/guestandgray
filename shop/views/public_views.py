@@ -19,7 +19,7 @@ from shop.models import Item, Category, Contact, Enquiry, Book
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.views.generic_views import FilteredTableView
-from shop.filters import BookCompilerFilter
+from shop.filters import CompilerFilter
 
 logger = logging.getLogger(__name__)
 
@@ -282,16 +282,16 @@ class BibliographyView(ListView):
     model = Book
     template_name = "shop/public/book_list.html"
     table_class = BookTable
-    filter_class = BookCompilerFilter
+    filter_class = CompilerFilter
     table_pagination = {"per_page": 100}
 
     def get_queryset(self):
-        return Book.objects.all().order_by("title")
+        return Book.objects.all().order_by("title").select_related("compiler")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["heading"] = "Bibiliography"
-        context["filter"] = BookCompilerFilter(
+        context["filter"] = CompilerFilter(
             self.request.GET, queryset=self.get_queryset()
         )
         context = add_page_context(context, "bibliography")
