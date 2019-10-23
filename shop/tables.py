@@ -37,7 +37,7 @@ class ImageColumn(tables.Column):
 class ItemTable(tables.Table):
     class Meta:
         model = Item
-        fields = ("selection", "name", "ref", "category.name", "price", "archive")
+        fields = ("selection", "name", "ref", "category.name", "sale_price", "archive")
         attrs = {"class": "table table-sm table-hover hover-link"}
         # row_attrs = {
         #     "data-url": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
@@ -51,6 +51,9 @@ class ItemTable(tables.Table):
         template_name="django_tables2/custom_checkbox.html",
         verbose_name="Select",
     )
+
+    def render_sale_price(self, value):
+        return int(value)
 
 
 class ContactTable(tables.Table):

@@ -1,6 +1,6 @@
 import django.forms as forms
 from django.forms import ModelForm, ModelChoiceField, ValidationError
-from shop.models import Item, Category, Contact, Address, Book, Compiler
+from shop.models import Item, Category, Contact, Book, Compiler
 
 
 class CategoryForm(ModelForm):
@@ -28,13 +28,50 @@ class ItemForm(ModelForm):
         model = Item
         fields = (
             "name",
-            "ref",
             "description",
-            "price",
             "category",
             "dimensions",
             "condition",
             "provenance",
+            "ref",
+            "purchase_date",
+            "cost_price",
+            "restoration_cost",
+            "sale_price",
+            "minimum_price",
+            "archive",
+            "location",
+            "purchase_data",
+            "visible",
+            "show_price",
+            "featured",
+        )
+
+
+class ArchiveItemForm(ModelForm):
+    title = "Archive Item"
+
+    class Meta:
+        model = Item
+        fields = (
+            "name",
+            "description",
+            "category",
+            "dimensions",
+            "condition",
+            "provenance",
+            "ref",
+            "purchase_date",
+            "cost_price",
+            "restoration_cost",
+            "sale_price",
+            # "minimum_price",
+            # "archive",
+            # "location",
+            "purchase_data",
+            "visible",
+            # "show_price",
+            # "featured",
         )
 
 
@@ -65,12 +102,6 @@ class EnquiryForm(ModelForm):
     mail_consent = forms.BooleanField(
         required=False, label="Please add me to your mailing list"
     )
-
-
-class AddressForm(ModelForm):
-    class Meta:
-        model = Address
-        fields = ("address1", "address2", "address3", "town", "post_code", "country")
 
 
 class BookForm(ModelForm):

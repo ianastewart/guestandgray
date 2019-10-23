@@ -55,7 +55,7 @@ def item_view(request, slug, pk):
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
         context["category"] = category
     context["item"] = item
-    context["price"] = int(item.price / 100)
+    # context["price"] = int(item.sale_price)
     context["images"] = item.images.all().exclude(id=item.image_id)
     form = EnquiryForm()
     form.fields["subject"].initial = f"{item.name} ({item.ref})"
@@ -79,19 +79,13 @@ def catalogue_view(request, slugs=None, archive=False):
         context["categories"] = child_categories.exclude(image=None)
         counter = Counter(category, archive)
         counter.count()
-        # for cat in context["categories"]:
-        #     cat.count = cat.item_set.filter(
-        #         image__isnull=False, archive=archive
-        #     ).count()
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"
-        context["count"] = category.item_set.filter(
-            image__isnull=False, archive=archive
-        ).count()
         objects = category.item_set.filter(
-            image__isnull=False, archive=archive
-        ).order_by("-price")
+            image__isnull=False, archive=archive, visible=True
+        ).order_by("featured", "-price")
+        context["count"] = objects.count()
         paginator = Paginator(objects, 32)
         page = request.GET.get("page")
         if paginator.num_pages >= 1 and not page:
@@ -105,11 +99,14 @@ def catalogue_view(request, slugs=None, archive=False):
 class Counter:
     """ Traverse a hierarchical category tree and append the total count of items under each node """
 
-    def __init__(self, root, archive=False, exclude_no_image=True):
+    def __init__(
+        self, root, archive=False, exclude_no_image=True, exclude_not_visible=True
+    ):
         self.total = 0
         self.root = root
         self.archive = archive
-        self.exclude = exclude_no_image
+        self.no_image = exclude_no_image
+        self.not_visible = exclude_not_visible
 
     def count(self):
         return self._count(self.root)
@@ -118,12 +115,16 @@ class Counter:
         # recursive count function
         print(f"Start {cat.name}")
         items = cat.item_set.filter(archive=self.archive)
-        if self.exclude:
+        if self.no_image:
             items = items.filter(image__isnull=False)
+        if self.not_visible:
+            items = items.filter(visible=True)
         total = items.count()
         child_cats = cat.get_children()
-        if self.exclude:
-            child_cats = child_cats.filter(image__isnull=False)
+        # if self.no_image:
+        #     child_cats = child_cats.filter(image__isnull=False)
+        # if self.not_visible:
+        #     child_cats = child_cats.filter(visible=True)
         if child_cats:
             for cat1 in child_cats:
                 total += self._count(cat1)

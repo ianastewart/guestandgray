@@ -1,128 +1,20 @@
 {% extends 'coderedcms/pages/web_page_notitle.html' %}
-{% load static wagtailimages_tags shop_tags bootstrap4 %}
+{% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
 {% block extra_head %}
   <link rel="stylesheet" href="{% static 'website/css/site.css' %}">
   <link rel="stylesheet" href="{% static 'shop/css/photoswipe.css' %}">
   <link rel="stylesheet" href="{% static 'shop/css/default-skin.css' %}">
 {% endblock %}
 {% block content_body %}
-
   <div class="container">
-    <div class="row">
-      <div class="col">
-    {% breadcrumb breadcrumb item.archive %}
-        <h2 class="mt-4 font-georgia">{{ item.name }}</h2>
-      </div>
-    </div>
-    <div class="row mt-5">
-      <div class="col-xs col-md-6">
-        <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
-          {% image item.image original as full_image %}
-          <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-500x500 class="img-fluid" %}</a>
-        </figure>
-        <div class="container mt-3">
-          <div class="row">
-            {% for image in images %}
-              <div class="col my-2">
-                <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
-                        data-index="{{ forloop.counter }}">
-                  {% image image original as full_image %}
-                  <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>
-                </figure>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-      <div class="col-xs col-md-6 bg-white p-3 mb-4 px-4 shadow">
-        <p>{{ item.description }}</p>
-        {% if item.dimensions %}
-          <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
-          <p class="col-12 col-lg-9">{{ item.dimensions}}</p>
-          </div>
-        {% endif %}
-        {% if item.condition %}
-          <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
-          <p class="col-12 col-lg-9">{{ item.condition }}</p>
-          </div>
-        {% endif %}
-          <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Reference: </p>
-          <p class="col-12 col-lg-9">{{ item.ref }}</p>
-          </div>
-        {% if item.archive %}
-          <p>ARCHIVE - Not For Sale</p>
-        {% else %}
-          <div class="row">
-          <div class="col-12 col-lg-4 py-2">
-          <h5>Price: £ {{ price }}</h5>
-          </div>
-          <div class="col-6 ">
-          <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#modal-form">Enquire</button>
-          </div>
-          </div>
-        {% endif %}
-        {% if item.provenance %}
-          <p class="mt-4">{{ item.provenance }}</p>
-        {% endif %}
-        <div class="mt-4">
-          {% if request.user.is_authenticated %}
-            <a class="btn btn-outline-secondary" role="button"
-               href="{% url 'item_detail' pk=item.id %}">Edit</a>{% endif %}
-        </div>
-      </div>
-    </div>
-
-    <!-- Root element of PhotoSwipe. Must have class pswp. -->
-    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-      <!-- Background of PhotoSwipe.
-           It's a separate element as animating opacity is faster than rgba(). -->
-      <div class="pswp__bg"></div>
-      <!-- Slides wrapper with overflow:hidden. -->
-      <div class="pswp__scroll-wrap">
-        <!-- Container that holds slides.
-            PhotoSwipe keeps only 3 of them in the DOM to save memory.
-            Don't modify these 3 pswp__item elements, data is added later on. -->
-        <div class="pswp__container">
-          <div class="pswp__item"></div>
-          <div class="pswp__item"></div>
-          <div class="pswp__item"></div>
-        </div>
-        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
-        <div class="pswp__ui pswp__ui--hidden">
-          <div class="pswp__top-bar">
-            <!--  Controls are self-explanatory. Order can be changed. -->
-            <div class="pswp__counter"></div>
-            <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-            <button class="pswp__button pswp__button--share" title="Share"></button>
-            <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-            <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-            <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
-            <!-- element will get class pswp__preloader--active when preloader is running -->
-            <div class="pswp__preloader">
-              <div class="pswp__preloader__icn">
-                <div class="pswp__preloader__cut">
-                  <div class="pswp__preloader__donut"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-            <div class="pswp__share-tooltip"></div>
-          </div>
-          <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
-          <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
-          <div class="pswp__caption">
-            <div class="pswp__caption__center"></div>
-          </div>
-        </div>
-      </div>
+  <div class="row">
+    <div class="col">
+      {% breadcrumb breadcrumb item.archive %}
     </div>
   </div>
-
-    <!-- Modal to hold form -->
+</div>
+  {% include 'shop/includes/partial_item_detail.html' with public=True %}
+    <!-- Modal to hold enquiry form -->
   <div class="modal fade " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
     <div class="modal-dialog {{ modal_class }}" role="document">
       <div class="modal-content bg-guest-light">
@@ -150,7 +42,6 @@
       </div>
     </div>
   </div>
-
 {% endblock %}
 
 {% block custom_scripts %}
@@ -188,5 +79,4 @@
           lightBox.init();
       });
   </script>
-
 {% endblock %}

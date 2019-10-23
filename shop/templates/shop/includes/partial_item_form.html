@@ -1,54 +1,100 @@
 <!-- Form works for both modal and non modal usage -->
-{% load bootstrap4 wagtailimages_tags %}
+{% load bootstrap4 wagtailimages_tags shop_tags %}
 <form method="post" action="{{ path }}" class="js-form">
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
   {% if modal %}
     <div class="modal-header">
-      <h5 class="modal-title">{{ form_title }}</h5>
+      <h5 class="modal-title">{{ form_title }} Ref: {{ object.ref }}</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-  {% else %}
-    <h5>{{ form_title }}</h5>
   {% endif %}
+  {% bootstrap_messages %}
   <div {% if modal %}class="modal-body"{% endif %}>
     <div class="row">
-      <div class="col-md-8">
-        {% bootstrap_form form layout="horizontal" %}
+      <div class="col-md-6">
+        {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
+        {% bootstrap_field form.name %}
+        {% bootstrap_field form.description %}
+        {% bootstrap_field form.category %}
+        {% bootstrap_field form.condition %}
+        {% bootstrap_field form.dimensions %}
+        {% bootstrap_field form.provenance %}
       </div>
-      <div class="col-md-4">
-        <div class="card">
-          {% if object and object.image %}
-            {% image object.image width-250 as card_image %}
-            <img class="card-img-top" src="{{ card_image.url }}">
-          {% else %}
-            <div class="card-body bg-white text-center" style="height:400px;">
-              <i>No image</i>
+      <div class="col-md-6">
+        <div class="row">
+
+          <div class="col-md-6 border border-secondary shadow">
+            {% if object.archive %}
+              <fieldset disabled>
+              <legend>Archived item</legend>
+            {% else %}
+              <fieldset>
+              <legend>Stock item</legend>
+            {% endif %}
+            {% bootstrap_field form.purchase_date %}
+            {% bootstrap_field form.purchase_data %}
+            {% bootstrap_field form.cost_price %}
+            {% bootstrap_field form.restoration_cost %}
+            {% bootstrap_field form.sale_price %}
+            {% if not object.archive %}
+              {% bootstrap_field form.minimum_price %}
+              {% bootstrap_field form.location %}
+            {% endif %}
+            {% if object.archive %}</fieldset>{% endif %}
+            <fieldset>
+              <legend>Website</legend>
+              {% checkbox form.visible %}
+              {% if not object.archive %}
+                {% checkbox form.featured %}
+                {% checkbox form.show_price %}
+              {% endif %}
+              <br>
+            </fieldset>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              {% if object and object.image %}
+                {% image object.image width-250 as card_image %}
+                <img class="card-img-top" src="{{ card_image.url }}">
+              {% else %}
+                <div class="card-body bg-white text-center" style="height:400px;">
+                  <i>No image</i>
+                </div>
+              {% endif %}
             </div>
-          {% endif %}
+            {% if object %}
+              {% if object.image %}
+                {% if object.category.image == object.image %}<p>Image is used as the category image</p>{% endif %}
+                {% if object.category.archive_image == object.image %}<p>Image is used as the archive image</p>
+                {% endif %}
+                <a class="btn btn-secondary mt-3" style="width:210px" href="{% url 'item_images' pk=object.pk %}">Manage
+                  images</a><br>
+                {% if object.category.image != object.image %}
+                  <button type="submit" class="btn btn-secondary mt-3 mr-2 js-submit" style="width:210px"
+                          name="assign_category">Use as
+                    category image
+                  </button>
+                {% endif %}
+                {% if object.category.archive_image != object.image %}
+                  <button type="submit" class="btn btn-secondary mt-3 js-submit" style="width:210px"
+                          name="assign_archive">
+                    Use as
+                    archive image
+                  </button>
+                {% endif %}
+              {% endif %}
+            {% else %}
+              You can add an image after you have saved the item.
+            {% endif %}
+          </div>
         </div>
-        {% if object %}
-          {% if object.image %}
-            {% if object.category.image == object.image %}<p>Image is used as the category image</p>{% endif %}
-            {% if object.category.archive_image == object.image %}<p>Image is used as the archive image</p>{% endif %}
-            <a class="btn btn-secondary mt-3" style="width:210px" href="{% url 'item_images' pk=object.pk %}">Manage
-              images</a><br>
-            {% if object.category.image != object.image %}
-              <button type="submit" class="btn btn-secondary mt-3 mr-2 js-submit" style="width:210px" name="assign_category">Use as
-                category image
-              </button>
-            {% endif %}
-            {% if object.category.archive_image != object.image %}
-              <button type="submit" class="btn btn-secondary mt-3 js-submit" style="width:210px" name="assign_archive">Use as
-                archive image
-              </button>
-            {% endif %}
-          {% endif %}
-        {% else %}
-          You can add an image after you have saved the item.
-        {% endif %}
+        <div class="row">
+          <div class="col-md-6 mt-2 border shadow">
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -56,11 +102,14 @@
     <div class="row my-3">
       <div class="col">
         {% if modal %}
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>{% endif %}
-        {% if allow_delete %}
-          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
+          <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+        {% elif object %}
+          <a class="btn btn-default" href={% url 'item_detail' pk=object.pk %}>Cancel</a>
         {% endif %}
-        <button type="submit" class="btn btn-primary js-submit">Save</button>
+        {% if allow_delete %}
+          <button class="btn btn-danger" {% if modal %}type="button" data-toggle="modal" data-target="#modal-confirm"{% else %}type="submit" name="delete"{% endif %}>Delete</button>
+        {% endif %}
+        <button class="btn btn-primary js-submit" {% if modal %}type="button" {% else %}type="submit" name="save"{% endif %}>Save</button>
       </div>
     </div>
   </div>

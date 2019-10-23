@@ -3,6 +3,7 @@ import os.path
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -16,17 +17,15 @@ from django.views.generic import (
 )
 from wagtail.core.models import Collection
 
-from shop.forms import ItemForm, CategoryForm, ContactForm, BookForm, CompilerForm
-from shop.models import (
-    Item,
-    Category,
-    CustomImage,
-    Contact,
-    Address,
-    Enquiry,
-    Book,
-    Compiler,
+from shop.forms import (
+    ItemForm,
+    ArchiveItemForm,
+    CategoryForm,
+    ContactForm,
+    BookForm,
+    CompilerForm,
 )
+from shop.models import Item, Category, CustomImage, Contact, Enquiry, Book, Compiler
 from shop.tables import (
     ItemTable,
     CategoryTable,
@@ -58,73 +57,84 @@ class ItemListView(LoginRequiredMixin, FilteredTableView):
         return Item.objects.all().order_by("ref")
 
 
-class ItemCreateView(LoginRequiredMixin, JsonCrudView):
-    model = Item
-    form_class = ItemForm
-    template_name = "shop/includes/partial_item_form.html"
-
-
-class ItemUpdateView(LoginRequiredMixin, UpdateView):
+class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
     form_class = ItemForm
     template_name = "shop/item_form.html"
+
+
+class ItemPostMixin:
+    """
+    Common post actions used in both regular and json item update views
+    Returns True if a command has been actioned ""
+    """
+
+    def post_action(self, request, object):
+        category = object.category
+        if "assign_category" in request.POST:
+            category.image = object.image
+            category.save()
+            return True
+        elif "assign_archive" in request.POST:
+            category.archive_image = object.image
+            category.save()
+            return True
+        return False
+
+
+class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
+    model = Item
+    template_name = "shop/item_form.html"
+
+    def get_form(self, form_class=None):
+        if self.object.archive:
+            return ArchiveItemForm(**self.get_form_kwargs())
+        else:
+            return ItemForm(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = self.object
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
+        context["allow_delete"] = True
         return context
 
     def get_success_url(self):
         return reverse("item_detail", kwargs={"pk": self.object.pk})
 
     def post(self, request, *args, **kwargs):
-        item = self.get_object()
-        category = item.category
-        reshow = False
-        if "assign_category" in request.POST:
-            category.image = item.image
-            category.save()
-            reshow = True
-        elif "assign_archive" in request.POST:
-            category.archive_image = item.image
-            category.save()
-            reshow = True
-        response = super().post(request, *args, **kwargs)
-        if reshow:
-            return redirect("item_update", item.pk)
-        return response
+        object = self.get_object()
+        if self.post_action(request, object):
+            return redirect("item_update", object.pk)
+        if "delete" in request.POST:
+            object.delete()
+            messages.add_message(
+                request, messages.INFO, f"Item ref: {object.ref} has been deleted"
+            )
+            return redirect("item_list")
+        return super().post(request, *args, **kwargs)
 
 
-class ItemUpdateViewAjax(LoginRequiredMixin, JsonCrudView):
+class ItemUpdateViewAjax(LoginRequiredMixin, JsonCrudView, ItemPostMixin):
     model = Item
-    form_class = ItemForm
     template_name = "shop/includes/partial_item_form.html"
     update = True
     allow_delete = True
 
+    def get_form_class(self):
+        return ArchiveItemForm if self.object.archive else ItemForm
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # context["object"] = self.object.image
-        # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
+        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 
     def post(self, request, *args, **kwargs):
-        item = self.get_object(**kwargs)
-        category = item.category
-        reshow = False
-        if "assign_category" in request.POST:
-            category.image = item.image
-            category.save()
-            reshow = True
-        elif "assign_archive" in request.POST:
-            category.archive_image = item.image
-            category.save()
-            reshow = True
-        response = super().post(request, *args, **kwargs)
-        if reshow:
-            return redirect("item_update_ajax", item.pk)
-        return response
+        object = self.get_object(**kwargs)
+        if self.post_action(request, object):
+            return redirect("item_update_ajax", object.pk)
+        return super().post(request, *args, **kwargs)
 
 
 class ItemImagesView(LoginRequiredMixin, DetailView):
@@ -230,11 +240,7 @@ class ItemDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        price = 0
-        if self.object.price:
-            price = int(self.object.price / 100)
-        context["price"] = price
-        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
+        context["images"] = self.object.images.all().exclude(id=self.object.image_id)
         return context
 
 

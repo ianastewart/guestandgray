@@ -6,7 +6,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=False)
 def breadcrumb(node_list, archive=False):
-    output = '<nav aria-label="breadcrumb"><ol class="breadcrumb">'
+    output = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-0">'
     for node in node_list:
         if node.active:
             output += f'<li class="breadcrumb-item active" aria-current="page">{node.name}</li>'
@@ -28,3 +28,12 @@ def shop_is_active_page(context, page, link):
     if page:
         return current_url == page.get_url(context["request"])
     return link in current_url
+
+
+@register.simple_tag(takes_context=False)
+def checkbox(box):
+    checked = "checked" if box.initial else ""
+    output = f'<div class="custom-control custom-checkbox">\
+    <input type="checkbox" class ="custom-control-input" id="{box.auto_id}" name="{box.html_name}" {checked}>\
+    <label class="custom-control-label" for="{box.auto_id}">{box.label}</label></div>'
+    return mark_safe(output)

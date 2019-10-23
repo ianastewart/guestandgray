@@ -31,6 +31,7 @@ $(document).ready(function () {
                         location.reload(true)
                     }
                 } else {
+                    $("#modal-form").modal("show");
                     $("#modal-form .modal-content").html(data.html_form);
                 }
             }

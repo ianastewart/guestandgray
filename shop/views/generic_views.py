@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.http import QueryDict, JsonResponse, HttpResponse
 from django_tables2 import SingleTableView
 from django.template.loader import render_to_string
@@ -77,7 +78,7 @@ class FilteredTableView(SingleTableView):
             return list(query_set)
         return query_set
 
-    def get_total(self, query_set):
+    def get_total(self, query_set=None):
         """ optional total shown above table"""
         return None
 
@@ -111,10 +112,10 @@ class FilteredTableView(SingleTableView):
                 filter_data = QueryDict(query)
                 query_set = self.get_queryset()
                 if self.filter_class:
-                    filter = self.filter_class(
+                    f = self.filter_class(
                         filter_data, queryset=query_set, request=self.request
                     )
-                    query_set = filter.qs
+                    query_set = f.qs
                 return self.process_table_data(query_set, no_list=True)
         return None
 
@@ -124,6 +125,9 @@ class JsonCrudView(View):
 
     model = None
     object = None
+    form = None
+    form_class = None
+    template_name = None
     update = False
     allow_delete = False
     success_url = ""
@@ -134,11 +138,15 @@ class JsonCrudView(View):
             self.object = get_object_or_404(self.model, pk=kwargs["pk"])
         return self.object
 
-    def get(self, request, *args, **kwargs):
+    def get_form_class(self):
+        return self.form_class
+
+    def get(self, request, **kwargs):
         if request.is_ajax():
+            data = {}
             try:
-                self.form = self.form_class(instance=self.get_object(**kwargs))
-                data = {}
+                self.object = self.get_object(**kwargs)
+                self.form = self.get_form_class()(instance=self.object)
                 data["html_form"] = render_to_string(
                     self.template_name, self.get_context_data(), request
                 )
@@ -149,7 +157,7 @@ class JsonCrudView(View):
             except Exception as e:
                 data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
             return JsonResponse(data)
-        return HttpResponse("<h3>Not ajax get request</h3>")
+        return HttpResponse("JsonCrudView received a non-ajax get request")
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -157,8 +165,11 @@ class JsonCrudView(View):
             data = {}
             if "delete" in request.POST:
                 instance.delete()
+                messages.add_message(
+                    request, messages.INFO, f"{str(instance)} was deleted"
+                )
             else:
-                self.form = self.form_class(request.POST, instance=instance)
+                self.form = self.get_form_class()(request.POST, instance=instance)
                 if self.form.is_valid():
                     self.form.save()
                     data["valid"] = True
@@ -170,7 +181,7 @@ class JsonCrudView(View):
             if "redirect" in request.POST:
                 data["url"] = self.success_url
             return JsonResponse(data)
-        return HttpResponse("Not ajax post request")
+        return HttpResponse("JsonCrudView received a non-ajax post request")
 
     def get_context_data(self):
         name = self.model._meta.object_name

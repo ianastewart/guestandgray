@@ -79,39 +79,63 @@ class Item(index.Indexed, models.Model):
         ON_SALE = 1
         SOLD = 2
 
+    class Location(ModelEnum):
+        IN_STOCK = 0
+        AUCTION = 1
+        NOT_COLLECTED = 2
+        AT_RESTORER = 3
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(null=True, blank=True, max_length=200)
     ref = models.CharField(
         null=False, blank=True, max_length=10, default="", db_index=True
     )
     description = models.TextField(null=True, blank=True)
-    dimensions = models.CharField(max_length=200, null=True, blank=True)
-    condition = models.CharField(max_length=200, null=True, blank=True)
-    provenance = models.CharField(max_length=500, null=True, blank=True)
-    # notes = models.TextField(null=True, blank=True)
-    price = models.IntegerField(null=True, blank=True)
-    image_file = models.CharField(max_length=100, null=True, blank=True)
-    image = models.ForeignKey(
-        "CustomImage",
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="parent_object",
-    )
-    category_text = models.CharField(max_length=100, null=True, blank=True)
-    # creation_date = models.DateTimeField(auto_now_add=True)
-    # sold_date = models.DateTimeField(null=True, blank=True)
-    # state = models.SmallIntegerField(choices=State.choices(), default=0)
-
     category = models.ForeignKey(
         Category, null=True, blank=True, on_delete=models.SET_NULL
     )
-    visible = models.BooleanField(default=True)
+    condition = models.CharField(max_length=200, null=True, blank=True)
+    dimensions = models.CharField(max_length=200, null=True, blank=True)
+    provenance = models.CharField(max_length=500, null=True, blank=True)
+    # notes = models.TextField(null=True, blank=True)
     archive = models.BooleanField(default=False)
+    cost_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    restoration_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    price = models.IntegerField(null=True, blank=True)
+    sale_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    minimum_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    purchase_data = models.ForeignKey(
+        "Purchase", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    # category_text = models.CharField(max_length=100, null=True, blank=True)
+    purchase_date = models.DateField(null=True, blank=True)
+    location = models.SmallIntegerField(
+        choices=Location.choices(), default=0, null=True, blank=True
+    )
+    show_price = models.BooleanField(default=True)
+    visible = models.BooleanField(default=True)
+    featured = models.BooleanField(default=True)
+    # image_file = models.CharField(max_length=100, null=True, blank=True)
+    image = models.ForeignKey(
+        "CustomImage",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="parent_object",
+    )
 
     search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
 
     def __str__(self):
-        return self.name
+        return f"{self.ref} {self.name}"
 
     def get_absolute_url(self):
         return reverse("public_item", kwargs={"slug": self.slug, "pk": self.id})
@@ -121,19 +145,46 @@ class Item(index.Indexed, models.Model):
         super().save(*args, **kwargs)
 
 
-class Address(models.Model):
-    address1 = models.CharField(max_length=50)
-    address2 = models.CharField(max_length=50, blank=True, null=True)
-    address3 = models.CharField(max_length=50, blank=True, null=True)
-    town = models.CharField(max_length=50)
-    post_code = models.CharField(max_length=15, blank=True, null=True)
-    country = models.CharField(max_length=50, blank=True, null=True)
+class Purchase(models.Model):
+    """ Purchase can be a lot with multiple items linked """
+
+    purchase_date = models.DateField(null=True, blank=True)
+    invoice_number = models.CharField(max_length=10, null=True, blank=True)
+    invoice_total = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    buyers_premium = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    lot_number = models.CharField(max_length=10, null=True, blank=True)
+    vendor = models.ForeignKey(
+        "Contact", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    paid_date = models.DateField(null=True, blank=True)
+    margin_scheme = models.BooleanField(default=True)
+    vat_rate = models.DecimalField(
+        max_digits=4, decimal_places=2, null=True, blank=True
+    )
 
     def __str__(self):
-        return f"{self.address1}, {self.address2}, {self.town}"
+        return f"{self.id} {self.lot_number}"
+
+
+class PurchaseExpense(models.Model):
+    expense_type = models.CharField(max_length=50)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    eligible = models.BooleanField(default=False)
+    purchase = models.ForeignKey(
+        Purchase, null=True, blank=True, on_delete=models.SET_NULL
+    )
+
+    def __str__(self):
+        return f"{self.id} {self.amount}"
 
 
 class Contact(models.Model):
+    """ Covers all business contacts  - buyers, vendors etc """
+
     title = models.CharField(max_length=20, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30)
@@ -141,10 +192,14 @@ class Contact(models.Model):
     work_phone = models.CharField(max_length=20, blank=True, null=True)
     mobile_phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=80, blank=True, null=True)
-    notes = models.CharField(max_length=1000, blank=True, null=True)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    notes = models.CharField(max_length=500, blank=True, null=True)
+    address = models.CharField(max_length=500, blank=True, null=True)
     mail_consent = models.BooleanField(default=False)
     consent_date = models.DateField(null=True)
+    vendor = models.BooleanField(default=False)
+    restorer = models.BooleanField(default=False)
+    buyer = models.BooleanField(default=False)
+    other = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -155,7 +210,9 @@ class Enquiry(models.Model):
     subject = models.CharField(max_length=80, blank=False, null=True)
     message = models.TextField(blank=False, null=True)
     items = models.ManyToManyField(Item)
-    contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
+    contact = models.ForeignKey(
+        Contact, on_delete=models.SET_NULL, blank=True, null=True
+    )
     closed = models.BooleanField(default=False)
 
     def __str__(self):

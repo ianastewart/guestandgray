@@ -1,3 +1,4 @@
+from decimal import *
 from requests_html import HTMLSession
 from django.core.management.base import BaseCommand
 from shop.models import Item, CustomImage, Category
@@ -160,7 +161,8 @@ def parse(page, options):
                             price = 0
                             if prices:
                                 price = prices[0].text.split("£")[1]
-                                price = int(price.replace(",", "").replace(".", ""))
+                                price = price.replace(",", "")
+                            sale_price = Decimal(price)
                             items = Item.objects.filter(ref=ref)
                             if len(items) == 1:
                                 print(items[0].name, "found")
@@ -172,7 +174,7 @@ def parse(page, options):
                                         name=truncate(description),
                                         ref=ref,
                                         description=description,
-                                        price=price,
+                                        sale_price=price,
                                         category=cat_db,
                                         image_file=image_file,
                                         archive=sold,
