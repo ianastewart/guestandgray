@@ -41,3 +41,7 @@ class CompilerFilter(FilterSet):
     compiler = ModelChoiceFilter(
         queryset=Compiler.objects.order_by("name"), empty_label="All compilers"
     )
+
+
+class VendorFilter(FilterSet):
+    company = CharFilter(lookup_expr="icontains")

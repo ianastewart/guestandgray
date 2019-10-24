@@ -80,6 +80,14 @@ class ContactTable(tables.Table):
         return "Yes" if value else ""
 
 
+class VendorTable(tables.Table):
+    class Meta:
+        model = Contact
+        fields = ("first_name", "last_name", "company", "address")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+
 class EnquiryTable(tables.Table):
     class Meta:
         model = Enquiry

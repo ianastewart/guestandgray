@@ -15,6 +15,7 @@ from shop.views.staff_views import (
     ContactCreateView,
     ContactListView,
     ContactUpdateView,
+    VendorListView,
     EnquiryListView,
     BookListView,
     BookCreateView,
@@ -32,16 +33,12 @@ from shop.views.public_views import (
     ContactSubmittedView,
     BibliographyView,
 )
-from shop.views.import_views import (
-    import_objects_view,
-    import_progress_view,
-    import_images_view,
-    # import_images_progress_view,
-    set_category_images_view,
-)
+from shop.views.import_views import upload_view
+
 
 staff_urls = [
     path("", StaffHomeView.as_view(), name="staff_home"),
+    # Items
     path("item/create/", ItemCreateView.as_view(), name="item_create"),
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
@@ -53,14 +50,7 @@ staff_urls = [
     ),
     path("item/list/create/", ItemCreateView.as_view(), name="item_create_json"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
-    path("import/", import_objects_view, name="import_objects"),
-    path("import/progress/", import_progress_view, name="import_progress"),
-    path("import/images/", import_images_view, name="import_images"),
-    path(
-        "import/category-images/",
-        set_category_images_view,
-        name="import_category_images",
-    ),
+    # Categories
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
     path(
         "category/update/<int:pk>/",
@@ -74,6 +64,7 @@ staff_urls = [
         CategoryDetailView.as_view(),
         name="category_detail",
     ),
+    # Contacts
     path("contact/list/", ContactListView.as_view(), name="contact_list"),
     path("contact/list/create/", ContactCreateView.as_view(), name="contact_create"),
     path(
@@ -81,6 +72,14 @@ staff_urls = [
         ContactUpdateView.as_view(),
         name="contact_update",
     ),
+    path("vendor/list/", VendorListView.as_view(), name="vendor_list"),
+    path("vendor/list/create/", ContactCreateView.as_view(), name="vendor_create"),
+    path(
+        "vendor/list/update/<int:pk>/",
+        ContactUpdateView.as_view(),
+        name="vendor_update",
+    ),
+    # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
     # Compilers
     path("compilers/", CompilerListView.as_view(), name="compiler_list"),
@@ -96,6 +95,8 @@ staff_urls = [
     path("books/update/<int:pk>/", BookUpdateView.as_view(), name="book_update"),
     # Search
     path("search/", search_view, {"public": False}, name="search"),
+    # Upload
+    path("upload/", upload_view, name="upload"),
 ]
 
 public_urls = [

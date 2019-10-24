@@ -1,7 +1,10 @@
 import logging
+import os.path
 
 from keyvaluestore.utils import get_value_for_key, set_key_value
 from django.shortcuts import render, redirect
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage, default_storage
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from shop.models import Item, Category, CustomImage
@@ -11,18 +14,17 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
-def import_objects_view(request):
-    template_name = "shop/import.html"
+def upload_view(request):
+    template_name = "shop/upload.html"
 
-    if request.method == "GET":
-        set_status("Waiting")
-
-    if request.method == "POST":
-        excel_file = request.FILES["myfile"]
-        if import_objects(excel_file):
-            process_objects(request.user)
-
-    return render(request, template_name, context={})
+    if request.method == "POST" and request.FILES["myfile"]:
+        myfile = request.FILES["myfile"]
+        full_path = os.path.join(settings.MEDIA_ROOT, "excel", myfile.name)
+        if os.path.exists(full_path):
+            os.remove(full_path)
+        path = default_storage.save(full_path, myfile)
+        return render(request, template_name, {"uploaded_file_url": path})
+    return render(request, template_name)
 
 
 @login_required

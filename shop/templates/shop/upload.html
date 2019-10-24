@@ -1,0 +1,69 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 %}
+{% load wagtailimages_tags %}
+{% block content_body %}
+  <div class="container bg-light">
+    <div class="row">
+      <div class="col">
+        <h1>Upload Excel file</h1>
+        <br>
+        <form method="post" enctype="multipart/form-data" id="idForm">
+          {% csrf_token %}
+          <!-- COMPONENT START -->
+          <div class="form-group">
+            <div class="input-group input-file" name="myfile">
+			        <span class="input-group-btn">
+        		    <button class="btn btn-outline-primary btn-choose" type="button">Choose</button>
+    		      </span>
+              <input type="text" class="form-control" placeholder='Choose a file...'/>
+              <span class="input-group-btn">
+       			    <button class="btn btn-warning btn-reset" type="button">Reset</button>
+    		      </span>
+            </div>
+          </div>
+          <!-- COMPONENT END -->
+          <button type="submit" class="btn btn-primary" id="idUpload" disabled>Upload</button>
+        </form>
+          {% if uploaded_file_url %}
+            <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+          {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block custom_scripts %}
+  <script>
+      function bs_input_file() {
+          $(".input-file").before(
+              function () {
+                  if (!$(this).prev().hasClass('input-ghost')) {
+                      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
+                      element.attr("name", $(this).attr("name"));
+                      element.change(function () {
+                          element.next(element).find('input').val((element.val()).split('\\').pop());
+                          $('#idUpload').removeAttr('disabled');
+                      });
+                      $(this).find("button.btn-choose").click(function () {
+                          element.click();
+                      });
+                      $(this).find("button.btn-reset").click(function () {
+                          element.val(null);
+                          $('#idUpload').attr('disabled', 'disabled');
+                          $(this).parents(".input-file").find('input').val('');
+                      });
+                      $(this).find('input').css("cursor", "pointer");
+                      $(this).find('input').mousedown(function () {
+                          $(this).parents('.input-file').prev().click();
+                          return false;
+                      });
+                      return element;
+                  }
+              }
+          );
+      }
+
+      $(function () {
+          bs_input_file();
+      });
+</script>
+{% endblock %}

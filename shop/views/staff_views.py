@@ -30,12 +30,13 @@ from shop.tables import (
     ItemTable,
     CategoryTable,
     ContactTable,
+    VendorTable,
     EnquiryTable,
     BookTable,
     CompilerTable,
 )
 from shop.views.generic_views import FilteredTableView, JsonCrudView
-from shop.filters import ItemFilter
+from shop.filters import ItemFilter, VendorFilter
 
 logger = logging.getLogger(__name__)
 
@@ -318,18 +319,29 @@ class ContactListView(LoginRequiredMixin, FilteredTableView):
         return Contact.objects.all().order_by("last_name")
 
 
+class VendorListView(LoginRequiredMixin, FilteredTableView):
+    model = Contact
+    template_name = "shop/generic_table.html"
+    table_class = VendorTable
+    filter_class = VendorFilter
+    table_pagination = {"per_page": 15}
+    allow_create = True
+    allow_update = True
+
+    def get_queryset(self):
+        return Contact.objects.filter(vendor=True).order_by("company")
+
+
 class ContactCreateView(LoginRequiredMixin, JsonCrudView):
     model = Contact
     form_class = ContactForm
-    template_name = "shop/includes/generic_modal_form.html"
-    horizontal_form = True
+    template_name = "shop/includes/partial_contact_form.html"
 
 
 class ContactUpdateView(LoginRequiredMixin, JsonCrudView):
     model = Contact
     form_class = ContactForm
-    template_name = "shop/includes/generic_modal_form.html"
-    horizontal_form = True
+    template_name = "shop/includes/partial_contact_form.html"
     update = True
     allow_delete = True
 

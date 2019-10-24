@@ -131,6 +131,9 @@ class Item(index.Indexed, models.Model):
         on_delete=models.SET_NULL,
         related_name="parent_object",
     )
+    invoice = models.ForeignKey(
+        "Invoice", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
 
@@ -182,24 +185,38 @@ class PurchaseExpense(models.Model):
         return f"{self.id} {self.amount}"
 
 
+class Invoice(models.Model):
+    invoice_date = models.DateField(null=True, blank=True)
+    number = models.CharField(max_length=10, null=True, blank=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    paid = models.BooleanField(default=False)
+    buyer = models.ForeignKey(
+        "Contact", null=True, blank=True, on_delete=models.SET_NULL
+    )
+
+
+class InvoiceExtra(models.Model):
+    description = models.CharField(max_length=20, null=False, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+
 class Contact(models.Model):
     """ Covers all business contacts  - buyers, vendors etc """
 
     title = models.CharField(max_length=20, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
-    last_name = models.CharField(max_length=30)
-    company = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
+    company = models.CharField(max_length=100, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
     work_phone = models.CharField(max_length=20, blank=True, null=True)
     mobile_phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=80, blank=True, null=True)
     notes = models.CharField(max_length=500, blank=True, null=True)
-    address = models.CharField(max_length=500, blank=True, null=True)
     mail_consent = models.BooleanField(default=False)
     consent_date = models.DateField(null=True)
     vendor = models.BooleanField(default=False)
     restorer = models.BooleanField(default=False)
     buyer = models.BooleanField(default=False)
-    other = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

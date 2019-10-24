@@ -1,4 +1,4 @@
-{% load bootstrap4 %}
+{% load bootstrap4 shop_tags %}
 <form method="post" action="{{ path }}" class="js-form">
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ pk }}">
@@ -10,7 +10,25 @@
   </div>
 
   <div class="modal-body">
-    {% bootstrap_form form layout="horizontal" set_placeholder=False %}
+    <div class="row">
+      <div class="col col-md-3">{% checkbox form.vendor %}</div>
+      <div class="col col-md-3">{% checkbox form.buyer %}</div>
+      <div class="col col-md-3">{% checkbox form.restorer %}</div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col col-md-3 pr-1">{% bootstrap_field form.title set_placeholder=False %}</div>
+      <div class="col col-md-4 px-1">{% bootstrap_field form.first_name set_placeholder=False %}</div>
+      <div class="col col-md-5 pl-1">{% bootstrap_field form.last_name set_placeholder=False %}</div>
+    </div>
+    {% bootstrap_field form.company set_placeholder=False %}
+    {% bootstrap_field form.address set_placeholder=False %}
+    <div class="row">
+      <div class="col col-md-6">{% bootstrap_field form.mobile_phone set_placeholder=False %}</div>
+      <div class="col col-md-6">{% bootstrap_field form.work_phone set_placeholder=False %}</div>
+    </div>
+    {% bootstrap_field form.email set_placeholder=False %}
+    {% bootstrap_field form.notes set_placeholder=False %}
   </div>
   <div class="modal-footer">
     {% buttons %}
