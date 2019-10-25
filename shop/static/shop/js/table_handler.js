@@ -75,9 +75,9 @@ $(document).ready(function () {
     });
 
     // called by table click to load update form
-    function ajax_update(pk) {
+    function ajax_get(pk, action) {
         $.ajax({
-            url: 'update/' + pk + '/',
+            url: action + '/' + pk + '/',
             type: 'get',
             dataType: 'json',
             beforeSend: function () {
@@ -134,10 +134,13 @@ $(document).ready(function () {
             if (typeof e.target.parentNode.dataset.url !== 'undefined') {
                 window.document.location = e.target.parentNode.dataset.url;
             }
-            // ajax update form when click on row
-            if (document.getElementById("allow_update")) {
-                if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
-                    ajax_update(e.target.parentNode.dataset.pk)
+            // ajax get when click on row
+            if (typeof e.target.parentNode.dataset.pk !== 'undefined'){
+                var pk = e.target.parentNode.dataset.pk;
+                if (document.getElementById("allow_update")) {
+                    ajax_get(pk, "update")
+                } else if (document.getElementById("allow_detail")) {
+                    ajax_get(pk, "detail")
                 }
             }
         }

@@ -176,7 +176,6 @@ def parse(page, options):
                                         description=description,
                                         sale_price=price,
                                         category=cat_db,
-                                        image_file=image_file,
                                         archive=sold,
                                     )
                                     item.save()

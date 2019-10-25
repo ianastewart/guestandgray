@@ -18,6 +18,7 @@ from shop.views.staff_views import (
     VendorListView,
     BuyerListView,
     InvoiceListView,
+    InvoiceDetailView,
     EnquiryListView,
     BookListView,
     BookCreateView,
@@ -88,6 +89,11 @@ staff_urls = [
     ),
     # Invoices
     path("invoice/list/", InvoiceListView.as_view(), name="invoice_list"),
+    path(
+        "invoice/list/detail/<int:pk>/",
+        InvoiceDetailView.as_view(),
+        name="invoice_detail",
+    ),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
     # Compilers

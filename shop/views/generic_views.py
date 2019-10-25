@@ -22,6 +22,7 @@ class FilteredTableView(SingleTableView):
     horizontal_form = False
     allow_create = False
     allow_update = False
+    allow_detail = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -94,6 +95,7 @@ class FilteredTableView(SingleTableView):
         context["object_name"] = self.model._meta.object_name
         context["allow_create"] = self.allow_create
         context["allow_update"] = self.allow_update
+        context["allow_detail"] = self.allow_detail
         context["horizontal_form"] = self.horizontal_form
         return context
 
@@ -134,8 +136,9 @@ class JsonCrudView(View):
     horizontal_form = False
 
     def get_object(self, **kwargs):
-        if self.update and self.model:
-            self.object = get_object_or_404(self.model, pk=kwargs["pk"])
+        pk = kwargs.get("pk", None)
+        if pk:
+            self.object = get_object_or_404(self.model, pk=pk)
         return self.object
 
     def get_form_class(self):
@@ -146,7 +149,9 @@ class JsonCrudView(View):
             data = {}
             try:
                 self.object = self.get_object(**kwargs)
-                self.form = self.get_form_class()(instance=self.object)
+                form_class = self.get_form_class()
+                if form_class:
+                    self.form = form_class(instance=self.object)
                 data["html_form"] = render_to_string(
                     self.template_name, self.get_context_data(), request
                 )

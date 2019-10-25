@@ -83,6 +83,7 @@
         </p>
           {% endif %}
         {% if allow_update %}<div id="allow_update"></div>{% endif %}
+        {% if allow_detail %}<div id="allow_detail"></div>{% endif %}
         {% render_table table 'django_tables2/bootstrap4.html' %}
       {% endif %}
 

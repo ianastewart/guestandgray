@@ -40,10 +40,6 @@ class ItemTable(tables.Table):
         model = Item
         fields = ("selection", "name", "ref", "category.name", "sale_price", "archive")
         attrs = {"class": "table table-sm table-hover hover-link"}
-        # row_attrs = {
-        #     "data-url": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
-        #     "class": "table-row pl-4",
-        # }
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     image = ImageColumn(accessor="image")
@@ -102,6 +98,7 @@ class InvoiceTable(tables.Table):
         model = Invoice
         fields = ("date", "number", "total", "paid", "buyer")
         attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
 
 class EnquiryTable(tables.Table):

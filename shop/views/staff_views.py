@@ -46,7 +46,7 @@ from shop.tables import (
     CompilerTable,
 )
 from shop.views.generic_views import FilteredTableView, JsonCrudView
-from shop.filters import ItemFilter, ContactFilter
+from shop.filters import ItemFilter, ContactFilter, InvoiceFilter
 
 logger = logging.getLogger(__name__)
 
@@ -350,11 +350,16 @@ class InvoiceListView(FilteredTableView):
     template_name = "shop/generic_table.html"
     table_class = InvoiceTable
     table_pagination = {"per_page": 15}
-    allow_create = True
-    allow_update = True
+    filter_class = InvoiceFilter
+    allow_detail = True
 
     def get_queryset(self):
         return Invoice.objects.all().order_by("-date")
+
+
+class InvoiceDetailView(LoginRequiredMixin, JsonCrudView):
+    model = Invoice
+    template_name = "shop/includes/partial_invoice_detail.html"
 
 
 class ContactCreateView(LoginRequiredMixin, JsonCrudView):
