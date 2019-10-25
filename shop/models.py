@@ -174,7 +174,7 @@ class Purchase(models.Model):
 
 
 class PurchaseExpense(models.Model):
-    expense_type = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     eligible = models.BooleanField(default=False)
     purchase = models.ForeignKey(
@@ -186,8 +186,8 @@ class PurchaseExpense(models.Model):
 
 
 class Invoice(models.Model):
-    invoice_date = models.DateField(null=True, blank=True)
-    number = models.CharField(max_length=10, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    number = models.CharField(max_length=10, null=True, blank=True, unique=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     paid = models.BooleanField(default=False)
     buyer = models.ForeignKey(
@@ -198,6 +198,9 @@ class Invoice(models.Model):
 class InvoiceExtra(models.Model):
     description = models.CharField(max_length=20, null=False, blank=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    invoice = models.ForeignKey(
+        "Invoice", null=False, blank=False, on_delete=models.CASCADE
+    )
 
 
 class Contact(models.Model):
@@ -219,7 +222,7 @@ class Contact(models.Model):
     buyer = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.company}"
 
 
 class Enquiry(models.Model):

@@ -25,18 +25,28 @@ from shop.forms import (
     BookForm,
     CompilerForm,
 )
-from shop.models import Item, Category, CustomImage, Contact, Enquiry, Book, Compiler
+from shop.models import (
+    Item,
+    Category,
+    CustomImage,
+    Invoice,
+    Contact,
+    Enquiry,
+    Book,
+    Compiler,
+)
 from shop.tables import (
     ItemTable,
     CategoryTable,
     ContactTable,
-    VendorTable,
+    ContactTableTwo,
+    InvoiceTable,
     EnquiryTable,
     BookTable,
     CompilerTable,
 )
 from shop.views.generic_views import FilteredTableView, JsonCrudView
-from shop.filters import ItemFilter, VendorFilter
+from shop.filters import ItemFilter, ContactFilter
 
 logger = logging.getLogger(__name__)
 
@@ -319,17 +329,32 @@ class ContactListView(LoginRequiredMixin, FilteredTableView):
         return Contact.objects.all().order_by("last_name")
 
 
-class VendorListView(LoginRequiredMixin, FilteredTableView):
-    model = Contact
+class VendorListView(ContactListView):
+    table_class = ContactTableTwo
+    filter_class = ContactFilter
+
+    def get_queryset(self):
+        return Contact.objects.filter(vendor=True).order_by("company")
+
+
+class BuyerListView(ContactListView):
+    table_class = ContactTableTwo
+    filter_class = ContactFilter
+
+    def get_queryset(self):
+        return Contact.objects.filter(buyer=True).order_by("company")
+
+
+class InvoiceListView(FilteredTableView):
+    model = Invoice
     template_name = "shop/generic_table.html"
-    table_class = VendorTable
-    filter_class = VendorFilter
+    table_class = InvoiceTable
     table_pagination = {"per_page": 15}
     allow_create = True
     allow_update = True
 
     def get_queryset(self):
-        return Contact.objects.filter(vendor=True).order_by("company")
+        return Invoice.objects.all().order_by("-date")
 
 
 class ContactCreateView(LoginRequiredMixin, JsonCrudView):

@@ -79,9 +79,7 @@ class ContactForm(ModelForm):
     class Meta:
         model = Contact
         fields = (
-            "title",
             "first_name",
-            "last_name",
             "company",
             "address",
             "work_phone",
@@ -93,14 +91,9 @@ class ContactForm(ModelForm):
             "buyer",
         )
 
+    first_name = forms.CharField(label="Name (optional)", required=False)
+    company = forms.CharField(label="Last name/Company", required=True)
     address = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 3}))
-
-    def clean(self):
-        cleaned_data = super().clean()
-        if not (cleaned_data["last_name"] or cleaned_data["company"]):
-            raise forms.ValidationError(
-                "You must define either 'last name' or 'company' or both"
-            )
 
 
 class EnquiryForm(ModelForm):

@@ -43,5 +43,5 @@ class CompilerFilter(FilterSet):
     )
 
 
-class VendorFilter(FilterSet):
+class ContactFilter(FilterSet):
     company = CharFilter(lookup_expr="icontains")

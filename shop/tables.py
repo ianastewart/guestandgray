@@ -1,8 +1,9 @@
 import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
+from django_tables2.utils import A
 from shop.truncater import truncate
-from shop.models import Category, Item, Contact, Enquiry, Book, Compiler
+from shop.models import Category, Item, Invoice, Contact, Enquiry, Book, Compiler
 
 
 class CategoryTable(tables.Table):
@@ -60,9 +61,7 @@ class ContactTable(tables.Table):
     class Meta:
         model = Contact
         fields = (
-            "title",
             "first_name",
-            "last_name",
             "company",
             "work_phone",
             "mobile_phone",
@@ -80,12 +79,29 @@ class ContactTable(tables.Table):
         return "Yes" if value else ""
 
 
-class VendorTable(tables.Table):
+class ContactTableTwo(tables.Table):
     class Meta:
         model = Contact
-        fields = ("first_name", "last_name", "company", "address")
+        fields = ("first_name", "company", "address")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+
+class BuyersTable(tables.Table):
+    class Meta:
+        model = Contact
+        fields = ("first_name", "company", "address")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+    invoices = tables.Column(linkify=("buyer_invoices", A("pk")))
+
+
+class InvoiceTable(tables.Table):
+    class Meta:
+        model = Invoice
+        fields = ("date", "number", "total", "paid", "buyer")
+        attrs = {"class": "table table-sm table-hover hover-link"}
 
 
 class EnquiryTable(tables.Table):
@@ -96,7 +112,7 @@ class EnquiryTable(tables.Table):
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     first_name = tables.Column(accessor="contact.first_name")
-    last_name = tables.Column(accessor="contact.last_name")
+    last_name = tables.Column(accessor="contact.company", verbose_name="Last name")
     email = tables.Column(accessor="contact.email")
     mail_consent = tables.Column(accessor="contact.mail_consent")
 

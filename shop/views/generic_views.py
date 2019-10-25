@@ -170,16 +170,20 @@ class JsonCrudView(View):
                 )
             else:
                 self.form = self.get_form_class()(request.POST, instance=instance)
-                if self.form.is_valid():
-                    self.form.save()
-                    data["valid"] = True
-                else:
+                try:
+                    if self.form.is_valid():
+                        self.form.save()
+                        data["valid"] = True
+                    else:
+                        data["valid"] = False
+                        data["html_form"] = render_to_string(
+                            self.template_name, self.get_context_data(), request
+                        )
+                except Exception as e:
                     data["valid"] = False
-                    data["html_form"] = render_to_string(
-                        self.template_name, self.get_context_data(), request
-                    )
-            if "redirect" in request.POST:
-                data["url"] = self.success_url
+                    data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
+                if "redirect" in request.POST:
+                    data["url"] = self.success_url
             return JsonResponse(data)
         return HttpResponse("JsonCrudView received a non-ajax post request")
 

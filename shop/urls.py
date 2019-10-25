@@ -16,6 +16,8 @@ from shop.views.staff_views import (
     ContactListView,
     ContactUpdateView,
     VendorListView,
+    BuyerListView,
+    InvoiceListView,
     EnquiryListView,
     BookListView,
     BookCreateView,
@@ -64,7 +66,7 @@ staff_urls = [
         CategoryDetailView.as_view(),
         name="category_detail",
     ),
-    # Contacts
+    # Contacts including vendors and buyers
     path("contact/list/", ContactListView.as_view(), name="contact_list"),
     path("contact/list/create/", ContactCreateView.as_view(), name="contact_create"),
     path(
@@ -79,6 +81,13 @@ staff_urls = [
         ContactUpdateView.as_view(),
         name="vendor_update",
     ),
+    path("buyer/list/", BuyerListView.as_view(), name="buyer_list"),
+    path("buyer/list/create/", ContactCreateView.as_view(), name="buyer_create"),
+    path(
+        "buyer/list/update/<int:pk>/", ContactUpdateView.as_view(), name="buyer_update"
+    ),
+    # Invoices
+    path("invoice/list/", InvoiceListView.as_view(), name="invoice_list"),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
     # Compilers

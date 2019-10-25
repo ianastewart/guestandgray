@@ -1,5 +1,5 @@
 {% load bootstrap4 shop_tags %}
-<form method="post" action="{{ path }}" class="js-form">
+<form method="post" action="{{ path }}" class="js-form" novalidate>
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ pk }}">
   <div class="modal-header">
@@ -8,7 +8,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-
+  {% bootstrap_form_errors form type="non_fields" %}
   <div class="modal-body">
     <div class="row">
       <div class="col col-md-3">{% checkbox form.vendor %}</div>
@@ -17,15 +17,13 @@
     </div>
     <hr>
     <div class="row">
-      <div class="col col-md-3 pr-1">{% bootstrap_field form.title set_placeholder=False %}</div>
-      <div class="col col-md-4 px-1">{% bootstrap_field form.first_name set_placeholder=False %}</div>
-      <div class="col col-md-5 pl-1">{% bootstrap_field form.last_name set_placeholder=False %}</div>
+      <div class="col col-md-4 pr-1">{% bootstrap_field form.first_name set_placeholder=False %}</div>
+      <div class="col col-md-8 pl-1">{% bootstrap_field form.company set_placeholder=False %}</div>
     </div>
-    {% bootstrap_field form.company set_placeholder=False %}
     {% bootstrap_field form.address set_placeholder=False %}
     <div class="row">
-      <div class="col col-md-6">{% bootstrap_field form.mobile_phone set_placeholder=False %}</div>
-      <div class="col col-md-6">{% bootstrap_field form.work_phone set_placeholder=False %}</div>
+      <div class="col col-md-6 pr-1">{% bootstrap_field form.mobile_phone set_placeholder=False %}</div>
+      <div class="col col-md-6 pl-1">{% bootstrap_field form.work_phone set_placeholder=False %}</div>
     </div>
     {% bootstrap_field form.email set_placeholder=False %}
     {% bootstrap_field form.notes set_placeholder=False %}
