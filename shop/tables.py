@@ -3,7 +3,16 @@ from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
 from django_tables2.utils import A
 from shop.truncater import truncate
-from shop.models import Category, Item, Invoice, Contact, Enquiry, Book, Compiler
+from shop.models import (
+    Category,
+    Item,
+    Invoice,
+    Purchase,
+    Contact,
+    Enquiry,
+    Book,
+    Compiler,
+)
 
 
 class CategoryTable(tables.Table):
@@ -97,6 +106,24 @@ class InvoiceTable(tables.Table):
     class Meta:
         model = Invoice
         fields = ("date", "number", "total", "paid", "buyer")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+
+class PurchaseTable(tables.Table):
+    class Meta:
+        model = Purchase
+        fields = (
+            "purchase_date",
+            "invoice_number",
+            "invoice_total",
+            "buyers_premium",
+            "lot_number",
+            "vendor",
+            "paid_date",
+            "margin_scheme",
+            "vat",
+        )
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
