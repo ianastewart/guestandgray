@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="col-xs col-md-6 mb-4 px-4 ">
-      <p>{{ item.description }}</p>
+      <p class="para">{{ item.description }}</p>
       {% if item.dimensions %}
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
@@ -41,8 +41,8 @@
         </div>
       {% endif %}
       <div class="row">
-        <p class="col-12 col-lg-3 text-muted mb-1">Reference: </p>
-        <p class="col-12 col-lg-9">{{ item.ref }}</p>
+        <p class="para col-12 col-lg-3 text-muted mb-1">Reference: </p>
+        <p class="para col-12 col-lg-9">{{ item.ref }}</p>
       </div>
       {% if item.archive %}
         <p>ARCHIVE - Not For Sale</p>

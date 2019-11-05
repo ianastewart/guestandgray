@@ -1,6 +1,16 @@
 import django.forms as forms
+from django.urls import reverse_lazy
 from django.forms import ModelForm, ModelChoiceField, ValidationError
-from shop.models import Item, Category, Contact, Book, Compiler
+from tempus_dominus.widgets import DatePicker
+from shop.models import (
+    Item,
+    Category,
+    Purchase,
+    PurchaseExpense,
+    Contact,
+    Book,
+    Compiler,
+)
 
 
 class CategoryForm(ModelForm):
@@ -22,8 +32,6 @@ class CategoryForm(ModelForm):
 
 
 class ItemForm(ModelForm):
-    title = "Item"
-
     class Meta:
         model = Item
         fields = (
@@ -41,38 +49,33 @@ class ItemForm(ModelForm):
             "minimum_price",
             "archive",
             "location",
-            "purchase_data",
             "visible",
             "show_price",
             "featured",
         )
 
 
-class ArchiveItemForm(ModelForm):
+class ArchiveItemForm(ItemForm):
     title = "Archive Item"
 
+    class Meta(ItemForm.Meta):
+        model = Item
+        exclude = (
+            "minimum_price",
+            "archive",
+            "location",
+            "visible",
+            "show_price",
+            "featured",
+        )
+
+
+class NewItemForm(ModelForm):
     class Meta:
         model = Item
-        fields = (
-            "name",
-            "description",
-            "category",
-            "dimensions",
-            "condition",
-            "provenance",
-            "ref",
-            "purchase_date",
-            "cost_price",
-            "restoration_cost",
-            "sale_price",
-            # "minimum_price",
-            # "archive",
-            # "location",
-            "purchase_data",
-            "visible",
-            # "show_price",
-            # "featured",
-        )
+        fields = ("name", "cost_price")
+
+    cost_price = forms.DecimalField(max_digits=8, decimal_places=2, required=True)
 
 
 class ContactForm(ModelForm):
@@ -94,6 +97,14 @@ class ContactForm(ModelForm):
     first_name = forms.CharField(label="Name (optional)", required=False)
     company = forms.CharField(label="Last name/Company", required=True)
     address = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 3}))
+
+
+class NewVendorForm(ContactForm):
+    class Meta(ContactForm.Meta):
+        exclude = ("vendor", "restorer", "buyer")
+
+    title = "Create new vendor"
+    path = reverse_lazy("contact_create")
 
 
 class EnquiryForm(ModelForm):
@@ -122,3 +133,90 @@ class CompilerForm(ModelForm):
     class Meta:
         model = Compiler
         fields = ("name", "description")
+
+
+class PurchaseVendorForm(forms.Form):
+    vendor_id = forms.CharField(
+        max_length=10, required=False, widget=forms.HiddenInput()
+    )
+
+
+class PurchaseForm(ModelForm):
+    class Meta:
+        model = Purchase
+        fields = (
+            "date",
+            "invoice_number",
+            "lot_number",
+            "invoice_total",
+            "buyers_premium",
+            # "vendor",
+            "paid_date",
+            "margin_scheme",
+            "vat",
+        )
+
+    new_vendor = forms.BooleanField(
+        widget=forms.RadioSelect(
+            choices=((False, "Search existing vendors"), ("True", "Create new vendor"))
+        )
+    )
+    vendor_search = forms.CharField(
+        max_length=50,
+        label="Vendor",
+        help_text="Type 3 or more letters to search by company name",
+    )
+    date = forms.DateField(widget=DatePicker())
+
+
+class PurchaseExpenseForm(ModelForm):
+    class Meta:
+        model = PurchaseExpense
+        fields = "description", "amount", "eligible"
+
+
+class PurchaseDataForm(ModelForm):
+    class Meta:
+        model = Purchase
+        fields = (
+            "date",
+            "invoice_number",
+            "lot_number",
+            "cost_lot",
+            "invoice_total",
+            "buyers_premium",
+            "margin_scheme",
+            "vat",
+            "paid_date",
+        )
+
+    date = forms.DateField(widget=DatePicker(), label="Purchase date")
+    invoice_number = forms.CharField(
+        max_length=10, required=True, label="Vendor's invoice number"
+    )
+    invoice_total = forms.DecimalField(required=True)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cost = cleaned_data["cost_lot"]
+        if not cost:
+            cost = 0
+        premium = cleaned_data["buyers_premium"]
+        if not premium:
+            premium = 0
+        vat = cleaned_data["vat"]
+        if not vat:
+            vat = 0
+        total = cleaned_data["invoice_total"]
+        if not total:
+            total = 0
+        sum = cost + premium + vat
+        if sum != total:
+            raise forms.ValidationError(
+                f"The sum of the fields (£{sum}) does not equal the invoice total."
+            )
+
+
+class PurchaseCostForm(forms.Form):
+    new_cost = forms.DecimalField(max_digits=8, decimal_places=2, required=True)
+    item_id = forms.CharField(required=False, widget=forms.HiddenInput)

@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "keyvaluestore",
     "treebeard",
     "django_tables2",
+    "tempus_dominus",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",
@@ -124,14 +125,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = "en-uk"
-
+LANGUAGE_CODE = "en-GB"
 TIME_ZONE = "Europe/London"
-
-USE_I18N = False
-
+USE_I18N = True
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -149,12 +146,13 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
-
 # Login
 
 LOGIN_URL = "wagtailadmin_login"
 LOGIN_REDIRECT_URL = "wagtailadmin_home"
 
+# Use pickle serializer so we can store Decimals and dates in sessions
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
 # Wagtail settings
 
@@ -188,3 +186,5 @@ BOOTSTRAP4 = {
 # Tags
 
 TAGGIT_CASE_INSENSITIVE = True
+TEMPUS_DOMINUS_LOCALIZE = True
+TEMPUS_DOMINUS_INCLUDE_ASSETS = True

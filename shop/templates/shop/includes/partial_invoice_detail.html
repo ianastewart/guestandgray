@@ -7,17 +7,28 @@
     </button>
   </div>
 {% endif %}
-<div {% if modal %}class="modal-body"{% else %}class="container bg-white shadow mb-2"{% endif %}>
+{% if modal %}<div class="modal-body"><div class="container-fluid">
+{% else %}<div><div class="container bg-white shadow mb-2">{% endif %}
   <div class="row">
     <div class="col">
-      <p>{{ object.date }}</p>
+      <p>{{ object.date|date }}</p>
       <p><b>{{ object.buyer.first_name }} {{ object.buyer.company }}</b><br>
         {{ object.buyer.address|linebreaksbr }}</p>
-    <hr>
-      <p>Items to be added here</p>
-<hr>  <h5>Total: £{{ object.total }}</h5>
-    <hr>
-      <h6>{% if object.paid %} Paid<{% else %}<span class="bg-danger text-white">&nbsp;Unpaid&nbsp; </span> {% endif %}</h6>
+      <hr>
     </div>
   </div>
+  {% for item in items %}
+    <div class="row">
+      <div class="col-2">{{ item.ref }}</div>
+      <div class="col-8">{{ item.name }}</div>
+      <div class="col-2 text-right">£{{ item.sale_price }}</div>
+    </div>
+  {% endfor %}
+<hr>
+  <div class="row">
+    <div class="col-10 text-right"><b>Total</b></div>
+    <div class="col-2 text-right"><b>£{{ object.total }}</b></div>
+  </div>
+  <h6>{% if object.paid %} Paid{% else %}<span class="bg-danger text-white">&nbsp;Unpaid&nbsp; </span> {% endif %}</h6>
+</div>
 </div>

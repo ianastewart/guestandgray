@@ -9,7 +9,13 @@ from django_filters import (
 )
 from shop.models import Item, Category, Compiler
 
-PER_PAGE_CHOICES = ((10, "10"), (15, "15"), (20, "20"), (50, "50"), (100, "100"))
+PER_PAGE_CHOICES = (
+    (10, "10 lines"),
+    (15, "15 lines"),
+    (20, "20 lines"),
+    (50, "50 lines"),
+    (100, "100 lines"),
+)
 
 
 class ItemFilter(FilterSet):
@@ -21,7 +27,6 @@ class ItemFilter(FilterSet):
         to_field_name="name",
         empty_label="No filter",
     )
-    archive = BooleanFilter(field_name="archive")
 
     archive = ChoiceFilter(
         field_name="archive",
@@ -29,10 +34,7 @@ class ItemFilter(FilterSet):
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
     )
     per_page = ChoiceFilter(
-        field_name="id",
-        label="Lines per page",
-        empty_label=None,
-        choices=PER_PAGE_CHOICES,
+        field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
     )
 
 

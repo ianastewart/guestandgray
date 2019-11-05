@@ -34,6 +34,6 @@ def shop_is_active_page(context, page, link):
 def checkbox(box):
     checked = "checked" if box.initial else ""
     output = f'<div class="custom-control custom-checkbox">\
-    <input type="checkbox" class ="custom-control-input" id="{box.auto_id}" name="{box.html_name}" {checked}>\
+    <input type="checkbox" class="custom-control-input" id="{box.auto_id}" name="{box.html_name}" {checked}>\
     <label class="custom-control-label" for="{box.auto_id}">{box.label}</label></div>'
     return mark_safe(output)

@@ -159,15 +159,17 @@ class Purchase(models.Model):
     buyers_premium = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
+    cost_lot = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
     lot_number = models.CharField(max_length=10, null=True, blank=True)
     vendor = models.ForeignKey(
         "Contact", null=True, blank=True, on_delete=models.SET_NULL
     )
     paid_date = models.DateField(null=True, blank=True)
     margin_scheme = models.BooleanField(default=True)
-    vat = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    vat_rate = models.DecimalField(
-        max_digits=4, decimal_places=2, null=True, blank=True
+    vat = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="VAT"
     )
 
     def __str__(self):
@@ -226,7 +228,13 @@ class Contact(models.Model):
     buyer = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.first_name} {self.company}"
+        return self.name
+
+    @property
+    def name(self):
+        if self.first_name:
+            return f"{self.first_name} {self.company}"
+        return self.company
 
 
 class Enquiry(models.Model):

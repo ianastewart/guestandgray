@@ -3,8 +3,8 @@
 {% load render_table querystring from django_tables2 %}
 
 {% block content %}
-  <div id="allow_update" style="display: none">{{ allow_update }}</div>
-  <div id="allow_detail" style="display: none">{{ allow_detail }}</div>
+  {% if allow_update %}<div id="allow_update" style="display: none"></div>{% endif %}
+  {% if allow_detail %}<div id="allow_detail" style="display: none"></div>{% endif %}
 
   {% if filter %}
     {{ filter.form.media }}

@@ -34,8 +34,9 @@
               <fieldset>
               <legend>Stock item</legend>
             {% endif %}
-            {% bootstrap_field form.purchase_date %}
-            {% bootstrap_field form.purchase_data %}
+            <p>Vendor: {{ object.purchase_data.vendor.company }}</p>
+            {% if form.purchase_date %}{% bootstrap_field form.purchase_date %}{% endif %}
+
             {% bootstrap_field form.cost_price %}
             {% bootstrap_field form.restoration_cost %}
             {% bootstrap_field form.sale_price %}

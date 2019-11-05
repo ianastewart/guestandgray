@@ -1,0 +1,57 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4  static shop_tags %}
+{% block body_class %}bg-guest-light{% endblock %}
+{% block content_body %}
+  {{ form.media }}
+  <div class="container my-2 py-2">
+      <div class="row">
+      <div class="col col-md-8 my-4 bg-light">
+        <h3 class="my-4">Enter purchase data</h3>
+    {% bootstrap_form_errors form %}
+        <form method="post" action="{{ path }}" class="js-form" novalidate>
+          {% csrf_token %}
+          <div class="row">
+
+            <div class="col col-md-4">
+              {% bootstrap_field form.date placeholder="" %}
+            </div>
+            <div class="col col-md-4">
+              {% bootstrap_field form.invoice_number placeholder="" %}
+            </div>
+            <div class="col col-md-4">
+              {% bootstrap_field form.lot_number placeholder="" %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              {% bootstrap_field form.margin_scheme %}
+              {% bootstrap_field form.cost_lot layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+              {% bootstrap_field form.buyers_premium layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+              {% bootstrap_field form.vat layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+              <hr>
+              {% bootstrap_field form.invoice_total layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+            </div>
+          </div>
+          {% buttons %}
+            <button type="submit" class="btn btn-primary" name="back">Back</button>
+            <button type="submit" class="btn btn-primary" name="next" id="btn_next">Next</button>
+          {% endbuttons %}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block custom_scripts %}
+  <script>
+      $("#id_margin_scheme").change(function () {
+          if ($(this).prop("checked")){
+              $('#id_vat').prop("disabled", true);
+              $("label[for='id_vat']").html("No VAT");
+          }else {
+              $('#id_vat').prop("disabled", false);
+              $("label[for='id_vat']").html("VAT");
+          }
+      })
+  </script>
+{% endblock %}

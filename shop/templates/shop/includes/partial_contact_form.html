@@ -3,19 +3,21 @@
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ pk }}">
   <div class="modal-header">
-    <h5 class="modal-title">{{ form_title }}</h5>
+    <h5 class="modal-title">{{ form.title }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   {% bootstrap_form_errors form type="non_fields" %}
   <div class="modal-body">
+    {% if not hide_controls %}
     <div class="row">
       <div class="col col-md-3">{% checkbox form.vendor %}</div>
       <div class="col col-md-3">{% checkbox form.buyer %}</div>
       <div class="col col-md-3">{% checkbox form.restorer %}</div>
     </div>
     <hr>
+    {% endif %}
     <div class="row">
       <div class="col col-md-4 pr-1">{% bootstrap_field form.first_name set_placeholder=False %}</div>
       <div class="col col-md-8 pl-1">{% bootstrap_field form.company set_placeholder=False %}</div>
@@ -28,13 +30,13 @@
     {% bootstrap_field form.email set_placeholder=False %}
     {% bootstrap_field form.notes set_placeholder=False %}
   </div>
-  <div class="modal-footer">
-    {% buttons %}
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      {%  if allow_delete %}
-      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
-      {% endif %}
-      <button type="submit" class="btn btn-primary js-submit">Save</button>
-    {% endbuttons %}
-  </div>
+    <div class="modal-footer">
+      {% buttons %}
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        {%  if allow_delete %}
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
+        {% endif %}
+        <button type="submit" class="btn btn-primary js-submit">Save</button>
+      {% endbuttons %}
+    </div>
 </form>

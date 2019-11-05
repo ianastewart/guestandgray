@@ -1,0 +1,118 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4  static shop_tags %}
+{% block body_class %}bg-guest-light{% endblock %}
+{% block content_body %}
+  {{ form.media }}
+  <div class="container my-2 py-2 bg-light border">
+    <div class="row">
+      <div class="col col-md-8 my-4">
+        <h3>Select vendor</h3>
+        <form method="post" action="{{ path }}" class="js-form">
+          {% csrf_token %}
+          {% bootstrap_field form.vendor_id %}
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <button type="button" class="btn btn-secondary js-select" style="width:130px">Search</button>
+            </div>
+            <input type="text" class="form-control" placeholder="" aria-label="" id="select_vendor" disabled
+                   autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"
+                   aria-describedby="basic-addon1">
+          </div>
+          <button type=button class="btn btn-secondary mb-2 js-create" style="width:130px">New vendor</button>
+          <div class="card card-body my-2" style="height:12rem; width:350px; background-color: #eeeeee">
+            <p id="vendor">{{ vendor|linebreaksbr }}</p>
+          </div>
+          {% buttons %}
+            <button type="submit" class="btn btn-primary" name="cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" name="next" id="btn_next" {% if not vendor %}disabled {% endif %}>Next</button>
+          {% endbuttons %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Modal to hold partial form -->
+  <div class="modal " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
+    <div class="modal-dialog modal-dialog-centered {{ modal_class }}" role="document">
+      <div class="modal-content bg-light">
+        {#        {% include "shop/includes/partial_contact_form.html" with form=contact_form hide_controls=True path=contact_form.path %}#}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block custom_scripts %}
+  <script src= {% static 'shop/js/typeahead.bundle.js' %}></script>
+  <script src="{% static 'shop/js/wrap_typeahead.js' %}"></script>
+  <script>
+      var colour_selected = '#bdffdc'
+      $(document).ready(function () {
+          wrap_typeahead('#select_vendor', '{% url "vendor_lookup" %}', '', gotVendor);
+          $('#id_vendor_name').prop("disabled", true);
+      });
+
+      // user selected a vendor
+      function gotVendor(data) {
+          $('#id_vendor_id').val(data.id);
+          $('#vendor').html(data.html);
+          $('#btn_next').prop("disabled", false)
+      }
+
+      $(".js-select").click(function () {
+          $('#btn_next').prop("disabled", true)
+          $('#vendor').html("");
+          $('#select_vendor').val("").prop("disabled", false).css('background-color', '#ffffff').focus();
+      });
+
+      $("#modal-form").on("click", ".js-submit", function () {
+          var form = $(this).parents("form");
+          var submitter = $(this).attr("name")
+          submit(form, submitter)
+          return false;
+      });
+
+      function submit(form, submitter) {
+          var data = form.serialize();
+          data += '&' + encodeURIComponent(submitter) + '=';
+          $.ajax({
+              url: form.attr("action"),
+              data: data,
+              type: form.attr("method"),
+              dataType: 'json',
+              success: function (data) {
+                  $("#modal-form .modal-content").html(data.html_form);
+                  if (data.valid) {
+                      $("#modal-form").modal("hide");
+                      $.ajax({
+                          url: "{% url 'vendor_lookup' %}",
+                          data: {'term': 'pk=' + data.pk},
+                          success: function (reply) {
+                              gotVendor(reply[0]);
+                          }
+                      })
+                  } else {
+                      $("#modal-form").modal("show");
+                  }
+              }
+          });
+      }
+
+      // request and show the modal create form
+      $(".js-create").click(function () {
+          $.ajax({
+              url: 'vendor/',
+              type: 'get',
+              dataType: 'json',
+              beforeSend: function () {
+                  $('#btn_next').prop("disabled", true)
+                  $('#vendor').html("");
+                  $("#modal-form").modal("show");
+                  $('#select_vendor').val("").prop("disabled", true).css('background-color', '#dddddd');
+              },
+              success: function (data) {
+                  $("#modal-form .modal-content").html(data.html_form);
+              }
+          });
+      })
+
+  </script>
+{% endblock %}

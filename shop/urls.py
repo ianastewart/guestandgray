@@ -1,31 +1,55 @@
 from django.urls import path, re_path
-from shop.views.staff_views import (
-    StaffHomeView,
+from shop.views.item_views import (
     ItemCreateView,
+    ItemCreateAjax,
     ItemDetailView,
     ItemUpdateView,
-    ItemUpdateViewAjax,
+    ItemUpdateAjax,
     ItemListView,
     ItemImagesView,
+)
+from shop.views.category_views import (
     CategoryCreateView,
     CategoryUpdateView,
     CategoryTreeView,
     CategoryListView,
     CategoryDetailView,
+)
+from shop.views.contact_views import (
     ContactCreateView,
-    ContactListView,
     ContactUpdateView,
+    ContactListView,
     VendorListView,
     BuyerListView,
-    InvoiceListView,
-    InvoiceDetailView,
     EnquiryListView,
+    vendor_lookup,
+)
+from shop.views.book_views import (
     BookListView,
     BookCreateView,
     BookUpdateView,
     CompilerListView,
     CompilerCreateView,
     CompilerUpdateView,
+)
+from shop.views.purchase_views import (
+    PurchaseStartView,
+    PurchaseCreateView,
+    PurchaseVendorCreateView,
+    PurchaseDataCreateView,
+    PurchaseExpenseCreateView,
+    PurchaseItemCreateView,
+    PurchaseSummaryCreateView,
+    PurchaseSummaryAjaxView,
+    PurchaseListView,
+    PurchaseDetailAjax,
+    PurchaseItemAjax,
+)
+from shop.views.staff_views import (
+    StaffHomeView,
+    InvoiceListView,
+    InvoiceDetailView,
+    InvoiceTableView,
 )
 from shop.views.public_views import (
     home_view,
@@ -47,11 +71,9 @@ staff_urls = [
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/list/", ItemListView.as_view(), name="item_list"),
     path(
-        "item/list/update/<int:pk>/",
-        ItemUpdateViewAjax.as_view(),
-        name="item_update_ajax",
+        "item/list/update/<int:pk>/", ItemUpdateAjax.as_view(), name="item_update_ajax"
     ),
-    path("item/list/create/", ItemCreateView.as_view(), name="item_create_json"),
+    path("item/list/create/", ItemCreateAjax.as_view(), name="item_create_ajax"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     # Categories
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
@@ -75,6 +97,7 @@ staff_urls = [
         ContactUpdateView.as_view(),
         name="contact_update",
     ),
+    path("vendor/lookup/", vendor_lookup, name="vendor_lookup"),
     path("vendor/list/", VendorListView.as_view(), name="vendor_list"),
     path("vendor/list/create/", ContactCreateView.as_view(), name="vendor_create"),
     path(
@@ -87,6 +110,54 @@ staff_urls = [
     path(
         "buyer/list/update/<int:pk>/", ContactUpdateView.as_view(), name="buyer_update"
     ),
+    # Purchases
+    path("purchase/list/", PurchaseListView.as_view(), name="purchase_list"),
+    path(
+        "purchase/list/detail/<int:pk>/",
+        PurchaseDetailAjax.as_view(),
+        name="purchase_detail",
+    ),
+    path("purchase/start/", PurchaseStartView.as_view(), name="purchase_start"),
+    path(
+        "purchase/create/<int:index>/",
+        PurchaseCreateView.as_view(),
+        name="purchase_create",
+    ),
+    path(
+        "purchase/create/vendor/",
+        PurchaseVendorCreateView.as_view(),
+        name="purchase_create_vendor",
+    ),
+    path(
+        "purchase/create/data/<int:index>/",
+        PurchaseDataCreateView.as_view(),
+        name="purchase_data_create",
+    ),
+    path(
+        "purchase/create/item/<int:index>/",
+        PurchaseItemCreateView.as_view(),
+        name="purchase_item_create",
+    ),
+    path(
+        "purchase/create/expense/<int:index>/",
+        PurchaseExpenseCreateView.as_view(),
+        name="purchase_expense_create",
+    ),
+    path(
+        "purchase/create/summary/<int:index>/",
+        PurchaseSummaryCreateView.as_view(),
+        name="purchase_summary",
+    ),
+    path(
+        "purchase/summary/ajax/<int:index>/",
+        PurchaseSummaryAjaxView.as_view(),
+        name="purchase_summary_ajax",
+    ),
+    path(
+        "purchase/item/ajax/<int:pk>/",
+        PurchaseItemAjax.as_view(),
+        name="purchase_item_ajax",
+    ),
     # Invoices
     path("invoice/list/", InvoiceListView.as_view(), name="invoice_list"),
     path(
@@ -94,6 +165,7 @@ staff_urls = [
         InvoiceDetailView.as_view(),
         name="invoice_detail",
     ),
+    path("invoice/table/", InvoiceTableView.as_view(), name="invoice_table"),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
     # Compilers

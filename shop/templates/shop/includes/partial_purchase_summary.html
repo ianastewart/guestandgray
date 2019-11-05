@@ -1,0 +1,109 @@
+{% load bootstrap4 %}
+<div class="container my-2 py-2">
+  <div class="row">
+    <div class="col bg-light">
+      <h4 class="my-4">Purchase summary</h4>
+    </div>
+  </div>
+  <form method="post" action="{{ path }}" novalidate>
+    {% csrf_token %}
+    <input type="hidden" id="return_url" name="return_url">
+    <p class="mb-0"><b>{{ vendor.name }}</b></p>
+    <div>{{ vendor.address|linebreaks }}</div>
+    <div class="row">
+      <div class="col-4">Invoice number:</div>
+      <div class="col-2 text-right">{{ invoice_number }}</div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-4">Date:</div>
+      <div class="col-2 text-right">{{ date }}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">Cost of lot</div>
+      <div class="col-2 text-right">£{{ cost_lot|floatformat:2 }}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">Buyer's premium</div>
+      <div class="col-2 text-right">£{{ buyers_premium|floatformat:2 }}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">Invoice total</div>
+      <div class="col-2 text-right border-top border-bottom border-dark"><b>£{{ invoice_total|floatformat:2 }}</b></div>
+    </div>
+    <div class="row">
+      <div class="col mt-2">
+        <div class="row">
+          <div class="col-7"><b>Items in lot</b></div>
+          <div class="col-3"><b>Allocated cost</b></div>
+        </div>
+        {% for item in items %}
+          <div class="row">
+            <div class="col-1">{{ item.ref }}</div>
+            <div class="col-6">{{ item.name }}</div>
+            <div class="col-2 text-right">£{{ item.cost_price|floatformat:2 }}</div>
+            <div class="col-2">
+              {% if can_update %}
+                <button type=button class="btn btn-sm btn-outline-secondary js-change py-0" name="{{ item.pk }}">Change
+              {% endif %}
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+        <div class="row">
+          <div class="col-7 text-right">Total items cost</div>
+          <div class="col-2 text-right border-dark border-top border-bottom">£{{ items_total|floatformat:2 }}</div>
+        </div>
+        {% if creating or can_update %}
+          <br>
+          {% if remaining < 0 %}
+            <p class="bg-danger text-white text-center">Allocated item costs exceed the invoice total by £
+            {{ excess|floatformat:2 }}.<br>
+          {% endif %}
+          {% if remaining > 0 %}
+            <p class="bg-danger text-white text-center">Allocated item costs do not add up to the invoice total.<br>
+              There is £{{ remaining|floatformat:2 }} left to allocate.</p>
+          {% endif %}
+          {% if remaining == 0 %}
+            <p class="bg-success text-white text-center">Allocated item costs = invoice total.</p>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% buttons %}
+      <button type="button" class="btn btn-primary js-submit" name="close">Close</button>
+      {% if creating %}
+        <button type="submit" class="btn btn-primary" name="back">Back</button>
+        {% if remaining > 0 %}
+          <button type="submit" class="btn btn-primary" name="item">Add an item</button>
+        {% elif remaining == 0 %}
+          <button type="button" class="btn btn-primary js-submit" name="save_close">Save</button>
+        {% endif %}
+      {% else %}
+        {% if remaining == 0 %}
+          <button type="button" class="btn btn-primary js-submit" name="save_close">Save</button>
+        {% endif %}
+      {% endif %}
+    {% endbuttons %}
+  </form>
+</div>
+<div style="display:none;" id="return_url"></div>
+{% block custom_scripts %}
+  <script>
+      $(".js-change").click(function () {
+          var pk = $(this).prop("name")
+          var url = "{% url 'purchase_item_ajax' 9999 %}".replace("9999", pk);
+          var return_url = $("#return_url").val()
+          $.ajax({
+              url: url,
+              type: 'get',
+              data: {return_url: return_url},
+              dataType: 'json',
+              success: function (data) {
+                  $("#modal-form").modal("show");
+                  $("#modal-form .modal-content").html(data.html_form);
+                  $("#return_url").val(data.return_url);
+              }
+          });
+      });
+  </script>
+{% endblock %}

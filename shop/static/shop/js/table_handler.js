@@ -1,21 +1,23 @@
 // Handle checkboxes in tables, and modal forms
 $(document).ready(function () {
     'use strict';
-    var lastChecked = null;
-    var chkboxes = $('.tr-checkbox');
-    var MAX = 1000;
+    let lastChecked = null;
+    let chkboxes = $('.tr-checkbox');
+    const MAX = 1000;
     $("body").css("cursor", "default");
 
+    $('#id_loader').hide();
     // set clicked attr on button that submitted the form
+
     $("#modal-form").on("click", ".js-submit", function () {
-        console.log("js-submit")
-        var form = $(this).parents("form");
-        var submitter = $(this).attr("name")
-        submit(form, submitter)
+        let form = $(this).parents("form");
+        let submitter = $(this).attr("name");
+        submit(form, submitter);
+        return false;
     });
 
-    function submit(form, submitter){
-        var data = form.serialize();
+    function submit(form, submitter) {
+        let data = form.serialize();
         data += '&' + encodeURIComponent(submitter) + '=';
         $.ajax({
             url: form.attr("action"),
@@ -25,8 +27,8 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.valid) {
                     $("#modal-form").modal("hide");
-                    if (data.url) {
-                        location.replace(data.url);
+                    if (data.return_url) {
+                        ajax_get("", data.return_url)
                     } else {
                         location.reload(true)
                     }
@@ -36,6 +38,7 @@ $(document).ready(function () {
                 }
             }
         });
+        return false;
     }
 
     // request and show the modal create form
@@ -51,40 +54,61 @@ $(document).ready(function () {
                 $("#modal-form .modal-content").html(data.html_form);
             }
         });
-    })
+    });
 
     // called by update form to delete record
     $(".js-delete").click(function () {
-        var pk = $('#pk').val();
+        let pk = $('#pk').val();
         $.ajax({
             url: 'update/' + pk + '/',
             data: 'delete',
             type: 'post',
             dataType: 'json',
-            success: function (data) {
+            success: function () {
                 $("#modal-form").modal("hide");
                 location.reload(true)
             }
         });
-    })
+    });
+
+    // changed filter auto submits the form
+    $(".form-control").change(function() {
+        if ($(this).parent().hasClass("auto-submit")){
+            doFilter();
+            //$(this).closest("form").submit();
+        }
+    });
+
+
+    let ready = false;
+    $("#lines_per_page").val($("#id_per_page").val());
+    ready = true;
+
+    $("#lines_per_page").change(function () {
+        if (ready) {
+            $("#id_per_page").val($("#lines_per_page").val());
+            doFilter();
+        }
+    });
 
     // normal submit button is ignored
     $("#modal-form").on("submit", ".js-form", function () {
-        console.log("ignore submit")
         return false;
     });
 
     // called by table click to load update form
     function ajax_get(pk, action) {
+        if(pk){
+            action = action + '/' + pk + '/';
+        }
         $.ajax({
-            url: action + '/' + pk + '/',
+            url: action,
             type: 'get',
             dataType: 'json',
-            beforeSend: function () {
-                $("#modal-form").modal("show");
-            },
             success: function (data) {
+                $("#modal-form").modal("show");
                 $("#modal-form .modal-content").html(data.html_form);
+                $("#return_url").val(data.return_url);
             }
         });
     }
@@ -96,7 +120,7 @@ $(document).ready(function () {
         highlight_array(chkboxes);
     }
 
-    $('#id_search').click(doSearch);
+    $('#id_filter').click(doFilter);
 
     $('#select_all_page').click(function () {
         $('#select_all').prop("checked", false)
@@ -114,14 +138,14 @@ $(document).ready(function () {
 
     $('.table').click(function (e) {
         if (e.target.className === 'tr-checkbox') {
-            var chkbox = e.target;
+            let chkbox = e.target;
             highlight(chkbox);
             if (!lastChecked) {
                 lastChecked = chkbox;
             } else if (e.shiftKey) {
-                var start = chkboxes.index(chkbox);
-                var end = chkboxes.index(lastChecked);
-                var subset = chkboxes.slice(Math.min(start, end), Math.max(start, end) + 1);
+                let start = chkboxes.index(chkbox);
+                let end = chkboxes.index(lastChecked);
+                let subset = chkboxes.slice(Math.min(start, end), Math.max(start, end) + 1);
                 subset.prop('checked', chkbox.checked);
                 highlight_array(subset);
                 lastChecked = chkbox;
@@ -135,8 +159,8 @@ $(document).ready(function () {
                 window.document.location = e.target.parentNode.dataset.url;
             }
             // ajax get when click on row
-            if (typeof e.target.parentNode.dataset.pk !== 'undefined'){
-                var pk = e.target.parentNode.dataset.pk;
+            if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
+                let pk = e.target.parentNode.dataset.pk;
                 if (document.getElementById("allow_update")) {
                     ajax_get(pk, "update")
                 } else if (document.getElementById("allow_detail")) {
@@ -153,7 +177,7 @@ $(document).ready(function () {
     }
 
     function highlight(box) {
-        var node = $(box).closest('.table-row')[0];
+        let node = $(box).closest('.table-row')[0];
         if (box.checked) {
             $(node).addClass('table-info');
         } else {
@@ -162,7 +186,7 @@ $(document).ready(function () {
     }
 
     function select_all(state) {
-        $('#select_all_page').prop("checked", false)
+        $('#select_all_page').prop("checked", false);
         for (var i = 0; i < chkboxes.length; i++) {
             chkboxes[i].checked = state;
             chkboxes[i].disabled = state;
@@ -181,8 +205,8 @@ $(document).ready(function () {
 
 // Count the number of checked rows
     function countChecked() {
-        var count = document.querySelectorAll('.tr-checkbox:checked').length;
-        var goDisabled = ((count === 0) || (count > MAX));
+        let count = document.querySelectorAll('.tr-checkbox:checked').length;
+        let goDisabled = ((count === 0) || (count > MAX));
         if (count > MAX) {
             count = "Maximum is {MAX}";
         }
@@ -190,11 +214,11 @@ $(document).ready(function () {
         $('#dropdownMenu').prop('disabled', goDisabled);
     }
 
-    function doSearch() {
+    function doFilter() {
         $('#id_loader').show();
-        $('#table_tile').hide();
-        $('#search_form').submit();
-        $("html").addClass("wait");
+        $('#id_table_data').hide();
+        $("body").css("cursor", "progress");
+        $('#id_filter_form').submit();
     }
 })
 ;

@@ -1,28 +1,33 @@
 from django.contrib import messages
 from django.http import QueryDict, JsonResponse, HttpResponse
-from django_tables2 import SingleTableView
 from django.template.loader import render_to_string
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import View
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
+from django_tables2 import SingleTableView
+from django_tables2.export.views import ExportMixin
 
 
-class FilteredTableView(SingleTableView):
+class FilteredTableView(ExportMixin, SingleTableView):
     """
     Generic view for django tables 2 with filter
     http://www.craigderington.me/django-generic-listview-with-django-filters-and-django-tables2/
     """
 
+    template_name = "generic_table.html"
     filter_class = None
     formhelper_class = None
     context_filter_name = "filter"
     table_pagination = {"per_page": 10}
     as_list = False
     modal_class = None
+    heading = ""
     horizontal_form = False
+    filter_left = False
     allow_create = False
     allow_update = False
     allow_detail = False
+    buttons = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -30,7 +35,7 @@ class FilteredTableView(SingleTableView):
         self.filter = None
         self.first_run = False
 
-    def get_initial_data(self, **kwargs):
+    def get_initial_data(self):
         """ Initial values for filter """
         return self.table_pagination.copy()
 
@@ -83,6 +88,12 @@ class FilteredTableView(SingleTableView):
         """ optional total shown above table"""
         return None
 
+    def get_buttons(self):
+        return None
+
+    def get_actions(self):
+        return None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         # context["lines"] = self.table_pagination["per_page"]
@@ -93,11 +104,37 @@ class FilteredTableView(SingleTableView):
             context["total"] = self.total
         context["modal_class"] = self.modal_class
         context["object_name"] = self.model._meta.object_name
+        context["buttons"] = self.get_buttons()
+        context["actions"] = self.get_actions()
         context["allow_create"] = self.allow_create
         context["allow_update"] = self.allow_update
         context["allow_detail"] = self.allow_detail
         context["horizontal_form"] = self.horizontal_form
+        context["heading"] = self.heading
+        context["filter_left"] = self.filter_left
         return context
+
+    def post(self, request, *args, **kwargs):
+        """ post requests are actions performed on a queryset """
+
+        self.selected_objects = self.post_query_set(request)
+        if not self.selected_objects:
+            self.selected_objects = self.model.objects.filter(
+                pk__in=request.POST.getlist("selection")
+            )
+
+        path = request.path + request.POST["query"]
+        if "export" in request.POST:
+            if self.heading:
+                self.export_name = self.heading
+            return redirect(path + "&_export=xlsx" "")
+
+        success_url = self.handle_action(request)
+        if success_url:
+            return redirect(success_url)
+        if "per_page" in request.POST:
+            path += f"&per_page={request.POST['per_page']}"
+        return redirect(path)
 
     def post_query_set(self, request):
         """
@@ -121,9 +158,13 @@ class FilteredTableView(SingleTableView):
                 return self.process_table_data(query_set, no_list=True)
         return None
 
+    def handle_action(self, request):
+        """ self.selected_objects is a queryset that returns the selection to be p[rocessed by the action """
+        return None
 
-class JsonCrudView(View):
-    """ Generic view that handles creation, update and delete in a modal triggered by a FileteredListView """
+
+class AjaxCrudView(View):
+    """ Generic view that handles creation, update and delete in a modal triggered by a FilteredListView """
 
     model = None
     object = None
@@ -144,14 +185,21 @@ class JsonCrudView(View):
     def get_form_class(self):
         return self.form_class
 
+    def get_form(self, **kwargs):
+        self.object = self.get_object(**kwargs)
+        form_class = self.get_form_class()
+        if form_class:
+            self.form = form_class(instance=self.object)
+
     def get(self, request, **kwargs):
         if request.is_ajax():
             data = {}
+            if "return_url" in request.GET:
+                data["return_url"] = request.GET["return_url"]
+            else:
+                data["return_url"] = request.path
             try:
-                self.object = self.get_object(**kwargs)
-                form_class = self.get_form_class()
-                if form_class:
-                    self.form = form_class(instance=self.object)
+                self.get_form(**kwargs)
                 data["html_form"] = render_to_string(
                     self.template_name, self.get_context_data(), request
                 )
@@ -168,32 +216,43 @@ class JsonCrudView(View):
         if request.is_ajax():
             instance = self.get_object(**kwargs)
             data = {}
-            if "delete" in request.POST:
+            if "save_back" in request.POST:
+                if "return_url" in request.POST:
+                    data["return_url"] = request.POST["return_url"]
+            elif "delete" in request.POST:
                 instance.delete()
                 messages.add_message(
                     request, messages.INFO, f"{str(instance)} was deleted"
                 )
-            else:
-                self.form = self.get_form_class()(request.POST, instance=instance)
-                try:
-                    if self.form.is_valid():
-                        self.form.save()
-                        data["valid"] = True
-                    else:
+            if "save_close" in request.POST or "save_back" in request.POST:
+                if self.get_form_class():
+                    self.form = self.get_form_class()(request.POST, instance=instance)
+                    try:
+                        if self.form.is_valid():
+                            self.save_object(**kwargs)
+                            if self.object:
+                                data["pk"] = self.object.pk
+                            data["valid"] = True
+                        else:
+                            data["valid"] = False
+                            data["html_form"] = render_to_string(
+                                self.template_name, self.get_context_data(), request
+                            )
+                    except Exception as e:
                         data["valid"] = False
-                        data["html_form"] = render_to_string(
-                            self.template_name, self.get_context_data(), request
-                        )
-                except Exception as e:
-                    data["valid"] = False
-                    data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
+                        data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
+                else:
+                    data["valid"] = True
                 if "redirect" in request.POST:
                     data["url"] = self.success_url
             return JsonResponse(data)
         return HttpResponse("JsonCrudView received a non-ajax post request")
 
+    def save_object(self, **kwargs):
+        self.object = self.form.save()
+
     def get_context_data(self):
-        name = self.model._meta.object_name
+        name = self.model._meta.object_name if self.model else "No model name"
         context = {
             "modal": True,
             "form": self.form,

@@ -87,7 +87,9 @@ class Command(BaseCommand):
                 if number:
                     date = parse_date(dat)  # date defaults if missing
                     try:
-                        Invoice.objects.create(date=date, number=number, buyer=buyer)
+                        Invoice.objects.create(
+                            date=date, number=number, buyer=buyer, total=0, paid=True
+                        )
                         new_invoices += 1
                     except Exception as e:
                         self.stdout.write(
@@ -130,6 +132,7 @@ class Command(BaseCommand):
         self.stdout.write(f"End import vendors: {count} contacts created")
 
     def import_stock(self, ws):
+        """ Read stock sheet, create missing items, update purchases and invoices """
         self.stdout.write(">> Start import stock")
         Item.objects.filter(category__isnull=True).delete()
         Purchase.objects.all().delete()
@@ -222,7 +225,7 @@ class Command(BaseCommand):
                     created += 1
                 item.cost_price = cost_item
                 item.restoration_cost = cost_rest
-                # Create a purchase record linked to item
+                # Create a purchase record and link item to it
                 try:
                     purchase = Purchase.objects.get(vendor=vendor, lot_number=lot)
                 except Purchase.DoesNotExist:
@@ -231,12 +234,12 @@ class Command(BaseCommand):
                         invoice_number=0,
                         invoice_total=cost_lot + premium,
                         buyers_premium=premium,
+                        cost_lot=cost_lot,
                         lot_number=lot,
                         vendor=vendor,
                         paid_date=pdate,
                         margin_scheme=margin_scheme,
                         vat=vat,
-                        vat_rate=Decimal(17.5),
                     )
                 item.purchase_data = purchase
                 # if sold, update invoice with item
@@ -245,13 +248,13 @@ class Command(BaseCommand):
                         invoice = Invoice.objects.get(number=inv_no)
                         item.invoice = invoice
                     except Invoice.DoesNotExist:
-
-                        invoice = Invoice.objects.create(
-                            date=pdate, number=inv_no, buyer=None
+                        invoice = Invoice(
+                            date=pdate, number=inv_no, buyer=None, total=0, paid=True
                         )
-                        item.invoice = invoice
                         inv_created += 1
-                        print(f"Row {row_number} No invoice {inv_no}")
+                    item.invoice = invoice
+                    invoice.total += item.sale_price
+                    invoice.save()
                 item.save()
 
         except Exception as e:

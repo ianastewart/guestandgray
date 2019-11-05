@@ -1,8 +1,8 @@
 import django_tables2 as tables
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django_tables2.utils import A
-from shop.truncater import truncate
 from shop.models import (
     Category,
     Item,
@@ -15,11 +15,21 @@ from shop.models import (
 )
 
 
+class RightAlignedColumn(tables.Column):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.attrs = {"th": {"style": "text-align: right;"}, "td": {"align": "right"}}
+
+
+class CurrencyColumn(RightAlignedColumn):
+    def render(self, value):
+        return "£" + str(intcomma(value))
+
+
 class CategoryTable(tables.Table):
     class Meta:
         model = Category
         fields = ("name", "parent", "description", "image", "count")
-        # sequence = ("name", "description", "image", "count", "dad")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {
             "data-url": lambda record: reverse(
@@ -49,13 +59,13 @@ class ItemTable(tables.Table):
         model = Item
         fields = ("selection", "name", "ref", "category.name", "sale_price", "archive")
         attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
 
     image = ImageColumn(accessor="image")
     selection = tables.TemplateColumn(
         accessor="pk",
         template_name="django_tables2/custom_checkbox.html",
-        verbose_name="Select",
+        verbose_name="",
     )
 
     def render_sale_price(self, value):
@@ -114,18 +124,41 @@ class PurchaseTable(tables.Table):
     class Meta:
         model = Purchase
         fields = (
-            "purchase_date",
+            "date",
+            "vendor",
             "invoice_number",
             "invoice_total",
             "buyers_premium",
             "lot_number",
-            "vendor",
             "paid_date",
-            "margin_scheme",
             "vat",
         )
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+    invoice_number = RightAlignedColumn()
+    # lot_number = RightAlignedColumn()
+    invoice_total = CurrencyColumn()
+    buyers_premium = CurrencyColumn()
+    vat = RightAlignedColumn()
+    items = RightAlignedColumn(accessor="item_set")
+
+    def render_items(self, value, record):
+        l = len(value.all())
+        if l == 1:
+            return value.all()[0].ref
+        return f"{l} items"
+
+    def render_vendor(self, value):
+        if value.first_name:
+            return f"{value.first_name} {value.company}"
+        return value.company
+
+    def render_vat(self, value, record):
+        if record.margin_scheme:
+            return "Margin scheme"
+        else:
+            return "£" + str(intcomma(value))
 
 
 class EnquiryTable(tables.Table):
