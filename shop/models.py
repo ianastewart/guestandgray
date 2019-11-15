@@ -151,16 +151,26 @@ class Item(index.Indexed, models.Model):
 class Purchase(models.Model):
     """ Purchase can be a lot with multiple items linked """
 
-    date = models.DateField(null=True, blank=True)
-    invoice_number = models.CharField(max_length=10, null=True, blank=True)
+    date = models.DateField(null=True, blank=True, verbose_name="Purchase date")
+    invoice_number = models.CharField(
+        max_length=10, null=True, blank=True, verbose_name="Vendor's invoice no."
+    )
     invoice_total = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     buyers_premium = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Buyer's premium",
     )
     cost_lot = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Cost of lot",
     )
     lot_number = models.CharField(max_length=10, null=True, blank=True)
     vendor = models.ForeignKey(
@@ -189,6 +199,37 @@ class PurchaseExpense(models.Model):
 
     def __str__(self):
         return f"{self.id} {self.amount}"
+
+
+class ItemRef(models.Model):
+    number = models.IntegerField(null=False, blank=False)
+    prefix = models.CharField(max_length=2, null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.prefix}{self.number}"
+
+    @classmethod
+    def get_next(cls, increment=True):
+        records = ItemRef.objects.all()
+        if len(records) == 0:
+            record = ItemRef.reset()
+        else:
+            record = records[0]
+        result = record.__str__()
+        if increment:
+            record.number += 1
+            record.save()
+        return result
+
+    @classmethod
+    def reset(cls, prefix="Z", number=1):
+        ItemRef.objects.all().delete()
+        return ItemRef.objects.create(prefix=prefix, number=number)
+
+    @classmethod
+    def increment(cls, ref):
+        number = int(ref[1:]) + 1
+        return f"{ref[0]}{number}"
 
 
 class Invoice(models.Model):

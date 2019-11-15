@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from datetime import datetime
 
 
-def clear(request):
+def clear_data(request):
     """ Clear session variables """
     request.session["posts"] = []
 
@@ -131,3 +131,29 @@ def redirect_next(index, request, default):
         if is_valid(posts[i]):
             return redirect(posts[i]["path"])
     return redirect(default, i + 1)
+
+
+# Stack handling for ajax calls
+
+
+def new_stack(request):
+    request.session["stack"] = []
+    request.session.modified = True
+
+
+def push(request, url):
+    stack = request.session.get("stack", None)
+    if stack is None:
+        stack = []
+    stack.append(url)
+    request.session["stack"] = stack
+    request.session.modified = True
+
+
+def pop(request):
+    try:
+        value = request.session["stack"].pop()
+        request.session.modified = True
+    except IndexError:
+        value = None
+    return value

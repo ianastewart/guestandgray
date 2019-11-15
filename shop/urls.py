@@ -34,7 +34,7 @@ from shop.views.book_views import (
 )
 from shop.views.purchase_views import (
     PurchaseStartView,
-    PurchaseCreateView,
+    PurchaseVendorView,
     PurchaseVendorCreateView,
     PurchaseDataCreateView,
     PurchaseExpenseCreateView,
@@ -120,11 +120,11 @@ staff_urls = [
     path("purchase/start/", PurchaseStartView.as_view(), name="purchase_start"),
     path(
         "purchase/create/<int:index>/",
-        PurchaseCreateView.as_view(),
-        name="purchase_create",
+        PurchaseVendorView.as_view(),
+        name="purchase_vendor",
     ),
     path(
-        "purchase/create/vendor/",
+        "purchase/create/<int:index>/vendor/",
         PurchaseVendorCreateView.as_view(),
         name="purchase_create_vendor",
     ),

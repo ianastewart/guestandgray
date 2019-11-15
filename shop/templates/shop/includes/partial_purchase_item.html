@@ -3,28 +3,29 @@
 <form method="post" action="{{ path }}" class="js-form">
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
-  <input type="hidden" id="return_url" name="return_url">
-    <div class="modal-header">
-      <h5 class="modal-title">{{ form_title }} Ref: {{ object.ref }}</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
+  <div class="modal-header">
+    <h5 class="modal-title">{{ form_title }} {{ object.ref }}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   {% bootstrap_messages %}
   <div class="modal-body">
     <div class="row">
-      <div class="col-md-6">
-        {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
-        {% bootstrap_form form %}
+      {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
+      <div class="col">
+        {% bootstrap_field form.name %}
       </div>
     </div>
-  </div>
-  <div class="modal-footer">
+    <div class="row">
+      <div class="col-md-4">
+        {% bootstrap_field form.cost_price addon_before="£" %}
+      </div>
+    </div>
     <div class="row my-3">
       <div class="col">
-          <button class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button class="btn btn-primary js-submit" type="button"  name="save_back">Save</button>
+        <button class="btn btn-default js-submit" name="cancel">Cancel</button>
+        <button class="btn btn-primary js-submit" type="button" name="save">Save</button>
       </div>
     </div>
-  </div>
 </form>

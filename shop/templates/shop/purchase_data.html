@@ -4,39 +4,47 @@
 {% block content_body %}
   {{ form.media }}
   <div class="container my-2 py-2">
-      <div class="row">
-      <div class="col col-md-8 my-4 bg-light">
-        <h3 class="my-4">Enter purchase data</h3>
-    {% bootstrap_form_errors form %}
+  <div class="row">
+  <div class="col col-lg-8 my-2 mx-auto">
+  <div class="card">
+    <div class="card-header card-body bg-white">
+      <h4 class="my-1">Step 2 - Enter purchase data</h4>
+    </div>
+    <div class="bg-light">
+      {% bootstrap_form_errors form type="non_fields" %}
+      <div class="bg-light">
         <form method="post" action="{{ path }}" class="js-form" novalidate>
-          {% csrf_token %}
-          <div class="row">
+          <div class="card-body">
+            {% csrf_token %}
+            <div class="row">
 
-            <div class="col col-md-4">
-              {% bootstrap_field form.date placeholder="" %}
+              <div class="col-12 col-lg-4">
+                {% bootstrap_field form.date placeholder="" %}
+              </div>
+              <div class="col-12 col-lg-4">
+                {% bootstrap_field form.invoice_number placeholder="" %}
+              </div>
+              <div class="col-12 col-lg-4">
+                {% bootstrap_field form.lot_number placeholder="" %}
+              </div>
             </div>
-            <div class="col col-md-4">
-              {% bootstrap_field form.invoice_number placeholder="" %}
-            </div>
-            <div class="col col-md-4">
-              {% bootstrap_field form.lot_number placeholder="" %}
+
+            <div class="row">
+              <div class="col">
+                {% bootstrap_field form.margin_scheme %}
+                {% bootstrap_field form.cost_lot layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+                {% bootstrap_field form.buyers_premium layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+                {% bootstrap_field form.vat layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+                {% bootstrap_field form.invoice_total layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+              </div>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col">
-              {% bootstrap_field form.margin_scheme %}
-              {% bootstrap_field form.cost_lot layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-              {% bootstrap_field form.buyers_premium layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-              {% bootstrap_field form.vat layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-              <hr>
-              {% bootstrap_field form.invoice_total layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-            </div>
+          <div class="card-footer card-body bg-white pb-0">
+            {% buttons %}
+              <button type="submit" class="btn btn-primary" name="back">Back</button>
+              <button type="submit" class="btn btn-primary" name="next" id="btn_next">Next</button>
+            {% endbuttons %}
           </div>
-          {% buttons %}
-            <button type="submit" class="btn btn-primary" name="back">Back</button>
-            <button type="submit" class="btn btn-primary" name="next" id="btn_next">Next</button>
-          {% endbuttons %}
         </form>
       </div>
     </div>
@@ -44,14 +52,18 @@
 {% endblock %}
 {% block custom_scripts %}
   <script>
+      set_vat();
       $("#id_margin_scheme").change(function () {
-          if ($(this).prop("checked")){
-              $('#id_vat').prop("disabled", true);
-              $("label[for='id_vat']").html("No VAT");
-          }else {
-              $('#id_vat').prop("disabled", false);
-              $("label[for='id_vat']").html("VAT");
+          set_vat();
+      });
+
+      function set_vat() {
+          if ($("#id_margin_scheme").prop("checked")) {
+              $("#id_vat").parents(".form-group").hide();
+          } else {
+              $("#id_vat").parents(".form-group").show();
           }
-      })
+      }
+
   </script>
 {% endblock %}

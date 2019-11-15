@@ -74,26 +74,34 @@
     </div>
   {% endif %}
 
-  <!-- Modal to hold partial form -->
-  <div class="modal " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
-    <div class="modal-dialog modal-dialog-centered {{ modal_class }}" role="document">
+  <!-- Modal to hold main artial form -->
+  <div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content bg-light">
       </div>
     </div>
   </div>
 
-  <!-- Modal to confirm -->
-  <div class="modal fade" data-backdrop="static" data-keyboard="false" id="modal-confirm" role="dialog"
-       style="top:250px;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content bg-warning">
-      <div class="modal-body">
-        <p>Are you sure?</p>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger js-delete" data-dismiss="modal">Delete</button>
+    <!-- Modal to hold second partial form -->
+  <div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form-2" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content bg-light">
       </div>
     </div>
   </div>
+
+{#  <!-- Modal to confirm -->#}
+{#  <div class="modal fade" data-backdrop="static" data-keyboard="false" id="modal-confirm" role="dialog"#}
+{#       style="top:250px;">#}
+{#  <div class="modal-dialog" role="document">#}
+{#    <div class="modal-content bg-warning">#}
+{#      <div class="modal-body">#}
+{#        <p>Are you sure?</p>#}
+{#        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>#}
+{#        <button type="button" class="btn btn-danger js-delete" data-dismiss="modal">Delete</button>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
 
 {% endblock %}
 {% block custom_scripts %}

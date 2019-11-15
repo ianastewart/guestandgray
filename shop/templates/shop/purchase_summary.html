@@ -2,74 +2,10 @@
 {% load bootstrap4  static shop_tags %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
-  {{ form.media }}
-  <div class="container my-2 py-2 bg-white">
-  {% include "shop/includes/partial_purchase_summary.html" %}
-{#    <div class="row">#}
-{#      <div class="col bg-light">#}
-{#        <h3 class="my-4">Purchase summary</h3>#}
-{#        <form method="post" action="{{ path }}" novalidate>#}
-{#          {% csrf_token %}#}
-{#          <div class="row">#}
-{#            <div class="col-6">#}
-{#              <p>{{ vendor|linebreaksbr }}<p>#}
-{#              <table>#}
-{#                <tr>#}
-{#                  <td>Invoice total</td>#}
-{#                  <td>£{{ invoice_total }}</td>#}
-{#                </tr>#}
-{#              </table>#}
-{#              Invoice total: <br>#}
-{#              {{ cost_lot }}<br>#}
-{#              <table class="table table-sm">#}
-{#                <tr>#}
-{#                  <th>Item</th>#}
-{#                  <th class="text-right">Cost</th>#}
-{#                </tr>#}
-{#                {% for item in items %}#}
-{#                  <tr>#}
-{#                    <td>{{ item.0 }}</td>#}
-{#                    <td class="text-right">£{{ item.1|floatformat:2 }}</td>#}
-{#                    <td class="border-0">#}
-{#                      <button type=button class="btn btn-sm btn-outline-secondary js-change py-0" name="{{ item.2 }}">Change#}
-{#                      </button>#}
-{#                    </td>#}
-{#                  </tr>#}
-{#                {% endfor %}#}
-{#                <tr>#}
-{#                  <td class="text-right border-dark border-bottom">Allocated items cost</td>#}
-{#                  <td class="text-right border-dark border-bottom">£{{ items_total|floatformat:2 }}</td>#}
-{#                </tr>#}
-{#              </table>#}
-{#              {% if remaining < 0 %}#}
-{#                <p class="bg-danger text-white text-center">Allocated item costs exceed the invoice total by £#}
-{#                {{ excess|floatformat:2 }}.<br>#}
-{#              {% endif %}#}
-{#              {% if remaining > 0 %}#}
-{#                <p class="bg-danger text-white text-center">Allocated item costs do not add up to the invoice total.<br>#}
-{#                  There is £{{ remaining|floatformat:2 }} left to allocate.</p>#}
-{#              {% endif %}#}
-{#              {% if remaining == 0 %}#}
-{#                <p class="bg-success text-white text-center">Allocated item costs = invoice total.</p>#}
-{#              {% endif %}#}
-{#            </div>#}
-{#          </div>#}
-{#          {% buttons %}#}
-{#            <button type="submit" class="btn btn-primary" name="back">Back</button>#}
-            {#            <button type="submit" class="btn btn-primary" name="expense">Add an expense</button>#}
-{#            {% if remaining > 0 %}#}
-{#              <button type="submit" class="btn btn-primary" name="item">Add an item</button>#}
-{#            {% endif %}#}
-{#            {% if remaining == 0 %}#}
-{#              <button type="submit" class="btn btn-primary" name="save">Save</button>#}
-{#            {% endif %}#}
-{#          {% endbuttons %}#}
-{#        </form>#}
-{#      </div>#}
-{#    </div>#}
-  </div>
 
-    <!-- Modal to hold partial form -->
+  {% include "shop/includes/partial_purchase_summary.html" %}
+
+  <!-- Modal to hold partial form -->
   <div class="modal " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
     <div class="modal-dialog modal-dialog-centered {{ modal_class }}" role="document">
       <div class="modal-content bg-light">
@@ -77,51 +13,7 @@
     </div>
   </div>
 
-
-
-
 {% endblock %}
 {% block custom_scripts %}
-  <script>
-      $(".js-change").click(function () {
-          var index = $(this).prop("name")
-          var url = "{% url 'purchase_summary_ajax' 9999 %}".replace("9999", index);
-        $.ajax({
-            url: url,
-            type: 'get',
-            dataType: 'json',
-            data: {return: url},
-            success: function (data) {
-                $("#modal-form").modal("show");
-                $("#modal-form .modal-content").html(data.html_form);
-            }
-        });
-    });
-
-      $("#modal-form").on("click", ".js-submit", function () {
-        var form = $(this).parents("form");
-        var submitter = $(this).attr("name")
-        var data = form.serialize();
-        data += '&' + encodeURIComponent(submitter) + '=';
-        $.ajax({
-            url: form.attr("action"),
-            data: data,
-            type: form.attr("method"),
-            dataType: 'json',
-            success: function (data) {
-                if (data.valid) {
-                    $("#modal-form").modal("hide");
-                    if (data.url) {
-                        location.replace(data.url);
-                    } else {
-                        location.reload(true)
-                    }
-                } else {
-                    $("#modal-form").modal("show");
-                    $("#modal-form .modal-content").html(data.html_form);
-                }
-            }
-        });
-    });
-  </script>
+  <script src="{% static "shop/js/table_handler.js" %}"></script>
 {% endblock %}

@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django_tables2 import SingleTableView
 from django_tables2.export.views import ExportMixin
+from shop.session import new_stack, push, pop
 
 
 class FilteredTableView(ExportMixin, SingleTableView):
@@ -175,6 +176,8 @@ class AjaxCrudView(View):
     allow_delete = False
     success_url = ""
     horizontal_form = False
+    modal_id = "#modal-form"
+    modal_class = ""
 
     def get_object(self, **kwargs):
         pk = kwargs.get("pk", None)
@@ -193,11 +196,15 @@ class AjaxCrudView(View):
 
     def get(self, request, **kwargs):
         if request.is_ajax():
-            data = {}
+            data = {
+                "path": request.path,
+                "modal_id": self.modal_id,
+                "modal_class": self.modal_class,
+            }
             if "return_url" in request.GET:
-                data["return_url"] = request.GET["return_url"]
+                push(request, request.GET["return_url"])
             else:
-                data["return_url"] = request.path
+                new_stack(request)
             try:
                 self.get_form(**kwargs)
                 data["html_form"] = render_to_string(
@@ -215,16 +222,18 @@ class AjaxCrudView(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             instance = self.get_object(**kwargs)
-            data = {}
-            if "save_back" in request.POST:
-                if "return_url" in request.POST:
-                    data["return_url"] = request.POST["return_url"]
+            return_url = pop(request)
+            if not return_url:
+                return_url = self.success_url
+            data = {"return_url": return_url, "valid": True, "modal_id": self.modal_id}
+            if "cancel" in request.POST:
+                pass
             elif "delete" in request.POST:
                 instance.delete()
                 messages.add_message(
                     request, messages.INFO, f"{str(instance)} was deleted"
                 )
-            if "save_close" in request.POST or "save_back" in request.POST:
+            elif "save" in request.POST:
                 if self.get_form_class():
                     self.form = self.get_form_class()(request.POST, instance=instance)
                     try:
@@ -232,7 +241,6 @@ class AjaxCrudView(View):
                             self.save_object(**kwargs)
                             if self.object:
                                 data["pk"] = self.object.pk
-                            data["valid"] = True
                         else:
                             data["valid"] = False
                             data["html_form"] = render_to_string(
@@ -241,10 +249,6 @@ class AjaxCrudView(View):
                     except Exception as e:
                         data["valid"] = False
                         data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
-                else:
-                    data["valid"] = True
-                if "redirect" in request.POST:
-                    data["url"] = self.success_url
             return JsonResponse(data)
         return HttpResponse("JsonCrudView received a non-ajax post request")
 
@@ -255,6 +259,7 @@ class AjaxCrudView(View):
         name = self.model._meta.object_name if self.model else "No model name"
         context = {
             "modal": True,
+            "modal_class": self.modal_class,
             "form": self.form,
             "path": self.request.path,
             "object_name": name,

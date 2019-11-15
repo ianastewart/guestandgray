@@ -3,30 +3,43 @@
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
   {{ form.media }}
-  <div class="container my-2 py-2 bg-light border">
+  <div class="container my-2 py-2">
     <div class="row">
-      <div class="col col-md-8 my-4">
-        <h3>Select vendor</h3>
-        <form method="post" action="{{ path }}" class="js-form">
-          {% csrf_token %}
-          {% bootstrap_field form.vendor_id %}
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <button type="button" class="btn btn-secondary js-select" style="width:130px">Search</button>
-            </div>
-            <input type="text" class="form-control" placeholder="" aria-label="" id="select_vendor" disabled
-                   autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"
-                   aria-describedby="basic-addon1">
+      <div class="col col-md-8 my-2 mx-auto">
+        <div class="card">
+          <div class="card-header card-body bg-white">
+            <h4 class="my-0">Create purchase<br>Step 1 - Define vendor</h4>
           </div>
-          <button type=button class="btn btn-secondary mb-2 js-create" style="width:130px">New vendor</button>
-          <div class="card card-body my-2" style="height:12rem; width:350px; background-color: #eeeeee">
-            <p id="vendor">{{ vendor|linebreaksbr }}</p>
+          <div class="bg-light">
+            <form method="post" action="{{ path }}" class="js-form">
+              <div class="card-body">
+                {% csrf_token %}
+                {% bootstrap_field form.vendor_id %}
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <button type="button" class="btn btn-secondary js-select" style="width:150px">Search vendors
+                    </button>
+                  </div>
+                  <input type="text" class="form-control" placeholder="" aria-label="" id="select_vendor" disabled
+                         autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"
+                         aria-describedby="basic-addon1">
+                </div>
+                <button type=button class="btn btn-secondary mb-2 js-create" style="width:150px">New vendor</button>
+                <div class="card card-body my-2 bg-white" style="height:12rem; width:370px;">
+                  <p id="vendor">{{ vendor|linebreaksbr }}</p>
+                </div>
+              </div>
+              <div class="card-footer card-body bg-white">
+                {% buttons %}
+                  <button type="submit" class="btn btn-primary" name="cancel">Cancel</button>
+                  <button type="submit" class="btn btn-primary" name="next" id="btn_next"
+                          {% if not vendor %}disabled {% endif %}>Next
+                  </button>
+                {% endbuttons %}
+              </div>
+            </form>
           </div>
-          {% buttons %}
-            <button type="submit" class="btn btn-primary" name="cancel">Cancel</button>
-            <button type="submit" class="btn btn-primary" name="next" id="btn_next" {% if not vendor %}disabled {% endif %}>Next</button>
-          {% endbuttons %}
-        </form>
+        </div>
       </div>
     </div>
   </div>

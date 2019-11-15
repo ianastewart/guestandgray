@@ -116,6 +116,13 @@ h4{
   border-color: white;
 }
 
+/*todo add this when we use SASS*/
+/*.input-group.is-invalid {*/
+/*   .invalid-feedback {*/
+/*    display: block;*/
+/*  }*/
+/*}*/
+
 /* ie11 fix for stretched images */
 .card > * { flex: 0 0 auto; }
 
@@ -174,6 +181,14 @@ body {
     width: 75%;
   }
 }
+
+/*!* allow modals to stack *!*/
+/*.modal:nth-of-type(odd) {*/
+/*    z-index: 1052 !important;*/
+/*}*/
+/*.modal-backdrop.show:nth-of-type(odd) {*/
+/*    z-index: 1051 !important;*/
+/*}*/
 
 .panel {
     position: relative;

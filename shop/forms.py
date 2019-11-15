@@ -166,7 +166,12 @@ class PurchaseForm(ModelForm):
         label="Vendor",
         help_text="Type 3 or more letters to search by company name",
     )
-    date = forms.DateField(widget=DatePicker())
+    date = forms.DateField(
+        widget=DatePicker(
+            options={"useCurrent": True},
+            attrs={"append": "fa fa-calendar", "icon_toggle": True},
+        )
+    )
 
 
 class PurchaseExpenseForm(ModelForm):
@@ -190,31 +195,45 @@ class PurchaseDataForm(ModelForm):
             "paid_date",
         )
 
-    date = forms.DateField(widget=DatePicker(), label="Purchase date")
-    invoice_number = forms.CharField(
-        max_length=10, required=True, label="Vendor's invoice number"
+    date = forms.DateField(
+        widget=DatePicker(
+            options={"useCurrent": True},
+            attrs={"prepend": "fa fa-calendar", "icon_toggle": True},
+        ),
+        label="Purchase date",
+        required=True,
     )
-    invoice_total = forms.DecimalField(required=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Set required fields here.
+        # They are allowed to be empty in the model to cope with old incomplete imported data
+        self.fields["invoice_number"].required = True
+        self.fields["cost_lot"].required = True
+        self.fields["invoice_total"].required = True
 
     def clean(self):
         cleaned_data = super().clean()
-        cost = cleaned_data["cost_lot"]
-        if not cost:
-            cost = 0
-        premium = cleaned_data["buyers_premium"]
-        if not premium:
-            premium = 0
-        vat = cleaned_data["vat"]
-        if not vat:
-            vat = 0
-        total = cleaned_data["invoice_total"]
-        if not total:
-            total = 0
-        sum = cost + premium + vat
-        if sum != total:
-            raise forms.ValidationError(
-                f"The sum of the fields (£{sum}) does not equal the invoice total."
-            )
+        if len(self.errors) == 0:
+            cost = cleaned_data["cost_lot"]
+            total = cleaned_data["invoice_total"]
+            premium = cleaned_data["buyers_premium"]
+            if not premium:
+                premium = 0
+                cleaned_data["buyers_premium"] = 0
+            vat = cleaned_data["vat"]
+            if not vat:
+                vat = 0
+                cleaned_data["vat"] = 0
+            if not cleaned_data["margin_scheme"] and vat == 0:
+                raise forms.ValidationError(
+                    f"VAT cannot be zero when outside the margin sheme."
+                )
+            sum = cost + premium + vat
+            if sum != total:
+                raise forms.ValidationError(
+                    f"The sum of the fields (£{sum}) does not equal the invoice total."
+                )
 
 
 class PurchaseCostForm(forms.Form):

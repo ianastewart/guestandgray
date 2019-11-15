@@ -1,24 +1,37 @@
 // Handle checkboxes in tables, and modal forms
 $(document).ready(function () {
     'use strict';
+    let last_path = "";
     let lastChecked = null;
     let chkboxes = $('.tr-checkbox');
     const MAX = 1000;
     $("body").css("cursor", "default");
 
     $('#id_loader').hide();
-    // set clicked attr on button that submitted the form
 
-    $("#modal-form").on("click", ".js-submit", function () {
-        let form = $(this).parents("form");
-        let submitter = $(this).attr("name");
-        submit(form, submitter);
+    // normal submit action is ignored on a modal form
+    $(".modal").on("submit", ".js-form", function () {
         return false;
     });
 
-    function submit(form, submitter) {
-        let data = form.serialize();
-        data += '&' + encodeURIComponent(submitter) + '=';
+    // Submit button pressed on a modal form
+    $(".modal").on("click", ".js-submit", function () {
+        let form = $(this).parents("form");
+        let submitter = $(this).attr("name");
+        ajax_submit(form, submitter);
+        return false;
+    });
+
+    // submit on a non-modal form
+    $(".js-submit").click(function () {
+        let form = $(this).parents("form");
+        let submitter = $(this).attr("name");
+        ajax_submit(form, submitter);
+        return false;
+    });
+
+    function ajax_submit(form, submitter) {
+        let data = form.serialize() + '&' + encodeURIComponent(submitter) + '='
         $.ajax({
             url: form.attr("action"),
             data: data,
@@ -26,22 +39,47 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (data) {
                 if (data.valid) {
-                    $("#modal-form").modal("hide");
+                    $(data.modal_id).modal("hide");
                     if (data.return_url) {
                         ajax_get("", data.return_url)
                     } else {
                         location.reload(true)
                     }
                 } else {
-                    $("#modal-form").modal("show");
-                    $("#modal-form .modal-content").html(data.html_form);
+                    $(data.modal_id).modal("show");
+                    $(data.modal_id + ".modal-content").html(data.html_form);
                 }
             }
         });
-        return false;
     }
 
-    // request and show the modal create form
+    // Button clicked on a modal form. Load a new modal form, passing the current url as the return path
+    $(".modal").on("click", ".js-call", function () {
+        let url = $(this).prop("name").replace("/0/", "/");
+        call_modal(url, last_path)
+    });
+
+    // Call from non-modal - don't pass a return address
+    $(".js-call").click(function () {
+        let url = $(this).prop("name").replace("/0/", "/");
+        call_modal(url, "")
+    });
+
+    function call_modal(call_url, return_url) {
+        $.ajax({
+            url: call_url,
+            type: 'get',
+            dataType: 'json',
+            data: {return_url: return_url},
+            success: function (data) {
+                $(data.modal_id).modal("show");
+                $(data.modal_id + " .modal-content").html(data.html_form);
+            }
+        });
+    }
+
+
+    // Request and show the modal create form
     $(".js-create").click(function () {
         $.ajax({
             url: 'create/',
@@ -71,34 +109,10 @@ $(document).ready(function () {
         });
     });
 
-    // changed filter auto submits the form
-    $(".form-control").change(function() {
-        if ($(this).parent().hasClass("auto-submit")){
-            doFilter();
-            //$(this).closest("form").submit();
-        }
-    });
-
-
-    let ready = false;
-    $("#lines_per_page").val($("#id_per_page").val());
-    ready = true;
-
-    $("#lines_per_page").change(function () {
-        if (ready) {
-            $("#id_per_page").val($("#lines_per_page").val());
-            doFilter();
-        }
-    });
-
-    // normal submit button is ignored
-    $("#modal-form").on("submit", ".js-form", function () {
-        return false;
-    });
 
     // called by table click to load update form
     function ajax_get(pk, action) {
-        if(pk){
+        if (pk) {
             action = action + '/' + pk + '/';
         }
         $.ajax({
@@ -106,9 +120,10 @@ $(document).ready(function () {
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                $("#modal-form").modal("show");
+                $("#modal-form").children().addClass(data.modal_class);
                 $("#modal-form .modal-content").html(data.html_form);
-                $("#return_url").val(data.return_url);
+                $("#modal-form").modal("show");
+                last_path = data.path;
             }
         });
     }
@@ -119,8 +134,6 @@ $(document).ready(function () {
         countChecked();
         highlight_array(chkboxes);
     }
-
-    $('#id_filter').click(doFilter);
 
     $('#select_all_page').click(function () {
         $('#select_all').prop("checked", false)
@@ -213,6 +226,29 @@ $(document).ready(function () {
         $('#count').text(count);
         $('#dropdownMenu').prop('disabled', goDisabled);
     }
+
+    // ---------- Filtering code -------
+
+    // changed filter auto submits the form
+    $(".form-control").change(function () {
+        if ($(this).parent().hasClass("auto-submit")) {
+            doFilter();
+            //$(this).closest("form").submit();
+        }
+    });
+
+    let ready = false;
+    $("#lines_per_page").val($("#id_per_page").val());
+    ready = true;
+
+    $("#lines_per_page").change(function () {
+        if (ready) {
+            $("#id_per_page").val($("#lines_per_page").val());
+            doFilter();
+        }
+    });
+
+    $('#id_filter').click(doFilter);
 
     function doFilter() {
         $('#id_loader').show();

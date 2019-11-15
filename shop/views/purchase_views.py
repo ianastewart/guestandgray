@@ -1,17 +1,18 @@
 from decimal import *
 import logging
+from django.contrib import messages
+from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, TemplateView, CreateView, FormView
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from shop.forms import (
     NewVendorForm,
     PurchaseVendorForm,
     PurchaseDataForm,
     NewItemForm,
-    PurchaseCostForm,
     PurchaseExpenseForm,
 )
-from shop.models import Contact, Purchase, Item, PurchaseExpense
+from shop.models import Contact, Purchase, Item, ItemRef
 from shop.tables import PurchaseTable
 from shop.views.generic_views import FilteredTableView, AjaxCrudView
 import shop.session as session
@@ -33,11 +34,11 @@ class PurchaseStartView(View):
     """ Starts a new wizard """
 
     def get(self, request):
-        session.clear(request)
-        return redirect("purchase_create", 0)
+        session.clear_data(request)
+        return redirect("purchase_vendor", 0)
 
 
-class PurchaseCreateView(LoginRequiredMixin, DispatchMixin, FormView):
+class PurchaseVendorView(LoginRequiredMixin, DispatchMixin, FormView):
     """ Capture details of the vendor"""
 
     form_class = PurchaseVendorForm
@@ -46,7 +47,12 @@ class PurchaseCreateView(LoginRequiredMixin, DispatchMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         vendor_id = self.initial.get("vendor_id", None)
-        context["vendor"] = get_vendor(vendor_id)
+        try:
+            vendor = Contact.objects.get(id=vendor_id)
+            name = vendor.name
+        except Contact.DoesNotExist:
+            name = ""
+        context["vendor"] = name
         return context
 
     def post(self, request, **kwargs):
@@ -113,6 +119,11 @@ class PurchaseItemCreateView(LoginRequiredMixin, DispatchMixin, FormView):
     form_class = NewItemForm
     template_name = "shop/purchase_item.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["item_number"] = self.index - 1
+        return context
+
     def post(self, request, **kwargs):
         if "back" in request.POST:
             if self.index > session.last_index(request):
@@ -130,6 +141,39 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
 
     template_name = "shop/purchase_summary.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        items_total = Decimal(0)
+        items = []
+        i = 0
+        posted = session.get_data(i, self.request)
+        context["vendor"] = Contact.objects.get(id=posted["vendor_id"])
+        i += 1
+        posted = session.get_data(i, self.request)
+        context["purchase"] = posted
+        invoice_total = posted["invoice_total"]
+        ref = ItemRef.get_next(increment=False)
+        while True:
+            i += 1
+            posted = session.get_data(i, self.request)
+            if posted:
+                posted["pk"] = i
+                posted["ref"] = ref
+                ref = ItemRef.increment(ref)
+                items.append(posted)
+                items_total += posted["cost_price"]
+            else:
+                break
+        context["items"] = items
+        context["items_total"] = items_total
+        remaining = invoice_total - items_total
+        context["remaining"] = remaining
+        PurchaseSummaryCreateView.set_message(self.request, remaining)
+        # index part of change_path gets updated by javascript to include the item pk
+        context["change_path"] = reverse("purchase_summary_ajax", kwargs={"index": 0})
+        context["creating"] = True
+        return context
+
     def post(self, request, **kwargs):
         if "back" in request.POST:
             return redirect(session.back(self.index, request))
@@ -140,70 +184,48 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
         elif "save" in request.POST:
             vendor_id = session.get_data(0, request)["vendor_id"]
             data = session.get_data(1, request)
-            purchase = Purchase.objects.create(
-                date=data["date"],
-                invoice_number=data["invoice_number"],
-                invoice_total=data["invoice_total"],
-                buyers_premium=data["buyers_premium"],
-                cost_lot=data["cost_lot"],
-                lot_number=data["lot_number"],
-                vendor_id=vendor_id,
-                paid_date=data["paid_date"],
-                margin_scheme=data["margin_scheme"],
-                vat=data["vat"],
-            )
-            i = 2
-            while i <= session.last_index(request):
-                data = session.get_data(i, request)
-                item = Item.objects.create(
-                    name=data["name"],
-                    cost_price=data["cost_price"],
-                    purchase_data=purchase,
+            with transaction.atomic():
+                purchase = Purchase.objects.create(
+                    date=data["date"],
+                    invoice_number=data["invoice_number"],
+                    invoice_total=data["invoice_total"],
+                    buyers_premium=data["buyers_premium"],
+                    cost_lot=data["cost_lot"],
+                    lot_number=data["lot_number"],
+                    vendor_id=vendor_id,
+                    paid_date=data["paid_date"],
+                    margin_scheme=data["margin_scheme"],
+                    vat=data["vat"],
                 )
-                i += 1
+                i = 2
+                while i <= session.last_index(request):
+                    data = session.get_data(i, request)
+                    Item.objects.create(
+                        name=data["name"],
+                        ref=ItemRef.get_next(),
+                        cost_price=data["cost_price"],
+                        purchase_data=purchase,
+                    )
+                    i += 1
+            session.clear_data(request)
             return redirect("purchase_list")
         return redirect("purchase_summary", self.index)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        expenses_total = Decimal(0)
-        items_total = Decimal(0)
-        expenses = []
-        items = []
-        i = 0
-        posted = session.get_data(i, self.request)
-        context["vendor"] = get_vendor(posted["vendor_id"])
-        i += 1
-        posted = session.get_data(i, self.request)
-        context["invoice_total"] = posted["invoice_total"]
-        context["cost_lot"] = posted["cost_lot"]
-
-        context["vendor"] = Contact.objects.get(id=self.object.vendor_id)
-        context["date"] = self.object.date
-        context["invoice_number"] = self.object.invoice_number
-        context["invoice_total"] = self.object.invoice_total
-        context["lot_no"] = self.object.lot_number
-        context["buyers_premium"] = self.object.buyers_premium
-        context["cost_lot"] = self.object.cost_lot
-        while True:
-            i += 1
-            posted = session.get_data(i, self.request)
-            if posted:
-                if posted["form_class"] == PurchaseExpenseForm.__name__:
-                    expenses.append([posted["description"], posted["amount"]])
-                    expenses_total += posted["amount"]
-                elif posted["form_class"] == NewItemForm.__name__:
-                    items.append([posted["name"], posted["cost_price"], str(i)])
-                    items_total += posted["cost_price"]
-            else:
-                break
-        context["expenses"] = expenses
-        context["expenses_total"] = expenses_total
-        context["items"] = items
-        context["items_total"] = items_total
-        context["remaining"] = context["cost_lot"] - items_total
-        context["excess"] = items_total - context["cost_lot"]
-        return context
+    @classmethod
+    def set_message(cls, request, remaining):
+        """ defines message to put at top of screen, used also outside creation """
+        if remaining > 0:
+            level = messages.WARNING
+            message = f"There is still £{remaining} to allocate to items."
+        elif remaining < 0:
+            level = messages.ERROR
+            message = (
+                f"The allocated item costs exceed the invoice total by £{-remaining}."
+            )
+        else:
+            level = messages.SUCCESS
+            message = "Invoice total matches allocated item costs"
+        messages.add_message(request, level, message)
 
 
 class PurchaseSummaryAjaxView(LoginRequiredMixin, AjaxCrudView):
@@ -234,58 +256,45 @@ class PurchaseSummaryAjaxView(LoginRequiredMixin, AjaxCrudView):
 
 
 class PurchaseListView(LoginRequiredMixin, FilteredTableView):
+    """ Show purchases in a generic table """
+
     model = Purchase
     table_class = PurchaseTable
     allow_detail = True
-    modal_class = "modal-lg"
 
     def get_queryset(self):
         return Purchase.objects.all().order_by("-id")
 
 
 class PurchaseDetailAjax(LoginRequiredMixin, AjaxCrudView):
+    """ Show Purchase summary in a modal over the PurchaseListView"""
+
     model = Purchase
     template_name = "shop/includes/partial_purchase_summary.html"
+    modal_class = "modal-lg"
 
     def get_context_data(self):
         context = super().get_context_data()
-        items_total = Decimal(0)
         context["vendor"] = Contact.objects.get(id=self.object.vendor_id)
-        context["date"] = self.object.date
-        context["invoice_number"] = self.object.invoice_number
-        context["invoice_total"] = self.object.invoice_total
-        context["lot_no"] = self.object.lot_number
-        context["buyers_premium"] = self.object.buyers_premium
-        context["cost_lot"] = self.object.cost_lot
-
         context["purchase"] = self.object
+        items_total = Decimal(0)
         items = self.object.item_set.all().order_by("pk")
         for item in items:
             items_total += item.cost_price
         context["items"] = items
         context["items_total"] = items_total
-        context["remaining"] = context["cost_lot"] - items_total
-        context["excess"] = items_total - context["cost_lot"]
+        context["remaining"] = self.object.invoice_total - items_total
         context["can_update"] = len(items) > 1
+        context["change_path"] = reverse("purchase_item_ajax", kwargs={"pk": 0})
+        context["creating"] = False
         return context
 
 
 class PurchaseItemAjax(LoginRequiredMixin, AjaxCrudView):
-    """ Handles updates to item costs in a purchase after creation """
+    """ Show second modal over PurchaseDetailAjax modal to change item cost """
 
     model = Item
     form_class = NewItemForm
+    modal_id = "#modal-form-2"
+    update = True
     template_name = "shop/includes/partial_purchase_item.html"
-
-
-def get_vendor(vendor_id):
-    if vendor_id:
-        try:
-            vendor = Contact.objects.get(id=vendor_id)
-            name = vendor.company
-            if vendor.first_name:
-                name = f"{vendor.first_name} {name}"
-            return f"{name}\n{vendor.address}"
-        except Contact.DoesNotExist:
-            return "Vendor not found"
-    return "No vendor id"
