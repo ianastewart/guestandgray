@@ -36,28 +36,34 @@ DATABASES = {"default": env.db_url("DATABASE_URL")}
 
 # Use template caching to speed up wagtail admin and front-end.
 # Requires reloading web server to pick up template changes.
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-                "wagtail.contrib.settings.context_processors.settings",
-            ],
-            "loaders": [
-                (
-                    "django.template.loaders.cached.Loader",
-                    [
-                        "django.template.loaders.filesystem.Loader",
-                        "django.template.loaders.app_directories.Loader",
-                    ],
-                )
-            ],
-        },
-    }
+# TEMPLATES = [
+#     {
+#         "BACKEND": "django.template.backends.django.DjangoTemplates",
+#         "OPTIONS": {
+#             "context_processors": [
+#                 "django.template.context_processors.debug",
+#                 "django.template.context_processors.request",
+#                 "django.contrib.auth.context_processors.auth",
+#                 "django.contrib.messages.context_processors.messages",
+#                 "wagtail.contrib.settings.context_processors.settings",
+#             ],
+#             "loaders": [
+#                 (
+#                     "django.template.loaders.cached.Loader",
+#                     [
+#                         "django.template.loaders.filesystem.Loader",
+#                         "django.template.loaders.app_directories.Loader",
+#                     ],
+#                 )
+#             ],
+#         },
+#     }
+# ]
+
+TEMPLATES[0]["OPTIONS"]["loaders"] = [
+    "django.template.loaders.cached.Loader",
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader",
 ]
 
 CACHES = {
