@@ -15,19 +15,20 @@ class FilteredTableView(ExportMixin, SingleTableView):
     http://www.craigderington.me/django-generic-listview-with-django-filters-and-django-tables2/
     """
 
-    template_name = "generic_table.html"
+    template_name = "table_manager/generic_table.html"
     filter_class = None
     formhelper_class = None
     context_filter_name = "filter"
     table_pagination = {"per_page": 10}
     as_list = False
-    modal_class = None
     heading = ""
     horizontal_form = False
-    filter_left = False
+    filter_left = True
     allow_create = False
     allow_update = False
     allow_detail = False
+    auto_filter = False
+    filter_button = "Filter"
     buttons = None
 
     def __init__(self, **kwargs):
@@ -103,7 +104,6 @@ class FilteredTableView(ExportMixin, SingleTableView):
             context["first_run"] = self.first_run
         if self.total:
             context["total"] = self.total
-        context["modal_class"] = self.modal_class
         context["object_name"] = self.model._meta.object_name
         context["buttons"] = self.get_buttons()
         context["actions"] = self.get_actions()
@@ -113,6 +113,8 @@ class FilteredTableView(ExportMixin, SingleTableView):
         context["horizontal_form"] = self.horizontal_form
         context["heading"] = self.heading
         context["filter_left"] = self.filter_left
+        context["auto_filter"] = self.auto_filter
+        context["filter_button"] = self.filter_button
         return context
 
     def post(self, request, *args, **kwargs):
@@ -211,11 +213,15 @@ class AjaxCrudView(View):
                     self.template_name, self.get_context_data(), request
                 )
             except TemplateDoesNotExist as e:
-                data["html_form"] = f"<h3>Template not found: {str(e)}</h3>"
+                data[
+                    "html_form"
+                ] = f"<h4>AjaxCrudView<br>Template not found: {str(e)}</h4>"
             except TemplateSyntaxError as e:
-                data["html_form"] = f"<h3>Template syntax error: {str(e)}</h3>"
+                data[
+                    "html_form"
+                ] = f"<h4>AjaxCrudView<br>Template syntax error: {str(e)}</h4>"
             except Exception as e:
-                data["html_form"] = f"<h3>Exception: {str(e)}</h3>"
+                data["html_form"] = f"<h4>AjaxCrudView<br>Exception: {str(e)}</h4>"
             return JsonResponse(data)
         return HttpResponse("JsonCrudView received a non-ajax get request")
 

@@ -1,10 +1,10 @@
 {% load render_table querystring from django_tables2 %}{% load static bootstrap4 %}
-<div class="panel bg-light ml-3 p-0" id="id_table_panel">
+<div class="panel bg-light ml-3 pl-0 pt-0" id="id_table_panel">
   {% if heading %}
-    <div class="col p-3 text-center"><h3>{{ heading }}</h3></div
+    <div class="col p-3 text-center"><h3>{{ heading }}</h3></div>
   {% endif %}
-  {% if actions or buttons or filter %}
-  <form action="." method="post" id="table_form">
+  {% if actions or buttons %}
+    <form action="." method="post" id="table_form">
       {% csrf_token %}
       <div class="row bg-guest-light pt-2">
           <input type="hidden" name="query" value={% querystring without "page" "per_page" %}>
@@ -44,19 +44,16 @@
                 </button>
               {% endif %}
               {% for button in buttons %}
-                <button type="submit" class="btn btn-primary ml-2 mb-1" value="{{ button.1 }}">
+                <button type="submit" class="btn btn-primary ml-2 mb-1" name="{{ button.1 }}">
                   {{ button.0 }}
                 </button>
               {% endfor %}
             </div>
           {% endif %}
-        <div class="col-2 col-md-2 text-right pt-2 mr-3">
-          {% include 'lines_per_page.html' %}
-        </div>
     </div>
    </form>
   {% endif %}
-<div id="id_table_data">{% render_table table 'django_tables2/bootstrap4.html' %}</div>
+<div id="id_table_data">{% render_table table 'table_manager/custom_bootstrap4.html' %}</div>
 {# gif from http://jaxload.info #}
 <div class="text-center" id="id_loader" style="display: none;"><br><img src="{% static 'shop/images/ajax-loader.gif' %}"></div>
-</div><
+</div>

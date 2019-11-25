@@ -3,11 +3,14 @@
 {% load render_table querystring from django_tables2 %}
 
 {% block content %}
-  {% if allow_update %}<div id="allow_update" style="display: none"></div>{% endif %}
-  {% if allow_detail %}<div id="allow_detail" style="display: none"></div>{% endif %}
+  {% if allow_update %}
+    <div id="allow_update" style="display: none"></div>{% endif %}
+  {% if allow_detail %}
+    <div id="allow_detail" style="display: none"></div>{% endif %}
 
   {% if filter %}
     {{ filter.form.media }}
+
     {% if filter_left %}
       <div class="container-fluid" style="height: calc(100% - 60px);">
         <div class="row h-100">
@@ -17,19 +20,22 @@
               <div class="panel flex-grow-1 bg-guest-light">
                 <form action="." method="get" id="id_filter_form">
                   {% for field in filter.form.visible_fields %}
-                    {% if field.name == 'per_page' %}<div style="display: none">{% bootstrap_field field %}</div>
-                    {% else %}{% bootstrap_field field form_group_class="form-group auto-submit" %}{% endif %}
+                    {% if field.name == 'per_page' %}
+                      <div >{% bootstrap_field field placeholder="" %}</div>
+                    {% else %}{% bootstrap_field field placeholder="" form_group_class="form-group auto-submit" %}{% endif %}
                   {% endfor %}
-{#                  <button class="form-control btn-primary " id="id_search" type="submit">#}
-{#                    <i class="fas fa-filter"></i>&nbsp&nbsp Filter#}
-{#                  </button>#}
+                  {%  if filter_button %}
+                    <button class="form-control btn-primary " id="id_search" type="submit">
+                      <i class="fas fa-filter"></i>&nbsp&nbsp {{ filter_button }}
+                    </button>
+                  {% endif %}
                 </form>
               </div>
             </div>
           </div>
           <div class="col col-md-9 col-lg-10 ml-0 bg-light">
             <div class="row flex-grow-1">
-              {% include 'table_data.html' with heading="" %}
+              {% include "table_manager/table_data.html"  with heading="" %}
             </div>
           </div>
         </div>
@@ -37,30 +43,32 @@
     {% else %} <!-- filter at top -->
       <div class="container-fluid p-0 bg-guest-light" style="height: calc(100% - 60px);">
         <div class="panel bg-guest-light">
-        <div class="bg-dark p-3 text-center" style="height:72px;"><h3 class="text-white">{{ heading }}</h3></div>
-        <form action="." method="get" id="search_form">
+          <div class="p-2 text-center" style="height:72px;"><h3>{{ heading }}</h3></div>
+            <form action="." method="get" id="id_filter_form">
           <div class="row">
-            {% for field in filter.form.visible_fields %}
-              <div class="col col-md-2">
-                {% bootstrap_field field %}
+              {% for field in filter.form.visible_fields %}
+                <div class="col col-md-2">
+                  {% bootstrap_field field placeholder=""%}
+                </div>
+              {% endfor %}
+              {% if filter_button %}
+              <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="form-group">
+                  <label for="id_search">&nbsp;</label>
+                  <button class="form-control btn-primary " id="id_search" type="submit">
+                    <i class="fas fa-filter"></i>&nbsp&nbsp {{ filter_button }}
+                  </button>
+                </div>
               </div>
-            {% endfor %}
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-              <div class="form-group">
-                <label for="id_search">&nbsp;</label>
-                <button class="form-control btn-primary " id="id_search" type="submit">
-                  <i class="fas fa-filter"></i>&nbsp&nbsp Filter
-                </button>
-              </div>
-            </div>
+            {% endif %}
           </div>
-        </form>
+            </form>
           <div class="h-100 d-flex flex-column">
-          <div class="col bg-light h-100">
-            <div class="row flex-grow-1">
-              {% include 'table_data.html' %}
+            <div class="col bg-light h-100">
+              <div class="row flex-grow-1">
+                {% include "table_manager/table_data.html" with heading="" %}
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -68,13 +76,12 @@
   {% else %} <!-- No filter -->
     <div class="container-fluid bg-guest-light">
       <div class="panel">
-        {% include "table_data.html" %}
-
+        {% include "table_manager/table_data.html"  with heading=""%}
       </div>
     </div>
   {% endif %}
 
-  <!-- Modal to hold main artial form -->
+  <!-- Modal to hold main partial form -->
   <div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content bg-light">
@@ -82,7 +89,7 @@
     </div>
   </div>
 
-    <!-- Modal to hold second partial form -->
+  <!-- Modal to hold second partial form -->
   <div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form-2" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content bg-light">
@@ -102,8 +109,9 @@
       </div>
     </div>
   </div>
+  </div>
 
 {% endblock %}
 {% block custom_scripts %}
-  <script src="{% static "shop/js/table_handler.js" %}"></script>
+  <script src="{% static "table_manager/js/table_manager.js" %}"></script>
 {% endblock %}

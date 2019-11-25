@@ -3,14 +3,14 @@ from django.http import JsonResponse, HttpResponseNotFound
 from shop.models import Contact, Enquiry
 from shop.forms import ContactForm
 from shop.tables import ContactTable, ContactTableTwo, EnquiryTable
-from shop.views.generic_views import FilteredTableView, AjaxCrudView
+from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import ContactFilter
 
 
 class ContactListView(LoginRequiredMixin, FilteredTableView):
     model = Contact
-    template_name = "generic_table.html"
     table_class = ContactTable
+    filter_class = ContactFilter
     heading = "Contacts"
     table_pagination = {"per_page": 100}
     allow_create = True
@@ -22,7 +22,6 @@ class ContactListView(LoginRequiredMixin, FilteredTableView):
 
 class VendorListView(ContactListView):
     table_class = ContactTableTwo
-    filter_class = ContactFilter
     heading = "Vendors"
 
     def get_queryset(self):
@@ -31,7 +30,6 @@ class VendorListView(ContactListView):
 
 class BuyerListView(ContactListView):
     table_class = ContactTableTwo
-    filter_class = ContactFilter
     heading = "Buyers"
 
     def get_queryset(self):
@@ -54,7 +52,6 @@ class ContactUpdateView(LoginRequiredMixin, AjaxCrudView):
 
 class EnquiryListView(LoginRequiredMixin, FilteredTableView):
     model = Enquiry
-    template_name = "generic_table.html"
     table_class = EnquiryTable
     table_pagination = {"per_page": 10}
     allow_update = True

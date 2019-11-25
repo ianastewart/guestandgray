@@ -233,7 +233,13 @@ $(document).ready(function () {
     $(".form-control").change(function () {
         if ($(this).parent().hasClass("auto-submit")) {
             doFilter();
-            //$(this).closest("form").submit();
+        }
+    });
+
+    // blur catches datepicker changes
+    $(".form-control").blur(function(){
+        if ($(this).parent().parent().hasClass("auto-submit")) {
+            doFilter();
         }
     });
 

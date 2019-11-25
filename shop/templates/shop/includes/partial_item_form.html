@@ -35,14 +35,28 @@
               <legend>Stock item</legend>
             {% endif %}
             <p>Vendor: {{ object.purchase_data.vendor.company }}</p>
-            {% if form.purchase_date %}{% bootstrap_field form.purchase_date %}{% endif %}
-
-            {% bootstrap_field form.cost_price %}
-            {% bootstrap_field form.restoration_cost %}
-            {% bootstrap_field form.sale_price %}
+            <p>Purchased on {{ object.purchase_data.date|date }}</p>
+            {% bootstrap_field form.location %}
+          {% currency_input form.sale_price %}
+            {% bootstrap_field form.cost_price layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6 py-1" form_group_class="" addon_before="£" %}
+            {% bootstrap_field form.restoration_cost placeholder="" layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6" form_group_class="" addon_before="£" %}
+            <div class="row">
+              <div class="col-md-6 my-2"><b>Total cost</b></div>
+              <div class="col-md-6 my-2"><b><span id="id_total_cost">£{{ total_cost }}</span></b></div>
+            </div>
+            {% bootstrap_field form.sale_price placeholder="" layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6" form_group_class="" addon_before="£" %}
+            <div class="row">
+              <div class="col-md-6"></div>
+              <div class="col-md-6 mb-2 text-sm-left"><span class="text-info">Margin=<span id="id_margin"></span></span>
+              </div>
+            </div>
             {% if not object.archive %}
-              {% bootstrap_field form.minimum_price %}
-              {% bootstrap_field form.location %}
+              {% bootstrap_field form.minimum_price placeholder="" layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6" form_group_class="" addon_before="£" %}
+              <div class="row">
+                <div class="col-md-6"></div>
+                <div class="col-md-6 mb-2 text-sm-left"><span class="text-info">Margin=<span id="id_min_margin"></span></span>
+                </div>
+              </div>
             {% endif %}
             {% if object.archive %}</fieldset>{% endif %}
             <fieldset>
@@ -108,11 +122,60 @@
           <a class="btn btn-default" href={% url 'item_detail' pk=object.pk %}>Cancel</a>
         {% endif %}
         {% if allow_delete %}
-          <button class="btn btn-danger" {% if modal %}type="button" data-toggle="modal" data-target="#modal-confirm"{% else %}type="submit" name="delete"{% endif %}>Delete</button>
+          <button class="btn btn-danger" {% if modal %}type="button" data-toggle="modal" data-target="#modal-confirm"
+                  {% else %}type="submit" name="delete"{% endif %}>Delete
+          </button>
         {% endif %}
-        <button class="btn btn-primary js-submit" {% if modal %}type="button" {% else %}type="submit" name="save"{% endif %}>Save</button>
+        <button class="btn btn-primary js-submit" {% if modal %}type="button" {% else %}type="submit"
+                name="save"{% endif %}>Save
+        </button>
       </div>
     </div>
   </div>
 </form>
+<script>
+    $('body').on('keydown', 'input, select', function (e) {
+        if (e.key === "Enter") {
+            var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+            focusable = form.find('input,a,select,button,textarea').filter(':visible');
+            next = focusable.eq(focusable.index(this) + 1);
+            if (next.length) {
+                next.focus();
+            } else {
+                form.submit();
+            }
+            return false;
+        }
+    });
+
+    calc();
+
+    $('#id_restoration_cost, #id_sale_price, #id_minimum_price').change(function () {
+        calc();
+    });
+
+    function calc() {
+        let cost = $("#id_cost_price").val() * 100;
+        let restoration = parseInt($('#id_restoration_cost').val()) * 100;
+        let total_cost = cost + restoration;
+        let sale = parseInt($('#id_sale_price').val()) * 100;
+        let min_sale = $('#id_minimum_price').val();
+        if (Number.isNaN(min_sale)) {
+            min_sale = 0;
+        } else {
+            min_sale = min_sale * 100;
+        }
+        let profit = sale - total_cost;
+        let min_profit = min_sale - total_cost;
+        let margin = parseInt(profit / sale * 1000) / 10;
+        let min_margin = parseInt(min_profit / min_sale * 1000) / 10;
+        $('#id_restoration_cost').val(restoration / 100);
+        $('#id_sale_price').val(sale / 100);
+        $('#id_minimum_price').val(min_sale / 100);
+        $("#id_total_cost").html("£" + total_cost / 100);
+        $('#id_margin').html(margin + "%");
+        $('#id_min_margin').html(min_margin + "%");
+    }
+</script>
+
 

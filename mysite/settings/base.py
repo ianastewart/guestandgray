@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # This project
     "shop",
     "website",
+    "table_manager",
     "import_export",
     "keyvaluestore",
     "treebeard",

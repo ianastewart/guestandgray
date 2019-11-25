@@ -7,6 +7,7 @@ from django_filters import (
     DateFilter,
     BooleanFilter,
 )
+from tempus_dominus.widgets import DatePicker
 from shop.models import Item, Category, Compiler
 
 PER_PAGE_CHOICES = (
@@ -46,8 +47,31 @@ class CompilerFilter(FilterSet):
 
 
 class ContactFilter(FilterSet):
+    first_name = CharFilter(lookup_expr="icontains")
     company = CharFilter(lookup_expr="icontains")
+    address = CharFilter(lookup_expr="icontains")
+    per_page = ChoiceFilter(
+        field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
+    )
 
 
 class InvoiceFilter(FilterSet):
     number = CharFilter()
+
+
+class PurchaseFilter(FilterSet):
+    from_date = DateFilter(
+        field_name="date",
+        label="Date from",
+        lookup_expr="gte",
+        widget=DatePicker(options={"format": "DD/MM/YYYY"}),
+    )
+    to_date = DateFilter(
+        field_name="date",
+        label="Date to",
+        lookup_expr="lte",
+        widget=DatePicker(options={"format": "DD/MM/YYYY"}),
+    )
+    per_page = ChoiceFilter(
+        field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
+    )

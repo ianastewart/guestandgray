@@ -1,5 +1,6 @@
 from decimal import *
 import logging
+from datetime import date
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,7 +15,8 @@ from shop.forms import (
 )
 from shop.models import Contact, Purchase, Item, ItemRef
 from shop.tables import PurchaseTable
-from shop.views.generic_views import FilteredTableView, AjaxCrudView
+from shop.filters import PurchaseFilter
+from table_manager.views import FilteredTableView, AjaxCrudView
 import shop.session as session
 
 logger = logging.getLogger(__name__)
@@ -260,10 +262,21 @@ class PurchaseListView(LoginRequiredMixin, FilteredTableView):
 
     model = Purchase
     table_class = PurchaseTable
+    filter_class = PurchaseFilter
+    filter_left = True
     allow_detail = True
 
     def get_queryset(self):
         return Purchase.objects.all().order_by("-id")
+
+    def get_initial_data(self):
+        initial = super().get_initial_data()
+        initial["from_date"] = date(2018, 1, 1)
+        initial["to_date"] = date(2020, 1, 1)
+        return initial
+
+    def get_buttons(self):
+        return [("Export to Excel", "export")]
 
 
 class PurchaseDetailAjax(LoginRequiredMixin, AjaxCrudView):

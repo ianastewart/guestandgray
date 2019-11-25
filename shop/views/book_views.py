@@ -4,12 +4,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from shop.forms import BookForm, CompilerForm
 from shop.models import Book, Compiler
 from shop.tables import BookTable, CompilerTable
-from shop.views.generic_views import FilteredTableView, AjaxCrudView
+from table_manager.views import FilteredTableView, AjaxCrudView
 
 
 class CompilerListView(LoginRequiredMixin, FilteredTableView):
     model = Compiler
-    template_name = "generic_table.html"
     table_class = CompilerTable
     table_pagination = {"per_page": 100}
     allow_create = True
@@ -32,7 +31,6 @@ class CompilerUpdateView(CompilerCreateView):
 
 class BookListView(LoginRequiredMixin, FilteredTableView):
     model = Book
-    template_name = "generic_table.html"
     table_class = BookTable
     table_pagination = {"per_page": 100}
     allow_create = True

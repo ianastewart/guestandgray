@@ -42,7 +42,6 @@ class ItemForm(ModelForm):
             "condition",
             "provenance",
             "ref",
-            "purchase_date",
             "cost_price",
             "restoration_cost",
             "sale_price",
@@ -53,6 +52,10 @@ class ItemForm(ModelForm):
             "show_price",
             "featured",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["cost_price"].widget.attrs["readonly"] = "readonly"
 
 
 class ArchiveItemForm(ItemForm):

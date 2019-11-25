@@ -64,7 +64,7 @@ class ItemTable(tables.Table):
     image = ImageColumn(accessor="image")
     selection = tables.TemplateColumn(
         accessor="pk",
-        template_name="django_tables2/custom_checkbox.html",
+        template_name="table_manager/custom_checkbox.html",
         verbose_name="",
     )
 
@@ -137,7 +137,7 @@ class PurchaseTable(tables.Table):
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     invoice_number = RightAlignedColumn()
-    # lot_number = RightAlignedColumn()
+    lot_number = RightAlignedColumn()
     invoice_total = CurrencyColumn()
     buyers_premium = CurrencyColumn()
     vat = RightAlignedColumn()
@@ -159,6 +159,27 @@ class PurchaseTable(tables.Table):
             return "Margin scheme"
         else:
             return "£" + str(intcomma(value))
+
+    def value_date(self, value):
+        return value
+
+    def value_invoice_number(self, value):
+        if value == "0":
+            return "-"
+        else:
+            return value
+
+    def value_items(self, value):
+        result = ""
+        for i in value.all():
+            result += i.ref + " "
+        return result[:-1]
+
+    def value_invoice_total(self, value):
+        return value
+
+    def value_buyers_premium(self, value):
+        return value
 
 
 class EnquiryTable(tables.Table):

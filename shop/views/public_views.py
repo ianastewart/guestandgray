@@ -18,7 +18,6 @@ from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 from shop.models import Item, Category, Contact, Enquiry, Book, Compiler
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
-from shop.views.generic_views import FilteredTableView
 from shop.filters import CompilerFilter
 
 logger = logging.getLogger(__name__)

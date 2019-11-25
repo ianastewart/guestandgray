@@ -14,7 +14,7 @@ from wagtail.core.models import Collection
 from shop.forms import ItemForm, ArchiveItemForm
 from shop.models import Item, CustomImage
 from shop.tables import ItemTable
-from shop.views.generic_views import FilteredTableView, AjaxCrudView
+from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import ItemFilter
 
 logger = logging.getLogger(__name__)
@@ -22,11 +22,9 @@ logger = logging.getLogger(__name__)
 
 class ItemListView(LoginRequiredMixin, FilteredTableView):
     model = Item
-    template_name = "generic_table.html"
     table_class = ItemTable
     filter_class = ItemFilter
     heading = "Items"
-    modal_class = "modal-xl"
     allow_create = False
     allow_update = True
     filter_left = True
@@ -50,6 +48,7 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
 class ItemCreateAjax(LoginRequiredMixin, AjaxCrudView):
     model = Item
     form_class = ItemForm
+    modal_class = "modal-xl"
     template_name = "shop/includes/partial_item_form.html"
 
 
@@ -108,6 +107,7 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
 class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
     model = Item
     template_name = "shop/includes/partial_item_form.html"
+    modal_class = "modal-xl"
     update = True
     allow_delete = True
 
@@ -116,7 +116,26 @@ class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context["object"] = self.object.image
+        item = self.object
+        cost = item.cost_price + item.restoration_cost
+        profit = item.sale_price - cost
+        if item.minimum_price:
+            min_profit = item.minimum_price - cost
+        else:
+            min_profit = 0
+        if item.sale_price != 0:
+            margin = profit / item.sale_price * 100
+            min_margin = min_profit / item.sale_price * 100
+        else:
+            margin = 0
+            min_margin = 0
+        context["item"] = item
+        context["purchase"] = self.object.purchase_data
+        context["total_cost"] = cost
+        context["margin"] = margin
+        context["min_margin"] = min_margin
+        context["profit"] = profit
+        context["min_profit"] = min_profit
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 

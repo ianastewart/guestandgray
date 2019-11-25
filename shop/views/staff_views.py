@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from shop.models import Invoice
 from shop.tables import InvoiceTable
-from shop.views.generic_views import FilteredTableView, AjaxCrudView
+from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import InvoiceFilter
 
 logger = logging.getLogger(__name__)

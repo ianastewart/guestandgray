@@ -37,3 +37,16 @@ def checkbox(box):
     <input type="checkbox" class="custom-control-input" id="{box.auto_id}" name="{box.html_name}" {checked}>\
     <label class="custom-control-label" for="{box.auto_id}">{box.label}</label></div>'
     return mark_safe(output)
+
+
+@register.simple_tag(takes_context=False)
+def currency_input(field, label=None, label_class="col-md-6", field_class="col-md-6"):
+    if not label:
+        label = field.label
+    output = f'<div class="row">\
+    <label class="col-md-6 col-form-label" for="id_{field.auto_id}">{label}</label>\
+    <div class="col-md-6"><div class="input-group">\
+    <div class="input-group-prepend"> <span class="input-group-text">£</span></div>\
+    <input type="number" name="{field.html_name}" value="{field.initial}" step="0.01" class="form-control text-right" id="{field.auto_id} title" >\
+    </div></div></div>'
+    return mark_safe(output)

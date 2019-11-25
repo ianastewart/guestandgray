@@ -5,7 +5,7 @@ from django.views.generic import CreateView, UpdateView, ListView, DetailView
 from shop.forms import CategoryForm
 from shop.models import Category
 from shop.tables import CategoryTable
-from shop.views.generic_views import FilteredTableView
+from table_manager.views import FilteredTableView
 
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
@@ -50,7 +50,6 @@ class CategoryTreeView(LoginRequiredMixin, ListView):
 
 class CategoryListView(LoginRequiredMixin, FilteredTableView):
     model = Category
-    template_name = "generic_table.html"
     table_class = CategoryTable
     table_pagination = {"per_page": 100}
     heading = "Categories"
