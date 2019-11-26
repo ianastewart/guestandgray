@@ -17,8 +17,12 @@
         <div class="card card-body bg-white">
           <div class="row">
             <div class="col-6">
+              {% if vendor %}
               <p class="mb-0"><b>{{ vendor.name }}</b></p>
               <div>{{ vendor.address|linebreaks }}</div>
+              {% else %}
+              <p>Vendor not known</p>
+              {% endif %}
             </div>
             <div class="col-3 text-right">Invoice number<br>Date</div>
             <div class="col-3">{{ purchase.invoice_number }}<br>{{ purchase.date }}</div>

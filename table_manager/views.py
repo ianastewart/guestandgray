@@ -193,6 +193,7 @@ class AjaxCrudView(View):
     def get_form(self, **kwargs):
         self.object = self.get_object(**kwargs)
         form_class = self.get_form_class()
+        # form-class is None for a detail view
         if form_class:
             self.form = form_class(instance=self.object)
 

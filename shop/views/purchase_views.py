@@ -288,7 +288,12 @@ class PurchaseDetailAjax(LoginRequiredMixin, AjaxCrudView):
 
     def get_context_data(self):
         context = super().get_context_data()
-        context["vendor"] = Contact.objects.get(id=self.object.vendor_id)
+        try:
+            vendor = Contact.objects.get(id=self.object.vendor_id)
+        except:
+            Contact.DoesNotExist
+            vendor = None
+        context["vendor"] = vendor
         context["purchase"] = self.object
         items_total = Decimal(0)
         items = self.object.item_set.all().order_by("pk")

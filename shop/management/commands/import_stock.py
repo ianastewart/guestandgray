@@ -160,6 +160,8 @@ class Command(BaseCommand):
         created = 0
         vendors_created = 0
         inv_created = 0
+        last_vendor = None
+        last_pdate = None
         try:
             for row in rowgen:
                 row_number = row[0].row
@@ -202,6 +204,14 @@ class Command(BaseCommand):
                         self.stdout.write(
                             f"Info row: {row_number} Multiple vendors {l}: {vendor}"
                         )
+                else:
+                    # Missing vendor uses previous vendor if same purchase date
+                    vendor = last_vendor
+                    if last_pdate == pdate:
+                        self.stdout.write(
+                            f"Info row: {row_number} {vendor.name} different date"
+                        )
+
                 # Find or create an item and add costs
                 try:
                     item = Item.objects.get(ref=ref)
@@ -227,7 +237,7 @@ class Command(BaseCommand):
                 item.restoration_cost = cost_rest
                 # Create a purchase record and link item to it
                 try:
-                    purchase = Purchase.objects.get(vendor=vendor, lot_number=lot)
+                    purchase = Purchase.objects.get(vendor=vendor, date=pdate)
                 except Purchase.DoesNotExist:
                     purchase = Purchase.objects.create(
                         date=pdate,
@@ -256,6 +266,8 @@ class Command(BaseCommand):
                     invoice.total += item.sale_price
                     invoice.save()
                 item.save()
+                last_pdate = pdate
+                last_vendor = vendor
 
         except Exception as e:
             self.stdout.write(f"Exception in {ws.title} row {row_number}\n{str(e)}")
