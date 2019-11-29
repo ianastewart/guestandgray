@@ -2,15 +2,7 @@ import django.forms as forms
 from django.urls import reverse_lazy
 from django.forms import ModelForm, ModelChoiceField, ValidationError
 from tempus_dominus.widgets import DatePicker
-from shop.models import (
-    Item,
-    Category,
-    Purchase,
-    PurchaseExpense,
-    Contact,
-    Book,
-    Compiler,
-)
+from shop.models import Item, Category, Purchase, Lot, Contact, Book, Compiler
 
 
 class CategoryForm(ModelForm):
@@ -73,7 +65,7 @@ class ArchiveItemForm(ItemForm):
         )
 
 
-class NewItemForm(ModelForm):
+class UpdateItemForm(ModelForm):
     class Meta:
         model = Item
         fields = ("name", "cost_price")
@@ -150,11 +142,9 @@ class PurchaseForm(ModelForm):
         fields = (
             "date",
             "invoice_number",
-            "lot_number",
             "invoice_total",
             "buyers_premium",
             # "vendor",
-            "paid_date",
             "margin_scheme",
             "vat",
         )
@@ -177,10 +167,14 @@ class PurchaseForm(ModelForm):
     )
 
 
-class PurchaseExpenseForm(ModelForm):
+class PurchaseLotForm(ModelForm):
     class Meta:
-        model = PurchaseExpense
-        fields = "description", "amount", "eligible"
+        model = Lot
+        fields = ("number", "cost")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.fields["cost"].required = True
 
 
 class PurchaseDataForm(ModelForm):
@@ -189,13 +183,10 @@ class PurchaseDataForm(ModelForm):
         fields = (
             "date",
             "invoice_number",
-            "lot_number",
-            "cost_lot",
             "invoice_total",
             "buyers_premium",
             "margin_scheme",
             "vat",
-            "paid_date",
         )
 
     date = forms.DateField(
@@ -212,13 +203,11 @@ class PurchaseDataForm(ModelForm):
         # Set required fields here.
         # They are allowed to be empty in the model to cope with old incomplete imported data
         self.fields["invoice_number"].required = True
-        self.fields["cost_lot"].required = True
         self.fields["invoice_total"].required = True
 
     def clean(self):
         cleaned_data = super().clean()
         if len(self.errors) == 0:
-            cost = cleaned_data["cost_lot"]
             total = cleaned_data["invoice_total"]
             premium = cleaned_data["buyers_premium"]
             if not premium:
@@ -232,11 +221,11 @@ class PurchaseDataForm(ModelForm):
                 raise forms.ValidationError(
                     f"VAT cannot be zero when outside the margin sheme."
                 )
-            sum = cost + premium + vat
-            if sum != total:
-                raise forms.ValidationError(
-                    f"The sum of the fields (£{sum}) does not equal the invoice total."
-                )
+            # sum = cost + premium + vat
+            # if sum != total:
+            #     raise forms.ValidationError(
+            #         f"The sum of the fields (£{sum}) does not equal the invoice total."
+            #     )
 
 
 class PurchaseCostForm(forms.Form):

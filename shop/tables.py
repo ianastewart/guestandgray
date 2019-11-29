@@ -129,25 +129,27 @@ class PurchaseTable(tables.Table):
             "invoice_number",
             "invoice_total",
             "buyers_premium",
-            "lot_number",
-            "paid_date",
             "vat",
+            "lots",
         )
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     invoice_number = RightAlignedColumn()
-    lot_number = RightAlignedColumn()
+    lots = RightAlignedColumn(accessor="lot_set")
     invoice_total = CurrencyColumn()
     buyers_premium = CurrencyColumn()
     vat = RightAlignedColumn()
-    items = RightAlignedColumn(accessor="item_set")
+    # items = RightAlignedColumn(accessor="item_set")
 
-    def render_items(self, value, record):
-        l = len(value.all())
-        if l == 1:
-            return value.all()[0].ref
-        return f"{l} items"
+    def render_lots(self, value):
+        return len(value.all())
+
+    # def render_items(self, value, record):
+    #     l = len(value.all())
+    #     if l == 1:
+    #         return value.all()[0].ref
+    #     return f"{l} items"
 
     def render_vendor(self, value):
         if value.first_name:

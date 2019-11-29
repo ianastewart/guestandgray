@@ -1,103 +1,114 @@
 {% load bootstrap4 %}
 <form method="post" action="{{ path }}" novalidate>
   {% csrf_token %}
-
-  {% if creating %}
-    <div class="container my-2 py-2">
-    <div class="row">
-    <div class="col col-md-8 my-2 mx-auto">
-  {% endif %}
   <div class="card">
     <div class="card-header card-body bg-white">
-      <h4 class="my-0">Purchase summary</h4>
+      <h4 class="my-0">Purchase</h4>
     </div>
     <div class="bg-light">
       <div class="card-body">
-        {% bootstrap_messages %}
-        <div class="card card-body bg-white">
+        <div class="card card-body bg-white mb-2">
           <div class="row">
             <div class="col-6">
               {% if vendor %}
-              <p class="mb-0"><b>{{ vendor.name }}</b></p>
-              <div>{{ vendor.address|linebreaks }}</div>
+                <p class="mb-0"><b>{{ vendor.name }}</b></p>
+                <div>{{ vendor.address|linebreaks }}</div>
               {% else %}
-              <p>Vendor not known</p>
+                <p>Vendor not known</p>
               {% endif %}
             </div>
             <div class="col-3 text-right">Invoice number<br>Date</div>
             <div class="col-3">{{ purchase.invoice_number }}<br>{{ purchase.date }}</div>
           </div>
+          {% for lot in lots %}
+            <div class="row">
+              <div class="col-4">Lot {{ lot.number }}</div>
+              <div class="col-2 text-right">£{{ lot.cost|floatformat:2 }}</div>
+              {% if lot.error %}
+                <div class="col-2"><span class="badge badge-danger">£ {{ lot.error }}</span></div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          {% if buyers_premium %}
+            <div class="row">
+              <div class="col-4">Buyer's premium</div>
+              <div class="col-2 text-right">£{{ purchase.buyers_premium|floatformat:2 }}</div>
+            </div>
+          {% endif %}
           <div class="row">
-            <div class="col-4">Cost of lot</div>
-            <div class="col-2 text-right">£{{ purchase.cost_lot|floatformat:2 }}</div>
-          </div>
-          <div class="row">
-            <div class="col-4">Buyer's premium</div>
-            <div class="col-2 text-right">£{{ purchase.buyers_premium|floatformat:2 }}</div>
-          </div>
-          <div class="row">
-            <div class="col-4"><b>Invoice total</b></div>
+            <div class="col-4 text-right"><b>Invoice total</b></div>
             <div class="col-2 text-right border-top border-bottom border-dark">
               <b>£{{ purchase.invoice_total|floatformat:2 }}</b></div>
           </div>
         </div>
-        <div class="card card-body bg-white mt-2">
-          <div class="row">
-            <div class="col mt-2">
-              <div class="row">
-                <div class="col-2 border-bottom"><b>Ref</b></div>
-                <div class="col-5 border-bottom"><b>Item</b></div>
-                <div class="col-3 border-bottom text-right"><b>Allocated cost</b></div>
-              </div>
-              {% for item in items %}
+        {% for lot in lots %}
+          <div class="card card-body bg-white mb-2 pt-1 pb-2">
+            <div class="text-center m-0">Lot {{ lot.number }}</div>
+            <div class="row">
+              <div class="col">
                 <div class="row">
-                  <div class="col-2">{% if item.ref %}{{ item.ref }}{% else %}<i>TBA</i>{% endif %}</div>
-                  <div class="col-6">{{ item.name }}</div>
-                  <div class="col-2 text-right">£{{ item.cost_price|floatformat:2 }}</div>
-                  <div class="col-2">
-                    {% if creating or can_update %}
-                      <button type=button class="btn btn-sm btn-outline-secondary py-0 js-call"
-                              name="{{ change_path }}{{ item.pk }}/">Change
-                      </button>
-                    {% endif %}
+                  <div class="col-2 border-bottom text-muted small"><i>Ref</i></div>
+                  <div class="col-5 border-bottom text-muted small"><i>Item</i></div>
+                  <div class="col-3 border-bottom text-muted small text-right"><i>Allocated cost</i></div>
+                </div>
+                {% for item in lot.items %}
+                  <div class="row">
+                    <div class="col-2">{% if item.ref %}{{ item.ref }}{% else %}<i>TBA</i>{% endif %}</div>
+                    <div class="col-6">{{ item.name }}</div>
+                    <div class="col-2 text-right">£{{ item.cost_price|floatformat:2 }}</div>
+                    <div class="col-2">
+                      {% if creating or lot.can_update %}
+                        <button type=button class="btn btn-sm btn-outline-secondary py-0 js-call"
+                                name="
+
+                                    {{ change_path }}{% if creating %}{{ item.ref }}{% else %}{{ item.pk }}{% endif %}/">
+                          Change
+                        </button>
+                      {% endif %}
+                    </div>
                   </div>
-                </div>
-              {% endfor %}
-              <div class="row">
-                <div class="col-8 text-right"><b>Total items cost</b></div>
-                <div class="col-2 text-right border-dark border-top border-bottom">
-                  <b>£{{ items_total|floatformat:2 }}</b>
-                </div>
+                {% endfor %}
+                {% if lot.items|length > 1 %}
+                  <div class="row">
+                    <div class="col-8 text-right"><b>Total cost</b></div>
+                    <div class="col-2 text-right border-dark border-top border-bottom">
+                      <b>£{{ lot.total|floatformat:2 }}</b>
+                    </div>
+                    <div class="col-2">
+                      {% if lot.error %}
+                        <span class="badge badge-danger">£ {{ lot.error }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
               </div>
             </div>
           </div>
-        </div>
+        {% endfor %}
+        {% bootstrap_messages %}
       </div>
-    </div>
     <div class="card-footer card-body bg-white pb-0">
       {% buttons %}
         {#      <button type="button" class="btn btn-primary js-submit" name="close">Close</button>#}
         {% if creating %}
           <button type="submit" class="btn btn-primary" name="back">Back</button>
           {% if remaining > 0 %}
-            <button type="submit" class="btn btn-primary" name="item">Add an item</button>
+            <button type="submit" class="btn btn-primary" name="lot">Add a lot</button>
           {% else %}
             <button type="submit" class="btn btn-primary" name="save"
-                    {% if remaining != 0 %}disabled{% endif %}>
+                    {% if error %}disabled{% endif %}>
               Save
             </button>
           {% endif %}
         {% else %}
-          <button type="button" class="btn btn-primary js-submit" name="save">Save</button>
+          <button type="button" class="btn btn-primary js-submit" name="save" {% if error %}disabled{% endif %}>Close
+          </button>
         {% endif %}
       {% endbuttons %}
     </div>
+    </div>
   </div>
-  {% if creating %}
-    </div>
-    </div>
-    </div>
-  {% endif %}
 </form>
+
 
 

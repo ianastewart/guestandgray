@@ -24,18 +24,15 @@
               <div class="col-12 col-lg-4">
                 {% bootstrap_field form.invoice_number placeholder="" %}
               </div>
-              <div class="col-12 col-lg-4">
-                {% bootstrap_field form.lot_number placeholder="" %}
-              </div>
             </div>
-
+{% bootstrap_field form.margin_scheme %}
             <div class="row">
-              <div class="col">
-                {% bootstrap_field form.margin_scheme %}
-                {% bootstrap_field form.cost_lot layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-                {% bootstrap_field form.buyers_premium layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-                {% bootstrap_field form.vat layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
-                {% bootstrap_field form.invoice_total layout="horizontal" horizontal_field_class='col-md-4' addon_before="£" placeholder="" %}
+              <div class="col-md-6">
+
+                {% currency_input form.buyers_premium layout="horizontal" %}
+                {% currency_input form.vat layout="horizontal" %}
+                {% currency_input form.invoice_total layout="horizontal" %}
+
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 <!-- Form works for both modal and non modal usage -->
 {% load bootstrap4 wagtailimages_tags shop_tags %}
-<form method="post" action="{{ path }}" class="js-form">
+<form method="post" action="{{ submit_path }}" class="js-form">
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
   <div class="modal-header">
@@ -28,4 +28,5 @@
         <button class="btn btn-primary js-submit" type="button" name="save">Save</button>
       </div>
     </div>
+  </div>
 </form>

@@ -14,18 +14,6 @@ class StaffHomeView(LoginRequiredMixin, TemplateView):
     template_name = "shop/staff_home.html"
 
 
-class InvoiceTableView(LoginRequiredMixin, FilteredTableView):
-    model = Invoice
-    template_name = "generic_table.html"
-    table_class = InvoiceTable
-    table_pagination = {"per_page": 15}
-    filter_class = InvoiceFilter
-    allow_detail = True
-
-    def get_queryset(self):
-        return Invoice.objects.all().order_by("-date")
-
-
 class InvoiceDetailView(LoginRequiredMixin, AjaxCrudView):
     model = Invoice
     template_name = "shop/includes/partial_invoice_detail.html"
@@ -39,7 +27,6 @@ class InvoiceDetailView(LoginRequiredMixin, AjaxCrudView):
 
 class InvoiceListView(LoginRequiredMixin, FilteredTableView):
     model = Invoice
-    template_name = "generic_table.html"
     table_class = InvoiceTable
     table_pagination = {"per_page": 15}
     filter_class = InvoiceFilter

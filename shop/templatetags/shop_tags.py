@@ -40,13 +40,35 @@ def checkbox(box):
 
 
 @register.simple_tag(takes_context=False)
-def currency_input(field, label=None, label_class="col-md-6", field_class="col-md-6"):
+def currency_input(
+    field, label=None, layout=None, label_class="col-md-6", field_class="col-md-6"
+):
     if not label:
         label = field.label
-    output = f'<div class="row">\
-    <label class="col-md-6 col-form-label" for="id_{field.auto_id}">{label}</label>\
-    <div class="col-md-6"><div class="input-group">\
-    <div class="input-group-prepend"> <span class="input-group-text">£</span></div>\
-    <input type="number" name="{field.html_name}" value="{field.initial}" step="0.01" class="form-control text-right" id="{field.auto_id} title" >\
-    </div></div></div>'
+    invalid = ""
+    feedback = ""
+    if field.errors:
+        invalid = "is-invalid"
+        feedback = f'<div class="invalid-feedback">{field.errors[0]}</div>'
+    if layout == "horizontal":
+        output = f'\
+        <div class="form-group row">\
+        <label class="col-md-6 col-form-label" for="{field.auto_id}">{label}</label>\
+        <div class="col-md-6">\
+        <div class="input-group">\
+        <div class="input-group-prepend">\
+        <span class="input-group-text">£</span>\
+        </div>\
+        <input type="number" name="{field.html_name}" value="{field.initial}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id}" title>\
+        {feedback}\
+        </div></div></div>'
+    else:
+        output = f'\
+        <div class="form-group">\
+        <label class="col-form-label" for="id_{field.auto_id}">{label}</label>\
+        <div class="input-group">\
+        <div class="input-group-prepend"> <span class="input-group-text">£</span></div>\
+        <input type="number" name="{field.html_name}" value="{field.initial}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id} title">\
+        {feedback}\
+        </div></div>'
     return mark_safe(output)

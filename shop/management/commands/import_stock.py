@@ -3,7 +3,7 @@ import datetime
 from decimal import *
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from shop.models import Item, Contact, Invoice, Purchase
+from shop.models import Item, Contact, Invoice, Purchase, Lot
 from shop.truncater import truncate
 from openpyxl import load_workbook
 
@@ -179,7 +179,7 @@ class Command(BaseCommand):
                     sale_date = parse_date(sale_date)
                 vat, _ = parse_decimal(row[col_vat].value)
                 margin_scheme = not vat
-                lot = row[col_lot].value
+                lot_number = row[col_lot].value
                 cost_item, _ = parse_decimal(row[col_cost_item].value)
                 cost_lot, _ = parse_decimal(row[col_cost_lot].value)
                 cost_rest, _ = parse_decimal(row[col_cost_rest].value)
@@ -235,6 +235,7 @@ class Command(BaseCommand):
                     created += 1
                 item.cost_price = cost_item
                 item.restoration_cost = cost_rest
+
                 # Create a purchase record and link item to it
                 try:
                     purchase = Purchase.objects.get(vendor=vendor, date=pdate)
@@ -242,16 +243,20 @@ class Command(BaseCommand):
                     purchase = Purchase.objects.create(
                         date=pdate,
                         invoice_number=0,
-                        invoice_total=cost_lot + premium,
+                        invoice_total=0,
                         buyers_premium=premium,
-                        cost_lot=cost_lot,
-                        lot_number=lot,
                         vendor=vendor,
-                        paid_date=pdate,
                         margin_scheme=margin_scheme,
                         vat=vat,
                     )
-                item.purchase_data = purchase
+                # Find or create a lot
+                try:
+                    lot = Lot.objects.get(purchase=purchase, number=lot_number)
+                except Lot.DoesNotExist:
+                    lot = Lot.objects.create(
+                        purchase=purchase, number=lot_number, cost=cost_lot
+                    )
+                item.lot = lot
                 # if sold, update invoice with item
                 if inv_no:
                     try:
@@ -272,6 +277,14 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(f"Exception in {ws.title} row {row_number}\n{str(e)}")
             raise
+        # Calculate the invoice total for every purchase
+        for purchase in Purchase.objects.all():
+            total = purchase.buyers_premium
+            for lot in purchase.lot_set.all():
+                total += lot.cost
+            purchase.invoice_total = total
+            purchase.save()
+
         self.stdout.write(
             f"Items exists: {exists} Created: {created} Vendors created {vendors_created} Invoices created: {inv_created}"
         )

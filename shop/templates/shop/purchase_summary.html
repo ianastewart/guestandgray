@@ -3,7 +3,13 @@
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
 
-  {% include "shop/includes/partial_purchase_summary.html" %}
+  <div class="container my-2 py-2">
+    <div class="row">
+      <div class="col col-md-8 my-2 mx-auto">
+        {% include "shop/includes/partial_purchase_summary.html" %}
+      </div>
+    </div>
+  </div>
 
   <!-- Modal to hold partial form -->
   <div class="modal " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
@@ -15,5 +21,5 @@
 
 {% endblock %}
 {% block custom_scripts %}
-  <script src="{% static "shop/js/table_manager.js" %}"></script>
+  <script src="{% static "table_manager/js/table_manager.js" %}"></script>
 {% endblock %}

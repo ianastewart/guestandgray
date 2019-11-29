@@ -37,20 +37,14 @@ from shop.views.purchase_views import (
     PurchaseVendorView,
     PurchaseVendorCreateView,
     PurchaseDataCreateView,
-    PurchaseExpenseCreateView,
-    PurchaseItemCreateView,
+    PurchaseLotCreateView,
     PurchaseSummaryCreateView,
     PurchaseSummaryAjaxView,
     PurchaseListView,
     PurchaseDetailAjax,
     PurchaseItemAjax,
 )
-from shop.views.staff_views import (
-    StaffHomeView,
-    InvoiceListView,
-    InvoiceDetailView,
-    InvoiceTableView,
-)
+from shop.views.staff_views import StaffHomeView, InvoiceListView, InvoiceDetailView
 from shop.views.public_views import (
     home_view,
     item_view,
@@ -134,14 +128,9 @@ staff_urls = [
         name="purchase_data_create",
     ),
     path(
-        "purchase/create/item/<int:index>/",
-        PurchaseItemCreateView.as_view(),
-        name="purchase_item_create",
-    ),
-    path(
-        "purchase/create/expense/<int:index>/",
-        PurchaseExpenseCreateView.as_view(),
-        name="purchase_expense_create",
+        "purchase/create/lot/<int:index>/",
+        PurchaseLotCreateView.as_view(),
+        name="purchase_lot_create",
     ),
     path(
         "purchase/create/summary/<int:index>/",
@@ -149,7 +138,7 @@ staff_urls = [
         name="purchase_summary",
     ),
     path(
-        "purchase/summary/ajax/<int:index>/",
+        "purchase/summary/ajax/<str:ref>/",
         PurchaseSummaryAjaxView.as_view(),
         name="purchase_summary_ajax",
     ),
@@ -165,7 +154,6 @@ staff_urls = [
         InvoiceDetailView.as_view(),
         name="invoice_detail",
     ),
-    path("invoice/table/", InvoiceTableView.as_view(), name="invoice_table"),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
     # Compilers

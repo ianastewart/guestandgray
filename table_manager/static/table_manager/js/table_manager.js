@@ -16,7 +16,7 @@ $(document).ready(function () {
 
     // Submit button pressed on a modal form
     $(".modal").on("click", ".js-submit", function () {
-        let form = $(this).parents("form");
+        let form = $(this).closest("form");
         let submitter = $(this).attr("name");
         ajax_submit(form, submitter);
         return false;
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
     // submit on a non-modal form
     $(".js-submit").click(function () {
-        let form = $(this).parents("form");
+        let form = $(this).closest("form");
         let submitter = $(this).attr("name");
         ajax_submit(form, submitter);
         return false;

@@ -112,11 +112,11 @@ class Item(index.Indexed, models.Model):
     minimum_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
-    purchase_data = models.ForeignKey(
-        "Purchase", null=True, blank=True, on_delete=models.SET_NULL
-    )
+    # purchase_data = models.ForeignKey(
+    #     "Purchase", null=True, blank=True, on_delete=models.SET_NULL
+    # )
     # category_text = models.CharField(max_length=100, null=True, blank=True)
-    purchase_date = models.DateField(null=True, blank=True)
+    # purchase_date = models.DateField(null=True, blank=True)
     location = models.SmallIntegerField(
         choices=Location.choices(), default=0, null=True, blank=True
     )
@@ -134,7 +134,7 @@ class Item(index.Indexed, models.Model):
     invoice = models.ForeignKey(
         "Invoice", null=True, blank=True, on_delete=models.SET_NULL
     )
-
+    lot = models.ForeignKey("Lot", null=True, blank=True, on_delete=models.SET_NULL)
     search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
 
     def __str__(self):
@@ -145,6 +145,7 @@ class Item(index.Indexed, models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+
         super().save(*args, **kwargs)
 
 
@@ -165,21 +166,12 @@ class Purchase(models.Model):
         blank=True,
         verbose_name="Buyer's premium",
     )
-    cost_lot = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name="Cost of lot",
-    )
-    lot_number = models.CharField(max_length=10, null=True, blank=True)
-    vendor = models.ForeignKey(
-        "Contact", null=True, blank=True, on_delete=models.SET_NULL
-    )
-    paid_date = models.DateField(null=True, blank=True)
     margin_scheme = models.BooleanField(default=True)
     vat = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="VAT"
+    )
+    vendor = models.ForeignKey(
+        "Contact", null=True, blank=True, on_delete=models.SET_NULL
     )
 
     def __str__(self):
@@ -187,6 +179,22 @@ class Purchase(models.Model):
         if self.vendor:
             vendor = self.vendor.company
         return f"Lot: {self.lot_number} {vendor}"
+
+
+class Lot(models.Model):
+    number = models.CharField(
+        max_length=10, null=True, blank=True, verbose_name="Lot number"
+    )
+    cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Cost of lot",
+    )
+    purchase = models.ForeignKey(
+        Purchase, null=True, blank=False, on_delete=models.SET_NULL
+    )
 
 
 class PurchaseExpense(models.Model):

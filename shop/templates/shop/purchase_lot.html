@@ -1,0 +1,84 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4  static shop_tags %}
+{% block body_class %}bg-guest-light{% endblock %}
+{% block content_body %}
+  {{ form.media }}
+  <div class="container my-2 py-2">
+    <div class="row">
+      <div class="col col-lg-8 mx-auto">
+        <form method="post" action="{{ path }}" class="js-form" novalidate>
+          <div class="card">
+            <div class="card-header card-body bg-white">
+              <h4 class="my-1">Add lot to purchase</h4>
+            </div>
+            <div class="card-body bg-light">
+              {% bootstrap_form_errors form type="non_fields" %}
+              <!-- input to clone -->
+              <div style="display:none;">
+                <div class="form-group" id="id_source">
+                  <div class="input-group">
+                    <input type="text" maxlength="200" class="form-control item" required>
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-danger js-del" type="button">X</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-md-4">
+                  {% bootstrap_field form.number placeholder="" %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  {% currency_input form.cost %}
+                </div>
+              </div>
+              <div id="items_root">
+                <h5>Items in lot</h5>
+                {% for item in items %}
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input type="text" name="item_{{ forloop.counter }}" maxlength="200" class="form-control item"
+                             required value="{{ item.name }}">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-danger js-del" type="button">X</button>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          <div class="card-footer bg-white">
+              <button type="submit" class="btn btn-primary" name="back">Back</button>
+              <button type="button" class="btn btn-primary" onclick="add();">Add an item</button>
+              <button type="submit" class="btn btn-primary" name="next">Next</button>
+          </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endblock %}
+{% block custom_scripts %}
+  <script>
+      $("#items_root").click(function (e) {
+          if (e.target.className.includes("js-del")) {
+              e.target.closest(".form-group").remove();
+          }
+      });
+
+      function add() {
+          var index = $(".item").length;
+          var clone = document.getElementById('id_source').cloneNode(true); // "deep" clone
+          clone.removeAttribute("id")
+          var name = "item_" + index;
+          input = clone.firstElementChild.firstElementChild;
+          input.setAttribute("name", name);
+          input.setAttribute("value", "");
+          document.getElementById('items_root').appendChild(clone);
+      }
+  </script>
+{% endblock %}
