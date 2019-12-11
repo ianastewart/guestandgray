@@ -1,0 +1,29 @@
+<form method="post" action="{{ path }}" novalidate>
+  {% csrf_token %}
+  <div class="card shadow">
+    <div class="card-header card-body bg-white">
+      <h4 class="my-0">Cart contents</h4>
+    </div>
+    <div class="card-body">
+     {% include 'shop/includes/invoice_table.html' with editable=True %}
+    </div>
+    <div class="card-footer">
+      <button type="submit" class="btn btn-primary" name="close">Close</button>
+      {% if items %}
+        <button type="submit" class="btn btn-primary" name="empty">Empty cart</button>
+        <button type="button" class="btn btn-primary js-call" name="{{ add_charge }}">Add charge</button>
+        <a class="btn btn-primary" href={% url 'cart_checkout' %}>Checkout</a>
+      {% endif %}
+    </div>
+
+  </div>
+  </div>
+</form>
+
+<!-- Modal to hold main partial form -->
+<div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content bg-light">
+    </div>
+  </div>
+</div>

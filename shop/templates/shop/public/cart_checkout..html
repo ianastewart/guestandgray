@@ -1,0 +1,11 @@
+{% extends "shop/shop_base.html" %}
+{% load static %}
+{% block body_class %}bg-guest-light{% endblock %}
+{% block content_body %}
+  <div class="container mt-2">
+  {% include "shop/includes/partial_cart_contents.html" %}
+  </div>
+{% endblock %}
+{% block custom_scripts %}
+  <script src="{% static "table_manager/js/table_manager.js" %}"></script>
+{% endblock %}

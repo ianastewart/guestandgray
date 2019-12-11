@@ -1,0 +1,26 @@
+<!-- Selector create a contact. Works with uses contact.js --->
+<input type="hidden" id="contact" name="contact"> <!-- holds selected contact id-->
+<div class="row">
+  <div class="col">
+    <div class="custom-control custom-radio">
+      <input type="radio" id="searchRadio" name="contactRadio"
+             class="custom-control-input js-searchContact">
+      <label class="custom-control-label" for="searchRadio">Search for existing contact</label>
+    </div>
+    <div class="custom-control custom-radio">
+      <input type="radio" id="newRadio" name="contactRadio" class="custom-control-input js-createContact">
+      <label class="custom-control-label" for="newRadio">Create new contact</label>
+    </div>
+  </div>
+  <div class="col">
+    <div class="input-group" id="searchGroup" style="display:none;">
+      <div class="input-group-prepend"><span class="input-group-text">Search</span></div>
+      <input type="text" class="form-control" placeholder="Enter at least 3 characters" aria-label=""
+             id="select_contact" disabled autocomplete="off" spellcheck="false" autocorrect="off"
+             autocapitalize="off" aria-describedby="basic-addon1">
+    </div>
+  </div>
+</div>
+<div class="card card-body my-2 bg-white" style="height:12rem; width:370px;">
+  <p id="details"></p>
+</div>

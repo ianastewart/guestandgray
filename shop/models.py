@@ -112,18 +112,12 @@ class Item(index.Indexed, models.Model):
     minimum_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
-    # purchase_data = models.ForeignKey(
-    #     "Purchase", null=True, blank=True, on_delete=models.SET_NULL
-    # )
-    # category_text = models.CharField(max_length=100, null=True, blank=True)
-    # purchase_date = models.DateField(null=True, blank=True)
     location = models.SmallIntegerField(
         choices=Location.choices(), default=0, null=True, blank=True
     )
     show_price = models.BooleanField(default=True)
     visible = models.BooleanField(default=True)
     featured = models.BooleanField(default=True)
-    # image_file = models.CharField(max_length=100, null=True, blank=True)
     image = models.ForeignKey(
         "CustomImage",
         null=True,
@@ -178,7 +172,7 @@ class Purchase(models.Model):
         vendor = "Unknown vendor"
         if self.vendor:
             vendor = self.vendor.company
-        return f"Lot: {self.lot_number} {vendor}"
+        return f"Invoice: {self.invoice_number} Vendor: {vendor}"
 
 
 class Lot(models.Model):
@@ -196,6 +190,9 @@ class Lot(models.Model):
         Purchase, null=True, blank=False, on_delete=models.SET_NULL
     )
 
+    def __str__(self):
+        return f"Lot: {self.number} Purchase id: {self.purchase.id}"
+
 
 class PurchaseExpense(models.Model):
     description = models.CharField(max_length=50)
@@ -210,6 +207,8 @@ class PurchaseExpense(models.Model):
 
 
 class ItemRef(models.Model):
+    """ Generates unique alphanumeric reference numbers for items """
+
     number = models.IntegerField(null=False, blank=False)
     prefix = models.CharField(max_length=2, null=False, blank=False)
 
@@ -250,12 +249,23 @@ class Invoice(models.Model):
     )
 
 
-class InvoiceExtra(models.Model):
-    description = models.CharField(max_length=20, null=False, blank=False)
+class InvoiceCharge(models.Model):
+    class ChargeType(ModelEnum):
+        SHIPPING = 0
+        INSURANCE = 1
+        OTHER = 2
+
+    charge_type = models.SmallIntegerField(
+        choices=ChargeType.choices(), default=0, null=False, blank=False
+    )
+    description = models.CharField(max_length=50, null=False, blank=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     invoice = models.ForeignKey(
-        "Invoice", null=False, blank=False, on_delete=models.CASCADE
+        "Invoice", null=True, blank=True, on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return f"{self.description} £{self.amount}"
 
 
 class Contact(models.Model):

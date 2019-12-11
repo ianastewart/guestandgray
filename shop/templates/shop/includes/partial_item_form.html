@@ -1,10 +1,10 @@
 <!-- Form works for both modal and non modal usage -->
-{% load bootstrap4 wagtailimages_tags shop_tags %}
+{% load bootstrap4 wagtailimages_tags shop_tags static %}
 <form method="post" action="{{ path }}" class="js-form">
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
   {% if modal %}
-    <div class="modal-header">
+    <div class="modal-header bg-white">
       <h5 class="modal-title">{{ form_title }} Ref: {{ object.ref }}</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -25,8 +25,8 @@
       </div>
       <div class="col-md-6">
         <div class="row">
-
-          <div class="col-md-6 border border-secondary shadow">
+          <div class="col-md-6 p-0">
+          <div class="card card-body bg-light py-1 border-dark">
             {% if object.archive %}
               <fieldset disabled>
               <legend>Archived item</legend>
@@ -34,31 +34,38 @@
               <fieldset>
               <legend>Stock item</legend>
             {% endif %}
-            <p>Vendor: {{ object.purchase_data.vendor.company }}</p>
-            <p>Purchased on {{ object.purchase_data.date|date }}</p>
-            {% bootstrap_field form.location %}
-          {% currency_input form.sale_price %}
-            {% bootstrap_field form.cost_price layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6 py-1" form_group_class="" addon_before="£" %}
-            {% bootstrap_field form.restoration_cost placeholder="" layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6" form_group_class="" addon_before="£" %}
+            {% if purchase %}
+              <p>Vendor: {{ purchase.vendor.company }}</p>
+              <p>Purchased on {{ purchase.date|date }}</p>
+            {% else %}
+              <p>Purchase details unknown</p>
+            {% endif %}
+            {% if form.location %}{% bootstrap_field form.location %}{% endif %}
+            {% currency_input form.cost_price layout="horizontal" %}
+            {% currency_input form.restoration_cost layout="horizontal" %}
             <div class="row">
               <div class="col-md-6 my-2"><b>Total cost</b></div>
-              <div class="col-md-6 my-2"><b><span id="id_total_cost">£{{ total_cost }}</span></b></div>
+              <div class="col-md-5 my-2 text-right"><b><span class="text-right" id="id_total_cost">£ {{ total_cost }}</span></b></div>
             </div>
-            {% bootstrap_field form.sale_price placeholder="" layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6" form_group_class="" addon_before="£" %}
+            {% currency_input form.sale_price layout="horizontal" %}
             <div class="row">
               <div class="col-md-6"></div>
-              <div class="col-md-6 mb-2 text-sm-left"><span class="text-info">Margin=<span id="id_margin"></span></span>
+              <div class="col-md-6 mb-2 text-right my-0"><span>Margin=<span id="id_margin"></span></span>
               </div>
             </div>
             {% if not object.archive %}
-              {% bootstrap_field form.minimum_price placeholder="" layout="horizontal" horizontal_label_class="col-md-6" field_class="col-md-6" form_group_class="" addon_before="£" %}
+              {% currency_input form.minimum_price layout="horizontal" %}
               <div class="row">
                 <div class="col-md-6"></div>
-                <div class="col-md-6 mb-2 text-sm-left"><span class="text-info">Margin=<span id="id_min_margin"></span></span>
+                <div class="col-md-6 mb-2 text-right"><span>Margin=<span id="id_min_margin"></span></span>
                 </div>
               </div>
+              <button type="submit" class="btn btn-secondary js-submit" name="add">Add to cart</button>
             {% endif %}
             {% if object.archive %}</fieldset>{% endif %}
+            </fieldset>
+          </div>
+          <div class="card card-body border-dark mt-2 py-1">
             <fieldset>
               <legend>Website</legend>
               {% checkbox form.visible %}
@@ -69,7 +76,8 @@
               <br>
             </fieldset>
           </div>
-          <div class="col-md-6">
+          </div>
+          <div class="col-md-6 mx-0">
             <div class="card">
               {% if object and object.image %}
                 {% image object.image width-250 as card_image %}
@@ -106,15 +114,11 @@
             {% endif %}
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 mt-2 border shadow">
-          </div>
-        </div>
       </div>
     </div>
   </div>
-  <div {% if modal %}class="modal-footer"{% endif %}>
-    <div class="row my-3">
+  <div {% if modal %}class="modal-footer text-left bg-white"{% endif %}>
+    <div class="row bg-white">
       <div class="col">
         {% if modal %}
           <button class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -133,6 +137,7 @@
     </div>
   </div>
 </form>
+{#<script src="{% static 'shop/js/margin_calc.js' %}"></script>#}
 <script>
     $('body').on('keydown', 'input, select', function (e) {
         if (e.key === "Enter") {
@@ -148,34 +153,12 @@
         }
     });
 
-    calc();
+    margin_calc();
 
     $('#id_restoration_cost, #id_sale_price, #id_minimum_price').change(function () {
-        calc();
+        margin_calc();
     });
-
-    function calc() {
-        let cost = $("#id_cost_price").val() * 100;
-        let restoration = parseInt($('#id_restoration_cost').val()) * 100;
-        let total_cost = cost + restoration;
-        let sale = parseInt($('#id_sale_price').val()) * 100;
-        let min_sale = $('#id_minimum_price').val();
-        if (Number.isNaN(min_sale)) {
-            min_sale = 0;
-        } else {
-            min_sale = min_sale * 100;
-        }
-        let profit = sale - total_cost;
-        let min_profit = min_sale - total_cost;
-        let margin = parseInt(profit / sale * 1000) / 10;
-        let min_margin = parseInt(min_profit / min_sale * 1000) / 10;
-        $('#id_restoration_cost').val(restoration / 100);
-        $('#id_sale_price').val(sale / 100);
-        $('#id_minimum_price').val(min_sale / 100);
-        $("#id_total_cost").html("£" + total_cost / 100);
-        $('#id_margin').html(margin + "%");
-        $('#id_min_margin').html(min_margin + "%");
-    }
 </script>
+
 
 

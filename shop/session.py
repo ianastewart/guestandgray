@@ -1,9 +1,8 @@
 from django.shortcuts import redirect
+from decimal import Decimal
+from shop.models import Item, InvoiceCharge
 
-# During the application process we store data posted from each of the forms
-# in session variables
-
-from datetime import datetime
+# Purchase creation functions
 
 
 def clear_data(request):
@@ -34,7 +33,7 @@ def get_data(index, request):
     """
     posts = request.session.get("posts", None)
     if posts:
-        if index >= 0 and index < len(posts):
+        if 0 <= index < len(posts):
             if not (
                 posts[index].get("invalid", False) or posts[index].get("deleted", False)
             ):
@@ -157,3 +156,89 @@ def pop(request):
     except IndexError:
         value = None
     return value
+
+
+# Cart handling
+# cart can contain a list of items and invoicecharges
+# the price of items in the list can be updated but changes are not saved in the database
+
+
+def cart_clear(request):
+    request.session["cart"] = []
+    request.session.modified = True
+    return []
+
+
+def cart_add_item(request, item):
+    if not cart_get_item(request, item.pk):
+        item.agreed_price = Decimal(0)
+        if item.sale_price is not None:
+            item.agreed_price = item.sale_price
+        else:
+            item.sale_price = Decimal(0)
+        cart = _cart(request)
+        cart.append(item)
+        request.session["cart"] = cart
+        request.session.modified = True
+
+
+def cart_get_item(request, pk):
+    return _cart_get_object(request, pk, Item)
+
+
+def cart_remove_item(request, pk):
+    item = cart_get_item(request, pk)
+    if item:
+        _cart(request).remove(item)
+        request.session.modified = True
+
+
+def cart_items(request):
+    return _cart_contents(request, Item)
+
+
+def cart_add_charge(request, charge):
+    if not cart_get_charge(request, charge.pk):
+        cart = _cart(request)
+        cart.append(charge)
+        request.session["cart"] = cart
+        request.session.modified = True
+
+
+def cart_get_charge(request, pk):
+    return _cart_get_object(request, pk, InvoiceCharge)
+
+
+def cart_remove_charge(request, pk):
+    charge = cart_get_charge(request, pk)
+    if charge:
+        _cart(request).remove(charge)
+        request.session.modified = True
+
+
+def cart_charges(request):
+    return _cart_contents(request, InvoiceCharge)
+
+
+# private support code
+def _cart(request):
+    cart = request.session.get("cart")
+    if not cart:
+        cart = cart_clear(request)
+    return cart
+
+
+def _cart_get_object(request, pk, cls):
+    pk = int(pk)
+    cart = _cart(request)
+    if cart:
+        for thing in cart:
+            if thing.pk == pk and thing._meta.object_name == cls._meta.object_name:
+                return thing
+    return None
+
+
+def _cart_contents(request, cls):
+    return [
+        obj for obj in _cart(request) if obj._meta.object_name == cls._meta.object_name
+    ]

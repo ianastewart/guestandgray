@@ -60,6 +60,19 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
         return Enquiry.objects.all().order_by("-date")
 
 
+class ContactCreateAjax(LoginRequiredMixin, AjaxCrudView):
+    """ Create a new vendor in modal within the PurchaseCreateView """
+
+    model = Contact
+    form_class = ContactForm
+    template_name = "shop/includes/partial_contact_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["hide_controls"] = True
+        return context
+
+
 def vendor_lookup(request, pk=None):
     """ Lookup for typeahead function """
     if request.user.is_authenticated and request.is_ajax():

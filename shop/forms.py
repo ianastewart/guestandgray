@@ -1,8 +1,17 @@
 import django.forms as forms
 from django.urls import reverse_lazy
-from django.forms import ModelForm, ModelChoiceField, ValidationError
+from django.forms import Form, ModelForm, ModelChoiceField, ValidationError
 from tempus_dominus.widgets import DatePicker
-from shop.models import Item, Category, Purchase, Lot, Contact, Book, Compiler
+from shop.models import (
+    Item,
+    Category,
+    Purchase,
+    Lot,
+    Contact,
+    Book,
+    Compiler,
+    InvoiceCharge,
+)
 
 
 class CategoryForm(ModelForm):
@@ -55,14 +64,7 @@ class ArchiveItemForm(ItemForm):
 
     class Meta(ItemForm.Meta):
         model = Item
-        exclude = (
-            "minimum_price",
-            "archive",
-            "location",
-            "visible",
-            "show_price",
-            "featured",
-        )
+        exclude = ("minimum_price", "archive", "location", "show_price", "featured")
 
 
 class UpdateItemForm(ModelForm):
@@ -71,6 +73,38 @@ class UpdateItemForm(ModelForm):
         fields = ("name", "cost_price")
 
     cost_price = forms.DecimalField(max_digits=8, decimal_places=2, required=True)
+
+
+class CartPriceForm(ModelForm):
+    class Meta:
+        model = Item
+        fields = ("sale_price", "agreed_price")
+
+    sale_price = forms.DecimalField(max_digits=8, decimal_places=2, required=False)
+    # agreed_price is just used stored temporarily in the session instance
+    agreed_price = forms.DecimalField(max_digits=8, decimal_places=2, required=True)
+
+    def clean_sale_price(self):
+        # Because this field is disabled and not required we need to reset its value
+        # or it gets set to None
+        if "sale_price" in self.initial:
+            self.cleaned_data["sale_price"] = self.initial["sale_price"]
+        return self.cleaned_data["sale_price"]
+
+
+class InvoiceChargeForm(ModelForm):
+    class Meta:
+        model = InvoiceCharge
+        fields = ("charge_type", "description", "amount")
+
+
+class InvoiceDateForm(forms.Form):
+    invoice_date = forms.DateField(
+        widget=DatePicker(
+            options={"useCurrent": True},
+            attrs={"append": "fa fa-calendar", "icon_toggle": True},
+        )
+    )
 
 
 class ContactForm(ModelForm):
@@ -99,6 +133,14 @@ class NewVendorForm(ContactForm):
         exclude = ("vendor", "restorer", "buyer")
 
     title = "Create new vendor"
+    path = reverse_lazy("contact_create")
+
+
+class NewContactForm(ContactForm):
+    class Meta(ContactForm.Meta):
+        exclude = ("vendor", "restorer", "buyer")
+
+    title = "Create new buyer"
     path = reverse_lazy("contact_create")
 
 

@@ -44,6 +44,12 @@ from shop.views.purchase_views import (
     PurchaseDetailAjax,
     PurchaseItemAjax,
 )
+from shop.views.cart_views import (
+    CartContentsView,
+    CartPriceView,
+    CartAddChargeView,
+    CartCheckoutView,
+)
 from shop.views.staff_views import StaffHomeView, InvoiceListView, InvoiceDetailView
 from shop.views.public_views import (
     home_view,
@@ -91,6 +97,7 @@ staff_urls = [
         ContactUpdateView.as_view(),
         name="contact_update",
     ),
+    path("contact/lookup/", vendor_lookup, name="contact_lookup"),
     path("vendor/lookup/", vendor_lookup, name="vendor_lookup"),
     path("vendor/list/", VendorListView.as_view(), name="vendor_list"),
     path("vendor/list/create/", ContactCreateView.as_view(), name="vendor_create"),
@@ -172,7 +179,13 @@ staff_urls = [
     path("search/", search_view, {"public": False}, name="search"),
     # Upload
     path("upload/", upload_view, name="upload"),
+    # Cart
+    path("cart/contents/", CartContentsView.as_view(), name="cart_contents"),
+    path("cart/price/<int:pk>/", CartPriceView.as_view(), name="cart_price"),
+    path("cart/checkout/", CartCheckoutView.as_view(), name="cart_checkout"),
+    path("cart/add_charge/", CartAddChargeView.as_view(), name="cart_add_charge"),
 ]
+
 
 public_urls = [
     path("", home_view, name="public_home"),

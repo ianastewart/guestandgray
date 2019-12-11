@@ -162,7 +162,6 @@ def parse(page, options):
                             if prices:
                                 price = prices[0].text.split("£")[1]
                                 price = price.replace(",", "")
-                            sale_price = Decimal(price)
                             items = Item.objects.filter(ref=ref)
                             if len(items) == 1:
                                 print(items[0].name, "found")
@@ -174,7 +173,7 @@ def parse(page, options):
                                         name=truncate(description),
                                         ref=ref,
                                         description=description,
-                                        sale_price=price,
+                                        sale_price=Decimal(price),
                                         category=cat_db,
                                         archive=sold,
                                     )

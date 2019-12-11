@@ -31,7 +31,7 @@ $(document).ready(function () {
     });
 
     function ajax_submit(form, submitter) {
-        let data = form.serialize() + '&' + encodeURIComponent(submitter) + '='
+        let data = form.serialize() + '&' + encodeURIComponent(submitter) + '=';
         $.ajax({
             url: form.attr("action"),
             data: data,
@@ -47,10 +47,14 @@ $(document).ready(function () {
                     }
                 } else {
                     $(data.modal_id).modal("show");
-                    $(data.modal_id + ".modal-content").html(data.html_form);
+                    $(data.modal_id + " .modal-content").html(data.html_form);
                 }
+            },
+            error: function(e) {
+                console.log(e);
             }
         });
+        return false;
     }
 
     // Button clicked on a modal form. Load a new modal form, passing the current url as the return path
@@ -72,8 +76,12 @@ $(document).ready(function () {
             dataType: 'json',
             data: {return_url: return_url},
             success: function (data) {
+                console.log(data)
                 $(data.modal_id).modal("show");
                 $(data.modal_id + " .modal-content").html(data.html_form);
+            },
+            error: function(e) {
+                console.log(e);
             }
         });
     }
@@ -237,7 +245,7 @@ $(document).ready(function () {
     });
 
     // blur catches datepicker changes
-    $(".form-control").blur(function(){
+    $(".form-control").blur(function () {
         if ($(this).parent().parent().hasClass("auto-submit")) {
             doFilter();
         }
@@ -262,5 +270,42 @@ $(document).ready(function () {
         $("body").css("cursor", "progress");
         $('#id_filter_form').submit();
     }
-})
-;
+});
+
+function margin_calc() {
+    let margin = 0
+    let min_margin = 0
+    let cost = int_or_zero("id_cost_price");
+    let restoration = int_or_zero("id_restoration_cost");
+    let sale = int_or_zero('id_sale_price');
+    let min_sale = int_or_zero('id_minimum_price');
+    let total_cost = cost + restoration;
+    let profit = sale - total_cost;
+    let min_profit = min_sale - total_cost;
+    if (profit > 0 && sale > 0) {
+        margin = parseInt(profit / sale * 1000) / 10;
+    }
+    if (min_profit > 0 && min_sale > 0) {
+        min_margin = parseInt(min_profit / min_sale * 1000) / 10;
+    }
+    $('#id_restoration_cost').val(restoration / 100);
+    $('#id_sale_price').val(sale / 100);
+    $('#id_minimum_price').val(min_sale / 100);
+    $("#id_total_cost").html("£" + total_cost / 100);
+    $('#id_margin').html(margin + "%");
+    $('#id_min_margin').html(min_margin + "%");
+}
+
+function int_or_zero(id) {
+    let v = document.getElementById(id).value;
+    if (typeof v !== 'undefined') {
+        let x = parseInt(v);
+        if (isNaN(x)) {
+            return 0;
+        } else {
+            return x * 100;
+        }
+    }
+}
+
+

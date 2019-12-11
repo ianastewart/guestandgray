@@ -3,6 +3,7 @@ from django.http import QueryDict, JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import View
+from django.views.generic.edit import ModelFormMixin
 from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django_tables2 import SingleTableView
 from django_tables2.export.views import ExportMixin
@@ -166,17 +167,14 @@ class FilteredTableView(ExportMixin, SingleTableView):
         return None
 
 
-class AjaxCrudView(View):
+class AjaxCrudView(ModelFormMixin, View):
     """ Generic view that handles creation, update and delete in a modal triggered by a FilteredListView """
 
-    model = None
     object = None
     form = None
-    form_class = None
-    template_name = None
+    template_name = "table_manager/generic_modal_form.html"
     update = False
     allow_delete = False
-    success_url = ""
     horizontal_form = False
     modal_id = "#modal-form"
     modal_class = ""
@@ -186,16 +184,6 @@ class AjaxCrudView(View):
         if pk:
             self.object = get_object_or_404(self.model, pk=pk)
         return self.object
-
-    def get_form_class(self):
-        return self.form_class
-
-    def get_form(self, **kwargs):
-        self.object = self.get_object(**kwargs)
-        form_class = self.get_form_class()
-        # form-class is None for a detail view
-        if form_class:
-            self.form = form_class(instance=self.object)
 
     def get(self, request, **kwargs):
         if request.is_ajax():
@@ -209,7 +197,8 @@ class AjaxCrudView(View):
             else:
                 new_stack(request)
             try:
-                self.get_form(**kwargs)
+                self.get_object(**kwargs)
+                self.form = self.get_form()
                 data["html_form"] = render_to_string(
                     self.template_name, self.get_context_data(), request
                 )
@@ -263,14 +252,17 @@ class AjaxCrudView(View):
         self.object = self.form.save()
 
     def get_context_data(self):
-        name = self.model._meta.object_name if self.model else "No model name"
+        form_title = ""
+        name = self.model._meta.object_name if self.model else ""
+        if name:
+            form_title = f"Update {name}" if self.update else "Create {name}"
         context = {
             "modal": True,
             "modal_class": self.modal_class,
             "form": self.form,
             "path": self.request.path,
             "object_name": name,
-            "form_title": f"Update {name}" if self.update else f"Create {name}",
+            "form_title": form_title,
             "horizontal_form": self.horizontal_form,
             "allow_delete": self.allow_delete,
         }

@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, TemplateView, CreateView, FormView
-from django.shortcuts import redirect, reverse
+from django.urls import reverse
+from django.shortcuts import redirect
 from shop.forms import (
     NewVendorForm,
     PurchaseVendorForm,
@@ -263,7 +264,7 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
 
 class PurchaseSummaryAjaxView(LoginRequiredMixin, AjaxCrudView):
     """
-    Handle changes to to item costs.
+    Handle changes to item costs.
     Can be called by wizard during creation when purchase summary is non modal
     or by detail view when the purchase summary is a modal
     """
@@ -379,3 +380,8 @@ class PurchaseItemAjax(LoginRequiredMixin, AjaxCrudView):
     modal_id = "#modal-form-2"
     update = True
     template_name = "shop/includes/partial_purchase_item.html"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context["submit_path"] = self.request.path
+        return context

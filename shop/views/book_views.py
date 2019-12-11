@@ -21,7 +21,6 @@ class CompilerListView(LoginRequiredMixin, FilteredTableView):
 class CompilerCreateView(LoginRequiredMixin, AjaxCrudView):
     model = Compiler
     form_class = CompilerForm
-    template_name = "shop/includes/generic_modal_form.html"
 
 
 class CompilerUpdateView(CompilerCreateView):
@@ -43,7 +42,6 @@ class BookListView(LoginRequiredMixin, FilteredTableView):
 class BookCreateView(LoginRequiredMixin, AjaxCrudView):
     model = Book
     form_class = BookForm
-    template_name = "shop/includes/generic_modal_form.html"
 
 
 class BookUpdateView(BookCreateView):

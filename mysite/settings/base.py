@@ -70,6 +70,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # Save pages to cache. Must be FIRST.
     "wagtailcache.cache.UpdateCacheMiddleware",
+    "wagtail.core.middleware.SiteMiddleware",
     # Common functionality
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -82,7 +83,6 @@ MIDDLEWARE = [
     # Error reporting. Uncomment this to recieve emails when a 404 is triggered.
     #'django.middleware.common.BrokenLinkEmailsMiddleware',
     # CMS functionality
-    "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     # Fetch from cache. Must be LAST.
     "wagtailcache.cache.FetchFromCacheMiddleware",

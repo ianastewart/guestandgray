@@ -1,12 +1,12 @@
 import logging
 import os.path
-
+from decimal import *
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView, DetailView
 from wagtail.core.models import Collection
@@ -16,6 +16,7 @@ from shop.models import Item, CustomImage
 from shop.tables import ItemTable
 from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import ItemFilter
+from shop.session import cart_add_item, cart_get_item
 
 logger = logging.getLogger(__name__)
 
@@ -58,16 +59,18 @@ class ItemPostMixin:
     Returns True if a command has been actioned ""
     """
 
-    def post_action(self, request, object):
-        category = object.category
+    def post_action(self, request, item):
+        category = item.category
         if "assign_category" in request.POST:
-            category.image = object.image
+            category.image = item.image
             category.save()
             return True
         elif "assign_archive" in request.POST:
-            category.archive_image = object.image
+            category.archive_image = item.image
             category.save()
             return True
+        elif "add" in request.POST:
+            cart_add_item(request, item)
         return False
 
 
@@ -85,7 +88,7 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
         context = super().get_context_data(**kwargs)
         context["object"] = self.object
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
-        context["allow_delete"] = True
+        context["allow_delete"] = not self.object.lot
         return context
 
     def get_success_url(self):
@@ -117,25 +120,32 @@ class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         item = self.object
-        cost = item.cost_price + item.restoration_cost
-        profit = item.sale_price - cost
-        if item.minimum_price:
-            min_profit = item.minimum_price - cost
+        margin = Decimal(0)
+        min_margin = Decimal(0)
+        profit = Decimal(0)
+        min_profit = Decimal(0)
+        if item.cost_price:
+            cost = item.cost_price + item.restoration_cost
+            profit = item.sale_price - cost
+            if item.minimum_price:
+                min_profit = item.minimum_price - cost
+            else:
+                item.minimum_price = Decimal(0)
+                min_profit = Decimal(0)
+            if item.sale_price > 0 and profit > 0:
+                margin = profit / item.sale_price * 100
+            if item.minimum_price > 0 and min_profit > 0:
+                min_margin = min_profit / item.minimum_price * 100
         else:
-            min_profit = 0
-        if item.sale_price != 0:
-            margin = profit / item.sale_price * 100
-            min_margin = min_profit / item.sale_price * 100
-        else:
-            margin = 0
-            min_margin = 0
+            cost = Decimal(0)
         context["item"] = item
-        context["purchase"] = self.object.purchase_data
         context["total_cost"] = cost
         context["margin"] = margin
         context["min_margin"] = min_margin
         context["profit"] = profit
         context["min_profit"] = min_profit
+        if item.lot:
+            context["purchase"] = item.lot.purchase
         context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         return context
 
@@ -250,4 +260,13 @@ class ItemDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["images"] = self.object.images.all().exclude(id=self.object.image_id)
+        context["in_cart"] = cart_get_item(self.request, self.object.pk)
         return context
+
+    def post(self, request, **kwargs):
+        item = get_object_or_404(Item, pk=kwargs.get("pk"))
+        cart_add_item(request, item)
+        messages.add_message(
+            request, messages.INFO, f"Item ref: {item.ref} has been added to the cart"
+        )
+        return redirect("item_detail", item.pk)

@@ -1,0 +1,53 @@
+{% load bootstrap4 shop_tags %}
+<form method="post" action="{{ submit_path }}">
+  {% csrf_token %}
+  <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
+  <div class="modal-header bg-white">
+    <h5 class="modal-title">Add charge</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% bootstrap_messages %}
+  <div class="modal-body">
+    {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
+    <div class="row">
+      <div class="col">
+        {% bootstrap_field form.charge_type layout="horizontal" %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        {% bootstrap_field form.description layout="horizontal" placeholder="Describe the charge" %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        {% currency_input form.amount layout="horizontal" %}
+      </div>
+    </div>
+    <div class="row my-3">
+      <div class="col">
+        <button class="btn btn-default js-submit" name="cancel">Cancel</button>
+        <button class="btn btn-primary js-submit" type="button" name="save">Save</button>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+    $(document).ready(function () {
+        setDescription();
+        $('#id_charge_type').change(function () {
+            setDescription()
+        });
+    });
+    function setDescription(){
+        var text = $("#id_charge_type option:selected").text();
+            if (text === 'Other'){
+                $("#id_description").val("");
+            } else {
+                $("#id_description").val(text + " charge");
+            }
+    }
+</script>
+

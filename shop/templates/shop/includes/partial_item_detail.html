@@ -1,5 +1,6 @@
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
-<div class="container bg-white shadow mb-2">
+<div class="container bg-white shadow my-2 py-2">
+  {{ form.media }}
   <div class="row">
     <div class="col">
       <h2 class="my-4 font-georgia">{{ item.name }}</h2>
@@ -64,13 +65,21 @@
         <p class="mt-4">{{ item.provenance }}</p>
       {% endif %}
       <div class="mt-4">
+      <form method="post">
+        {% csrf_token %}
         {% if public and request.user.is_authenticated %}
           <a class="btn btn-outline-secondary" role="button" href="{% url 'item_detail' pk=item.pk %}">Staff view</a>
         {% endif %}
         {% if not public %}
           <a class="btn btn-outline-secondary" role="button" href="{% url 'item_update' pk=item.pk %}">Edit item</a>
           <a class="btn btn-outline-secondary" role="button" href="{% url 'public_item' slug='x' pk=item.pk %}">Public view</a>
+          {% if in_cart %}
+            <span class="badge badge-info">Added to cart</span>
+            {% else %}
+          <button type="submit" class="btn btn-outline-secondary" name="add">Add to sale</button>
+            {% endif %}
         {% endif %}
+        </form>
       </div>
     </div>
   </div>

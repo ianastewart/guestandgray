@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from shop.session import cart_items
 
 register = template.Library()
 
@@ -41,12 +42,19 @@ def checkbox(box):
 
 @register.simple_tag(takes_context=False)
 def currency_input(
-    field, label=None, layout=None, label_class="col-md-6", field_class="col-md-6"
+    field,
+    label="",
+    layout="",
+    disabled=False,
+    label_class="col-md-6",
+    field_class="col-md-6",
 ):
     if not label:
         label = field.label
     invalid = ""
     feedback = ""
+    val = field.data if field.data else ""
+    dis = "disabled" if disabled else ""
     if field.errors:
         invalid = "is-invalid"
         feedback = f'<div class="invalid-feedback">{field.errors[0]}</div>'
@@ -59,7 +67,7 @@ def currency_input(
         <div class="input-group-prepend">\
         <span class="input-group-text">£</span>\
         </div>\
-        <input type="number" name="{field.html_name}" value="{field.initial}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id}" title>\
+        <input type="number" name="{field.html_name}" value="{val}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id}" title {dis}>\
         {feedback}\
         </div></div></div>'
     else:
@@ -68,7 +76,16 @@ def currency_input(
         <label class="col-form-label" for="id_{field.auto_id}">{label}</label>\
         <div class="input-group">\
         <div class="input-group-prepend"> <span class="input-group-text">£</span></div>\
-        <input type="number" name="{field.html_name}" value="{field.initial}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id} title">\
+        <input type="number" name="{field.html_name}" value="{val}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id} title {dis}">\
         {feedback}\
         </div></div>'
-    return mark_safe(output)
+    return mark_safe(output.replace("        ", ""))
+
+
+@register.simple_tag(takes_context=True)
+def cart_count(context):
+    request = context["request"]
+    if cart_items(request):
+        output = f'<span class ="cart-badge">{len(cart_items(request))}</span>'
+        return mark_safe(output)
+    return ""

@@ -1,7 +1,9 @@
 {% extends "shop/shop_base.html" %}
-{% load wagtailimages_tags static %}
+{% load wagtailimages_tags static bootstrap4 %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
-  <br>
+<div class="container">
+  {% bootstrap_messages %}
+</div>
 {% include 'shop/includes/partial_item_detail.html' with public=False %}
 {% endblock %}
