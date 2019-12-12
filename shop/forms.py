@@ -105,6 +105,7 @@ class InvoiceDateForm(forms.Form):
             attrs={"append": "fa fa-calendar", "icon_toggle": True},
         )
     )
+    contact = forms.IntegerField(required=True, widget=forms.HiddenInput)
 
 
 class ContactForm(ModelForm):

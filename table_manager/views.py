@@ -198,7 +198,9 @@ class AjaxCrudView(ModelFormMixin, View):
                 new_stack(request)
             try:
                 self.get_object(**kwargs)
-                self.form = self.get_form()
+                # detail view will not have a form_class
+                if self.form_class:
+                    self.form = self.get_form()
                 data["html_form"] = render_to_string(
                     self.template_name, self.get_context_data(), request
                 )

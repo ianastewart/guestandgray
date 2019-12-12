@@ -3,8 +3,9 @@ from typing import Any, Dict
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
+from django.db import transaction
 from django.urls import reverse
-from shop.models import Item, InvoiceCharge
+from shop.models import Item, Invoice, InvoiceCharge, InvoiceNumber, Contact
 from shop.forms import CartPriceForm, InvoiceChargeForm, InvoiceDateForm
 from table_manager.views import AjaxCrudView
 from shop.session import (
@@ -125,5 +126,29 @@ class CartCheckoutView(LoginRequiredMixin, FormView):
         }
         return context
 
-    def post(self, request, **kwargs):
-        return redirect("cart_contents")
+    def form_valid(self, form):
+        with transaction.atomic():
+            invoice = Invoice(date=form.cleaned_data["invoice_date"])
+            if "invoice" in self.request.POST:
+                invoice.number = InvoiceNumber.get_next()
+            else:
+                invoice.proforma = True
+            invoice.buyer = Contact.objects.get(id=form.cleaned_data["contact"])
+            invoice.save()
+            total = Decimal(0)
+            for item in cart_items(self.request):
+                total += item.agreed_price
+                item.sale_price = item.agreed_price
+                item.invoice = invoice
+                item.save()
+            for charge in cart_charges(self.request):
+                total += charge.amount
+                charge.invoice = invoice
+                charge.save()
+            invoice.total = total
+            invoice.save()
+            cart_clear(self.request)
+        return redirect("invoice_list")
+
+    def form_invalid(self, form):
+        pass

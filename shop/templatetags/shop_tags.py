@@ -1,6 +1,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 from shop.session import cart_items
+from django.contrib import humanize
 
 register = template.Library()
 
@@ -38,6 +39,11 @@ def checkbox(box):
     <input type="checkbox" class="custom-control-input" id="{box.auto_id}" name="{box.html_name}" {checked}>\
     <label class="custom-control-label" for="{box.auto_id}">{box.label}</label></div>'
     return mark_safe(output)
+
+
+@register.filter(name="currency")
+def currency(value):
+    return f"£ {value}"
 
 
 @register.simple_tag(takes_context=False)

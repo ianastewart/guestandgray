@@ -239,10 +239,35 @@ class ItemRef(models.Model):
         return f"{ref[0]}{number}"
 
 
+class InvoiceNumber(models.Model):
+    """ Generate sequential numbers for invoices """
+
+    invoice_number = models.IntegerField(null=False, blank=False)
+
+    @classmethod
+    def get_next(cls, increment=False):
+        records = InvoiceNumber.objects.all()
+        if len(records) == 0:
+            record = InvoiceNumber.reset()
+        else:
+            record = records[0]
+        result = record.invoice_number
+        if increment:
+            record.invoice_number = result + 1
+            record.save()
+        return result
+
+    @classmethod
+    def reset(cls, number=1):
+        InvoiceNumber.objects.all().delete()
+        return InvoiceNumber.objects.create(invoice_number=number)
+
+
 class Invoice(models.Model):
     date = models.DateField(null=True, blank=True)
     number = models.CharField(max_length=10, null=True, blank=True, unique=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    proforma = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
     buyer = models.ForeignKey(
         "Contact", null=True, blank=True, on_delete=models.SET_NULL

@@ -1,4 +1,4 @@
-{% load humanize %}
+{% load shop_tags humanize %}
 {% if modal %}
   <div class="modal-header">
     <h2 class="modal-title">Invoice {{ object.number }}</h2>
@@ -17,11 +17,18 @@
       <hr>
     </div>
   </div>
+  {% include "shop/includes/invoice_table.html" %}
   {% for item in items %}
     <div class="row">
       <div class="col-2">{{ item.ref }}</div>
       <div class="col-8">{{ item.name }}</div>
-      <div class="col-2 text-right">£{{ item.sale_price }}</div>
+      <div class="col-2 text-right">{{ item.sale_price|currency }}</div>
+    </div>
+  {% endfor %}
+  {% for charge in charges %}
+    <div class="row">
+      <div class="col-10 text-right">{{ charge.description }}</div>
+      <div class="col-2 text-right">£{{ charge.amount }}</div>
     </div>
   {% endfor %}
 <hr>

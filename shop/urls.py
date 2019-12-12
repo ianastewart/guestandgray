@@ -50,7 +50,8 @@ from shop.views.cart_views import (
     CartAddChargeView,
     CartCheckoutView,
 )
-from shop.views.staff_views import StaffHomeView, InvoiceListView, InvoiceDetailView
+from shop.views.invoice_views import InvoiceListView, InvoiceDetailView
+from shop.views.staff_views import StaffHomeView
 from shop.views.public_views import (
     home_view,
     item_view,
