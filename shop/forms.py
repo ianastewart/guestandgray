@@ -8,6 +8,7 @@ from shop.models import (
     Purchase,
     Lot,
     Contact,
+    Address,
     Book,
     Compiler,
     InvoiceCharge,
@@ -111,22 +112,20 @@ class InvoiceDateForm(forms.Form):
 class ContactForm(ModelForm):
     class Meta:
         model = Contact
-        fields = (
-            "first_name",
-            "company",
-            "address",
-            "work_phone",
-            "mobile_phone",
-            "email",
-            "notes",
-            "vendor",
-            "restorer",
-            "buyer",
-        )
+        fields = ("first_name", "company", "notes", "vendor", "restorer", "buyer")
 
     first_name = forms.CharField(label="Name (optional)", required=False)
     company = forms.CharField(label="Last name/Company", required=True)
-    address = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 3}))
+    address = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 5}))
+    work_phone = forms.CharField(max_length=20, required=False)
+    mobile_phone = forms.CharField(max_length=20, required=False)
+    email = forms.EmailField(max_length=80, required=False)
+
+
+class AddressForm(ModelForm):
+    class Meta:
+        model = Address
+        fields = ("address", "work_phone", "mobile_phone", "email")
 
 
 class NewVendorForm(ContactForm):
@@ -148,7 +147,7 @@ class NewContactForm(ContactForm):
 class EnquiryForm(ModelForm):
     class Meta:
         model = Contact
-        fields = ("first_name", "last_name", "mobile_phone", "email")
+        fields = ("first_name", "last_name")  # , "mobile_phone", "email")
 
     subject = forms.CharField(max_length=50, required=False)
     message = forms.CharField(
@@ -174,7 +173,7 @@ class CompilerForm(ModelForm):
 
 
 class PurchaseVendorForm(forms.Form):
-    vendor_id = forms.CharField(
+    contact_id = forms.CharField(
         max_length=10, required=False, widget=forms.HiddenInput()
     )
 

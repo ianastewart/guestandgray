@@ -167,6 +167,9 @@ class Purchase(models.Model):
     vendor = models.ForeignKey(
         "Contact", null=True, blank=True, on_delete=models.SET_NULL
     )
+    address = models.ForeignKey(
+        "Address", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     def __str__(self):
         vendor = "Unknown vendor"
@@ -272,6 +275,9 @@ class Invoice(models.Model):
     buyer = models.ForeignKey(
         "Contact", null=True, blank=True, on_delete=models.SET_NULL
     )
+    address = models.ForeignKey(
+        "Address", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
 
 class InvoiceCharge(models.Model):
@@ -300,16 +306,20 @@ class Contact(models.Model):
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     company = models.CharField(max_length=100, blank=True, null=True)
-    address = models.CharField(max_length=200, blank=True, null=True)
-    work_phone = models.CharField(max_length=20, blank=True, null=True)
-    mobile_phone = models.CharField(max_length=20, blank=True, null=True)
-    email = models.EmailField(max_length=80, blank=True, null=True)
+
     notes = models.CharField(max_length=500, blank=True, null=True)
     mail_consent = models.BooleanField(default=False)
     consent_date = models.DateField(null=True)
     vendor = models.BooleanField(default=False)
     restorer = models.BooleanField(default=False)
     buyer = models.BooleanField(default=False)
+    main_address = models.OneToOneField(
+        "address",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="main_contact",
+    )
 
     def __str__(self):
         return self.name
@@ -319,6 +329,24 @@ class Contact(models.Model):
         if self.first_name:
             return f"{self.first_name} {self.company}"
         return self.company
+
+    def addresses(self):
+        return self.address_set.all().order_by("-date")
+
+
+class Address(models.Model):
+    """ A Contact can have multiple addresses sored in address history"""
+
+    shipping = models.BooleanField(default=True)
+    billing = models.BooleanField(default=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    work_phone = models.CharField(max_length=20, blank=True, null=True)
+    mobile_phone = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(max_length=80, blank=True, null=True)
+    contact = models.ForeignKey(
+        Contact, null=False, blank=False, on_delete=models.CASCADE
+    )
+    date = models.DateTimeField(auto_now_add=True)
 
 
 class Enquiry(models.Model):

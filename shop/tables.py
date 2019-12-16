@@ -78,9 +78,9 @@ class ContactTable(tables.Table):
         fields = (
             "first_name",
             "company",
-            "work_phone",
-            "mobile_phone",
-            "email",
+            "main_address__address",
+            "main_address__mobile_phone",
+            "main_address__email",
             "mail_consent",
             "notes",
         )
@@ -97,7 +97,7 @@ class ContactTable(tables.Table):
 class ContactTableTwo(tables.Table):
     class Meta:
         model = Contact
-        fields = ("first_name", "company", "address")
+        fields = ("first_name", "company", "address__address")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
@@ -105,7 +105,7 @@ class ContactTableTwo(tables.Table):
 class BuyersTable(tables.Table):
     class Meta:
         model = Contact
-        fields = ("first_name", "company", "address")
+        fields = ("first_name", "company", "address__address")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 

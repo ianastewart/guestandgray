@@ -1,4 +1,5 @@
 from django.urls import path, re_path
+
 from shop.views.item_views import (
     ItemCreateView,
     ItemCreateAjax,
@@ -22,7 +23,7 @@ from shop.views.contact_views import (
     VendorListView,
     BuyerListView,
     EnquiryListView,
-    vendor_lookup,
+    contact_lookup,
 )
 from shop.views.book_views import (
     BookListView,
@@ -98,8 +99,8 @@ staff_urls = [
         ContactUpdateView.as_view(),
         name="contact_update",
     ),
-    path("contact/lookup/", vendor_lookup, name="contact_lookup"),
-    path("vendor/lookup/", vendor_lookup, name="vendor_lookup"),
+    path("contact/lookup/", contact_lookup, name="contact_lookup"),
+    path("vendor/lookup/", contact_lookup, name="vendor_lookup"),
     path("vendor/list/", VendorListView.as_view(), name="vendor_list"),
     path("vendor/list/create/", ContactCreateView.as_view(), name="vendor_create"),
     path(

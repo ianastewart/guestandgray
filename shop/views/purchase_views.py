@@ -50,13 +50,17 @@ class PurchaseVendorView(LoginRequiredMixin, DispatchMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        vendor_id = self.initial.get("vendor_id", None)
+        contact_id = self.initial.get("contact_id", None)
         try:
-            vendor = Contact.objects.get(id=vendor_id)
-            name = vendor.name
+            contact = Contact.objects.get(id=contact_id)
+            name = contact.name
         except Contact.DoesNotExist:
             name = ""
-        context["vendor"] = name
+        context["contact"] = name
+        context["urls"] = {
+            "lookup": reverse("contact_lookup"),
+            "create": reverse("contact_create"),
+        }
         return context
 
     def post(self, request, **kwargs):
@@ -164,7 +168,8 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
 
         i = 0
         posted = session.get_data(i, self.request)
-        context["vendor"] = Contact.objects.get(id=posted["vendor_id"])
+        context["vendor"] = Contact.objects.get(id=posted["contact_id"])
+        context["address"] = context["vendor"].main_address.address
         i += 1
         posted = session.get_data(i, self.request)
         context["purchase"] = posted
@@ -199,7 +204,8 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
         elif "lot" in request.POST:
             return redirect("purchase_lot_create", self.index)
         elif "save" in request.POST:
-            vendor_id = session.get_data(0, request)["vendor_id"]
+            vendor_id = session.get_data(0, request)["contact_id"]
+            vendor = Contact.objects.get(id=vendor_id)
             data = session.get_data(1, request)
             with transaction.atomic():
                 purchase = Purchase.objects.create(
@@ -207,9 +213,10 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
                     invoice_number=data["invoice_number"],
                     invoice_total=data["invoice_total"],
                     buyers_premium=data["buyers_premium"],
-                    vendor_id=vendor_id,
                     margin_scheme=data["margin_scheme"],
                     vat=data["vat"],
+                    vendor=vendor,
+                    address=vendor.main_address,
                 )
                 # Reallocate references just in case they have been used in another session
                 PurchaseSummaryCreateView.allocate_refs(request, permanent=True)

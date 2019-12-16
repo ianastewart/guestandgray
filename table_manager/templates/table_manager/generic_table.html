@@ -34,6 +34,7 @@
             </div>
           </div>
           <div class="col col-md-9 col-lg-10 ml-0 bg-light">
+            {% bootstrap_messages %}
             <div class="row flex-grow-1">
               {% include "table_manager/table_data.html"  with heading="" %}
             </div>
@@ -42,6 +43,7 @@
       </div>
     {% else %} <!-- filter at top -->
       <div class="container-fluid p-0 bg-guest-light" style="height: calc(100% - 60px);">
+        {% bootstrap_messages %}
         <div class="panel bg-guest-light">
           <div class="p-2 text-center" style="height:72px;"><h3>{{ heading }}</h3></div>
             <form action="." method="get" id="id_filter_form">
@@ -101,9 +103,9 @@
   <div class="modal fade" data-backdrop="static" data-keyboard="false" id="modal-confirm" role="dialog"
        style="top:250px;">
   <div class="modal-dialog" role="document">
-    <div class="modal-content bg-warning">
+    <div class="modal-content">
+      <div class="modal-header bg-warning"><h5>Are you sure?</h5></div>
       <div class="modal-body">
-        <p>Are you sure?</p>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-danger js-delete" data-dismiss="modal">Delete</button>
       </div>

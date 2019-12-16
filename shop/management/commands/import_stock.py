@@ -3,7 +3,7 @@ import datetime
 from decimal import *
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from shop.models import Item, Contact, Invoice, Purchase, Lot
+from shop.models import Item, Contact, Address, Invoice, Purchase, Lot
 from shop.truncater import truncate
 from openpyxl import load_workbook
 
@@ -47,9 +47,9 @@ class Command(BaseCommand):
                 self.stdout.write(f"Header error in sheet {ws.title}:\n{str(e)}")
                 return
 
-            Contact.objects.filter(buyer=True).delete()
+            Contact.objects.all().delete()
             Invoice.objects.all().delete()
-
+            row_number = 0
             new_contacts = 0
             existing_contacts = 0
             new_invoices = 0
@@ -63,16 +63,15 @@ class Command(BaseCommand):
                     row_number = row[col_address].row
                 elif number:
                     row_number = row[col_invoice_no].row
-                # if row_number == 742:
+                # if row_number == 8:
                 #     breakpoint()
 
                 if adr:
-                    row_number = row[col_address].row
                     first_name, name, address = parse_name_address(adr)
                     contacts = Contact.objects.filter(company=name)
                     if len(contacts) > 0:
                         for contact in contacts:
-                            if contact.address[:10] == address[:10]:
+                            if contact.main_address.address[:10] == address[:10]:
                                 buyer = contact
                                 existing_contacts += 1
                                 if not buyer.buyer:
@@ -80,15 +79,26 @@ class Command(BaseCommand):
                                     buyer.save()
                                 break
                 if not buyer and adr:
+
                     buyer = Contact.objects.create(
-                        first_name=first_name, company=name, address=address, buyer=True
+                        first_name=first_name, company=name, buyer=True
                     )
                     new_contacts += 1
+                    buyer_address = Address.objects.create(
+                        address=address, contact=buyer
+                    )
+                    buyer.main_address = buyer_address
+                    buyer.save()
                 if number:
                     date = parse_date(dat)  # date defaults if missing
                     try:
                         Invoice.objects.create(
-                            date=date, number=number, buyer=buyer, total=0, paid=True
+                            date=date,
+                            number=number,
+                            buyer=buyer,
+                            address=buyer_address,
+                            total=0,
+                            paid=True,
                         )
                         new_invoices += 1
                     except Exception as e:
@@ -116,12 +126,17 @@ class Command(BaseCommand):
                         notes = vendor_key(cell.value)
                         try:
                             Contact.objects.get(
-                                company=name, address=address, vendor=True
+                                company=name, main_address__address=address, vendor=True
                             )
                         except Contact.DoesNotExist:
-                            Contact.objects.create(
-                                company=name, address=address, notes=notes, vendor=True
+                            contact = Contact.objects.create(
+                                company=name, notes=notes, vendor=True
                             )
+                            address = Address.objects.create(
+                                address=address, contact=contact
+                            )
+                            contact.main_address = address
+                            contact.save()
                             count += 1
                     else:
                         done = True
@@ -195,8 +210,13 @@ class Command(BaseCommand):
                     if l == 0:
                         name, address = parse_name_address(vendor_name, vendor=True)
                         vendor = Contact.objects.create(
-                            company=name, address=address, notes=key, vendor=True
+                            company=name, notes=key, vendor=True
                         )
+                        address = Address.objects.create(
+                            address=address, contact=vendor
+                        )
+                        vendor.main_address = address
+                        vendor.save()
                         vendors_created += 1
                     elif l == 1:
                         vendor = vendors[0]
@@ -207,10 +227,10 @@ class Command(BaseCommand):
                 else:
                     # Missing vendor uses previous vendor if same purchase date
                     vendor = last_vendor
-                    if last_pdate == pdate:
-                        self.stdout.write(
-                            f"Info row: {row_number} {vendor.name} different date"
-                        )
+                    # if last_pdate == pdate:
+                    # self.stdout.write(
+                    #     f"Info row: {row_number} {vendor.name} different date"
+                    # )
 
                 # Find or create an item and add costs
                 try:

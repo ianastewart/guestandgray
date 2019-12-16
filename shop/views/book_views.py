@@ -36,7 +36,7 @@ class BookListView(LoginRequiredMixin, FilteredTableView):
     allow_update = True
 
     def get_queryset(self):
-        return Book.objects.all().order_by("title")
+        return Book.objects.all().select_related("compiler").order_by("title")
 
 
 class BookCreateView(LoginRequiredMixin, AjaxCrudView):

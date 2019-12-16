@@ -1,24 +1,37 @@
 var urls = JSON.parse(document.getElementById('id_urls').textContent);
 $(document).ready(function () {
     wrap_typeahead('#select_contact', urls['lookup'], '', gotContact);
-    $('#id_contact_name').prop("disabled", true);
+    if ($('#details').text() !== ""){
+        setDetails();
+    }
 
     // user selected a contact
     function gotContact(data) {
-        $('#contact').val(data.id);
+        $('#id_contact_id').val(data.id);
+        setDetails();
         $('#details').html(data.html);
-        $('.submit-btn').prop("disabled", false)
         $("#newRadio").prop("checked", false);
         $("#searchRadio").prop("checked", false);
         $('#searchGroup').hide();
     }
 
+    function clearDetails() {
+        $('#detailsCard').removeClass('bg-white');
+        $('#detailsCard').addClass('bg-light');
+        $('#details').html("");
+        $('.submit-btn').prop("disabled", true);
+    }
+
+    function setDetails() {
+        $('#detailsCard').removeClass('bg-light');
+        $('#detailsCard').addClass('bg-white');
+         $('.submit-btn').prop("disabled", false);
+    }
+
     // enable the search form
     $("#searchRadio").click(function () {
+        clearDetails();
         $('#searchGroup').show();
-        $('.submit-btn').prop("disabled", true);
-        $('#contact').html("");
-        $('#select_contact').val("").prop("disabled", false).css('background-color', '#ffffff').focus();
     });
 
     // request and show the modal form to create a contact
@@ -28,9 +41,8 @@ $(document).ready(function () {
             type: 'get',
             dataType: 'json',
             beforeSend: function () {
+                clearDetails();
                 $('#searchGroup').hide()
-                $('#btn_next').prop("disabled", true)
-                $('#contact').html("");
                 $("#modal-form").modal("show");
             },
             success: function (data) {
@@ -39,7 +51,7 @@ $(document).ready(function () {
         });
     })
 
-        // normal submit action is ignored on a modal form
+    // normal submit action is ignored on a modal form
     $(".modal").on("submit", ".js-form", function () {
         return false;
     });

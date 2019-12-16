@@ -10,38 +10,23 @@
           <div class="card-header card-body bg-white">
             <h4 class="my-0">Create purchase<br>Step 1 - Define vendor</h4>
           </div>
-          <div class="bg-light">
-            <form method="post" action="{{ path }}" class="js-form">
-              <div class="card-body">
-                {% csrf_token %}
-                {% bootstrap_field form.vendor_id %}
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <button type="button" class="btn btn-secondary js-select" style="width:150px">Search vendors
-                    </button>
-                  </div>
-                  <input type="text" class="form-control" placeholder="" aria-label="" id="select_vendor" disabled
-                         autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"
-                         aria-describedby="basic-addon1">
-                </div>
-                <button type=button class="btn btn-secondary mb-2 js-create" style="width:150px">New vendor</button>
-                <div class="card card-body my-2 bg-white" style="height:12rem; width:370px;">
-                  <p id="vendor">{{ vendor|linebreaksbr }}</p>
-                </div>
-              </div>
-              <div class="card-footer card-body bg-white">
-                {% buttons %}
-                  <button type="submit" class="btn btn-primary" name="cancel">Cancel</button>
-                  <button type="submit" class="btn btn-primary" name="next" id="btn_next"
-                          {% if not vendor %}disabled {% endif %}>Next
-                  </button>
-                {% endbuttons %}
-              </div>
-            </form>
-          </div>
+          <form method="post" action="{{ path }}" class="js-form">
+            <div class="card-body bg-light">
+
+              {% csrf_token %}
+              {% include 'shop/includes/contact_selector.html' with contact_type="vendor" %}
+            </div>
+            <div class="card-footer card-body bg-white">
+                <button type="submit" class="btn btn-primary" name="cancel">Cancel</button>
+                <button type="submit" class="btn btn-primary submit-btn" name="next" id="btn_next"
+                        {% if not vendor %}disabled {% endif %}>Next
+                </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
+  </div>
   </div>
   <!-- Modal to hold partial form -->
   <div class="modal " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
@@ -53,78 +38,8 @@
 {% endblock %}
 
 {% block custom_scripts %}
+  {{ urls|json_script:"id_urls" }}
   <script src= {% static 'shop/js/typeahead.bundle.js' %}></script>
   <script src="{% static 'shop/js/wrap_typeahead.js' %}"></script>
-  <script>
-      var colour_selected = '#bdffdc'
-      $(document).ready(function () {
-          wrap_typeahead('#select_vendor', '{% url "vendor_lookup" %}', '', gotVendor);
-          $('#id_vendor_name').prop("disabled", true);
-      });
-
-      // user selected a vendor
-      function gotVendor(data) {
-          $('#id_vendor_id').val(data.id);
-          $('#vendor').html(data.html);
-          $('#btn_next').prop("disabled", false)
-      }
-
-      $(".js-select").click(function () {
-          $('#btn_next').prop("disabled", true)
-          $('#vendor').html("");
-          $('#select_vendor').val("").prop("disabled", false).css('background-color', '#ffffff').focus();
-      });
-
-      $("#modal-form").on("click", ".js-submit", function () {
-          var form = $(this).parents("form");
-          var submitter = $(this).attr("name")
-          submit(form, submitter)
-          return false;
-      });
-
-      function submit(form, submitter) {
-          var data = form.serialize();
-          data += '&' + encodeURIComponent(submitter) + '=';
-          $.ajax({
-              url: form.attr("action"),
-              data: data,
-              type: form.attr("method"),
-              dataType: 'json',
-              success: function (data) {
-                  $("#modal-form .modal-content").html(data.html_form);
-                  if (data.valid) {
-                      $("#modal-form").modal("hide");
-                      $.ajax({
-                          url: "{% url 'vendor_lookup' %}",
-                          data: {'term': 'pk=' + data.pk},
-                          success: function (reply) {
-                              gotVendor(reply[0]);
-                          }
-                      })
-                  } else {
-                      $("#modal-form").modal("show");
-                  }
-              }
-          });
-      }
-
-      // request and show the modal create form
-      $(".js-create").click(function () {
-          $.ajax({
-              url: 'vendor/',
-              type: 'get',
-              dataType: 'json',
-              beforeSend: function () {
-                  $('#btn_next').prop("disabled", true)
-                  $('#vendor').html("");
-                  $("#modal-form").modal("show");
-                  $('#select_vendor').val("").prop("disabled", true).css('background-color', '#dddddd');
-              },
-              success: function (data) {
-                  $("#modal-form .modal-content").html(data.html_form);
-              }
-          });
-      })
-
-  </script>
+  <script src="{% static 'shop/js/contact.js' %}"></script>
 {% endblock %}

@@ -232,7 +232,7 @@ class AjaxCrudView(ModelFormMixin, View):
                     request, messages.INFO, f"{str(instance)} was deleted"
                 )
             elif "save" in request.POST:
-                if self.get_form_class():
+                if self.form_class:
                     self.form = self.get_form_class()(request.POST, instance=instance)
                     try:
                         if self.form.is_valid():

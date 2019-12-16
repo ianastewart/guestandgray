@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import include, path, re_path
+from django.urls import include, path
 from django.contrib import admin
 from wagtail.documents import urls as wagtaildocs_urls
 from coderedcms import admin_urls as coderedadmin_urls
@@ -29,6 +29,10 @@ urlpatterns = [
     # the list:
     path("pages/", include(codered_urls)),
 ]
+if settings.DEBUG_TOOLBAR:
+    import debug_toolbar
+
+    urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
 
 
 if settings.DEBUG:

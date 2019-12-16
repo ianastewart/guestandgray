@@ -12,7 +12,7 @@
             <div class="col-6">
               {% if vendor %}
                 <p class="mb-0"><b>{{ vendor.name }}</b></p>
-                <div>{{ vendor.address|linebreaks }}</div>
+                <div>{{ vendor.main_address.address|linebreaks }}</div>
               {% else %}
                 <p>Vendor not known</p>
               {% endif %}
