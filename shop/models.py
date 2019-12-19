@@ -77,7 +77,8 @@ class Item(index.Indexed, models.Model):
     class State(ModelEnum):
         NOT_FOR_SALE = 0
         ON_SALE = 1
-        SOLD = 2
+        RESERVED = 2
+        SOLD = 3
 
     class Location(ModelEnum):
         IN_STOCK = 0
@@ -98,6 +99,7 @@ class Item(index.Indexed, models.Model):
     dimensions = models.CharField(max_length=200, null=True, blank=True)
     provenance = models.CharField(max_length=500, null=True, blank=True)
     # notes = models.TextField(null=True, blank=True)
+    state = models.SmallIntegerField(choices=State.choices(), default=0)
     archive = models.BooleanField(default=False)
     cost_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
@@ -242,33 +244,33 @@ class ItemRef(models.Model):
         return f"{ref[0]}{number}"
 
 
-class InvoiceNumber(models.Model):
-    """ Generate sequential numbers for invoices """
-
-    invoice_number = models.IntegerField(null=False, blank=False)
-
-    @classmethod
-    def get_next(cls, increment=False):
-        records = InvoiceNumber.objects.all()
-        if len(records) == 0:
-            record = InvoiceNumber.reset()
-        else:
-            record = records[0]
-        result = record.invoice_number
-        if increment:
-            record.invoice_number = result + 1
-            record.save()
-        return result
-
-    @classmethod
-    def reset(cls, number=1):
-        InvoiceNumber.objects.all().delete()
-        return InvoiceNumber.objects.create(invoice_number=number)
+# class InvoiceNumber(models.Model):
+#     """ Generate sequential numbers for invoices """
+#
+#     invoice_number = models.IntegerField(null=False, blank=False)
+#
+#     @classmethod
+#     def get_next(cls, increment=True):
+#         records = InvoiceNumber.objects.all()
+#         if len(records) == 0:
+#             record = InvoiceNumber.reset()
+#         else:
+#             record = records[0]
+#         result = record.invoice_number
+#         if increment:
+#             record.invoice_number = result + 1
+#             record.save()
+#         return result
+#
+#     @classmethod
+#     def reset(cls, number=1):
+#         InvoiceNumber.objects.all().delete()
+#         return InvoiceNumber.objects.create(invoice_number=number)
 
 
 class Invoice(models.Model):
     date = models.DateField(null=True, blank=True)
-    number = models.CharField(max_length=10, null=True, blank=True, unique=True)
+    number = models.CharField(max_length=10, null=True, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     proforma = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
@@ -278,6 +280,13 @@ class Invoice(models.Model):
     address = models.ForeignKey(
         "Address", null=True, blank=True, on_delete=models.SET_NULL
     )
+
+    @classmethod
+    def next_number(cls):
+        invs = cls.objects.all().order_by("-number")
+        if invs:
+            return int(invs.first().number) + 1
+        return 1
 
 
 class InvoiceCharge(models.Model):
@@ -329,6 +338,12 @@ class Contact(models.Model):
         if self.first_name:
             return f"{self.first_name} {self.company}"
         return self.company
+
+    @property
+    def details(self):
+        if self.main_address:
+            return f"{self.name}\n{self.main_address.address}"
+        return self.name
 
     def addresses(self):
         return self.address_set.all().order_by("-date")

@@ -9,6 +9,7 @@ $(document).ready(function () {
     function gotContact(data) {
         $('#id_contact_id').val(data.id);
         setDetails();
+        $('#select_contact').val("");
         $('#details').html(data.html);
         $("#newRadio").prop("checked", false);
         $("#searchRadio").prop("checked", false);
@@ -16,15 +17,13 @@ $(document).ready(function () {
     }
 
     function clearDetails() {
-        $('#detailsCard').removeClass('bg-white');
-        $('#detailsCard').addClass('bg-light');
+        $('#detailsCard').removeClass('bg-white').addClass('bg-light');
         $('#details').html("");
         $('.submit-btn').prop("disabled", true);
     }
 
     function setDetails() {
-        $('#detailsCard').removeClass('bg-light');
-        $('#detailsCard').addClass('bg-white');
+        $('#detailsCard').removeClass('bg-light').addClass('bg-white');
          $('.submit-btn').prop("disabled", false);
     }
 
@@ -42,14 +41,14 @@ $(document).ready(function () {
             dataType: 'json',
             beforeSend: function () {
                 clearDetails();
-                $('#searchGroup').hide()
+                $('#searchGroup').hide();
                 $("#modal-form").modal("show");
             },
             success: function (data) {
                 $("#modal-form .modal-content").html(data.html_form);
             }
         });
-    })
+    });
 
     // normal submit action is ignored on a modal form
     $(".modal").on("submit", ".js-form", function () {
@@ -57,8 +56,8 @@ $(document).ready(function () {
     });
 
     $("#modal-form").on("click", ".js-submit", function () {
-        var form = $(this).parents("form");
-        var submitter = $(this).attr("name");
+        let form = $(this).parents("form");
+        let submitter = $(this).attr("name");
         let data = form.serialize() + '&' + encodeURIComponent(submitter) + '=';
         data += '&' + encodeURIComponent(submitter) + '=';
         $.ajax({

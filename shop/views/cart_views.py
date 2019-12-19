@@ -5,17 +5,26 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.db import transaction
 from django.urls import reverse
-from shop.models import Item, Invoice, InvoiceCharge, InvoiceNumber, Contact
-from shop.forms import CartPriceForm, InvoiceChargeForm, InvoiceDateForm
+from shop.models import Item, Invoice, InvoiceCharge, Contact
+from shop.forms import (
+    CartPriceForm,
+    InvoiceChargeForm,
+    InvoiceBuyerForm,
+    InvoiceCreateForm,
+)
 from table_manager.views import AjaxCrudView
 from shop.session import (
     cart_items,
     cart_remove_item,
+    cart_empty,
     cart_clear,
     cart_get_item,
     cart_charges,
     cart_add_charge,
     cart_remove_charge,
+    cart_get_buyer,
+    cart_add_buyer,
+    cart_session_to_invoice,
 )
 
 
@@ -43,9 +52,9 @@ class CartContentsView(LoginRequiredMixin, TemplateView):
         context["charges"] = charges
         context["total"] = total
 
-    def post(self, request, **kwargs):
+    def post(self, request):
         if "empty" in request.POST:
-            cart_clear(request)
+            cart_empty(request)
         else:
             for k in request.POST:
                 if "remove" in k or "uncharge" in k:
@@ -62,7 +71,7 @@ class CartPriceView(LoginRequiredMixin, AjaxCrudView):
     template_name = "shop/includes/partial_cart_price.html"
     form_class = CartPriceForm
 
-    def get_form(self):
+    def get_form(self, form_class=None):
         return self.form_class(
             {
                 "sale_price": self.object.sale_price,
@@ -111,15 +120,27 @@ class CartAddChargeView(LoginRequiredMixin, AjaxCrudView):
         return context
 
 
-class CartCheckoutView(LoginRequiredMixin, FormView):
-    template_name = "shop/cart_checkout.html"
-    form_class = InvoiceDateForm
+class CartBuyerView(LoginRequiredMixin, FormView):
+    """ Add a buyer - ether existing or new to the cart """
+
+    template_name = "shop/cart_buyer.html"
+    form_class = InvoiceBuyerForm
+    buyer = None
+
+    def get_initial(self) -> Dict[str, Any]:
+        initial = super().get_initial()
+        self.buyer = cart_get_buyer(self.request)
+        if self.buyer:
+            initial["contact_id"] = self.buyer.id
+        return initial
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         CartContentsView.invoice_context(
             cart_items(self.request), cart_charges(self.request), context
         )
+        if self.buyer:
+            context["contact"] = self.buyer.details
         context["urls"] = {
             "lookup": reverse("contact_lookup"),
             "create": reverse("contact_create"),
@@ -127,28 +148,42 @@ class CartCheckoutView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        with transaction.atomic():
-            invoice = Invoice(date=form.cleaned_data["invoice_date"])
-            if "invoice" in self.request.POST:
-                invoice.number = InvoiceNumber.get_next()
-            else:
-                invoice.proforma = True
-            invoice.buyer = Contact.objects.get(id=form.cleaned_data["contact"])
-            invoice.save()
-            total = Decimal(0)
-            for item in cart_items(self.request):
-                total += item.agreed_price
-                item.sale_price = item.agreed_price
-                item.invoice = invoice
-                item.save()
-            for charge in cart_charges(self.request):
-                total += charge.amount
-                charge.invoice = invoice
-                charge.save()
-            invoice.total = total
-            invoice.save()
-            cart_clear(self.request)
-        return redirect("invoice_list")
+        buyer = Contact.objects.get(pk=form.cleaned_data["contact_id"])
+        cart_add_buyer(self.request, buyer)
+        if "back" in self.request.POST:
+            return redirect("cart_contents")
+        else:
+            return redirect("cart_checkout")
 
-    def form_invalid(self, form):
-        pass
+
+class CartCheckoutView(LoginRequiredMixin, FormView):
+    template_name = "shop/cart_checkout.html"
+    form_class = InvoiceCreateForm
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        CartContentsView.invoice_context(
+            cart_items(self.request), cart_charges(self.request), context
+        )
+        context["contact"] = cart_get_buyer(self.request).details
+        context["number"] = Invoice.next_number()
+        form = context["form"]
+        if len(form.errors) > 0:
+            context["final"] = True
+        return context
+
+    def post(self, request, **kwargs):
+        if request.POST["proforma"] == "true":
+            # no need to clean data for pro forma
+            form = self.get_form()
+            return self.form_valid(form)
+        return super().post(request, **kwargs)
+
+    def form_valid(self, form):
+        # pro forma invoice will not have cleaned_data containing the date
+        date = None
+        if hasattr(form, "cleaned_data"):
+            date = form.cleaned_data["invoice_date"]
+        with transaction.atomic():
+            cart_session_to_invoice(self.request, date)
+        return redirect("invoice_list")

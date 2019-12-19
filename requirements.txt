@@ -20,6 +20,7 @@ defusedxml==0.6.0
 diff-match-patch==20181111
 Django==2.2.8
 django-bootstrap4==1.0.1
+django-debug-toolbar==2.1
 django-environ==0.4.5
 django-eventtools==0.9.11
 django-filter==2.2.0
@@ -39,6 +40,7 @@ draftjs-exporter==2.1.6
 et-xmlfile==1.0.1
 Fabric3==1.14.post1
 fake-useragent==0.1.11
+Faker==0.9.1
 future==0.17.1
 geocoder==1.38.1
 html5lib==1.0.1
@@ -49,6 +51,7 @@ jdcal==1.4.1
 libsass==0.19.2
 lxml==4.4.1
 MarkupPy==1.14
+mixer==6.1.3
 more-itertools==7.2.0
 mypy==0.720
 mypy-extensions==0.4.3
@@ -82,6 +85,7 @@ sentry-sdk==0.11.1
 six==1.12.0
 sqlparse==0.3.0
 tablib==0.14.0
+text-unidecode==1.2
 toml==0.10.0
 tqdm==4.35.0
 typed-ast==1.4.0

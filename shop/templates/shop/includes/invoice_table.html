@@ -1,50 +1,54 @@
-<table class="table table-sm table-borderless">
-  <tbody>
-  {% if items %}
-    {% for item in items %}
+<div class="card bg-white p-1">
+  <table class="table table-sm table-borderless">
+    <tbody>
+    {% if items %}
+      {% for item in items %}
+        <tr>
+          <td><a href="{% url 'item_detail' item.pk %}">{{ item.ref }}</a></td>
+          <td>{{ item.name }}</td>
+          <td class="text-right">
+            {% if item.agreed_price %}
+            {% if item.sale_price != item.agreed_price %}<span class="text-danger">£{{ item.agreed_price }}</span>
+            {% else %}£{{ item.sale_price }}{% endif %}
+            {% else %}£{{ item.sale_price }}{% endif %}
+          </td>
+          {% if editable %}
+            <td class="text-right">
+              <button type="button" class="btn btn-sm btn-outline-secondary js-call"
+                      name="{{ price_path }}{{ item.pk }}">Price
+              </button>
+            </td>
+            <td>
+              <button type=submit class="btn btn-sm btn-danger" name="remove_{{ item.pk }}">X</button>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    {% else %}
+      No items
+    {% endif %}
+    {% for charge in charges %}
       <tr>
-        <td><a href="{% url 'item_detail' item.pk %}">{{ item.ref }}</a></td>
-        <td>{{ item.name }}</td>
-        <td class="text-right">
-          {% if item.sale_price != item.agreed_price %}<span class="text-danger">£{{ item.agreed_price }}</span>
-          {% else %}£{{ item.sale_price }}{% endif %}
-        </td>
-      {% if editable %}
-        <td class="text-right">
-          <button type="button" class="btn btn-sm btn-outline-secondary js-call"
-                  name="{{ price_path }}{{ item.pk }}">Price
-          </button>
-        </td>
-        <td>
-          <button type=submit class="btn btn-sm btn-danger" name="remove_{{ item.pk }}">X</button>
-        </td>
-      {% endif %}
+        <td></td>
+        <td class="text-right">{{ charge.description }}</td>
+        <td class="text-right">£{{ charge.amount|floatformat:2 }}</td>
+        {% if editable %}
+          <td></td>
+          <td>
+            <button type=submit class="btn btn-sm btn-danger" name="uncharge_{{ charge.pk }}">X</button>
+          </td>
+        {% endif %}
       </tr>
     {% endfor %}
-  {% else %}
-    No items
-  {% endif %}
-  {% for charge in charges %}
     <tr>
       <td></td>
-      <td class="text-right">{{ charge.description }}</td>
-      <td class="text-right">£{{ charge.amount|floatformat:2 }}</td>
+      <td class="text-right"><b>Total:</b></td>
+      <td class="text-right border-top border-bottom"><b>£{{ total }}</b></td>
       {% if editable %}
-      <td></td>
-      <td>
-        <button type=submit class="btn btn-sm btn-danger" name="uncharge_{{ charge.pk }}">X</button>
-      </td>
+        <td></td>
+        <td></td>
       {% endif %}
     </tr>
-  {% endfor %}
-  <tr>
-    <td></td>
-    <td class="text-right"><b>Total:</b></td>
-    <td class="text-right border-top border-bottom"><b>£{{ total }}</b></td>
-    {% if editable %}
-    <td></td>
-    <td></td>
-    {% endif %}
-  </tr>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>

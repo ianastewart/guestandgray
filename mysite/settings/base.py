@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "treebeard",
     "django_tables2",
     "tempus_dominus",
+    "crispy_forms",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",
@@ -106,7 +107,7 @@ TEMPLATES = [
         },
     }
 ]
-
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 

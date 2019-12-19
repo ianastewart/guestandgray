@@ -1,6 +1,7 @@
+from django.utils.timezone import now
 from django.shortcuts import redirect
 from decimal import Decimal
-from shop.models import Item, InvoiceCharge
+from shop.models import Invoice, Item, InvoiceCharge, Contact
 
 # Purchase creation functions
 
@@ -159,14 +160,24 @@ def pop(request):
 
 
 # Cart handling
-# cart can contain a list of items and invoicecharges
+# cart can contain a list of items, invoicecharges and a single buyer (contact)
 # the price of items in the list can be updated but changes are not saved in the database
 
 
 def cart_clear(request):
     request.session["cart"] = []
     request.session.modified = True
-    return []
+
+
+def cart_empty(request):
+    """ Restore state of any items in cart then clear it """
+    cart = request.session.get("cart")
+    if cart:
+        items = cart_items(request)
+        for item in items:
+            item.state = Item.State.ON_SALE
+            item.save()
+    cart_clear(request)
 
 
 def cart_add_item(request, item):
@@ -176,6 +187,8 @@ def cart_add_item(request, item):
             item.agreed_price = item.sale_price
         else:
             item.sale_price = Decimal(0)
+        item.state = Item.State.RESERVED
+        item.save()
         cart = _cart(request)
         cart.append(item)
         request.session["cart"] = cart
@@ -190,6 +203,8 @@ def cart_remove_item(request, pk):
     item = cart_get_item(request, pk)
     if item:
         _cart(request).remove(item)
+        item.state = Item.State.ON_SALE
+        item.save()
         request.session.modified = True
 
 
@@ -220,10 +235,81 @@ def cart_charges(request):
     return _cart_contents(request, InvoiceCharge)
 
 
+def cart_add_buyer(request, contact):
+    existing = cart_get_buyer(request)
+    if existing:
+        _cart(request).remove(existing)
+    _cart(request).append(contact)
+    request.session.modified = True
+
+
+def cart_get_buyer(request):
+    count = 0
+    for thing in _cart(request):
+        if thing._meta.object_name == Contact._meta.object_name:
+            count += 1
+            result = thing
+    if count:
+        if count > 1:
+            raise ValueError("Muliple buyers stored in session")
+        return result
+    return None
+
+
+def cart_session_to_invoice(request, date=None):
+    """
+    Create an invoice from cart session data
+    If date is none, its a proforma invoice
+    """
+
+    if date:
+        proforma = False
+        number = Invoice.next_number()
+    else:
+        date = now()
+        proforma = True
+        number = 0
+    invoice = Invoice(date=date, proforma=proforma, number=number)
+    invoice.buyer = cart_get_buyer(request)
+    invoice.address = invoice.buyer.main_address
+    invoice.save()
+    total = Decimal(0)
+    for item in cart_items(request):
+        total += item.agreed_price
+        item.sale_price = item.agreed_price
+        item.state = Item.State.SOLD
+        item.invoice = invoice
+        item.archive = True
+        item.save()
+    for charge in cart_charges(request):
+        total += charge.amount
+        charge.invoice = invoice
+        charge.save()
+    invoice.total = total
+    invoice.save()
+    cart_clear(request)
+    return invoice
+
+
+def cart_invoice_to_session(request, invoice):
+    """
+    Create session representation of a proforma invoice
+    Then delete the invoice and charges
+    """
+    cart_clear(request)
+    for item in invoice.item_set.all():
+        cart_add_item(request, item)
+    for charge in invoice.invoicecharge_set.all():
+        cart_add_charge(request, charge)
+        charge.delete()
+    cart_add_buyer(request, invoice.buyer)
+    invoice.delete()
+
+
 # private support code
 def _cart(request):
-    cart = request.session.get("cart")
-    if not cart:
+    cart = request.session.get("cart", None)
+    if cart is None:
         cart = cart_clear(request)
     return cart
 

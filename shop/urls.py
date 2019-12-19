@@ -49,6 +49,7 @@ from shop.views.cart_views import (
     CartContentsView,
     CartPriceView,
     CartAddChargeView,
+    CartBuyerView,
     CartCheckoutView,
 )
 from shop.views.invoice_views import InvoiceListView, InvoiceDetailView
@@ -184,10 +185,10 @@ staff_urls = [
     # Cart
     path("cart/contents/", CartContentsView.as_view(), name="cart_contents"),
     path("cart/price/<int:pk>/", CartPriceView.as_view(), name="cart_price"),
-    path("cart/checkout/", CartCheckoutView.as_view(), name="cart_checkout"),
     path("cart/add_charge/", CartAddChargeView.as_view(), name="cart_add_charge"),
+    path("cart/buyer/", CartBuyerView.as_view(), name="cart_buyer"),
+    path("cart/checkout/", CartCheckoutView.as_view(), name="cart_checkout"),
 ]
-
 
 public_urls = [
     path("", home_view, name="public_home"),

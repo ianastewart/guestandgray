@@ -99,14 +99,21 @@ class InvoiceChargeForm(ModelForm):
         fields = ("charge_type", "description", "amount")
 
 
-class InvoiceDateForm(forms.Form):
+class InvoiceBuyerForm(forms.Form):
+    contact_id = forms.IntegerField(required=True, widget=forms.HiddenInput)
+
+
+class InvoiceCreateForm(forms.Form):
+    # invoice_date is marked as required but is ignored for proforma invoices
     invoice_date = forms.DateField(
+        required=True,
         widget=DatePicker(
             options={"useCurrent": True},
             attrs={"append": "fa fa-calendar", "icon_toggle": True},
-        )
+        ),
     )
-    contact = forms.IntegerField(required=True, widget=forms.HiddenInput)
+    # proforma is set by custom radio buttons
+    proforma = forms.BooleanField(required=False, widget=forms.HiddenInput)
 
 
 class ContactForm(ModelForm):

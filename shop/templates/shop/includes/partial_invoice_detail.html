@@ -1,27 +1,49 @@
 {% load shop_tags humanize %}
 {% if modal %}
-  <div class="modal-header">
-    <h2 class="modal-title">Invoice {{ object.number }}</h2>
+  <div class="modal-header bg-white">
+    <h4 class="modal-title mt-0">{% if invoice.proforma %}Proforma Invoice{% else %}Invoice
+      {{ invoice.number }}{% endif %}</h4>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 {% endif %}
-{% if modal %}<div class="modal-body"><div class="container-fluid">
-{% else %}<div><div class="container bg-white shadow mb-2">{% endif %}
-  <div class="row">
-    <div class="col">
-      <p>{{ object.date|date }}</p>
-      <p><b>{{ object.buyer.first_name }} {{ object.buyer.company }}</b><br>
-        {{ object.buyer.address|linebreaksbr }}</p>
-      <hr>
-    </div>
+{% if modal %}
+  <div class="modal-body">
+  <div class="container-fluid">
+{% else %}
+  <div>
+  <div class="container bg-white shadow mb-2">{% endif %}
+<div class="row">
+  <div class="col-md-6 mb-2"><p>{{ invoice.date|date }}</p></div>
+  <div class="col-md-6">
+    {% if not invoice.proforma %}
+      <h5 class="float-right">{% if invoice.paid %}
+        <span class="badge bg-success text-white">Paid</span>{% else %}
+        <span class="badge bg-danger text-white">Unpaid</span> {% endif %}
+      </h5>
+    {% endif %}
   </div>
-  {% include "shop/includes/invoice_table.html" %}
-  <div class="row">
-    <div class="col-10 text-right"><b>Total</b></div>
-    <div class="col-2 text-right"><b>£{{ object.total }}</b></div>
-  </div>
-  <h6>{% if object.paid %} Paid{% else %}<span class="bg-danger text-white">&nbsp;Unpaid&nbsp; </span> {% endif %}</h6>
 </div>
+<div class="row my-2">
+  <div class="card p-2 bg-white" style="min-height: 6rem; min-width: 15rem;">
+    {{ invoice.buyer.details|linebreaksbr }}
+  </div>
+</div>
+</div>
+{% include "shop/includes/invoice_table.html" %}
+</div>
+<form method="post" action="{{ path }}">
+  {% csrf_token %}
+
+  {% if invoice.proforma %}
+    <div class="card-footer bg-white">
+      <button type="button" class="btn btn-primary js-submit" name="update">Update invoice</button>
+    </div>
+  {% elif not invoice.paid %}
+    <div class="card-footer bg-white">
+      <button type="button" class="btn btn-primary js-submit" name="update">Update invoice</button>
+    </div>
+  {% endif %}
+</form>
 </div>

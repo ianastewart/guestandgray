@@ -1,0 +1,46 @@
+{% extends "shop/shop_base.html" %}
+{% load static bootstrap4 %}
+{% block body_class %}bg-guest-light{% endblock %}
+{% block content_body %}
+  <div class="container mt-2">
+  {{ form.media }}
+    <form method="post" action="{{ path }}" novalidate>
+      {% csrf_token %}
+      <div class="card">
+        <div class="card-header card-body bg-white">
+          <h4 class="my-0">Buyer details</h4>
+        </div>
+        <div class="bg-light">
+          <div class="card-body">
+            <div class="row my-2">
+              <div class="col-md-9">{% include 'shop/includes/contact_selector.html' with contact_type="buyer"%}</div>
+            </div>
+            <div class="row>">
+              <div class="col-md-9 p-0">
+                {% include 'shop/includes/invoice_table.html' with editable=False %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="card-footer bg-white">
+          <a class="btn btn-primary" href="{% url 'cart_contents' %}">Back</a>
+          <button type="submit" class="btn btn-primary submit-btn" name="next" disabled>Next</button>
+        </div>
+      </div>
+    </form>
+    <!-- Modal to hold partial form for buyer creation-->
+    <div class="modal " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
+      <div class="modal-dialog modal-dialog-centered {{ modal_class }}" role="document">
+        <div class="modal-content bg-light">
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block custom_scripts %}
+  {{ urls|json_script:"id_urls" }}
+  <script src= {% static 'shop/js/typeahead.bundle.js' %}></script>
+  <script src="{% static 'shop/js/wrap_typeahead.js' %}"></script>
+  <script src="{% static "shop/js/contact.js" %}"></script>
+{% endblock %}

@@ -1,30 +1,49 @@
 {% extends "shop/shop_base.html" %}
-{% load static bootstrap4 %}
+{% load static bootstrap4 crispy_forms_tags %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
   <div class="container mt-2">
-  {{ form.media }}
+    {{ form.media }}
     <form method="post" action="{{ path }}" novalidate>
       {% csrf_token %}
       <div class="card">
         <div class="card-header card-body bg-white">
           <h4 class="my-0">Checkout</h4>
         </div>
+        {% bootstrap_form_errors form type='all' %}
         <div class="bg-light">
           <div class="card-body">
-            {% include 'shop/includes/invoice_table.html' with editable=False %}
-            <hr>
-            <h4>Buyer</h4>
             <div class="row">
-              <div class="col-md-9">{% include 'shop/includes/contact_selector.html' %}</div>
-              <div class="col-md-3">{% bootstrap_field form.invoice_date show_label=False %}</div>
+              <div class=col-md-4>
+                <h6>Buyer</h6>
+                <div class="card p-2 mb-2 bg-white" style="min-height: 6rem;">
+                  {{ contact|linebreaksbr }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <h6 class="mt-2">Invoice type</h6>
+                {% bootstrap_field form.proforma %} <!-- set by radio buttons -->
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="radio_proforma" name="invoice" class="custom-control-input">
+                  <label class="custom-control-label" for="radio_proforma">Create proforma invoice</label>
+                </div>
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="radio_invoice" name="invoice" class="custom-control-input">
+                  <label class="custom-control-label" for="radio_invoice">Create final invoice</label>
+                </div>
+              </div>
+              <div class="col-md-4 my-2" id="id_date_group" {% if not final %}style="display: none;{% endif %}">
+                <h6>Invoice date</h6>
+                {% bootstrap_field form.invoice_date show_label=False placeholder="Select date" %}
+                <p>Invoice number: {{ number }}</p>
+              </div>
             </div>
+            {% include 'shop/includes/invoice_table.html' with editable=False %}
           </div>
         </div>
         <div class="card-footer">
-          <a class="btn btn-primary" href="{% url 'cart_contents' %}">Back</a>
-          <button type="submit" class="btn btn-primary submit-btn" name="proforma" disabled>Create pro-forma invoice</button>
-          <button type="submit" class="btn btn-primary submit-btn" name="invoice" disabled>Create final invoice</button>
+          <a class="btn btn-primary" href="{% url 'cart_buyer' %}">Back</a>
+          <button type="submit" class="btn btn-primary" id="create_button" name="submit">Create invoice</button>
         </div>
       </div>
     </form>
@@ -38,8 +57,5 @@
   </div>
 {% endblock %}
 {% block custom_scripts %}
-  {{ urls|json_script:"id_urls" }}
-  <script src= {% static 'shop/js/typeahead.bundle.js' %}></script>
-  <script src="{% static 'shop/js/wrap_typeahead.js' %}"></script>
-  <script src="{% static "shop/js/contact.js" %}"></script>
+  <script src="{% static "shop/js/create_invoice.js" %}"></script>
 {% endblock %}

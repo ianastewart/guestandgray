@@ -1,7 +1,7 @@
 <!-- Selector create a contact. Works with uses contact.js --->
 {#<input type="hidden" id="contact_id" name="contact_id"> <!-- holds selected contact id-->#}
 {{ form.contact_id }}
-<div class="row">
+<div class="row mt-2">
   <div class="col">
     <div class="custom-control custom-radio">
       <input type="radio" id="searchRadio" name="contactRadio"
@@ -22,10 +22,10 @@
     </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-md-6 my-2">
-    <div id="detailsCard" class="card card-body my-2 bg-light" style="height:9rem;">
-      <p id="details">{{ contact }}</p>
+<div class="row my-2">
+  <div class="col-md-6">
+    <div id="detailsCard" class="card p-2 bg-light" style="min-height:8rem;">
+      <p id="details">{{ contact|linebreaksbr }}</p>
     </div>
   </div>
 </div>

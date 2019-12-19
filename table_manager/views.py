@@ -182,8 +182,13 @@ class AjaxCrudView(ModelFormMixin, View):
     def get_object(self, **kwargs):
         pk = kwargs.get("pk", None)
         if pk:
-            self.object = get_object_or_404(self.model, pk=pk)
-        return self.object
+            try:
+                self.object = self.model.objects.get(pk=pk)
+                return self.object
+            except:
+                self.model.DoesNotExist
+                pass
+        return None
 
     def get(self, request, **kwargs):
         if request.is_ajax():
@@ -270,4 +275,6 @@ class AjaxCrudView(ModelFormMixin, View):
         }
         if self.object:
             context["object"] = self.object
+            if name:
+                context[name.lower()] = self.object
         return context
