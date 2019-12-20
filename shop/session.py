@@ -167,6 +167,7 @@ def pop(request):
 def cart_clear(request):
     request.session["cart"] = []
     request.session.modified = True
+    return []
 
 
 def cart_empty(request):
