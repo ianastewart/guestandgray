@@ -6,7 +6,7 @@ from shop.models import Invoice
 from shop.tables import InvoiceTable
 from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import InvoiceFilter
-from shop.session import cart_invoice_to_session
+from shop.session import cart_invoice_to_session, push
 
 
 class InvoiceDetailView(LoginRequiredMixin, AjaxCrudView):
@@ -28,7 +28,7 @@ class InvoiceDetailView(LoginRequiredMixin, AjaxCrudView):
             invoice.save()
         elif "update" in request.POST:
             cart_invoice_to_session(request, invoice)
-            request.push(reverse("cart_contents"))
+            # push(request.session, reverse("cart_contents"))
             # return redirect("cart_contents")
 
         return super().post(request, **kwargs)

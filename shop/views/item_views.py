@@ -109,6 +109,7 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
 
 class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
     model = Item
+    form_class = ItemForm
     template_name = "shop/includes/partial_item_form.html"
     modal_class = "modal-xl"
     update = True

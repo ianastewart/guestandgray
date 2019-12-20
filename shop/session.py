@@ -298,8 +298,11 @@ def cart_invoice_to_session(request, invoice):
     """
     cart_clear(request)
     for item in invoice.item_set.all():
+        item.invoice = None
+        item.save()
         cart_add_item(request, item)
     for charge in invoice.invoicecharge_set.all():
+        charge.invoice = None
         cart_add_charge(request, charge)
         charge.delete()
     cart_add_buyer(request, invoice.buyer)
@@ -325,6 +328,5 @@ def _cart_get_object(request, pk, cls):
 
 
 def _cart_contents(request, cls):
-    return [
-        obj for obj in _cart(request) if obj._meta.object_name == cls._meta.object_name
-    ]
+    cart = _cart(request)
+    return [obj for obj in cart if obj._meta.object_name == cls._meta.object_name]
