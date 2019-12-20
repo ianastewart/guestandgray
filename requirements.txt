@@ -18,7 +18,7 @@ cssselect==1.1.0
 decorator==4.4.0
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==2.2.8
+Django==3.0.1
 django-bootstrap4==1.0.1
 django-debug-toolbar==2.1
 django-environ==0.4.5
