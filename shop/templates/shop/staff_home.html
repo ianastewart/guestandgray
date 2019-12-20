@@ -1,10 +1,50 @@
 {% extends "shop/shop_base.html" %}
 {% load bootstrap4 %}
-{% block content_body%}
+{% block content_body %}
   <div class="container">
+    <h1>Dashboard</h1>
     <div class="row">
-      <div class="col-md-8">
-        <h1>Staff Home Page</h1>
+      <div class="col-md-4">
+        <div class="card border-secondary">
+          <div class="card-header card-title bg-guest-dark text-white">
+            <h4 class="my-1">Unpaid Invoices</h4>
+          </div>
+          <div class="card card-body">
+            <h5>Count: {{ count_unpaid }}<br>Value: £ {{ value_unpaid }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-secondary">
+          <div class="card-header card-title bg-guest-dark text-white">
+            <h4 class="my-1">Proforma Invoices</h4>
+          </div>
+          <div class="card card-body">
+            <h5>Count: {{ count_proforma }}<br>Value: £ {{ value_proforma }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <div class="card border-secondary">
+          <div class="card-header card-title bg-guest-dark text-white">
+            <h4 class="my-1">Sales this tax year</h4>
+          </div>
+          <div class="card card-body">
+            <h5>Count: {{ count_this }}<br>Value: £ {{ value_this }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-secondary">
+          <div class="card-header card-title bg-guest-dark text-white">
+            <h4 class="my-1">Sales last tax year</h4>
+          </div>
+          <div class="card card-body">
+            <h5>Count: {{ count_last }}<br>Value: £ {{ value_last }}</h5>
+          </div>
+        </div>
       </div>
     </div>
   </div>

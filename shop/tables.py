@@ -115,9 +115,14 @@ class BuyersTable(tables.Table):
 class InvoiceTable(tables.Table):
     class Meta:
         model = Invoice
-        fields = ("date", "number", "total", "paid", "buyer")
+        fields = ("date", "proforma", "number", "total", "paid", "buyer")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+    def render_number(self, value, record):
+        if record.proforma:
+            return "-"
+        return value
 
 
 class PurchaseTable(tables.Table):
