@@ -10,10 +10,14 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView, DetailView
 from wagtail.core.models import Collection
+from django_tables2 import Column, TemplateColumn, Table
+from django_tables2_column_shifter.tables import ColumnShiftTable
+from shop.tables import ImageColumn
 
 from shop.forms import ItemForm, ArchiveItemForm
 from shop.models import Item, CustomImage
-from shop.tables import ItemTable
+
+# from shop.tables import ItemTable
 from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import ItemFilter
 from shop.session import cart_add_item, cart_get_item
@@ -21,7 +25,38 @@ from shop.session import cart_add_item, cart_get_item
 logger = logging.getLogger(__name__)
 
 
-class ItemListView(LoginRequiredMixin, FilteredTableView):
+class ItemTable(ColumnShiftTable):
+    class Meta:
+        model = Item
+        fields = (
+            "selection",
+            "name",
+            "ref",
+            "category",
+            "cost_price",
+            "sale_price",
+            "archive",
+        )
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
+
+    category = Column(accessor="category__name", verbose_name="Category")
+    image = ImageColumn(accessor="image")
+    selection = TemplateColumn(
+        accessor="pk",
+        template_name="table_manager/custom_checkbox.html",
+        verbose_name="",
+    )
+
+    def get_column_default_show(self):
+        self.column_default_show = ["selection", "name", "ref"]
+        return super().get_column_default_show()
+
+    def render_sale_price(self, value):
+        return int(value)
+
+
+class ItemTableView(LoginRequiredMixin, FilteredTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
@@ -29,14 +64,17 @@ class ItemListView(LoginRequiredMixin, FilteredTableView):
     allow_create = False
     allow_update = True
     filter_left = True
+    auto_filter = True
+
+    def get_initial_data(self):
+        initial = super().get_initial_data()
+        initial["archive"] = "0"
+        return initial
 
     def get_queryset(self):
-        return Item.objects.all().order_by("ref")
+        return Item.objects.all().select_related("category").order_by("ref")
 
     def get_actions(self):
-        return [("Export to Excel", "export")]
-
-    def get_buttons(self):
         return [("Export to Excel", "export")]
 
 

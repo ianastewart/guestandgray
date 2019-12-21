@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "keyvaluestore",
     "treebeard",
     "django_tables2",
+    "django_tables2_column_shifter",
     "tempus_dominus",
     # CodeRed CMS
     "coderedcms",
@@ -131,6 +132,7 @@ TIME_ZONE = "Europe/London"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+USE_THOUSAND_SEPARATOR = True
 
 
 # Static files (CSS, JavaScript, Images)

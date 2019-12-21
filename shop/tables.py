@@ -1,8 +1,10 @@
 import django_tables2 as tables
-from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django_tables2.utils import A
+from django_tables2_column_shifter.tables import ColumnShiftTable
+from table_manager.tables import *
 from shop.models import (
     Category,
     Item,
@@ -13,17 +15,6 @@ from shop.models import (
     Book,
     Compiler,
 )
-
-
-class RightAlignedColumn(tables.Column):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.attrs = {"th": {"style": "text-align: right;"}, "td": {"align": "right"}}
-
-
-class CurrencyColumn(RightAlignedColumn):
-    def render(self, value):
-        return "£" + str(intcomma(value))
 
 
 class CategoryTable(tables.Table):
@@ -52,24 +43,6 @@ class ImageColumn(tables.Column):
     def render(self, value):
         image = value.get_rendition("max-100x100")
         return mark_safe(f'<img src="{image.file.url}">')
-
-
-class ItemTable(tables.Table):
-    class Meta:
-        model = Item
-        fields = ("selection", "name", "ref", "category.name", "sale_price", "archive")
-        attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
-
-    image = ImageColumn(accessor="image")
-    selection = tables.TemplateColumn(
-        accessor="pk",
-        template_name="table_manager/custom_checkbox.html",
-        verbose_name="",
-    )
-
-    def render_sale_price(self, value):
-        return int(value)
 
 
 class ContactTable(tables.Table):
@@ -112,20 +85,23 @@ class BuyersTable(tables.Table):
     invoices = tables.Column(linkify=("buyer_invoices", A("pk")))
 
 
-class InvoiceTable(tables.Table):
+class InvoiceTable(ColumnShiftTable):
     class Meta:
         model = Invoice
-        fields = ("date", "proforma", "number", "total", "paid", "buyer")
+        fields = ("date", "buyer", "number", "total", "paid")
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
+    total = CurrencyColumn()
+    paid = CenteredTrueFalseColumn()
+
     def render_number(self, value, record):
         if record.proforma:
-            return "-"
+            return "Proforma"
         return value
 
 
-class PurchaseTable(tables.Table):
+class PurchaseTable(ColumnShiftTable):
     class Meta:
         model = Purchase
         fields = (

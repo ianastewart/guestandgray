@@ -35,8 +35,13 @@
           </div>
           <div class="col col-md-9 col-lg-10 ml-0 bg-light">
             {% bootstrap_messages %}
+{#              {% include "table_manager/table_actions.html" %}#}
             <div class="row flex-grow-1">
-              {% include "table_manager/table_data.html"  with heading="" %}
+              <div class="col-12">
+              {% include "django_tables2_column_shifter/table.html" %}
+              </div>
+{#              {% block table %}#}
+{#              {% include "table_manager/table_data.html"  with heading="" %}#}
             </div>
           </div>
         </div>
@@ -116,4 +121,5 @@
 {% endblock %}
 {% block custom_scripts %}
   <script src="{% static "table_manager/js/table_manager.js" %}"></script>
+  <script src="{% static "django_tables2_column_shifter/js/django_tables2_column_shifter.js" %}"></script>
 {% endblock %}

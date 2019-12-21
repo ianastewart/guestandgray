@@ -1,0 +1,47 @@
+{% load render_table querystring from django_tables2 %}
+{% load static bootstrap4 %}
+{% if actions or buttons %}
+    {% if actions %}
+      <div class="col-6 col-md-4 col-lg-3 col-xl-2 pt-1 pb-0">
+        <div style="padding-left: 4.8px;" class="mb-0">
+          <input type="checkbox" id="select_all" name="select_all" value="Select all">
+          <label class="pl-2 mb-0" for="select_all">Select all</label>
+        </div>
+        <div style="padding-left: 4.8px" class="mb-0">
+          <input type="checkbox" id="select_all_page" value="Select page">
+          <label class="pl-2 mb-0" for="select_all_page">Select all on page</label>
+        </div>
+      </div>
+      <div class="col-6 col-md-2 my-auto">
+        <span id="selected"><span id="count">0</span> of {{ table.rows|length }} rows selected</span>
+      </div>
+      <div class="col-6 col-md-2 pt-2">
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown">
+            Select action
+          </button>
+          <div class="dropdown-menu">
+            {% for action in actions %}
+              <button class="dropdown-item" type="submit" name="{{ action.1 }}">{{ action.0 }}</button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% if buttons %}
+      <div class="col pt-2 mr-3">
+        {% if allow_create %}
+          <button type="button" class="btn btn-primary js-create ml-2 mb-1">
+            <span class="glyphicon glyphicon-plus"></span>
+            New {{ object_name }}
+          </button>
+        {% endif %}
+        {% for button in buttons %}
+          <button type="submit" class="btn btn-primary ml-2 mb-1" name="{{ button.1 }}">
+            {{ button.0 }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </form>
+{% endif %}
