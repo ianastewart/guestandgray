@@ -49,7 +49,7 @@ idna==2.8
 importlib-metadata==0.23
 jdcal==1.4.1
 libsass==0.19.2
-lxml==4.4.1
+lxml==4.6.2
 MarkupPy==1.14
 mixer==6.1.3
 more-itertools==7.2.0
