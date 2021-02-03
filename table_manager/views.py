@@ -262,7 +262,7 @@ class AjaxCrudView(ModelFormMixin, View):
         form_title = ""
         name = self.model._meta.object_name if self.model else ""
         if name:
-            form_title = f"Update {name}" if self.update else "Create {name}"
+            form_title = f"Update {name}" if self.update else f"Create {name}"
         context = {
             "modal": True,
             "modal_class": self.modal_class,

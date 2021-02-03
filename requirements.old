@@ -13,7 +13,7 @@ chardet==3.0.4
 Click==7.0
 coderedcms==0.16.3
 colorama==0.4.1
-cryptography==2.7
+cryptography==3.0
 cssselect==1.1.0
 decorator==4.4.0
 defusedxml==0.6.0
@@ -64,7 +64,7 @@ pathspec==0.6.0
 Pillow==6.2.1
 pipdeptree==0.13.2
 pluggy==0.13.0
-psycopg2-binary==2.8.3
+psycopg2-binary==2.8.6
 py==1.8.0
 pycparser==2.19
 pyee==6.0.0
