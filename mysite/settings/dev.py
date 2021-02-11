@@ -4,7 +4,7 @@ env_path = os.path.join(BASE_DIR, ".env")
 environ.Env.read_env(env_path)
 
 DEBUG = True
-DEBUG_TOOLBAR = True
+DEBUG_TOOLBAR = False
 
 if DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar"]

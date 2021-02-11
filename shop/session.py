@@ -133,32 +133,6 @@ def redirect_next(index, request, default):
     return redirect(default, i + 1)
 
 
-# Stack handling for ajax calls
-
-
-def new_stack(request):
-    request.session["stack"] = []
-    request.session.modified = True
-
-
-def push(request, url):
-    stack = request.session.get("stack", None)
-    if stack is None:
-        stack = []
-    stack.append(url)
-    request.session["stack"] = stack
-    request.session.modified = True
-
-
-def pop(request):
-    try:
-        value = request.session["stack"].pop()
-        request.session.modified = True
-    except IndexError:
-        value = None
-    return value
-
-
 # Cart handling
 # cart can contain a list of items, invoicecharges and a single buyer (contact)
 # the price of items in the list can be updated but changes are not saved in the database

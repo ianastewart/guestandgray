@@ -1,23 +1,14 @@
-import re
 import os
-import time
-from fabric.contrib.files import exists
-from fabric.colors import red, green, yellow, cyan
-from fabric.api import hosts, cd, env, run, sudo, put, get
-from fabric.context_managers import hide
+import re
 
-from deployment.database_helper import (
-    _create_database,
-    _upload_database,
-    _download_database,
-    _upload_dev_db,
-    _create_user,
-    _grant_priviliges,
-    _upload_media,
-    _download_media,
-    _upload_media_dev,
-    _dump_dev_db,
-)
+from fabric.api import cd, env, hosts, put, run, sudo
+from fabric.colors import cyan, green, yellow
+from fabric.context_managers import hide
+from fabric.contrib.files import exists
+
+from deployment.database_helper import (_create_database, _create_user, _download_database, _download_media,
+                                        _dump_dev_db, _grant_priviliges, _upload_database, _upload_dev_db,
+                                        _upload_media_dev)
 
 # from fabric.network import ssh
 # ssh.util.log_to_file("paramiko.log", 10)
@@ -89,6 +80,8 @@ def download_media():
     app = "gray"
     _download_media(_local_dev_folder(), app)
 
+def upload_media_dev():
+    _upload_media_dev(_local_dev_folder())
 
 @hosts(HOST)
 def upload_db():
@@ -100,9 +93,8 @@ def upload_db():
 
 
 def upload_dev():
-    """ Replace database and media on dev system"""
+    """ Replace database on dev system"""
     _upload_dev_db(_local_dev_folder(), "gray")
-    _upload_media_dev(_local_dev_folder())
 
 
 def dump_dev():

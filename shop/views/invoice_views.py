@@ -6,7 +6,7 @@ from shop.models import Invoice
 from shop.tables import InvoiceTable
 from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import InvoiceFilter
-from shop.session import cart_invoice_to_session, push
+from shop.session import cart_invoice_to_session
 
 
 class InvoiceDetailView(LoginRequiredMixin, AjaxCrudView):

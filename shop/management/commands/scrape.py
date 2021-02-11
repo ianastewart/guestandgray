@@ -177,6 +177,7 @@ def parse(page, options):
                                         category=cat_db,
                                         archive=sold,
                                     )
+                                    item.image_file = image_file
                                     item.save()
                                     load_image(item, user)
                                     print(item.name, "created")

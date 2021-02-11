@@ -4,6 +4,8 @@
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
   {% if modal %}
+    <div class="modal-dialog modal-xl bg-white">
+  <div class="modal-content">
     <div class="modal-header bg-white">
       <h5 class="modal-title">{{ form_title }} Ref: {{ object.ref }}</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -136,29 +138,30 @@
       </div>
     </div>
   </div>
+  {% if modal %}</div></div>{% endif %}
 </form>
 {#<script src="{% static 'shop/js/margin_calc.js' %}"></script>#}
-<script>
-    $('body').on('keydown', 'input, select', function (e) {
-        if (e.key === "Enter") {
-            var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
-            focusable = form.find('input,a,select,button,textarea').filter(':visible');
-            next = focusable.eq(focusable.index(this) + 1);
-            if (next.length) {
-                next.focus();
-            } else {
-                form.submit();
-            }
-            return false;
-        }
-    });
-
-    margin_calc();
-
-    $('#id_restoration_cost, #id_sale_price, #id_minimum_price').change(function () {
-        margin_calc();
-    });
-</script>
+{#<script>#}
+{#    $('body').on('keydown', 'input, select', function (e) {#}
+{#        if (e.key === "Enter") {#}
+{#            var self = $(this), form = self.parents('form:eq(0)'), focusable, next;#}
+{#            focusable = form.find('input,a,select,button,textarea').filter(':visible');#}
+{#            next = focusable.eq(focusable.index(this) + 1);#}
+{#            if (next.length) {#}
+{#                next.focus();#}
+{#            } else {#}
+{#                form.submit();#}
+{#            }#}
+{#            return false;#}
+{#        }#}
+{#    });#}
+{##}
+{#    margin_calc();#}
+{##}
+{#    $('#id_restoration_cost, #id_sale_price, #id_minimum_price').change(function () {#}
+{#        margin_calc();#}
+{#    });#}
+{#</script>#}
 
 
 

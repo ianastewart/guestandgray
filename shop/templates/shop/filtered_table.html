@@ -1,0 +1,13 @@
+{% extends "shop/shop_base.html" %}
+{% load wagtailimages_tags static bootstrap4 %}
+{% block body_class %}bg-guest-light{% endblock %}
+{% block content_body %}
+<div class="container-fluid">
+  {% bootstrap_messages %}
+  {% include "table_manager/filtered_table.html" %}
+</div>
+{% endblock %}
+{% block custom_scripts %}
+  <script src="{% static "table_manager/js/table_manager.js" %}"></script>
+  <script src="{% static "django_tables2_column_shifter/js/django_tables2_column_shifter.js" %}"></script>
+{% endblock %}

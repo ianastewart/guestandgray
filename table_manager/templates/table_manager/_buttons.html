@@ -1,0 +1,4 @@
+{% load bootstrap4 %}
+{% for b in buttons %}
+  {% bootstrap_button content=b.content button_type=b.button_type button_class=b.button_class extra_classes=b.extra_classes size=b.size name=b.name value=b.value href=b.href %}
+{% endfor %}

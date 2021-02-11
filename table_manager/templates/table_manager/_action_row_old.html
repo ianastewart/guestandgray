@@ -1,0 +1,43 @@
+{% load render_table querystring from django_tables2 %}{% load static bootstrap4 %}
+{% if actions or buttons %}
+  <form method="post">{% csrf_token %}
+  <div class="row">
+    <input type="hidden" name="query" value={% querystring without "page" "per_page" %}>
+    {% if actions %}
+      <div class="col pt-0 pb-0">
+        <div style="padding-left: 4.8px">
+          <input type="checkbox" id="select_all" name="select_all" value="Select all">
+          <label class="pl-2" for="select_all">Select all</label>
+        </div>
+        <div style="-padding-left: 4.8px" class="mb-0">
+          <input type="checkbox" id="select_all_page" value="Select page">
+          <label class="pl-2" for="select_all_page">Select all on page</label>
+        </div>
+      </div>
+      <div class="col">
+        <span id="selected"><span id="count">0</span> of {{ table.rows|length }} rows selected</span>
+      </div>
+      <div class="col pt-2 align-content-end">
+        <div class="dropdown float-right">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown">
+            Select action
+          </button>
+          <div class="dropdown-menu">
+            {% for action in actions %}
+              <button class="dropdown-item" type="submit" name="{{ action.0 }}">{{ action.1 }}</button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% include "table_manager/_column_shifter_button.html" %}
+    {% endif %}
+    {% if buttons %}
+      <div class="col pt-2 mr-3 mb-2">
+        {% for button in buttons %}
+          {% include "table_manager/buttons.html" %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  </form>
+{% endif %}

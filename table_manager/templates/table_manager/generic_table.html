@@ -73,7 +73,8 @@
           <div class="h-100 d-flex flex-column">
             <div class="col bg-light h-100">
               <div class="row flex-grow-1">
-                {% include "table_manager/table_data.html" with heading="" %}
+{#                {% include "table_manager/table_data.html" with heading="" %}#}
+                {% include "django_tables2_column_shifter/table.html" %}
               </div>
             </div>
           </div>

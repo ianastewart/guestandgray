@@ -19,6 +19,7 @@ from shop.models import Item, CustomImage
 
 # from shop.tables import ItemTable
 from table_manager.views import FilteredTableView, AjaxCrudView
+from table_manager.buttons import BsButton
 from shop.filters import ItemFilter
 from shop.session import cart_add_item, cart_get_item
 
@@ -60,11 +61,12 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
+    template_name="shop/filtered_table.html"
     heading = "Items"
     allow_create = False
     allow_update = True
-    filter_left = True
     auto_filter = True
+    filter_right=True
 
     def get_initial_data(self):
         initial = super().get_initial_data()
@@ -77,6 +79,8 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
     def get_actions(self):
         return [("Export to Excel", "export")]
 
+    def get_buttons(self):
+        return [BsButton("hello"), BsButton("Bye")]
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item

@@ -163,6 +163,7 @@ def load_image(item, user, collection=None):
             item.save()
             return True
     item.image = None
+    item.save()
     return False
 
 

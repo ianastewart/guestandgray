@@ -1,8 +1,10 @@
 # Database helper for fab file
 import os
+import subprocess
 import time
-from fabric.colors import red, green, yellow, cyan
-from fabric.api import hosts, cd, env, run, sudo, put, get
+
+from fabric.api import cd, get, put, run, sudo
+from fabric.colors import cyan, green, yellow
 
 LOCAL_BACKUP_FOLDER = "Backup"
 BACKUP_FOLDER = "database_backup"
@@ -95,6 +97,14 @@ def _upload_database(local_dev_folder, app, dbuser, pw, db):
 def _upload_dev_db(local_dev_folder, db):
     """ Replace database only dev system"""
     print(f"Replace dev database {db}")
+    sql = f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity \
+        WHERE pg_stat_activity.datname = '{db}' AND pid <> pg_backend_pid()"
+    cmd = f'psql -U postgres -c "{sql}"'
+    result = subprocess.check_output(cmd, shell=True)
+    print(result)
+
+
+
     os.system(f'psql -U postgres -c "DROP DATABASE {db}"')
     os.system(f'psql -U postgres -c "CREATE DATABASE {db} WITH OWNER django"')
     os.system(

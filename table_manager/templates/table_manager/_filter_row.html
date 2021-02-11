@@ -1,0 +1,20 @@
+{% load bootstrap4 %}
+<form action="." method="get" id="id_filter_form">
+  {{ filter.form.media }}
+  <div class="d-flex">
+    {% for field in filter.form.visible_fields %}
+      <div class="px-2">
+        {% if filter_button %}
+          {% bootstrap_field field placeholder="" form_group_class="form-group mb-2" label_class="mb-0 p-0" %}
+        {% else %}
+          {% bootstrap_field field placeholder="" form_group_class="form-group mb-2 auto-submit" %}
+        {% endif %}
+      </div>
+    {% endfor %}
+    {% if filter_button %}
+      <button class="form-control btn-primary" id="id_search" type="submit">
+        <i class="fas fa-filter"></i>&nbsp&nbsp {{ filter_button }}
+      </button>
+    {% endif %}
+  </div>
+</form>

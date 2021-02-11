@@ -1,0 +1,80 @@
+{% load render_table querystring from django_tables2 %}{% load static bootstrap4 %}
+{{ form.media }}
+
+<!-- flags for javascript -->
+<div class="d-none">
+  {% if view.allow_update %}
+    <div id="ajax_update"></div>{% endif %}
+  {% if view.allow_detail %}
+    <div id="ajax_detail"></div>{% endif %}
+  {% if view.allow_url %}
+    <div id="detail"></div>{% endif %}
+</div>
+
+{#<div class="row bg-white">#}
+{#  {% if filter %}#}
+{#    <div class="col-12 col-md-3 col-xl-2 {{ view.css_filter }}"></div>#}
+{#    <div class="col-12 col-md-9 col-xl-10 border-left text-center {{ view.css_title }} "><h2>{{ view.title }}&nbsp;</h2>#}
+{#    </div>#}
+{#  {% else %}#}
+{#    <div class="col text-center {{ view.css_title }}"><h2>{{ view.title }}&nbsp;</h2></div>#}
+{#  {% endif %}#}
+{#</div>#}
+{% if filter %}
+  {% if filter_left %}
+    <div class="row">
+      <div class="col-12 col-md-3 col-xl-2 {{ view.css_filter }} flex-md-grow-1">
+        {% include "table_manager/_filter_fields.html" with filter_column=True %}
+      </div>
+      <div class="col-12 col-md-9 col-xl-10 border-left bg-white flex-grow-1 p-0">
+        {% include "table_manager/_action_row.html" %}
+        {% include "table_manager/column_shifter.html" %}
+      </div>
+    </div>
+  {% elif filter_right1 %}
+    <div class="row">
+      <div class="col col-md-9 col-xl-10">
+        {% include "table_manager/column_shifter.html" %}
+        {% include "table_manager/_action_row.html" %}
+      </div>
+      <div class="col col-md-3 col-xl-2">
+        {% include "table_manager/_filter_fields.html" with filter_column=True %}
+      </div>
+    </div>
+  {% else %}
+    <div class="col p-0 bg-white">
+      <div class="{{ view.css_filter }} border-bottom">
+        {% include "table_manager/_filter_fields.html" %}
+      </div>
+      {% include "table_manager/_action_row.html" %}
+      {% include "table_manager/column_shifter.html" %}
+    </div>
+  {% endif %}
+
+{% else %}
+  {% include "table_manager/_action_row.html" %}
+  {% include "table_manager/column_shifter.html" %}
+{% endif %}
+</div>
+
+<!-- Modal to hold main partial form -->
+<div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
+</div>
+
+<!-- Modal to hold second partial form -->
+<div class="modal" data-backdrop="static" data-keyboard="false" id="modal-form-2" role="dialog">
+</div>
+
+<!-- Modal to confirm -->
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="modal-confirm" role="dialog"
+     style="top:250px;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning"><h5>Are you sure?</h5></div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger js-delete" data-dismiss="modal">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
