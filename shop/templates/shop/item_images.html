@@ -1,12 +1,13 @@
 {% extends "shop/shop_base.html" %}
-{% load wagtailimages_tags static %}
+{% load wagtailimages_tags static shop_tags %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
   <div class="container my-2 py-2 bg-light">
     <div class="row">
       <div class="col">
-        <h2 class="my-3">Update images</h2>
+        <h2 class="my-3">Manage images</h2>
         <h3 class="my-3">{{ item.name }}</h3>
+        <p>Ref: {{ item.ref }}</p>
       </div>
     </div>
     <div class="row">
@@ -18,12 +19,13 @@
               <div class="thumbnail" >
                 <a style="background-image: url({{ card_image.url }});"></a>
               </div>
-              <div class="card-body px-2" style="font-family: Lato">
+              <div class="card-body px-2 py-2" style="font-family: sans-serif">
+              <p class="small mb-2">{{ image.filename }} {{ image.width }}w x {{ image.height }}h</p>
                 <h5>{% if item.image.id == image.id %}Primary{% else %}&nbsp;{% endif %}</h5>
-                <button class="btn btn btn-danger js-action" data-action="delete" data-id="{{ image.id }}">Delete
+                <button class="btn btn-danger js-action" data-action="delete" data-id={{ image.id }}>Delete
                 </button>
                 {% if item.image.id != image.id %}
-                  <button class="btn btn btn-primary js-action" data-action="primary" data-id="{{ image.id }}">Make
+                  <button class="btn btn-primary js-action" data-action="primary" data-id={{ image.id }}>Make
                     primary
                   </button>
                 {% endif %}
@@ -38,26 +40,25 @@
   <div class="row my-3">
     <div class="col-md-8">
       <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Add an image</button>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Upload images</button>
     </div>
   </div>
   </div>
-{% endblock %}
-{% block content_walls %}
+
   <!-- Modal to load an image-->
-  <div class="modal fade" id="uploadModal" data-backdrop="false" tabindex="-1" role="dialog"
+  <div class="modal" id="uploadModal" data-backdrop="true" tabindex="-1" role="dialog"
        aria-labelledby="uploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <form method="post" enctype="multipart/form-data" id="idForm">
           {% csrf_token %}
           <div class="modal-header">
-            <h5 class="modal-title" id="uploadModalLabel">Upload an image</h5>
+            <h5 class="modal-title" id="uploadModalLabel">Upload images</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-light">
             <!-- COMPONENT START -->
             <div class="form-group">
               <div class="input-group input-file" name="myfile">

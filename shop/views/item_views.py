@@ -62,6 +62,7 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
     table_class = ItemTable
     filter_class = ItemFilter
     template_name="shop/filtered_table.html"
+    # template_name="table_manager/generic_table.html"
     heading = "Items"
     allow_create = False
     allow_update = True
@@ -255,11 +256,10 @@ class ItemImagesView(LoginRequiredMixin, DetailView):
             myfile = request.FILES["myfile"]
             names = myfile.name.split(".")
             error = ""
-            if names[len(names) - 1] == "jpg":
+            if names[1].lower() in ["jpg", "jpeg"]:
                 short_path = os.path.join("original_images", myfile.name)
                 full_path = os.path.join(settings.MEDIA_ROOT, short_path)
                 if os.path.exists(full_path):
-
                     try:
                         existing_set = CustomImage.objects.filter(file=short_path)
                         if len(existing_set) > 1:
@@ -273,13 +273,12 @@ class ItemImagesView(LoginRequiredMixin, DetailView):
                                 else:
                                     error += f"It is linked to Ref: {existing.item.ref }, {existing.title}."
                         else:
-
                             os.remove(full_path)
                     except CustomImage.DoesNotExist:
                         # if file exists but is not used by a CustomImage, overwrite it
                         os.remove(full_path)
             else:
-                error = "File is not an image. Please select a .jpg"
+                error = "File is not a valid JPEG file. Valid extensions are: .jpg, .jpeg, .JPG, .JPEG"
             if error:
                 result = {"error": error}
             else:

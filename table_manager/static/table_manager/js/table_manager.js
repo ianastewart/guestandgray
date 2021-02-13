@@ -14,95 +14,138 @@ $(document).ready(function () {
         return false;
     });
 
-    // Submit button pressed on a modal form
+    // .js-submit validates form
     $(".modal").on("click", ".js-submit", function () {
-        let form = $(this).closest("form");
-        let submitter = $(this).attr("name");
-        ajax_submit(form, submitter);
+        ajax_post(this, true);
         return false;
     });
 
-    // submit on a non-modal form
+    // .js-post has no validation and pops return by default
+    $(".modal").on("click", ".js-post", function () {
+        ajax_post(this, false);
+        return false;
+    });
+
+
+// Button clicked on a modal form. Load a new modal form, passing the current url as the return path
+    $(".modal").on("click", ".js-link", function () {
+        ajax_get(this.href, last_path);
+        return false;
+    });
+
+    // Button clicked on a modal form. Load a new modal form, passing the current url as the return path
+    $(".modal").on("click", ".js-href", function () {
+        ajax_get(this.href, last_path);
+        return false;
+    });
+
+
+    // .js-submit on a non-modal form
     $(".js-submit").click(function () {
-        let form = $(this).closest("form");
-        let submitter = $(this).attr("name");
-        ajax_submit(form, submitter);
+        ajax_post(this, true);
         return false;
     });
 
-    function ajax_submit(form, submitter) {
-        let data = form.serialize() + '&' + encodeURIComponent(submitter) + '=';
+
+// Call from an <a> tag, target is in href
+    $(".js-href").click(function () {
+        ajax_get(this.href, last_path);
+        return false;
+    });
+
+    $(".js-link").click(function () {
+        ajax_get(this.href, last_path);
+        return false;
+    });
+
+// Request and show the modal create form
+    $(".js-create").click(function () {
+        ajax_get('create/', "");
+        return false;
+    });
+
+// called by table click on a row to load update form
+    function ajax_table_get(pk, url) {
+        if (pk) {
+            url = url + '/' + pk + '/';
+        }
+        ajax_get(url, "");
+    }
+
+    function ajax_get(call_url, return_url, no_push = false) {
+        $.ajax({
+            url: call_url,
+            type: 'get',
+            dataType: 'json',
+            data: {
+                return_url: return_url,
+                no_push: no_push
+            },
+            success: function (data) {
+                process_get(data);
+            },
+            error: function (e) {
+                console.log(e);
+            },
+            timeout: 10000
+        });
+    }
+
+    function process_get(data) {
+        // console.log(data);
+        $(data.target_id).html(data.html);
+        if (data.html.includes('modal-dialog')) {
+            $(data.target_id).modal("show");
+        }
+        if (data.html.includes('fp_config')) {
+            flatpickrInit();
+        }
+        last_path = data.path;
+    }
+
+    function ajax_post(button, validate) {
+        let form = $(button).closest("form");
+        let target_id = $(button).attr('target_id');
+        let no_return = $(button).attr('no_return');
+        let data = `${form.serialize()}&${encodeURIComponent(button.name)}=&x_validate=${validate}&x_target_id=${target_id ? target_id : ""}&x_no_return=${no_return}`;
         $.ajax({
             url: form.attr("action"),
             data: data,
             type: form.attr("method"),
             dataType: 'json',
             success: function (data) {
-                if (data.valid) {
-                    $(data.modal_id).modal("hide");
-                    if (data.return_url) {
-                        ajax_get("", data.return_url)
-                    } else {
-                        location.reload(true)
-                    }
+                if (data.form_invalid || data.error) {
+                    process_get(data);
                 } else {
-                    $(data.modal_id).modal("show");
-                    $(data.modal_id + " .modal-content").html(data.html_form);
+                    process_post(data);
                 }
             },
-            error: function(e) {
+            error: function (e) {
                 console.log(e);
-            }
+            },
+            timeout: 10000
         });
         return false;
     }
 
-    // Button clicked on a modal form. Load a new modal form, passing the current url as the return path
-    $(".modal").on("click", ".js-call", function () {
-        let url = $(this).prop("name").replace("/0/", "/");
-        call_modal(url, last_path)
-    });
-
-    // Call from non-modal - don't pass a return address
-    $(".js-call").click(function () {
-        let url = $(this).prop("name").replace("/0/", "/");
-        call_modal(url, "")
-    });
-
-    function call_modal(call_url, return_url) {
-        $.ajax({
-            url: call_url,
-            type: 'get',
-            dataType: 'json',
-            data: {return_url: return_url},
-            success: function (data) {
-                console.log(data)
-                $(data.modal_id).modal("show");
-                $(data.modal_id + " .modal-content").html(data.html_form);
-            },
-            error: function(e) {
-                console.log(e);
+    function process_post(data) {
+        $(".flatpickr-calendar").remove();
+        if (data.next_url) {
+            if (data.is_ajax) {
+                ajax_get(data.next_url, last_path, true);
+            } else {
+                if ($(data.target_id).html().includes("modal-dialog")) {
+                    $(data.target_id).modal("hide");
+                }
+                window.location.href = data.next_url;
             }
-        });
+        } else {
+            window.location.reload();
+        }
     }
 
 
-    // Request and show the modal create form
-    $(".js-create").click(function () {
-        $.ajax({
-            url: 'create/',
-            type: 'get',
-            dataType: 'json',
-            beforeSend: function () {
-                $("#modal-form").modal("show");
-            },
-            success: function (data) {
-                $("#modal-form .modal-content").html(data.html_form);
-            }
-        });
-    });
-
-    // called by update form to delete record
+// called by update form to delete record
     $(".js-delete").click(function () {
         let pk = $('#pk').val();
         $.ajax({
@@ -111,30 +154,11 @@ $(document).ready(function () {
             type: 'post',
             dataType: 'json',
             success: function () {
-                $("#modal-form").modal("hide");
-                location.reload(true)
+                process_post(data);
             }
         });
     });
 
-
-    // called by table click to load update form
-    function ajax_get(pk, action) {
-        if (pk) {
-            action = action + '/' + pk + '/';
-        }
-        $.ajax({
-            url: action,
-            type: 'get',
-            dataType: 'json',
-            success: function (data) {
-                $("#modal-form").children().addClass(data.modal_class);
-                $("#modal-form .modal-content").html(data.html_form);
-                $("#modal-form").modal("show");
-                last_path = data.path;
-            }
-        });
-    }
 
     if ($('#select_all').prop('checked')) {
         select_all(true);
@@ -143,8 +167,9 @@ $(document).ready(function () {
         highlight_array(chkboxes);
     }
 
+
     $('#select_all_page').click(function () {
-        $('#select_all').prop("checked", false)
+        $('#select_all').prop("checked", false);
         for (var i = 0; i < chkboxes.length; i++) {
             chkboxes[i].checked = this.checked;
             highlight(chkboxes[i]);
@@ -182,10 +207,12 @@ $(document).ready(function () {
             // ajax get when click on row
             if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
                 let pk = e.target.parentNode.dataset.pk;
-                if (document.getElementById("allow_update")) {
-                    ajax_get(pk, "update")
-                } else if (document.getElementById("allow_detail")) {
-                    ajax_get(pk, "detail")
+                if (document.getElementById("ajax_update")) {
+                    ajax_table_get(pk, "update");
+                } else if (document.getElementById("ajax_detail")) {
+                    ajax_table_get(pk, "detail");
+                } else if (document.getElementById("detail")) {
+                    window.document.location = e.target.parentNode.dataset.url;
                 }
             }
         }
@@ -235,16 +262,22 @@ $(document).ready(function () {
         $('#dropdownMenu').prop('disabled', goDisabled);
     }
 
-    // ---------- Filtering code -------
+// ---------- Filtering code -------
 
-    // changed filter auto submits the form
+// changed filter auto submits the form
     $(".form-control").change(function () {
         if ($(this).parent().hasClass("auto-submit")) {
             doFilter();
         }
     });
 
-    // blur catches datepicker changes
+    $(".checkbox").change(function () {
+        if ($(this).parent().hasClass("auto-submit")) {
+            doFilter();
+        }
+    });
+
+// blur catches datepicker changes
     $(".form-control").blur(function () {
         if ($(this).parent().parent().hasClass("auto-submit")) {
             doFilter();
@@ -252,14 +285,14 @@ $(document).ready(function () {
     });
 
     let ready = false;
-    $("#lines_per_page").val($("#id_per_page").val());
+    $("#hidden_per_page").val($("#id_per_page").val());
     ready = true;
 
-    $("#lines_per_page").change(function () {
-        if (ready) {
-            $("#id_per_page").val($("#lines_per_page").val());
+    $("#id_per_page").change(function () {
+       if (ready) {
+            $("#hidden_per_page").val($("#id_per_page").val());
             doFilter();
-        }
+       }
     });
 
     $('#id_filter').click(doFilter);
@@ -270,7 +303,67 @@ $(document).ready(function () {
         $("body").css("cursor", "progress");
         $('#id_filter_form').submit();
     }
+
+
+// flatpickr initialisation placed here so works for date field loaded in a modal.
+
+    function flatpickrInit() {
+        let flatpickr_db = {}, linked_configs = [];
+        document.querySelectorAll('[fp_config]:not([disabled])').forEach(function (inputElement) {
+            try {
+                var config = JSON.parse(inputElement.getAttribute('fp_config'));
+            } catch (x) {
+            }
+            if (config.id && config.options) {
+                let inputWrapper;
+                if (config.options.wrap) {
+                    inputElement.setAttribute('data-input', '');
+                    inputWrapper = inputElement.closest('.flatpickr-wrapper');
+                    if (!inputWrapper) {
+                        throw new Error(
+                            'django-flatpickr error:: When wrap option is set to true, ' +
+                            'flatpickr input element should be contained by ".flatpickr-wrapper" element'
+                        )
+                    }
+                }
+                if (config.linked_to) linked_configs.push(config);
+                flatpickr_db[config.id] = {
+                    config: config,
+                    instance: flatpickr(inputWrapper || inputElement, config.options)
+                }
+            }
+        });
+        linked_configs.forEach(function (config) {
+            let flatpickr_from_instance = flatpickr_db[config.linked_to].instance;
+            let flatpickr_to_instance = flatpickr_db[config.id].instance;
+            flatpickrOnChange(flatpickr_from_instance, function (selectedDates) {
+                flatpickr_to_instance.set('minDate', selectedDates[0] || false);
+            });
+            flatpickrOnChange(flatpickr_to_instance, function (selectedDates) {
+                flatpickr_from_instance.set('maxDate', selectedDates[0] || false);
+            });
+        });
+
+        function flatpickrOnChange(instance, callbackFn) {
+            /* This prevents the infinite loop */
+            function resolveTime(selectedDates) {
+                return selectedDates.length ? selectedDates[0].getTime() : 0;
+            }
+
+            let rememberedTime = resolveTime(instance.selectedDates);
+            callbackFn(instance.selectedDates, true);
+            instance.set('onChange', function (selectedDates) {
+                let selectedTime = resolveTime(selectedDates);
+                if (selectedTime != rememberedTime) {
+                    rememberedTime = selectedTime;
+                    callbackFn(selectedDates);
+                }
+            });
+        }
+    }
 });
+
+
 
 function margin_calc() {
     let margin = 0

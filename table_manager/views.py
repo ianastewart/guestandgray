@@ -78,10 +78,6 @@ class FilteredTableView(ExportMixin, SingleTableView):
             query_set = self.object_list
         else:
             query_set = self.get_queryset()
-        # if self.filter_class and self.first_run:
-        #     query_set = self.get_queryset()
-        # else:
-        #     query_set = self.get_queryset()
         if self.filter_class:
             initial = self.get_initial_data()
             for key, value in initial.items():
@@ -91,24 +87,17 @@ class FilteredTableView(ExportMixin, SingleTableView):
                     filter_data[key] = value
             self.filter = self.filter_class(filter_data, queryset=query_set, request=self.request)
             query_set = self.filter.qs
-        if lines:
-            self.filter.data["per_page"] = lines
+            if lines:
+                self.filter.data["per_page"] = lines
         return self.process_table_data(query_set)
 
-    def process_table_data(self, query_set, no_list=False):
+    def process_table_data(self, query_set):
         """
         Process table data after it has been filtered, before it is rendered.
         Used, for example to convert filtered junior records into parent records
         Also can calculate a total or return a list when table uses properties
         """
-        self.total = self.get_total(query_set)
-        if self.as_list and not no_list:
-            return list(query_set)
         return query_set
-
-    def get_total(self, query_set=None):
-        """ optional total shown above table"""
-        return None
 
     def get_buttons(self):
         if self.allow_create:

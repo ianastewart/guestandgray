@@ -2,7 +2,6 @@
 {% get_settings %}
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
-{% wagtail_site as site %}
 
 
 <!doctype html>
@@ -14,24 +13,18 @@
       <script async
               src="https://www.googletagmanager.com/gtag/js?id={{ settings.coderedcms.AnalyticsSettings.ga_tracking_id }}"></script>
       <script>
-        cr_track_clicks = {{settings.coderedcms.AnalyticsSettings.ga_track_button_clicks|yesno:"true,false"}};
-        window.dataLayer = window.dataLayer || [];
+          cr_track_clicks = {{settings.coderedcms.AnalyticsSettings.ga_track_button_clicks|yesno:"true,false"}};
+          window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-          dataLayer.push(arguments);
-        }
+          function gtag() {
+              dataLayer.push(arguments);
+          }
 
-        gtag('js', new Date());
-        gtag('config', '{{settings.coderedcms.AnalyticsSettings.ga_tracking_id}}');
+          gtag('js', new Date());
+          gtag('config', '{{settings.coderedcms.AnalyticsSettings.ga_tracking_id}}');
       </script>
     {% endif %}
   {% endblock %}
-
-  {# Pass in CMS variables to JavaScript #}
-  <script>
-    cr_site_url = "{{site.root_url}}";
-    cr_external_new_tab = {{settings.coderedcms.GeneralSettings.external_new_tab|yesno:"true,false"}};
-  </script>
 
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -41,7 +34,8 @@
   {% block html_seo_base %}
     <title>
       {% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}
-      {% block title_suffix %}{% if not self.seo_title %} - {{ site.site_name }}{% endif %}{% endblock %}</title>
+          {% block title_suffix %}{% if not self.seo_title %} - {{ request.site.site_name }}
+          {% endif %}{% endblock %}</title>
     <meta name="description" content="
         {% block description %}{% if self.search_description %}{{ self.search_description }}{% endif %}{% endblock %}"/>
     <link rel="canonical" href="{% block canonical %}{{ self.get_full_url }}{% endblock %}">
@@ -52,12 +46,8 @@
   {% if settings.coderedcms.SeoSettings.og_meta %}
     {% block og_seo_base %}
       <meta property="og:title" content="
-
-
           {% block og_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}"/>
       <meta property="og:description" content="
-
-
           {% block og_description %}{% if self.search_description %}{{ self.search_description }}{% endif %}{% endblock %}"/>
       <meta property="og:site_name" content="{% block og_site_name %}{{ self.get_site.site_name }}{% endblock %}"/>
       <meta property="og:type" content="{% block og_type %}website{% endblock %}"/>
@@ -84,7 +74,7 @@
   {% block frontend_assets %}
     {% if settings.coderedcms.LayoutSettings.frontend_theme %}
       <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/{{ settings.coderedcms.LayoutSettings.frontend_theme }}/bootstrap.min.css"/>
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.3.1/{{ settings.coderedcms.LayoutSettings.frontend_theme }}/bootstrap.min.css"/>
     {% else %}
       <link rel="stylesheet" href="{% static 'coderedcms/vendor/bootstrap/dist/css/bootstrap.min.css' %}"/>
     {% endif %}
@@ -97,10 +87,9 @@
       <link rel="stylesheet" type="text/css" href="{% static 'coderedcms/css/codered-front.min.css' %}">
     {% endif %}
   {% endblock %}
-
+  <link href="https://fonts.googleapis.com/css?family=Cinzel|Lato&display=swap" rel="stylesheet">
   {% block custom_assets %}
-    {#    <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">#}
-    <link href="https://fonts.googleapis.com/css?family=Cinzel|Lato&display=swap" rel="stylesheet">
+    {#            <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">#}
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/site.css' %}">
   {% endblock %}
 
@@ -126,8 +115,7 @@
 <body
     class="d-flex flex-column coderedcms-{{ page.content_type.model }} {% if page.get_parent %}parent-page-{{ page.get_parent.id }}{% endif %}
         {% block body_class %}bg-breadcrumb{% endblock %}" id="page-{{ page.id }}">
-<div id="page-content"> <!-- Customised for sticky footer -->
-
+<div id="page-content"> <!-- For sticky footer -->
   {% include "coderedcms/includes/codered_banner.html" %}
 
   {% wagtailuserbar %}
@@ -138,7 +126,6 @@
     {% endif %}
   {% endblock %}
 
-  <!-- Customised Header and Navbar -->
   <div class="bg-guest">
     <div class="container">
       <div class="row position-relative">
@@ -147,19 +134,15 @@
         </div>
         <div class="col-12 col-lg-6">
           {% if request.user.is_authenticated %}
-            <a class="banner-text banner-admin" href="/staff">Admin</a>
+          <a class="banner-text banner-admin" href="/staff">Admin</a>
           {% endif %}
-          <p class="d-none d-lg-block banner-text banner-position">Antique Chinese & Japanese Porcelain<br>European
-            Ceramics & Works of Art</p>
-          <p class="d-xs-block d-lg-none banner-text">Antique Chinese & Japanese Porcelain<br>European Ceramics & Works
-            of
-            Art</p>
+          <p class="d-none d-lg-block banner-text banner-position">Antique Chinese & Japanese Porcelain<br>European Ceramics & Works of Art</p>
+          <p class="d-xs-block d-lg-none banner-text">Antique Chinese & Japanese Porcelain<br>European Ceramics & Works of Art</p>
         </div>
       </div>
     </div>
-    {% block navbar %}{% endblock %}
+      {% block navbar %}{% endblock %}
   </div>
-
 
   <div id="content">
     {% block content %}
@@ -199,8 +182,7 @@
 
     {% endblock %}
   </div>
-</div> <!-- Customised end page-content -->
-
+</div>
 <div id="content-walls">
   {% block content_walls %}
     {% for content_wall in content_walls %}
@@ -212,10 +194,11 @@
 {% block footer %}{% endblock %}
 
 {% block required_scripts %}
-  <script src="{% static 'coderedcms/vendor/jquery/jquery-3.5.1.min.js' %}"></script>
+  <script src="{% static 'coderedcms/vendor/jquery/jquery-3.4.1.min.js' %}"></script>
 {% endblock %}
 
 {% block frontend_scripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="{% static 'coderedcms/vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
 {% endblock %}
 
@@ -225,7 +208,7 @@
 
 {% block custom_scripts %}
   {# Legacy behavior, remove this in the future and leave blank for client sites to implement. #}
-  <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>
+  {#        <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>#}
 {% endblock %}
 
 {# Structured data JSON-LD #}

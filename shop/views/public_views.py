@@ -75,7 +75,7 @@ def catalogue_view(request, slugs=None, archive=False):
     if child_categories:
         # category has sub categories
         template_name = "shop/public/category_grid.html"
-        context["categories"] = child_categories.exclude(image=None)
+        context["categories"] = child_categories #.exclude(image=None)
         counter = Counter(category, archive)
         counter.count()
     else:

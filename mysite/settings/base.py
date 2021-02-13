@@ -131,7 +131,7 @@ TIME_ZONE = "Europe/London"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-USE_THOUSAND_SEPARATOR = True
+USE_THOUSAND_SEPARATOR = False # Note need to use unlocalise for pks if True
 
 
 # Static files (CSS, JavaScript, Images)

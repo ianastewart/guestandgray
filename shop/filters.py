@@ -1,26 +1,19 @@
-from django_filters import (
-    Filter,
-    FilterSet,
-    CharFilter,
-    ChoiceFilter,
-    ModelChoiceFilter,
-    DateFilter,
-    BooleanFilter,
-)
+from django_filters import (CharFilter, ChoiceFilter, DateFilter, FilterSet, ModelChoiceFilter)
 from tempus_dominus.widgets import DatePicker
-from shop.models import Item, Category, Compiler
+
+from shop.models import Category, Compiler
+from table_manager.filters import PaginationFilter
 
 PER_PAGE_CHOICES = (
-    (10, "10 lines"),
-    (15, "15 lines"),
-    (20, "20 lines"),
-    (50, "50 lines"),
-    (100, "100 lines"),
+    (10, "10 rows"),
+    (15, "15 rows"),
+    (20, "20 rows"),
+    (50, "50 rows"),
+    (100, "100 rows"),
 )
 
 
 class ItemFilter(FilterSet):
-
     category = ModelChoiceFilter(
         queryset=Category.objects.filter(numchild=0).order_by("name"),
         required=None,
@@ -34,13 +27,13 @@ class ItemFilter(FilterSet):
         empty_label=None,
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
     )
-    per_page = ChoiceFilter(
-        field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
-    )
+    per_page = PaginationFilter()
+    # per_page = ChoiceFilter(
+    #     field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
+    # )
 
 
 class CompilerFilter(FilterSet):
-
     compiler = ModelChoiceFilter(
         queryset=Compiler.objects.order_by("name"), empty_label="All compilers"
     )

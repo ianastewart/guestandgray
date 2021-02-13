@@ -1,31 +1,34 @@
 {% extends 'coderedcms/pages/web_page_notitle.html' %}
+
+
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'website/css/site.css' %}">
+  {{ block.super }}
   <link rel="stylesheet" href="{% static 'shop/css/photoswipe.css' %}">
   <link rel="stylesheet" href="{% static 'shop/css/default-skin.css' %}">
 {% endblock %}
+
 {% block content_body %}
   <div class="container">
-  <div class="row">
-    <div class="col">
-      {% breadcrumb breadcrumb item.archive %}
+    <div class="row">
+      <div class="col">
+        {% breadcrumb breadcrumb item.archive %}
+      </div>
     </div>
   </div>
-</div>
   {% include 'shop/includes/partial_item_detail.html' with public=True %}
-    <!-- Modal to hold enquiry form -->
+  {% include 'shop/includes/photoswipe.html' %}
+
+  <!-- Modal to hold enquiry form -->
   <div class="modal fade " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
     <div class="modal-dialog {{ modal_class }}" role="document">
       <div class="modal-content bg-guest-light">
-
-
-                <div class="bg-light px-4 pt-4 pb-2 border">
+        <div class="bg-light px-4 pt-4 pb-2 border">
           <form action="{% url 'public_contact' %}" method="post" class="form">
             {% csrf_token %}
             {% bootstrap_field form.first_name layout='horizontal' %}
             {% bootstrap_field form.last_name layout='horizontal' %}
-{#            {% bootstrap_field form.email layout='horizontal' %}#}
+            {#            {% bootstrap_field form.email layout='horizontal' %}#}
             <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="customCheck1" name="mail_consent">
               <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
@@ -48,35 +51,35 @@
   <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
   <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
   <script>
-      var pswpElement = document.querySelectorAll('.pswp')[0];
-      // build the json album images collection
-      var items = [
-          {
-              src: '{{ item.image.file.url }}',
-              w:  {{ item.image.width }},
-              h:  {{ item.image.height }},
-              title: '{{ item.name }}'
-          },
-          {% for item in images %}
-              {
-                  src: '{{ item.file.url }}',
-                  w:  {{ item.width }},
-                  h:  {{ item.height }},
-                  title: '{{ item.name }}'
-              },
-          {% endfor %}
-      ];
+    var pswpElement = document.querySelectorAll('.pswp')[0];
+    // build the json album images collection
+    var items = [
+      {
+        src: '{{ item.image.file.url }}',
+        w:  {{ item.image.width }},
+        h:  {{ item.image.height }},
+        title: '{{ item.name }}'
+      },
+      {% for item in images %}
+        {
+          src: '{{ item.file.url }}',
+          w:  {{ item.width }},
+          h:  {{ item.height }},
+          title: '{{ item.name }}'
+        },
+      {% endfor %}
+    ];
 
-      $("figure").on("click", function (event) {
-          event.preventDefault();
-          var options = {
-              index: parseInt(this.dataset.index),
-              bgOpacity: 0.85,
-              showHideOpacity: true
-          }
-          // Initialize PhotoSwipe
-          var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
-          lightBox.init();
-      });
+    $("figure").on("click", function (event) {
+      event.preventDefault();
+      var options = {
+        index: parseInt(this.dataset.index),
+        bgOpacity: 0.85,
+        showHideOpacity: true
+      }
+      // Initialize PhotoSwipe
+      var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
+      lightBox.init();
+    });
   </script>
 {% endblock %}

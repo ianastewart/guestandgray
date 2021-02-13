@@ -1,4 +1,5 @@
 {% load render_table querystring from django_tables2 %}{% load static bootstrap4 %}
+
 {{ form.media }}
 
 <!-- flags for javascript -->
@@ -27,7 +28,6 @@
         {% include "table_manager/_filter_fields.html" with filter_column=True %}
       </div>
       <div class="col-12 col-md-9 col-xl-10 border-left bg-white flex-grow-1 p-0">
-        {% include "table_manager/_action_row.html" %}
         {% include "table_manager/column_shifter.html" %}
       </div>
     </div>
@@ -42,17 +42,17 @@
       </div>
     </div>
   {% else %}
+    <div class="row">
     <div class="col p-0 bg-white">
       <div class="{{ view.css_filter }} border-bottom">
         {% include "table_manager/_filter_fields.html" %}
       </div>
-      {% include "table_manager/_action_row.html" %}
       {% include "table_manager/column_shifter.html" %}
+    </div>
     </div>
   {% endif %}
 
 {% else %}
-  {% include "table_manager/_action_row.html" %}
   {% include "table_manager/column_shifter.html" %}
 {% endif %}
 </div>

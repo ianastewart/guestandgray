@@ -1,47 +1,48 @@
 {% load render_table querystring from django_tables2 %}{% load static bootstrap4 %}
 {% if actions or buttons %}
   <div class="container-fluid p-0">
-  <form method="post">{% csrf_token %}
-  <div class="d-flex justify-content-between bg-light">
-  <div class="d-flex pt-1 border-right">
-    <input type="hidden" name="query" value={% querystring without "page" "per_page" %}>
-    {% if actions %}
-      <div class="px-2">
-        <input type="checkbox" id="select_all" name="select_all" value="Select all">
-        <label class="pl-2 mb-0" for="select_all">Select all</label><br>
-        <input type="checkbox" id="select_all_page" value="Select page">
-        <label class="pl-2 mb-0" for="select_all_page">Select all on page</label>
+    <div class="d-flex justify-content-between bg-light">
+          <form method="post">{% csrf_token %}
+      <div class="d-flex pt-1 border-right">
+        <input type="hidden" name="query" value={% querystring without "page" "per_page" %}>
+        {% if actions or buttons %}
+
+            <div class="px-2">
+              <input type="checkbox" id="select_all" name="select_all" value="Select all">
+              <label class="pl-2 mb-0" for="select_all">Select all</label><br>
+              <input type="checkbox" id="select_all_page" value="Select page">
+              <label class="pl-2 mb-0" for="select_all_page">Select all on page</label>
+            </div>
+            <div class="px-2 py-0" style="width: 200px">
+              <span id="selected"><span id="count">0</span> of {{ table.rows|length }} rows selected</span>
+            </div>
+            <div class="p-1">
+              <div class="dropdown float-right">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu"
+                        data-toggle="dropdown">
+                  Select action
+                </button>
+                <div class="dropdown-menu">
+                  {% for action in actions %}
+                    <button class="dropdown-item" type="submit" name="{{ action.0 }}">{{ action.1 }}</button>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+        {% endif %}
       </div>
-      <div class="px-2 py-0" style="width: 200px">
-        <span id="selected"><span id="count">0</span> of {{ table.rows|length }} rows selected</span>
-      </div>
-      <div class="p-1">
-        <div class="dropdown float-right">
-          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown">
-            Select action
-          </button>
-          <div class="dropdown-menu">
-            {% for action in actions %}
-              <button class="dropdown-item" type="submit" name="{{ action.0 }}">{{ action.1 }}</button>
-            {% endfor %}
-          </div>
+          </form>
+      <div class="d-flex justify-content-end pt-1">
+        <div class="pt-1">
+          {% include "table_manager/_buttons.html" %}
         </div>
+        {% include "table_manager/_column_shifter_button.html" %}
+        {% if filter %}
+        <div class="pt-1">
+          {% bootstrap_field filter.form.per_page form_group_class="form-group mb-0 pr-2" show_label=False  %}
+        </div>
+        {% endif %}
       </div>
-    {% endif %}
+    </div>
   </div>
-<div class="d-flex justify-content-end pt-1">
-  <div class="p-1">
-    {% include "table_manager/_buttons.html" %}
-</div>
-
-  {% include "table_manager/_column_shifter_button.html" %}
-
-  <div class="p-1">
-  {% bootstrap_field filter.form.per_page show_label=False form_group_class="form-group auto-submit" %}
-  </div>
-  </div>
-</div>
-
-</form>
-</div>
 {% endif %}

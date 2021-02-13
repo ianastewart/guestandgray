@@ -55,6 +55,8 @@ class CartContentsView(LoginRequiredMixin, TemplateView):
     def post(self, request):
         if "empty" in request.POST:
             cart_empty(request)
+        elif "close" in request.POST:
+            return redirect("staff_home")
         else:
             for k in request.POST:
                 if "remove" in k or "uncharge" in k:

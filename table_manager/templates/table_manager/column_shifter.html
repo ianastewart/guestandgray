@@ -5,9 +5,10 @@
 
 {% block table %}
   <div id="{{ table.uniq_table_class_name }}" class="column-shifter-container">
+        {% include "table_manager/_action_row.html" %}
       <input type="hidden" name="query" value={% querystring without "page" "per_page" %}>
 {#      <div class="row bg-guest-lighter">#}
-{#        {% include "table_manager/_action_row.html" %}#}
+{#        {% include "table_manager/_column_shifter_button.html" %}#}
 {#      </div>#}
     {# Loader default is show #}
     <div class="loader" style="text-align:center;">

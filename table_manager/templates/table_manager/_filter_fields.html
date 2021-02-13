@@ -3,11 +3,13 @@
   {{ filter.form.media }}
   <div class="{% if filter_column %}d-flex-column{% else %}d-flex{% endif %}">
     {% for field in filter.form.visible_fields %}
-      {% if field.name != 'per_page' %}
+      {% if field.name == 'per_page' %}
+        <input type="hidden" name="per_page" id="hidden_per_page">
+      {% else %}
         {% if filter_button %}
-          {% bootstrap_field field form_group_class="form-group" label_class="mb-0" %}
+          {% bootstrap_field field form_group_class="form-group pl-2 pt-2" label_class="small mb-0" %}
         {% else %}
-          {% bootstrap_field field form_group_class="form-group auto-submit" label_class="mb-0" %}
+          {% bootstrap_field field form_group_class="form-group pl-2 pt-2 auto-submit" label_class="small mb-0" %}
         {% endif %}
       {% endif %}
     {% endfor %}
