@@ -37,8 +37,9 @@ class Category(MP_Node):
         on_delete=models.SET_NULL,
         related_name="archive_category",
     )
+    sequence = models.PositiveIntegerField(default=0)
     count = models.IntegerField(default=0)
-    node_order_by = ["name"]
+    node_order_by = ["sequence"]
 
     def __str__(self):
         return self.name
@@ -97,8 +98,8 @@ class Item(index.Indexed, models.Model):
     )
     condition = models.CharField(max_length=200, null=True, blank=True)
     dimensions = models.CharField(max_length=200, null=True, blank=True)
-    provenance = models.CharField(max_length=500, null=True, blank=True)
-    # notes = models.TextField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    provenance = models.TextField(null=True, blank=True)
     state = models.SmallIntegerField(choices=State.choices(), default=0)
     archive = models.BooleanField(default=False)
     cost_price = models.DecimalField(
@@ -350,7 +351,7 @@ class Contact(models.Model):
 
 
 class Address(models.Model):
-    """ A Contact can have multiple addresses sored in address history"""
+    """ A Contact can have multiple addresses stored in address history"""
 
     shipping = models.BooleanField(default=True)
     billing = models.BooleanField(default=True)

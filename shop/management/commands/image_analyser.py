@@ -1,17 +1,22 @@
 from django.core.management.base import BaseCommand, CommandError
 import os
+from shutil import copyfile
 from pathlib import Path
 from django.contrib.auth.models import User
 from shop.models import Item
+from PIL import Image
 
 
 class Imagine():
 
     def __init__(self):
         self.used_count = 0
+        self.source ="H:/Large Images/"
+        self.target = "H:/Used Images/"
+        self.name_dict = {}
 
     def load(self):
-        self.images = os.listdir("H:\Large Images")
+        self.images = os.listdir(self.source)
         self.images.sort()
         self.items = Item.objects.all().order_by("ref")
 
@@ -20,6 +25,7 @@ class Imagine():
         for name in self.images:
             changed, new_name = self.sanitize(name)
             if changed:
+                self.name_dict[new_name] = name
                 self.images[i] = new_name
             i += 1
 
@@ -39,18 +45,27 @@ class Imagine():
         print(f"{name} IS BAD)")
         return False, name
 
-    def search_local(self, ref, index):
+    def search_local(self, ref, index, copy=False):
         """ Search 10 before and 10 after image for variant """
         print(ref)
         for i in range(index - 10, index + 10):
             if ref in self.images[i]:
                 if i == index:
                     print("Primary", self.images[i])
+                    if copy:
+                        self.copy(self.images[i])
                     self.used_count += 1
                 else:
                     print("Variant", self.images[i])
+                    if copy:
+                        self.copy(self.images[i])
                     self.used_count += 1
         print("----")
+
+    def copy(self, name):
+        if name in self.name_dict:
+            name = self.name_dict[name]
+        copyfile(self.source + name, self.target + name)
 
     def item_update(self):
         self.used_count = 0
@@ -75,32 +90,21 @@ class Imagine():
         print(f"{len(self.items)} items processed, {found_count} images found, {missing_count} images missing")
         print(f"{self.used_count} of {len(self.images)} large images used")
 
-    # numbers = list("0123456789")
-    # letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    # normal = letters+numbers
-    # entries = Path("H:\Large Images")
-    # found = 0
-    # missing = 0
-    # for entry in entries.iterdir():
-    #     bits = entry.name.split(".")
-    #     name = bits[0]
-    #     j = 0
-    #     for i in list(name):
-    #         if i in normal:
-    #             j+=1
-    #         else:
-    #             root=name[:j]
-    #             suffix = name[j:]
-    #             break
-    #     item = Item.objects.filter(ref=root).first()
-    #     if item:
-    #         found += 1
-    #         #print(root, "found")
-    #     else:
-    #         missing += 1
-    #         print(name, "missing")
-    # print(f"Found {found} Missing {missing}")
+def open_image(path=None):
+    if not path:
+        path = "H:\Large Images\W307c.JPG"
+    im = Image.open(path)
+    return im
 
+def save_image(im):
+    name = im.filename.replace("Large Images", "Test images")
+    im.save(name + "-web_maximum.JPG", quality="web_maximum")
+    im.save(name + "-web_very_high.JPG", quality="web_very_high")
+    im.save(name + "-web_high.JPG", quality="web_high")
+    im.save(name + "-web_medium.JPG", quality="web_medium")
+    im.save(name + "-web_low.JPG", quality="web_low")
+    im.save(name + "-high.JPG", quality="high")
+    im.save(name + "-web_high.JPG", quality="maximum")
 
 class Command(BaseCommand):
     help = "Analyse images"

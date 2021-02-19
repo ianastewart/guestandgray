@@ -1,7 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, ListView, DetailView
+from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
 
+from shop.cat_tree import *
 from shop.forms import CategoryForm
 from shop.models import Category
 from shop.tables import CategoryTable
@@ -38,14 +41,20 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class CategoryTreeView(LoginRequiredMixin, ListView):
-    model = Category
-    template_name = "shop/category_tree.html"
-    context_object_name = "categories"
+class CategoryTreeView(LoginRequiredMixin, TemplateView):
 
-    def get_queryset(self):
-        root = Category.objects.get(name="Catalogue")
-        return root.get_children().order_by("name")
+    template_name = "shop/category_tree.html"
+
+    def get(self, request):
+        if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+            return JsonResponse(tree(), safe=False)
+        else:
+            return super().get(request)
+
+    def post(self, request):
+        p = request.POST
+        tree_move(p["node"], p["target"], p["previous"], p["position"] == "inside")
+        return JsonResponse("OK", safe=False)
 
 
 class CategoryListView(LoginRequiredMixin, FilteredTableView):
@@ -68,3 +77,8 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["item_list"] = self.object.item_set.all().order_by("ref")
         return context
+
+    def post(self, request, **kwargs):
+        if "delete" in request.POST:
+            self.get_object().delete()
+        return redirect("category_list")

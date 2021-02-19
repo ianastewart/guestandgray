@@ -1,7 +1,7 @@
 {% extends "shop/shop_base.html" %}
 {% load bootstrap4 wagtailimages_tags %}
 {% block content_body %}
-  <div class="container bg-light">
+  <div class="container bg-light my-2">
     <div class="row">
       <div class="col">
         <h1>{{ category.name }}</h1>
@@ -9,18 +9,29 @@
     </div>
     <div class="row">
       <div class="col-md-4 my-3">
+        {% if category.image  %}
         {% image category.image width-300 %}
-        <br> {{ category.image.object.name }} <br>
+        <p class="small">{{ category.image.item.ref }} {{ category.image.item.name }} <p>
+        {% else %}
+      <p>Category has no image</p>
+      {% endif %}
+      <form method="post">{% csrf_token %}
         <a class="btn btn-primary" href="{% url "category_update" pk=category.pk %}">Edit category</a>
+        {% if not item_list %}
+          <button type="submit" name="delete" class="btn btn-danger">Delete category</button>
+        {% endif %}
+      </form>
       </div>
-      <div class="col-md-8">
-        <div class="my-2">
-        </div>
+      <div class="col-md-8 my-3">
+        {% if item_list %}
         <ul>
           {% for item in item_list %}
             <li><a href="{% url 'item_detail' pk=item.pk %}">{{ item.ref }} {{ item.name }}</a></li>
           {% endfor %}
         </ul>
+        {% else %}
+        <p class="text-center">Category is empty</p>
+        {% endif %}
       </div>
     </div>
   </div>

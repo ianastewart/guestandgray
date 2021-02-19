@@ -11,7 +11,7 @@ from openpyxl import load_workbook
 class Command(BaseCommand):
     help = "Process Excel stock file"
 
-    def add_arguments(selfself, parser):
+    def add_arguments(self, parser):
         parser.add_argument("workbook", type=str, help="workbook name")
 
     def handle(self, *args, **options):
@@ -22,13 +22,13 @@ class Command(BaseCommand):
             try:
                 self.stdout.write(f">> Start load workbook")
                 wb = load_workbook(filename=path, read_only=True, data_only=True)
-                self.stdout.write(f"Workbook loaded")
-                ws = wb.get_sheet_by_name("Buyers")
-                self.import_buyers(ws)
-                ws = wb.get_sheet_by_name("Vendors")
-                self.import_vendors(ws)
+                # self.stdout.write(f"Workbook loaded")
+                # ws = wb.get_sheet_by_name("Buyers")
+                # self.import_buyers(ws)
+                # ws = wb.get_sheet_by_name("Vendors")
+                # self.import_vendors(ws)
                 for ws in wb.worksheets:
-                    if "Stock" in ws.title:
+                    if "Sheet1" in ws.title:
                         self.import_stock(ws)
             except Exception as e:
                 self.stdout.write(f"Exception processing sheet {ws.title} \n{str(e)}")
@@ -154,7 +154,7 @@ class Command(BaseCommand):
         rowgen = ws.rows
         cols = [c.value for c in next(rowgen)]
         try:
-            col_pdate = cols.index("PDate")
+            col_pdate = cols.index("Pdate")
             col_vendor = cols.index("Vendor")
             col_vat = cols.index("VAT")
             col_lot = cols.index("Lot No.")
@@ -162,11 +162,12 @@ class Command(BaseCommand):
             col_cost_lot = cols.index("CostLot")
             col_cost_item = cols.index("CostItem")
             col_cost_rest = cols.index("Cost Rest")
-            col_stock_no = cols.index("Stock No")
-            col_description = cols.index("Full Description")
+            col_stock_no = cols.index("Stock no.")
+            col_description = cols.index("Description")
             col_price = cols.index("Price")
             col_sale_date = cols.index("SaleDate")
             col_inv_no = cols.index("InvNo")
+            col_purchaser = cols.index("Purchaser")
             col_section = cols.index("Section Text")
         except ValueError as e:
             self.stdout.write(f"Header error in sheet {ws.title}:\n{str(e)}")
@@ -233,6 +234,7 @@ class Command(BaseCommand):
                     # )
 
                 # Find or create an item and add costs
+                item = None
                 try:
                     item = Item.objects.get(ref=ref)
                     if item.sale_price != price:
@@ -242,57 +244,64 @@ class Command(BaseCommand):
                             )
                     exists += 1
                 except Item.DoesNotExist:
-                    item = Item.objects.create(
-                        name=truncate(description),
-                        ref=ref,
-                        description=description,
-                        sale_price=Decimal(price),
-                        category=None,
-                        image=None,
-                        archive=archive,
-                        visible=False,
-                    )
-                    created += 1
-                item.cost_price = cost_item
-                item.restoration_cost = cost_rest
+                    self.stdout.write(f"Item {ref} {description} not found")
+                    # item = Item.objects.create(
+                    #     name=truncate(description),
+                    #     ref=ref,
+                    #     description=description,
+                    #     sale_price=Decimal(price),
+                    #     category=None,
+                    #     image=None,
+                    #     archive=archive,
+                    #     visible=False,
+                    # )
+                    # created += 1
+                if item:
 
-                # Create a purchase record and link item to it
-                try:
-                    purchase = Purchase.objects.get(vendor=vendor, date=pdate)
-                except Purchase.DoesNotExist:
-                    purchase = Purchase.objects.create(
-                        date=pdate,
-                        invoice_number=0,
-                        invoice_total=0,
-                        buyers_premium=premium,
-                        vendor=vendor,
-                        margin_scheme=margin_scheme,
-                        vat=vat,
-                    )
-                # Find or create a lot
-                try:
-                    lot = Lot.objects.get(purchase=purchase, number=lot_number)
-                except Lot.DoesNotExist:
-                    lot = Lot.objects.create(
-                        purchase=purchase, number=lot_number, cost=cost_lot
-                    )
-                item.lot = lot
-                # if sold, update invoice with item
-                if inv_no:
+                    item.cost_price = cost_item
+                    item.restoration_cost = cost_rest
+
+                    # Create a purchase record and link item to it
                     try:
-                        invoice = Invoice.objects.get(number=inv_no)
-                        item.invoice = invoice
-                    except Invoice.DoesNotExist:
-                        invoice = Invoice(
-                            date=pdate, number=inv_no, buyer=None, total=0, paid=True
+                        purchase = Purchase.objects.get(vendor=vendor, date=pdate)
+                    except Purchase.DoesNotExist:
+                        purchase = Purchase.objects.create(
+                            date=pdate,
+                            invoice_number=0,
+                            invoice_total=0,
+                            buyers_premium=premium,
+                            vendor=vendor,
+                            margin_scheme=margin_scheme,
+                            vat=vat,
                         )
-                        inv_created += 1
-                    item.invoice = invoice
-                    invoice.total += item.sale_price
-                    invoice.save()
-                item.save()
-                last_pdate = pdate
-                last_vendor = vendor
+                    # Find or create a lot
+                    try:
+                        lot = Lot.objects.get(purchase=purchase, number=lot_number)
+                    except Lot.DoesNotExist:
+                        lot = Lot.objects.create(
+                            purchase=purchase, number=lot_number, cost=cost_lot
+                        )
+                    item.lot = lot
+                    # if sold, update invoice with item
+                    if inv_no:
+                        try:
+                            invoice = Invoice.objects.get(number=inv_no)
+                            item.invoice = invoice
+                        except Invoice.DoesNotExist:
+                            invoice = Invoice(
+                                date=pdate,
+                                number=inv_no,
+                                buyer=None,
+                                total=0,
+                                paid=True,
+                            )
+                            inv_created += 1
+                        item.invoice = invoice
+                        invoice.total += item.sale_price
+                        invoice.save()
+                    item.save()
+                    last_pdate = pdate
+                    last_vendor = vendor
 
         except Exception as e:
             self.stdout.write(f"Exception in {ws.title} row {row_number}\n{str(e)}")

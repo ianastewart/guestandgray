@@ -19,6 +19,7 @@ from shop.models import Item, Category, Contact, Enquiry, Book, Compiler
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.filters import CompilerFilter
+from shop.cat_tree import Counter
 
 logger = logging.getLogger(__name__)
 
@@ -75,9 +76,10 @@ def catalogue_view(request, slugs=None, archive=False):
     if child_categories:
         # category has sub categories
         template_name = "shop/public/category_grid.html"
-        context["categories"] = child_categories #.exclude(image=None)
         counter = Counter(category, archive)
         counter.count()
+        # need to reload after the count
+        context["categories"] = category.get_children()
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"
@@ -93,44 +95,6 @@ def catalogue_view(request, slugs=None, archive=False):
         context["items"] = paginator.get_page(page)
 
     return render(request, template_name, context)
-
-
-class Counter:
-    """ Traverse a hierarchical category tree and append the total count of items under each node """
-
-    def __init__(
-        self, root, archive=False, exclude_no_image=True, exclude_not_visible=True
-    ):
-        self.total = 0
-        self.root = root
-        self.archive = archive
-        self.no_image = exclude_no_image
-        self.not_visible = exclude_not_visible
-
-    def count(self):
-        return self._count(self.root)
-
-    def _count(self, cat):
-        # recursive count function
-        print(f"Start {cat.name}")
-        items = cat.item_set.filter(archive=self.archive)
-        if self.no_image:
-            items = items.filter(image__isnull=False)
-        if self.not_visible:
-            items = items.filter(visible=True)
-        total = items.count()
-        child_cats = cat.get_children()
-        # if self.no_image:
-        #     child_cats = child_cats.filter(image__isnull=False)
-        # if self.not_visible:
-        #     child_cats = child_cats.filter(visible=True)
-        if child_cats:
-            for cat1 in child_cats:
-                total += self._count(cat1)
-        cat.count = total
-        cat.save()
-        print(f"{cat.name} {cat.count}")
-        return total
 
 
 def get_host_context(slug):
@@ -212,7 +176,7 @@ def search_view(request, public):
         # paginate results
         if results:
             paginator = Paginator(
-                results, GeneralSettings.for_site(request.site).search_num_results
+                results, GeneralSettings.for_request(request).search_num_results
             )
             page = request.GET.get("p", 1)
             try:

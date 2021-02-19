@@ -6,7 +6,7 @@
 
     <div class="row my-2 bg-white">
       <div class="col-12 col-lg-6 mt-4 px-5">
-        <h3 style="font-family: Georgia">GUEST & GRAY</h3>
+        <h3 class="font-georgia">Guest & Gray</h3>
         <address>
           58 Davies Street <br>
           London<br>
@@ -16,10 +16,10 @@
           Phone: +44 (0) 20 7408 1252<br>
           Mobile: +44 (0) 7968 719 496
         </p>
-        <a href="mail:info@chinese-porcelain-art.com">info@chinese-porcelain-art.com</a>
+        Mail: <a href="mail:info@chinese-porcelain-art.com">info@chinese-porcelain-art.com</a>
         <br>
         <br>
-        <div class="embed-responsive embed-responsive-16by9">
+        <div class="embed-responsive embed-responsive-16by9 border">
           <iframe class="embed-responsive-item" width="100%" style="border:1px" src="https://maps.google.com/maps?q=Guest+and+Gray+London&output=embed" allowfullscreen></iframe>
         </div>
         </div>
@@ -36,7 +36,7 @@
               <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
             </div>
             <hr>
-            <p>The fields below are optional:</p>
+            <p class="small">The fields below are optional:</p>
             {% bootstrap_field form.subject layout='horizontal' %}
             {% bootstrap_field form.message layout='horizontal' %}
             <p class="text-danger">ToDo: Add recaptcha</p>

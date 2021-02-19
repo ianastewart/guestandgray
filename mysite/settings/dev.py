@@ -10,6 +10,8 @@ if DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
+INSTALLED_APPS += ["django_waitress"]
+
 DATABASES = {"default": env.db_url("DATABASE_URL")}
 
 SECRET_KEY = "z+wk))(tp(46s)j5)yz*dcxxtx&tjl(7h)7vs%0fqcq*oif&mx"

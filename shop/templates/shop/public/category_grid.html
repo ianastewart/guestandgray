@@ -1,43 +1,46 @@
-{% extends 'coderedcms/pages/web_page.html' %}
+{% extends 'coderedcms/pages/web_page_notitle.html' %}
 {% load wagtailimages_tags shop_tags %}
-{% block content %}
+{% block body_class %} bg-guest-lighter{% endblock %}
+{% block content_body %}
   <div class="container">
     {% breadcrumb breadcrumb archive %}
-    <h2 class="my-4 font-custom">
-      {% if archive %}Archive: {% endif %}
-      {{ category.name }}
+    <h2 class="my-4 font-georgia">{{ category.name }}
+      {% if archive %} Archive{% else %} Catalogue{% endif %} Sections
+
     </h2>
     <div class="row mt-4">
       {% for category in categories %}
         {% image category.image width-250 as card_image %}
-        <div class="col-sm-6 col-md-4 col-lg-3 d-none d-sm-block">
-          <div class="card card-thumb card-thumb-cat shadow d-none d-sm-block">
-            <div class="thumbnail" href="#">
-              {% if archive %}
-                <a href="{{ category.get_archive_url }}" style="background-image: url({{ card_image.url }});"></a>
-              {% else %}
-                <a href="{{ category.get_absolute_url }}" style="background-image: url({{ card_image.url }});"></a>
-              {% endif %}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card p-2 mb-3 border-1 bg-white shadow d-none d-sm-block " style="height:21rem;">
+            <div class="h5 font-georgia text-dark m-0 text-center" style="height:2.5rem;">{{ category.name }}</div>
+          <p class="text-center pt-1">({{ category.count }} objects)</p>
+            {% if archive %}
+              <a href="{{ category.get_archive_url }}">
+              <a href="{{ category.get_archive_url }}"><span
+                  class="font-custom text-dark"><b>{{ category.name }} ({{ category.count }})</b></span></a>
+            {% else %}
+              <a href="{{ category.get_absolute_url }}">
+            {% endif %}
+            <div class="image image-hover-zoom">
+              <img src="{{ card_image.url }}" class="img img-responsive full-width ">
             </div>
-            <div class="card-body px-2">
-              {% if archive %}
-                <a href="{{ category.get_archive_url }}"><span class="font-custom text-dark"><b>{{ category.name }} ({{ category.count }})</b></span></a>
-              {% else %}
-                <a href="{{ category.get_absolute_url }}"><span class="text-dark">{{ category.name }} ({{ category.count }})</span></a>
-              {% endif %}
-            </div>
+            </a>
           </div>
-        </div>
-        {#        Mobile only #}
-        <div class="col-12 d-block d-sm-none mb-2 text-center">
-          {% if archive %}
-            <a href="{{ category.get_archive_url }}">
-          {% else %}
-            <a href="{{ category.get_absolute_url }}">
-          {% endif %}
-          <img src="{{ card_image.url }}" alt="{{ category.name }}">
-          <p class="text-black-50">{{ category.name }}</p>
-          </a>
+          <div class="d-block d-sm-none">
+            {% if archive %}
+              <a href="{{ category.get_archive_url }}">
+              <a href="{{ category.get_archive_url }}"><span
+                  class="font-custom text-dark"><b>{{ category.name }} ({{ category.count }})</b></span></a>
+            {% else %}
+              <a href="{{ category.get_absolute_url }}">
+            {% endif %}
+            <img src="{{ card_image.url }}">
+            <div class="caption text-dark text-center mt-1 mb-3">
+              {{ category.name }} ({{ category.count }})
+            </div>
+            </a>
+          </div>
         </div>
       {% endfor %}
     </div>

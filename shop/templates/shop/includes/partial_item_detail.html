@@ -49,7 +49,7 @@
         <p>ARCHIVE - Not For Sale</p>
       {% else %}
         <div class="row">
-          {% if item.show_price %}
+          {% if item.show_price and item.price %}
             <div class="col-12 col-lg-4 py-2">
               <h5>Price: £ {{ price|intcomma }}</h5>
             </div>

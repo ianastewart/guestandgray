@@ -154,8 +154,8 @@ class NewContactForm(ContactForm):
 class EnquiryForm(ModelForm):
     class Meta:
         model = Contact
-        fields = ("first_name", "last_name")  # , "mobile_phone", "email")
-
+        fields = ("first_name", "last_name")
+    email = forms.EmailField(max_length=100, required=True)
     subject = forms.CharField(max_length=50, required=False)
     message = forms.CharField(
         max_length=2000, required=False, widget=forms.Textarea(attrs={"rows": 3})
