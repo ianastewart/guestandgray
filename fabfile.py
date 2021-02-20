@@ -176,7 +176,7 @@ def _deploy_helper(
         # _maintenance(app, show=True)
         if tasks:
             sudo(f"supervisorctl stop {tasks}")
-        # sudo(f"supervisorctl stop {app}")
+        sudo(f"supervisorctl stop {app}")
     _deploy_django(venv, app, settings, branch, collect_static, fast)
     if tasks:
         sudo(f"supervisorctl start {tasks}")

@@ -7,7 +7,7 @@ environ.Env.read_env(env_path)
 
 sentry_sdk.init(dsn=env.str("SENTRY"), integrations=[DjangoIntegration()])
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 SECRET_KEY = env.str("SECRET_KEY")
 ALLOWED_HOSTS = ["77.68.81.128", "213.171.212.38", "gray.iskt.co.uk", "localhost"]
