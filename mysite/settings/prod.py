@@ -10,7 +10,7 @@ sentry_sdk.init(dsn=env.str("SENTRY"), integrations=[DjangoIntegration()])
 DEBUG = True
 
 SECRET_KEY = env.str("SECRET_KEY")
-ALLOWED_HOSTS = ["77.68.81.128", "gray.iskt.co.uk", "localhost"]
+ALLOWED_HOSTS = ["77.68.81.128", "213.171.212.38", "gray.iskt.co.uk", "localhost"]
 
 # INSTALLED_APPS += ["raven.contrib.django.raven_compat"]
 

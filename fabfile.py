@@ -6,9 +6,17 @@ from fabric.colors import cyan, green, yellow
 from fabric.context_managers import hide
 from fabric.contrib.files import exists
 
-from deployment.database_helper import (_create_database, _create_user, _download_database, _download_media,
-                                        _dump_dev_db, _grant_priviliges, _upload_database, _upload_dev_db,
-                                        _upload_media_dev)
+from deployment.database_helper import (
+    _create_database,
+    _create_user,
+    _download_database,
+    _download_media,
+    _dump_dev_db,
+    _grant_priviliges,
+    _upload_database,
+    _upload_dev_db,
+    _upload_media_dev,
+)
 
 # from fabric.network import ssh
 # ssh.util.log_to_file("paramiko.log", 10)
@@ -19,7 +27,8 @@ BACKUP_FOLDER = "GuestAndGray/Backup"
 BACKUP_FOLDER = "database_backup"
 BACKUP_FILE = "gray.dump"
 MEDIA_FILE = "media.zip"
-HOST = "77.68.81.128"
+# HOST = "77.68.81.128"
+HOST = "213.171.212.38"
 # HOST = "iskt.co.uk"
 
 
@@ -42,7 +51,8 @@ def provision():
     """
     Provision a new site with live data. Does everything except install certificate.
     Before running: Copy deployment.first_setup.sh to root folder using filezilla and make it executable
-    Log in as root and execute it
+    with chmod +x first_setup.sh
+    Log in as root and execute it ./first_setup.sh
 
     """
     dot_env = _read_env()
@@ -54,7 +64,7 @@ def provision():
 
 @hosts(HOST)
 def install_app(app="gray", settings="prod", branch="master"):
-    """ Install application, defaults to sandbox """
+    """ Install application """
     dot_env = _read_env()
     env.user = "django"
     env.password = dot_env["DJANGO"]
@@ -80,8 +90,10 @@ def download_media():
     app = "gray"
     _download_media(_local_dev_folder(), app)
 
+
 def upload_media_dev():
     _upload_media_dev(_local_dev_folder())
+
 
 @hosts(HOST)
 def upload_db():
@@ -164,7 +176,7 @@ def _deploy_helper(
         # _maintenance(app, show=True)
         if tasks:
             sudo(f"supervisorctl stop {tasks}")
-        sudo(f"supervisorctl stop {app}")
+        # sudo(f"supervisorctl stop {app}")
     _deploy_django(venv, app, settings, branch, collect_static, fast)
     if tasks:
         sudo(f"supervisorctl start {tasks}")
@@ -182,6 +194,8 @@ def _install_system_software():
     # install PostgresSQL & create user and database
     sudo("apt-get -y install build-essential libpq-dev python-dev")
     sudo("apt-get -y install postgresql postgresql-contrib")
+    # install libff1-dev so cryptography compiles
+    sudo("apt-get -y install llibffi-dev")
     # install NGINX
     sudo("apt-get -y install nginx")
     # install pip and venv
@@ -191,9 +205,9 @@ def _install_system_software():
     sudo("apt-get -y install supervisor")
     sudo("systemctl enable supervisor")
     sudo("systemctl start supervisor")
-    # install certbot from certbot maintained repository
-    sudo("sudo add-apt-repository -y ppa:certbot/certbot")
-    sudo("apt-get -y install python-certbot-nginx")
+    # # install certbot from certbot maintained repository
+    # sudo("sudo add-apt-repository -y ppa:certbot/certbot")
+    # sudo("apt-get -y install python-certbot-nginx")
     # install git
     sudo("apt-get -y install git")
     print(green("End install system software"))

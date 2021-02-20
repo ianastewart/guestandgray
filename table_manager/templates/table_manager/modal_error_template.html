@@ -1,0 +1,20 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+  <div class="modal-content bg-white">
+    <div class="modal-header bg-light">
+      <h5 class="modal-title">{% if debug %}{{ message }}{% else %}Sorry, an error has ocurred{% endif %}</h5>
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      {% if debug %}
+        <p><b>Path</b><br>{{ path }}</p>
+        <p><b>Trace</b><br>{{ trace }}</p>
+        {% if template_name %}
+          <p><b>Template</b>: {{ template }}<br>
+            <b>During</b>: {{ during }}</p>
+        {% endif %}
+      {% else %}
+        It has been logged and the adminstrator has been informed.
+      {% endif %}
+    </div>
+  </div>
+</div>

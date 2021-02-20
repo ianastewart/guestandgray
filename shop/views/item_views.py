@@ -61,13 +61,13 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
-    template_name="shop/filtered_table.html"
+    template_name = "shop/filtered_table.html"
     # template_name="table_manager/generic_table.html"
     heading = "Items"
     allow_create = False
-    allow_update = True
+    allow_detail = True
     auto_filter = True
-    filter_right=True
+    filter_right = True
 
     def get_initial_data(self):
         initial = super().get_initial_data()
@@ -82,6 +82,7 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
 
     def get_buttons(self):
         return [BsButton("hello"), BsButton("Bye")]
+
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
@@ -295,7 +296,7 @@ class ItemImagesView(LoginRequiredMixin, DetailView):
         return JsonResponse(result)
 
 
-class ItemDetailView(DetailView):
+class ItemDetailView(LoginRequiredMixin, DetailView):
     model = Item
     template_name = "shop/item_detail.html"
 
@@ -312,3 +313,15 @@ class ItemDetailView(DetailView):
             request, messages.INFO, f"Item ref: {item.ref} has been added to the cart"
         )
         return redirect("item_detail", item.pk)
+
+
+class ItemDetailAjax(LoginRequiredMixin, AjaxCrudView):
+    model = Item
+    template_name = "shop/item_detail_modal.html"
+    modal_class = "modal-xl"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["images"] = self.object.images.all().exclude(id=self.object.image_id)
+        context["in_cart"] = cart_get_item(self.request, self.object.pk)
+        return context

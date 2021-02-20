@@ -4,6 +4,7 @@ from shop.views.item_views import (
     ItemCreateView,
     ItemCreateAjax,
     ItemDetailView,
+    ItemDetailAjax,
     ItemUpdateView,
     ItemUpdateAjax,
     ItemTableView,
@@ -75,6 +76,9 @@ staff_urls = [
     path("item/list/", ItemTableView.as_view(), name="item_list"),
     path(
         "item/list/update/<int:pk>/", ItemUpdateAjax.as_view(), name="item_update_ajax"
+    ),
+    path(
+        "item/list/detail/<int:pk>/", ItemDetailAjax.as_view(), name="item_detail_ajax"
     ),
     path("item/list/create/", ItemCreateAjax.as_view(), name="item_create_ajax"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),

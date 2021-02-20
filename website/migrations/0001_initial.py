@@ -18,7 +18,7 @@ import wagtail.snippets.blocks
 class Migration(migrations.Migration):
 
     initial = True
-
+    run_before = ('wagtailcore', '0053_locale_model')
     dependencies = [
         ("coderedcms", "0015_coderedsessionformsubmission_coderedsubmissionrevision"),
         ("wagtailcore", "0041_group_collection_permissions_verbose_name_plural"),
