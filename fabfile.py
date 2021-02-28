@@ -136,7 +136,7 @@ def status():
 
 
 @hosts(HOST)
-def manage(app, command):
+def manage(command):
     """ Example fab manage:sandbox,migrate """
     env.user = "django"
     env.password = _read_env()["DJANGO"]
