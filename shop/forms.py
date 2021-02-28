@@ -12,6 +12,7 @@ from shop.models import (
     Book,
     Compiler,
     InvoiceCharge,
+    Photo,
 )
 
 
@@ -43,17 +44,26 @@ class ItemForm(ModelForm):
             "dimensions",
             "condition",
             "provenance",
+            "notes",
             "ref",
             "cost_price",
             "restoration_cost",
             "sale_price",
             "minimum_price",
             "archive",
+            "state",
             "location",
             "visible",
             "show_price",
             "featured",
+            "done",
+            "book",
         )
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 6}),
+            "provenance": forms.Textarea(attrs={"rows": 2}),
+            "notes": forms.Textarea(attrs={"rows": 2}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -74,6 +84,23 @@ class UpdateItemForm(ModelForm):
         fields = ("name", "cost_price")
 
     cost_price = forms.DecimalField(max_digits=8, decimal_places=2, required=True)
+
+
+class ImageForm(Form):
+
+    limit = forms.ChoiceField(
+        label="Resize image",
+        required=False,
+        choices=(
+            (0, "No resize"),
+            (1000, "Resize to 1000x1000"),
+            (2000, "Resize to 2000x2000"),
+            (3000, "Resize to 3000x3000"),
+            (4000, "Resize to 4000x4000"),
+            (5000, "Resize to 5000x5000"),
+        ),
+    )
+    crop = forms.BooleanField(label="Crop nearly square images", required=False)
 
 
 class CartPriceForm(ModelForm):
@@ -155,6 +182,7 @@ class EnquiryForm(ModelForm):
     class Meta:
         model = Contact
         fields = ("first_name", "last_name")
+
     email = forms.EmailField(max_length=100, required=True)
     subject = forms.CharField(max_length=50, required=False)
     message = forms.CharField(
@@ -280,3 +308,9 @@ class PurchaseDataForm(ModelForm):
 class PurchaseCostForm(forms.Form):
     new_cost = forms.DecimalField(max_digits=8, decimal_places=2, required=True)
     item_id = forms.CharField(required=False, widget=forms.HiddenInput)
+
+
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Photo
+        fields = ("file",)

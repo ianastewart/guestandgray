@@ -1,13 +1,15 @@
 import logging
 import requests
 import shutil
+import os
 from keyvaluestore.utils import get_value_for_key, set_key_value
 from django.shortcuts import render, redirect
+from django.conf import settings
 from import_export import resources
 from import_export.fields import Field
 from treebeard.mp_tree import MP_Node
 from tablib import Dataset
-from .models import Item, Category, CustomImage
+from .models import Item, Category, CustomImage, Photo
 
 logger = logging.getLogger(__name__)
 
@@ -189,3 +191,7 @@ def delete_all(cls):
     while cls.objects.count():
         ids = cls.objects.values_list("pk", flat=True)[:500]
         cls.objects.filter(pk__in=ids).delete()
+
+
+def clear_item_images():
+    Item.objects.all().update(image_id=None)

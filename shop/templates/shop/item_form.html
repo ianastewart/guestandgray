@@ -3,11 +3,11 @@
 {% block content_body %}
   <div class="container my-2 py-2 bg-light">
     <div class="row">
-      <div class="col my-4">
+      <div class="col">
         {% if item %}
-          <h3>Update Item Ref: {{ item.ref }}</h3>
+          <div class="h4 py-2">Edit Item Ref: {{ item.ref }}</div>
         {% else %}
-          <h3>New item</h3>
+          <div class="h4">New item</div>
         {% endif %}
       </div>
     </div>

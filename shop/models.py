@@ -120,7 +120,8 @@ class Item(index.Indexed, models.Model):
     )
     show_price = models.BooleanField(default=True)
     visible = models.BooleanField(default=True)
-    featured = models.BooleanField(default=True)
+    featured = models.BooleanField(default=False)
+    done = models.BooleanField(default=False)
     image = models.ForeignKey(
         "CustomImage",
         null=True,
@@ -133,6 +134,7 @@ class Item(index.Indexed, models.Model):
     )
     lot = models.ForeignKey("Lot", null=True, blank=True, on_delete=models.SET_NULL)
     search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
+    book = models.ForeignKey("Book", null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.ref} {self.name}"
@@ -402,12 +404,10 @@ class Book(models.Model):
 
 
 class CustomImage(AbstractImage):
-    # primary_image = models.BooleanField(default=False)
-    # ref = models.CharField(max_length=10, null=True, blank=True)
     item = models.ForeignKey(
         Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images"
     )
-
+    show = models.BooleanField(default=True)
     admin_form_fields = Image.admin_form_fields + ("item",)
 
 
@@ -418,3 +418,9 @@ class CustomRendition(AbstractRendition):
 
     class Meta:
         unique_together = (("image", "filter_spec", "focal_point_key"),)
+
+
+class Photo(models.Model):
+    title = models.CharField(max_length=255, blank=True)
+    file = models.FileField(upload_to="photos/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)

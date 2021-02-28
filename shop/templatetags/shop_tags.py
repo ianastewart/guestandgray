@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.template.defaultfilters import title
 from shop.session import cart_items
 from django.contrib import humanize
 
@@ -41,6 +42,15 @@ def checkbox(box):
     return mark_safe(output)
 
 
+@register.filter(name="titler")
+def titler(value):
+    text = title(value)
+    for t in [" A ", " An ", " And ", " With ", " In ", " On ", " The ", " Of "]:
+        if t in text:
+            text = text.replace(t, t.lower())
+    return mark_safe(text)
+
+
 @register.filter(name="currency")
 def currency(value):
     return f"£ {value}"
@@ -59,7 +69,10 @@ def currency_input(
         label = field.label
     invalid = ""
     feedback = ""
-    val = field.data if field.data else ""
+    val = field.initial if field.initial else ""
+    readonly = ""
+    if "readonly" in field.subwidgets[0].parent_widget.attrs:
+        readonly = "readonly"
     dis = "disabled" if disabled else ""
     if field.errors:
         invalid = "is-invalid"
@@ -73,7 +86,7 @@ def currency_input(
         <div class="input-group-prepend">\
         <span class="input-group-text">£</span>\
         </div>\
-        <input type="number" name="{field.html_name}" value="{val}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id}" title {dis}>\
+        <input type="number" name="{field.html_name}" value="{val}" step="0.01" class="form-control {invalid} text-right" id="{field.auto_id}" title {dis} {readonly}>\
         {feedback}\
         </div></div></div>'
     else:

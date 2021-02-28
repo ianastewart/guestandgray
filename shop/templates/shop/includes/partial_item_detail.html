@@ -8,7 +8,7 @@
   {% endif %}
   <div class="row">
     <div class="col">
-      <h2 class="my-4 font-georgia">{{ item.name }}</h2>
+      <h2 class="my-4 font-georgia">{{ item.name|titler }}</h2>
       {% if not public %}<h5>Category: {{ item.category.name }}</h5>{% endif %}
     </div>
   </div>
@@ -16,24 +16,25 @@
     <div class="col-xs col-md-6">
       <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
         {% image item.image original as full_image %}
-        <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-500x500 class="img-fluid" %}</a>
+        <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" %}</a>
       </figure>
-      <div class="container mt-3">
-        <div class="row">
+      <div class="d-flex flex-wrap">
           {% for image in images %}
-            <div class="col my-2">
-              <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
-                      data-index="{{ forloop.counter }}">
+            <div class="d-flex flex-column pr-2 pb-2">
                 {% image image original as full_image %}
                 <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>
-              </figure>
+              {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
             </div>
           {% endfor %}
-        </div>
       </div>
     </div>
     <div class="col-xs col-md-6 mb-4 px-4 ">
       <p class="para">{{ item.description }}</p>
+      <hr>
+      <div class="row">
+        <p class="col-12 col-lg-3 text-muted mb-1">Reference: </p>
+        <p class="col-12 col-lg-9">{{ item.ref }}</p>
+      </div>
       {% if item.dimensions %}
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
@@ -46,17 +47,20 @@
           <p class="col-12 col-lg-9">{{ item.condition }}</p>
         </div>
       {% endif %}
-      <div class="row">
-        <p class="para col-12 col-lg-3 text-muted mb-1">Reference: </p>
-        <p class="para col-12 col-lg-9">{{ item.ref }}</p>
-      </div>
+      {% if item.notes %}
+        <div class="row">
+          <p class="col-12 col-lg-3 text-muted mb-1">Notes:</p>
+          <p class="col-12 col-lg-9">{{ item.notes }}</p>
+        </div>
+      {% endif %}
+      <hr>
       {% if item.archive %}
         <p>ARCHIVE - Not For Sale</p>
       {% else %}
         <div class="row">
-          {% if item.show_price and item.price %}
+          {% if item.show_price and item.sale_price %}
             <div class="col-12 col-lg-4 py-2">
-              <h5>Price: £ {{ price|intcomma }}</h5>
+              <h5>Price: £ {{ item.sale_price|intcomma }}</h5>
             </div>
           {% endif %}
           {% if public %}

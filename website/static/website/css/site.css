@@ -27,7 +27,7 @@ h4 {
 }
 
 .bg-guest-lighter {
-  background-color: linen; /* #efefef;*/
+  background-color: #efefef;
 }
 
 .bg-guest-light {
@@ -77,6 +77,28 @@ h4 {
 .navbar-dark .navbar-nav .show > .nav-link {
   color: #FFFFFF;
 }
+
+.cell {
+  width:100px;
+  text-align: right;
+}
+input:read-only {
+  background-color: #eee;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 
 /*.navbar-dark .navbar-nav .nav-link.active {*/
 /*  border: red;*/
@@ -197,6 +219,10 @@ body {
 
 .image-hover-zoom:hover img {
   transform: translateX(-50%) translateY(-50%) scale(1.1);
+}
+
+.form-group label{
+    font-size: .9em;
 }
 
 @media (min-width: 500px) {

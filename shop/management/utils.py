@@ -15,7 +15,8 @@ def sanitize(name):
             base = parts[0]
         elif " (" in bits[0]:
             parts = bits[0].split(" (")
-            bits[0] = parts[0] + "-" + parts[1][0]
+            frags = parts[1].split(")")
+            bits[0] = parts[0] + "-" + frags[0]
             changed = True
             base = parts[0]
         else:

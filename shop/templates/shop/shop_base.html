@@ -1,11 +1,17 @@
-{% load static  %}
+{% load static %}
 <!doctype html>
 <html>
 <head>
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="viewport">
-  <link rel="stylesheet" href="{% static 'coderedcms/vendor/bootstrap/dist/css/bootstrap.min.css' %}"/>
+
+{#{% compress css %}#}
+{#    <link type="text/x-scss" href="{% static 'coderedcms/vendor/bootstrap/scss' %}" rel="stylesheet" media="screen">#}
+{#{% endcompress %}#}
+
+{#  <link rel="stylesheet" href="{% static 'coderedcms/vendor/bootstrap/dist/css/bootstrap.min.css' %}"/>#}
+  <link rel="stylesheet" href="{% static 'website/css/custom.css' %}"/>
 {#  <script src="https://kit.fontawesome.com/95a5d6875e.js" crossorigin="anonymous"></script>#}
   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
   <link rel="stylesheet" href="{% static 'website/css/site.css' %}"/>

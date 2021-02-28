@@ -8,7 +8,6 @@ from shop.views.item_views import (
     ItemUpdateView,
     ItemUpdateAjax,
     ItemTableView,
-    ItemImagesView,
 )
 from shop.views.category_views import (
     CategoryCreateView,
@@ -65,7 +64,7 @@ from shop.views.public_views import (
     BibliographyView,
 )
 from shop.views.import_views import upload_view
-
+from shop.views.image_views import BasicUploadView, ItemImagesView
 
 staff_urls = [
     path("", StaffHomeView.as_view(), name="staff_home"),
@@ -185,7 +184,9 @@ staff_urls = [
     # Search
     path("search/", search_view, {"public": False}, name="search"),
     # Upload
+    # todo upload will be redundant
     path("upload/", upload_view, name="upload"),
+    path("basic-upload/", BasicUploadView.as_view(), name="basic_upload"),
     # Cart
     path("cart/contents/", CartContentsView.as_view(), name="cart_contents"),
     path("cart/price/<int:pk>/", CartPriceView.as_view(), name="cart_price"),

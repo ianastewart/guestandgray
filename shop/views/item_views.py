@@ -1,27 +1,22 @@
 import logging
-import os.path
 from decimal import *
-from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.contrib import messages
-from django.core.files.storage import default_storage
-from django.http import JsonResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import CreateView, UpdateView, DetailView
-from wagtail.core.models import Collection
-from django_tables2 import Column, TemplateColumn, Table
+from django.views.generic import CreateView, DetailView, UpdateView, FormView
+from django_tables2 import Column, TemplateColumn
 from django_tables2_column_shifter.tables import ColumnShiftTable
+
+from shop.filters import ItemFilter
+from shop.forms import ArchiveItemForm, ItemForm, ImageForm
+from shop.models import CustomImage, Item
+from shop.session import cart_add_item, cart_get_item
 from shop.tables import ImageColumn
 
-from shop.forms import ItemForm, ArchiveItemForm
-from shop.models import Item, CustomImage
-
 # from shop.tables import ItemTable
-from table_manager.views import FilteredTableView, AjaxCrudView
-from table_manager.buttons import BsButton
-from shop.filters import ItemFilter
-from shop.session import cart_add_item, cart_get_item
+from table_manager.views import AjaxCrudView, FilteredTableView
 
 logger = logging.getLogger(__name__)
 
@@ -34,20 +29,28 @@ class ItemTable(ColumnShiftTable):
             "name",
             "ref",
             "category",
+            "purchased",
             "cost_price",
             "sale_price",
             "archive",
+            "featured",
+            "visible",
+            "done",
         )
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
 
     category = Column(accessor="category__name", verbose_name="Category")
     image = ImageColumn(accessor="image")
+    images = Column(accessor="id", verbose_name="Photos")
     selection = TemplateColumn(
         accessor="pk",
         template_name="table_manager/custom_checkbox.html",
         verbose_name="",
     )
+
+    def render_images(self, record):
+        return CustomImage.objects.filter(item=record).count()
 
     def get_column_default_show(self):
         self.column_default_show = ["selection", "name", "ref"]
@@ -64,7 +67,7 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
     template_name = "shop/filtered_table.html"
     # template_name="table_manager/generic_table.html"
     heading = "Items"
-    allow_create = False
+    allow_create = True
     allow_detail = True
     auto_filter = True
     filter_right = True
@@ -75,13 +78,38 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
         return initial
 
     def get_queryset(self):
-        return Item.objects.all().select_related("category").order_by("ref")
+        return (
+            Item.objects.all()
+            .select_related("category")
+            .prefetch_related("book")
+            .order_by("ref")
+        )
 
     def get_actions(self):
-        return [("Export to Excel", "export")]
+        return [
+            ("show_price", "Show price"),
+            ("hide_price", "Hide price"),
+            ("visible", " Visible on"),
+            ("invisible", "Visible off"),
+            ("feature", "Featured on"),
+            ("unfeature", "Featured off"),
+            ("category", "Change category"),
+            ("export", "Export to Excel"),
+        ]
 
-    def get_buttons(self):
-        return [BsButton("hello"), BsButton("Bye")]
+    def handle_action(self, request):
+        if "show_price" in request.POST:
+            self.selected_objects.update(show_price=True)
+        elif "hide_price" in request.POST:
+            self.selected_objects.update(show_price=False)
+        elif "visible" in request.POST:
+            self.selected_objects.update(visible=True)
+        elif "invisible" in request.POST:
+            self.selected_objects.update(visible=False)
+        elif "feature" in request.POST:
+            self.selected_objects.update(featured=True)
+        elif "unfeature" in request.POST:
+            self.selected_objects.update(featured=False)
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
@@ -201,108 +229,15 @@ class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
         return super().post(request, *args, **kwargs)
 
 
-class ItemImagesView(LoginRequiredMixin, DetailView):
-    model = Item
-    template_name = "shop/item_images.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # primary image always first in list
-        images = []
-        exclude = 0
-        if self.object.image:
-            images.append(self.object.image)
-            exclude = self.object.image.id
-        for image in CustomImage.objects.filter(item_id=self.object.id).order_by(
-            "title"
-        ):
-            if image.id != exclude:
-                images.append(image)
-        context["images"] = images
-        return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        result = {"error": "Bad command"}
-        if "action" in request.POST:
-            action = request.POST["action"]
-            id = request.POST["id"]
-            try:
-                image = CustomImage.objects.get(id=id)
-            except CustomImage.DoesNotExist:
-                result = {"error": "Bad image id"}
-                return JsonResponse(result)
-
-            if action == "delete":
-                primary = self.object.image_id == image.id
-                # Just remove the reference to the item, leaving image in the database
-                image.item = None
-                image.save()
-                if primary:
-                    # if we delete the primary, try to make first remaining image primary
-                    images = CustomImage.objects.filter(item_id=self.object.id)
-                    if images:
-                        self.object.image = images[0]
-                    else:
-                        self.object.image = None
-                    self.object.save()
-                result = {"success": "deleted"}
-
-            elif action == "primary":
-                self.object.image = image
-                self.object.save()
-                result = {"success": "Made primary"}
-
-        elif request.FILES["myfile"]:
-            myfile = request.FILES["myfile"]
-            names = myfile.name.split(".")
-            error = ""
-            if names[1].lower() in ["jpg", "jpeg"]:
-                short_path = os.path.join("original_images", myfile.name)
-                full_path = os.path.join(settings.MEDIA_ROOT, short_path)
-                if os.path.exists(full_path):
-                    try:
-                        existing_set = CustomImage.objects.filter(file=short_path)
-                        if len(existing_set) > 1:
-                            error = "Multiple copies already in database."
-                        elif len(existing_set) == 1:
-                            existing = existing_set[0]
-                            if existing.item:
-                                error = "Image already in the database. "
-                                if existing.item.id == self.object.id:
-                                    error += "It is linked to this item."
-                                else:
-                                    error += f"It is linked to Ref: {existing.item.ref }, {existing.title}."
-                        else:
-                            os.remove(full_path)
-                    except CustomImage.DoesNotExist:
-                        # if file exists but is not used by a CustomImage, overwrite it
-                        os.remove(full_path)
-            else:
-                error = "File is not a valid JPEG file. Valid extensions are: .jpg, .jpeg, .JPG, .JPEG"
-            if error:
-                result = {"error": error}
-            else:
-                collection_id = Collection.objects.get(name="Root").id
-                path = default_storage.save(full_path, myfile)
-                new_image = CustomImage.objects.create(
-                    file=short_path,
-                    title=self.object.name,
-                    collection_id=collection_id,
-                    uploaded_by_user=request.user,
-                    item=self.object,
-                )
-                result = {"success": new_image.title}
-        return JsonResponse(result)
-
-
 class ItemDetailView(LoginRequiredMixin, DetailView):
     model = Item
     template_name = "shop/item_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["images"] = self.object.images.all().exclude(id=self.object.image_id)
+        context["images"] = (
+            self.object.images.all().exclude(id=self.object.image_id).order_by("-show")
+        )
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         return context
 

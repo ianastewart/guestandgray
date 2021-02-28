@@ -5,7 +5,7 @@
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
   {% if modal %}
     <div class="modal-dialog modal-xl bg-white">
-  <div class="modal-content">
+    <div class="modal-content">
     <div class="modal-header bg-white">
       <h5 class="modal-title">{{ form_title }} Ref: {{ object.ref }}</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -16,106 +16,127 @@
   {% bootstrap_messages %}
   <div {% if modal %}class="modal-body"{% endif %}>
     <div class="row">
-      <div class="col-md-6">
-        {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
-        {% bootstrap_field form.name %}
-        {% bootstrap_field form.description %}
-        {% bootstrap_field form.category %}
-        {% bootstrap_field form.condition %}
-        {% bootstrap_field form.dimensions %}
-        {% bootstrap_field form.provenance %}
-      </div>
-      <div class="col-md-6">
+      <div class="col-md-6 col-lg-4">
         <div class="row">
-          <div class="col-md-6 p-0">
-          <div class="card card-body bg-light py-1 border-dark">
-            {% if object.archive %}
-              <fieldset disabled>
-              <legend>Archived item</legend>
-            {% else %}
-              <fieldset>
-              <legend>Stock item</legend>
-            {% endif %}
-            {% if purchase %}
-              <p>Vendor: {{ purchase.vendor.company }}</p>
-              <p>Purchased on {{ purchase.date|date }}</p>
-            {% else %}
-              <p>Purchase details unknown</p>
-            {% endif %}
-            {% if form.location %}{% bootstrap_field form.location %}{% endif %}
-            {% currency_input form.cost_price layout="horizontal" %}
-            {% currency_input form.restoration_cost layout="horizontal" %}
-            <div class="row">
-              <div class="col-md-6 my-2"><b>Total cost</b></div>
-              <div class="col-md-5 my-2 text-right"><b><span class="text-right" id="id_total_cost">£ {{ total_cost }}</span></b></div>
-            </div>
-            {% currency_input form.sale_price layout="horizontal" %}
-            <div class="row">
-              <div class="col-md-6"></div>
-              <div class="col-md-6 mb-2 text-right my-0"><span>Margin=<span id="id_margin"></span></span>
+          <div class="col-lg-6">
+            <div class="card bg-transparent">
+              {% if object and object.image %}
+                {% image object.image width-250 as card_image %}
+                <img class="card-img-top" src="{{ card_image.url }}">
+              {% endif %}
+              <div class="p-2">
+                {% if object and not object.image %}
+                  <div class=" p-2 text-center">
+                    <i>No image</i>
+                  </div>
+                {% endif %}
+                {#              {% if object %}#}
+                {#                {% if object.image %}#}
+                {#                  {% if object.category.image == object.image %}<p>Image is used as the category image</p>{% endif %}#}
+                {#                  {% if object.category.archive_image == object.image %}<p>Image is used as the archive image</p>#}
+                {#                  {% endif %}#}
+
+                {#              {% if object.category.image != object.image %}#}
+                {#                <button type="submit" class="btn btn-secondary mt-3 mr-2 js-submit" style="width:210px"#}
+                {#                        name="assign_category">Use as#}
+                {#                  category image#}
+                {#                </button>#}
+                {#              {% endif %}#}
+                {#              {% if object.category.archive_image != object.image %}#}
+                {#                <button type="submit" class="btn btn-secondary mt-3 js-submit" style="width:210px"#}
+                {#                        name="assign_archive">#}
+                {#                  Use as#}
+                {#                  archive image#}
+                {#                </button>#}
+                {#              {% endif %}#}
+                {#                {% endif %}#}
+                {#              {% else %}#}
+                {#                You can add an image after you have saved the item.#}
+                {#              {% endif %}#}
+                <a class="btn btn-secondary btn-sm btn-block m-0" href="{% url 'item_images' pk=object.pk %}">Manage
+                  images</a>
               </div>
             </div>
-            {% if not object.archive %}
-              {% currency_input form.minimum_price layout="horizontal" %}
-              <div class="row">
-                <div class="col-md-6"></div>
-                <div class="col-md-6 mb-2 text-right"><span>Margin=<span id="id_min_margin"></span></span>
-                </div>
-              </div>
-              <button type="submit" class="btn btn-secondary js-submit" name="add">Add to cart</button>
-            {% endif %}
-            {% if object.archive %}</fieldset>{% endif %}
-            </fieldset>
           </div>
-          <div class="card card-body border-dark mt-2 py-1">
-            <fieldset>
-              <legend>Website</legend>
+          <div class="col-lg-6 pl-0">
+            <div class="card card-body">
+              <h5>Key settings</h5>
+              {% bootstrap_field form.state show_label=False %}
               {% checkbox form.visible %}
               {% if not object.archive %}
                 {% checkbox form.featured %}
                 {% checkbox form.show_price %}
-              {% endif %}
-              <br>
-            </fieldset>
-          </div>
-          </div>
-          <div class="col-md-6 mx-0">
-            <div class="card">
-              {% if object and object.image %}
-                {% image object.image width-250 as card_image %}
-                <img class="card-img-top" src="{{ card_image.url }}">
-              {% else %}
-                <div class="card-body bg-white text-center" style="height:400px;">
-                  <i>No image</i>
-                </div>
+                {% checkbox form.done %}
               {% endif %}
             </div>
-            {% if object %}
-              {% if object.image %}
-                {% if object.category.image == object.image %}<p>Image is used as the category image</p>{% endif %}
-                {% if object.category.archive_image == object.image %}<p>Image is used as the archive image</p>
-                {% endif %}
-                <a class="btn btn-secondary mt-3" style="width:210px" href="{% url 'item_images' pk=object.pk %}">Manage
-                  images</a><br>
-                {% if object.category.image != object.image %}
-                  <button type="submit" class="btn btn-secondary mt-3 mr-2 js-submit" style="width:210px"
-                          name="assign_category">Use as
-                    category image
-                  </button>
-                {% endif %}
-                {% if object.category.archive_image != object.image %}
-                  <button type="submit" class="btn btn-secondary mt-3 js-submit" style="width:210px"
-                          name="assign_archive">
-                    Use as
-                    archive image
-                  </button>
-                {% endif %}
-              {% endif %}
-            {% else %}
-              You can add an image after you have saved the item.
-            {% endif %}
           </div>
         </div>
+        {% bootstrap_field form.category %}
+        <div class="card card-body bg-light py-1 border-dark">
+          {% if object.archive %}
+            <fieldset disabled>
+            <legend>Archived item</legend>
+          {% else %}
+            <fieldset>
+            <legend>Stock item</legend>
+          {% endif %}
+          {% if item.lot %}
+            <p>Vendor: {{ item.lot.purchase.vendor.company }}<br>
+              Purchased on {{ item.lot.purchase.date|date }}</p>
+          {% else %}
+            <p> Purchase details unknown</p>
+          {% endif %}
+          <table>
+            {% if form.location %}
+              <tr>
+                <td width="140px;">{% bootstrap_label "Location" %}</td>
+                <td colspan="3">{% bootstrap_field form.location show_label=False %}</td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td width="140px;">Purchase price</td>
+              <td>£ <input type="number" name="purchase_price" id="id_cost_price" class="cell"
+                           value="{{ form.cost_price.initial }}"></td>
+            </tr>
+            <tr>
+              <td width="140px;">Restoration cost</td>
+              <td>£ <input type="number" name="restoration_cost" id="id_restoration_cost" class="cell"
+                           value="{{ form.restoration_price.initial }}"></td>
+            </tr>
+            <tr>
+              <td width="140px;">Total cost</td>
+              <td>£ <input type="number" name="total_cost" id="id_total_cost" class="cell" readonly></td>
+            </tr>
+            <tr class="mt-3">
+              <td width="140px;">Sale price</td>
+              <td> £ <input type="number" name="sale_price" id="id_sale_price" class="cell"
+                            value="{{ form.sale_price.initial }}">
+              <td>
+              <td class="small"><span id="id_margin"></span></td>
+            </tr>
+            <tr>
+              <td width="140px;">Minimum price</td>
+              <td> £ <input type="number" name="minimum_price" id="id_minimum_price" class="cell"
+                            value="{{ form.minimum_price.initial }}">
+              <td></td>
+              <td class="small"><span id="id_min_margin"></span></td>
+            </tr>
+          </table>
+          <button type="submit" class="btn btn-secondary js-submit" name="add">Add to cart</button>
+          {% if object.archive %}</fieldset>{% endif %}
+          </fieldset>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-8">
+        {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
+        {% bootstrap_field form.name %}
+        {% bootstrap_field form.description %}
+        {% bootstrap_field form.condition %}
+        {% bootstrap_field form.dimensions %}
+        {% bootstrap_field form.provenance %}
+        {% bootstrap_field form.notes %}
+        {% bootstrap_field form.book %}
+
       </div>
     </div>
   </div>
@@ -140,28 +161,28 @@
   </div>
   {% if modal %}</div></div>{% endif %}
 </form>
-{#<script src="{% static 'shop/js/margin_calc.js' %}"></script>#}
-{#<script>#}
-{#    $('body').on('keydown', 'input, select', function (e) {#}
-{#        if (e.key === "Enter") {#}
-{#            var self = $(this), form = self.parents('form:eq(0)'), focusable, next;#}
-{#            focusable = form.find('input,a,select,button,textarea').filter(':visible');#}
-{#            next = focusable.eq(focusable.index(this) + 1);#}
-{#            if (next.length) {#}
-{#                next.focus();#}
-{#            } else {#}
-{#                form.submit();#}
-{#            }#}
-{#            return false;#}
-{#        }#}
-{#    });#}
-{##}
-{#    margin_calc();#}
-{##}
-{#    $('#id_restoration_cost, #id_sale_price, #id_minimum_price').change(function () {#}
-{#        margin_calc();#}
-{#    });#}
-{#</script>#}
+<script src="{% static 'shop/js/margin_calc.js' %}"></script>
+<script>
+  $('body').on('keydown', 'input, select', function (e) {
+    if (e.key === "Enter") {
+      var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+      focusable = form.find('input,a,select,button,textarea').filter(':visible');
+      next = focusable.eq(focusable.index(this) + 1);
+      if (next.length) {
+        next.focus();
+      } else {
+        form.submit();
+      }
+      return false;
+    }
+  });
+
+  margin_calc();
+
+  $('.cell').change(function () {
+    margin_calc();
+  });
+</script>
 
 
 

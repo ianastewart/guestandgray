@@ -16,6 +16,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 class FilteredTableView(ExportMixin, SingleTableView):
     """
     Generic view for django tables 2 with filter
@@ -85,7 +86,9 @@ class FilteredTableView(ExportMixin, SingleTableView):
                     lines = value
                 elif key in self.filter_class.base_filters and key not in filter_data:
                     filter_data[key] = value
-            self.filter = self.filter_class(filter_data, queryset=query_set, request=self.request)
+            self.filter = self.filter_class(
+                filter_data, queryset=query_set, request=self.request
+            )
             query_set = self.filter.qs
             if lines:
                 self.filter.data["per_page"] = lines
@@ -134,7 +137,9 @@ class FilteredTableView(ExportMixin, SingleTableView):
 
         self.selected_objects = self.post_query_set(request)
         if not self.selected_objects:
-            self.selected_objects = self.model.objects.filter(pk__in=request.POST.getlist("selection"))
+            self.selected_objects = self.model.objects.filter(
+                pk__in=request.POST.getlist("selection")
+            )
 
         path = request.path + request.POST["query"]
         if "export" in request.POST:
@@ -164,9 +169,11 @@ class FilteredTableView(ExportMixin, SingleTableView):
                 filter_data = QueryDict(query)
                 query_set = self.get_queryset()
                 if self.filter_class:
-                    f = self.filter_class(filter_data, queryset=query_set, request=self.request)
+                    f = self.filter_class(
+                        filter_data, queryset=query_set, request=self.request
+                    )
                     query_set = f.qs
-                return self.process_table_data(query_set, no_list=True)
+                return self.process_table_data(query_set)
         return None
 
     def handle_action(self, request):
@@ -270,7 +277,9 @@ class AjaxCrudView(ModelFormMixin, View):
                             # default save action only works for a model form
                             if hasattr(self.form, "save"):
                                 self.save_object(data, **kwargs)
-                                action_response = self.handle_action("save", pk=self.object.pk)
+                                action_response = self.handle_action(
+                                    "save", pk=self.object.pk
+                                )
 
             if action_response is None:
                 for key in request.POST.keys():
@@ -292,7 +301,9 @@ class AjaxCrudView(ModelFormMixin, View):
             else:
                 next_url = ""
                 next_is_ajax = False
-            return JsonResponse(self._set_next_url(data, next_url=next_url, next_is_ajax=next_is_ajax))
+            return JsonResponse(
+                self._set_next_url(data, next_url=next_url, next_is_ajax=next_is_ajax)
+            )
 
         except Exception as e:
             message = "Exception in POST"
@@ -317,7 +328,9 @@ class AjaxCrudView(ModelFormMixin, View):
 
     def delete(self, data):
         self.instance.delete()
-        messages.add_message(self.request, messages.INFO, f"{str(self.instance)} was deleted")
+        messages.add_message(
+            self.request, messages.INFO, f"{str(self.instance)} was deleted"
+        )
 
     def next_url(self, pk=None):
         """ called after save so a new form can be shown in a modal """
@@ -368,8 +381,15 @@ class AjaxCrudView(ModelFormMixin, View):
         trace = f"{exc_obj}\n{filename}, line {lineno}\n{line}"
         logger.error(f"{message}\n{trace}")
         trace = mark_safe(trace.replace("\n", "<br>"))
-        context = {"message": message, "path": self.request.path, "trace": trace, "debug": settings.DEBUG}
+        context = {
+            "message": message,
+            "path": self.request.path,
+            "trace": trace,
+            "debug": settings.DEBUG,
+        }
         if hasattr(e, "template_debug"):
             context["template_name"] = e.template_debug["name"]
             context["during"] = e.template_debug["during"]
-        return render_to_string("table_manager/modal_error_template.html", context, request=None)
+        return render_to_string(
+            "table_manager/modal_error_template.html", context, request=None
+        )
