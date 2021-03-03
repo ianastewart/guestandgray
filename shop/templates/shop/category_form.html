@@ -12,7 +12,23 @@
       <div class="col col-lg-8">
         <form method="post" class="form">
           {% csrf_token %}
-          {% bootstrap_form form layout="horizontal" %}
+          {% bootstrap_field form.name %}
+          {% bootstrap_field form.short_name %}
+          {% bootstrap_field form.description %}
+          <div class="row">
+            <div class="col-4">
+              {% bootstrap_field form.category_ref %}
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-sm btn-secondary mt-4 js-search" id="category_search">Change</button>
+            </div>
+            <div class="col-4">
+              {% bootstrap_field form.archive_ref %}
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-sm btn-secondary mt-4" id="archive_search">Change</button>
+            </div>
+          </div>
           {% buttons %}
             <button type="submit" class="btn btn-primary">Save</button>
             <a class="btn btn-outline-secondary" href="{{ category.get_absolute_url }}">View on website</a>
@@ -21,26 +37,63 @@
       </div>
       <div class="col col-lg-4">
         {% if category.image %}
-          {% image category.image width-300 %}
-          <br> Item ref: {{ category.image.item.ref }} <br><br>
+          <img id="id_item_image" width="250" src="{{ category.image.file.url }}">
+          <br> Item ref: <span id="catRef">{{ category.image.item.ref }}</span><br><br>
         {% else %}:
           <div class="card card-body bg-white text-center" style="width:300px; height:250px">
             <i>No category image</i>
           </div>
         {% endif %}
         {% if category.archive_image %}
-          {% image category.image width-300 %}
+          <img id="id_archive_image" width="250" src="{{ category.archive_image.file.url }}">
           <br> {{ category.archive_image.item.ref }} <br>
         {% else %}
           <div class="card card-body bg-white text-center" style="width:300px; height:200px">
             <i>No archive image</i>
           </div>
         {% endif %}
-        <p><i>To change the category's image, edit the desired object in that category.</i></p>
       </div>
     </div>
   </div>
 
+    <div id="images_url" class="d-none">{{ images_url }}</div>
+  <div id="category_id" class="d-none"> {{ category.id }}</div>
+
+  <script>
+    $("#category_search").click(function() {
+      var ref = document.getElementById("id_category_ref").value;
+      var target = "#id_item_image";
+      ajax_get(ref, target);
+    })
+
+    $("#archive_search").click(function() {
+      var ref = document.getElementById("id_archive_ref").value;
+      var target = "#id_archive_image";
+      ajax_get(ref, target);
+    })
+
+    function ajax_get(ref, target) {
+      $.ajax({
+        url: document.getElementById("images_url").innerText,
+        type: 'get',
+        dataType: 'json',
+        data: {
+          ref: ref,
+          category: document.getElementById("category_id").innerText,
+          target: target
+        },
+        success: function (data) {
+          if (data.image) {
+            $(target).attr("src", data.image);
+          }
+        },
+        error: function (e) {
+          alert(e);
+        },
+        timeout: 10000
+      });
+    }
+  </script>
 
 
 {% endblock %}

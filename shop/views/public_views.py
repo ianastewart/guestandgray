@@ -56,7 +56,14 @@ def item_view(request, slug, pk):
         context["category"] = category
     context["item"] = item
     # context["price"] = int(item.sale_price)
-    context["images"] = item.images.filter(show=True).exclude(id=item.image_id)
+    images = [item.image]
+    ims = item.images.filter(show=True).exclude(id=item.image_id)
+    if len(ims) > 1:
+        for im in ims:
+            images.append(im)
+    context["images"] = images
+    if len(context["images"]) == 1:
+        context["images"] == None
     form = EnquiryForm()
     form.fields["subject"].initial = f"{item.name} ({item.ref})"
     context["form"] = form

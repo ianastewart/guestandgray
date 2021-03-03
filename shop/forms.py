@@ -33,6 +33,9 @@ class CategoryForm(ModelForm):
             .order_by("name"),
         )
 
+    category_ref = forms.CharField(required=False, label="Item ref for category image")
+    archive_ref = forms.CharField(required=False, label="Item ref for archive image")
+
 
 class ItemForm(ModelForm):
     class Meta:

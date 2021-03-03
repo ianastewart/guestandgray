@@ -213,12 +213,20 @@ body {
   transform: translateX(-50%) translateY(-50%);
 }
 
+.primary img:hover {
+  cursor: zoom-in;
+}
+
 .image-hover-zoom img {
   transition: transform 1s ease-in-out;
 }
 
 .image-hover-zoom:hover img {
   transform: translateX(-50%) translateY(-50%) scale(1.1);
+}
+
+.thumb img:hover {
+  cursor: pointer;
 }
 
 .form-group label{

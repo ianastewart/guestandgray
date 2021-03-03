@@ -15,6 +15,7 @@ from shop.views.category_views import (
     CategoryTreeView,
     CategoryListView,
     CategoryDetailView,
+    CategoryImagesView,
 )
 from shop.views.contact_views import (
     ContactCreateView,
@@ -89,6 +90,7 @@ staff_urls = [
         name="category_update",
     ),
     path("category/tree/", CategoryTreeView.as_view(), name="category_tree"),
+    path("category/images/", CategoryImagesView.as_view(), name="category_images"),
     path("category/list/", CategoryListView.as_view(), name="category_list"),
     path(
         "category/detail/<int:pk>/",

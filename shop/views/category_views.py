@@ -2,11 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
+from django.views.generic import CreateView, DetailView, TemplateView, UpdateView, View
 
 from shop.cat_tree import *
 from shop.forms import CategoryForm
-from shop.models import Category
+from shop.models import Category, Item
 from shop.tables import CategoryTable
 from table_manager.views import FilteredTableView
 
@@ -30,7 +30,16 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
         initial = super().get_initial()
         cat = self.object.get_parent()
         initial["parent_category"] = cat.pk
+        if cat.image:
+            initial["category_ref"] = cat.image.item.ref
+        if cat.archive_image:
+            initial["archive_ref"] = cat.archive_image.item.ref
         return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["images_url"] = reverse("category_images")
+        return context
 
     def form_valid(self, form):
         old_parent = self.object.get_parent()
@@ -76,9 +85,23 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["item_list"] = self.object.item_set.all().order_by("ref")
+        context["images_url"] = reverse("category_images")
         return context
 
     def post(self, request, **kwargs):
         if "delete" in request.POST:
             self.get_object().delete()
         return redirect("category_list")
+
+
+class CategoryImagesView(View):
+    def get(self, request, *args, **kwargs):
+        ref = request.GET["ref"]
+        item = Item.objects.filter(ref=ref).first()
+        category = Category.objects.get(id=request.GET["category"])
+        data = {}
+        if item and item.image is not None:
+            category.image = item.image
+            category.save()
+            data["image"] = item.image.file.url
+        return JsonResponse(data)
