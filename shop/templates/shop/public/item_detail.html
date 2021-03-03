@@ -58,14 +58,16 @@
         src: '{{ item.image.file.url }}',
         w:  {{ item.image.width }},
         h:  {{ item.image.height }},
-        title: '{{ item.name }}'
+        title: '{{ item.name }}',
+        index: 0
       },
       {% for item in images %}
         {
           src: '{{ item.file.url }}',
           w:  {{ item.width }},
           h:  {{ item.height }},
-          title: '{{ item.name }}'
+          title: '{{ item.name }}',
+          index: {{ forloop.counter }}
         },
       {% endfor %}
     ];
@@ -73,7 +75,7 @@
     $("figure").on("click", function (event) {
       event.preventDefault();
       var options = {
-        index: parseInt(this.dataset.index),
+        index: 0,
         bgOpacity: 0.85,
         showHideOpacity: true
       }
@@ -81,5 +83,9 @@
       var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
       lightBox.init();
     });
+
+    $(".thumb").click(function() {
+    $("#main_image").attr("src", $(this).attr("full"));
+});
   </script>
 {% endblock %}

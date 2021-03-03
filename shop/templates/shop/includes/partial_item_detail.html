@@ -14,15 +14,18 @@
   </div>
   <div class="row">
     <div class="col-xs col-md-6">
+    <div class="card p-0 mb-3 border-0 bg-transparent d-none d-sm-block " style="height:500px;">
       <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
         {% image item.image original as full_image %}
-        <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" %}</a>
+        <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" id="main_image" %}</a>
       </figure>
-      <div class="d-flex flex-wrap">
+    </div>
+      <div class="thumb d-flex flex-wrap">
           {% for image in images %}
             <div class="d-flex flex-column pr-2 pb-2">
                 {% image image original as full_image %}
-                <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>
+{#                <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>#}
+              {% image image max-100x100 class="thumb" full=full_image.url %}
               {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
             </div>
           {% endfor %}
