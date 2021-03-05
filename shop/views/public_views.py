@@ -92,7 +92,7 @@ def catalogue_view(request, slugs=None, archive=False):
         template_name = "shop/public/item_grid.html"
         objects = category.item_set.filter(
             image__isnull=False, archive=archive, visible=True
-        ).order_by("featured", "-price")
+        ).order_by("featured", "rank", "-sale_price")
         context["count"] = objects.count()
         paginator = Paginator(objects, 32)
         page = request.GET.get("page")

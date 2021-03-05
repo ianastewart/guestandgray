@@ -2,8 +2,7 @@
 {% load wagtailimages_tags static bootstrap4 %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
-<div class="container">
   {% bootstrap_messages %}
-</div>
-{% include 'shop/includes/partial_item_detail.html' with public=False %}
+  {% include 'shop/includes/partial_item_detail.html' with public=False %}
+  {% include 'shop/includes/photoswipe.html' %}
 {% endblock %}

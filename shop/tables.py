@@ -1,20 +1,20 @@
-import django_tables2 as tables
-from django.utils.safestring import mark_safe
 from django.urls import reverse
-from django.contrib.humanize.templatetags.humanize import intcomma
+from django.utils.safestring import mark_safe
 from django_tables2.utils import A
 from django_tables2_column_shifter.tables import ColumnShiftTable
-from table_manager.tables import *
+
 from shop.models import (
-    Category,
-    Item,
-    Invoice,
-    Purchase,
-    Contact,
-    Enquiry,
     Book,
+    Category,
     Compiler,
+    Contact,
+    CustomImage,
+    Enquiry,
+    Invoice,
+    Item,
+    Purchase,
 )
+from table_manager.tables import *
 
 
 class CategoryTable(tables.Table):
@@ -43,6 +43,45 @@ class ImageColumn(tables.Column):
     def render(self, value):
         image = value.get_rendition("max-100x100")
         return mark_safe(f'<img src="{image.file.url}">')
+
+
+class ItemTable(ColumnShiftTable):
+    class Meta:
+        model = Item
+        fields = (
+            "selection",
+            "name",
+            "ref",
+            "category",
+            "purchased",
+            "cost_price",
+            "sale_price",
+            "archive",
+            "featured",
+            "visible",
+            "done",
+        )
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
+
+    category = tables.Column(accessor="category__name", verbose_name="Category")
+    image = ImageColumn(accessor="image")
+    images = tables.Column(accessor="id", verbose_name="Photos")
+    selection = tables.TemplateColumn(
+        accessor="pk",
+        template_name="table_manager/custom_checkbox.html",
+        verbose_name="",
+    )
+
+    def render_images(self, record):
+        return CustomImage.objects.filter(item=record).count()
+
+    def get_column_default_show(self):
+        self.column_default_show = ["selection", "name", "ref"]
+        return super().get_column_default_show()
+
+    def render_sale_price(self, value):
+        return int(value)
 
 
 class ContactTable(tables.Table):
@@ -121,6 +160,7 @@ class PurchaseTable(ColumnShiftTable):
     invoice_total = CurrencyColumn()
     buyers_premium = CurrencyColumn()
     vat = RightAlignedColumn()
+
     # items = RightAlignedColumn(accessor="item_set")
 
     def render_lots(self, value):

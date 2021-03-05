@@ -5,15 +5,13 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, UpdateView, FormView
-from django_tables2 import Column, TemplateColumn
-from django_tables2_column_shifter.tables import ColumnShiftTable
+from django.views.generic import CreateView, DetailView, UpdateView
 
 from shop.filters import ItemFilter
-from shop.forms import ArchiveItemForm, ItemForm, ImageForm
+from shop.forms import ArchiveItemForm, ItemForm
 from shop.models import CustomImage, Item
 from shop.session import cart_add_item, cart_get_item
-from shop.tables import ImageColumn
+from shop.tables import ItemTable
 
 # from shop.tables import ItemTable
 from table_manager.views import AjaxCrudView, FilteredTableView
@@ -21,51 +19,11 @@ from table_manager.views import AjaxCrudView, FilteredTableView
 logger = logging.getLogger(__name__)
 
 
-class ItemTable(ColumnShiftTable):
-    class Meta:
-        model = Item
-        fields = (
-            "selection",
-            "name",
-            "ref",
-            "category",
-            "purchased",
-            "cost_price",
-            "sale_price",
-            "archive",
-            "featured",
-            "visible",
-            "done",
-        )
-        attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
-
-    category = Column(accessor="category__name", verbose_name="Category")
-    image = ImageColumn(accessor="image")
-    images = Column(accessor="id", verbose_name="Photos")
-    selection = TemplateColumn(
-        accessor="pk",
-        template_name="table_manager/custom_checkbox.html",
-        verbose_name="",
-    )
-
-    def render_images(self, record):
-        return CustomImage.objects.filter(item=record).count()
-
-    def get_column_default_show(self):
-        self.column_default_show = ["selection", "name", "ref"]
-        return super().get_column_default_show()
-
-    def render_sale_price(self, value):
-        return int(value)
-
-
 class ItemTableView(LoginRequiredMixin, FilteredTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
     template_name = "shop/filtered_table.html"
-    # template_name="table_manager/generic_table.html"
     heading = "Items"
     allow_create = True
     allow_detail = True
@@ -82,7 +40,7 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
             Item.objects.all()
             .select_related("category")
             .prefetch_related("book")
-            .order_by("ref")
+            .order_by("featured", "rank", "-sale_price")
         )
 
     def get_actions(self):

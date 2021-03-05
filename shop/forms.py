@@ -61,6 +61,7 @@ class ItemForm(ModelForm):
             "featured",
             "done",
             "book",
+            "rank",
         )
         widgets = {
             "description": forms.Textarea(attrs={"rows": 6}),
@@ -71,6 +72,12 @@ class ItemForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["cost_price"].widget.attrs["readonly"] = "readonly"
+
+    def clean_rank(self):
+        rank = self.cleaned_data["rank"]
+        if rank < 1 or rank > 10:
+            raise forms.ValidationError("Rank must be between 1 and 10")
+        return self.cleaned_data["rank"]
 
 
 class ArchiveItemForm(ItemForm):

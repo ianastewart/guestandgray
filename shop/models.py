@@ -122,6 +122,7 @@ class Item(index.Indexed, models.Model):
     visible = models.BooleanField(default=True)
     featured = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
+    rank = models.SmallIntegerField(default=10)
     image = models.ForeignKey(
         "CustomImage",
         null=True,

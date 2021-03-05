@@ -96,12 +96,25 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
 
 class CategoryImagesView(View):
     def get(self, request, *args, **kwargs):
-        ref = request.GET["ref"]
-        item = Item.objects.filter(ref=ref).first()
-        category = Category.objects.get(id=request.GET["category"])
+        ref = request.GET.get("ref", None)
+        target = request.GET.get("target", None)
+        cat = request.GET.get("category", None)
+        archive = "archive" in request.GET.get("target")
         data = {}
-        if item and item.image is not None:
-            category.image = item.image
-            category.save()
-            data["image"] = item.image.file.url
+        if ref and target and cat:
+            try:
+                item = Item.objects.get(ref=ref)
+                category = Category.objects.get(id=cat)
+                if item.image is not None:
+                    if archive:
+                        category.archive_image = item.image
+                    else:
+                        category.image = item.image
+                    category.save()
+                    data["image"] = item.image.file.url
+                else:
+                    data["error"] = f"Item {ref} has no image"
+
+            except Item.DoesNotExist:
+                data["error"] = f"There is no item with reference {ref}"
         return JsonResponse(data)

@@ -13,13 +13,14 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs col-md-6">
-    <div class="card p-0 mb-2 border-0 bg-transparent d-none d-sm-block ">
+    <div class="col col-lg-6">
+    <div class="card p-0 mb-2 border-0 bg-transparent">
       <figure class="image primary mb-0" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
         {% image item.image original as full_image %}
         <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" id="main_image" %}</a>
       </figure>
     </div>
+      {% if images|length > 1 %}
       <div class="thumb d-flex flex-wrap">
           {% for image in images %}
             <div class="d-flex flex-column pr-2 pb-2">
@@ -30,8 +31,9 @@
             </div>
           {% endfor %}
       </div>
+    {% endif %}
     </div>
-    <div class="col-xs col-md-6 mb-4 px-4 ">
+    <div class="col-lg-6 mb-4 px-4 ">
       <p class="para">{{ item.description }}</p>
       <hr>
       <div class="row">
@@ -50,14 +52,7 @@
           <p class="col-12 col-lg-9">{{ item.condition }}</p>
         </div>
       {% endif %}
-      {% if item.notes %}
-        <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Notes:</p>
-          <p class="col-12 col-lg-9">{{ item.notes }}</p>
-        </div>
-      {% endif %}
-      <hr>
-      {% if item.archive %}
+          {% if item.archive %}
         <p>ARCHIVE - Not For Sale</p>
       {% else %}
         <div class="row">
@@ -73,6 +68,21 @@
           {% endif %}
         </div>
       {% endif %}
+
+      {% if item.notes %}
+        <div class="row">
+          <p class="col-12 col-lg-3 text-muted mb-1">Notes:</p>
+          <p class="col-12 col-lg-9">{{ item.notes }}</p>
+        </div>
+      {% endif %}
+      {% if item.book %}
+        <div class="row">
+          <p class="col-12 col-lg-3 text-muted mb-1">Recommended book:</p>
+          <p class="col-12 col-lg-9">{{ item.book.title }}</p>
+        </div>
+      {% endif %}
+      <hr>
+
       {% if item.provenance %}
         <p class="mt-4">{{ item.provenance }}</p>
       {% endif %}
@@ -96,3 +106,52 @@
     </div>
   </div>
 </div>
+</div>
+
+{% block custom_scripts %}
+<script>
+    $(".thumb").click(function() {
+      $("#main_image").attr("src", $(this).attr("full"));
+    });
+</script>
+
+
+
+
+  <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
+  <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
+  <script>
+    var pswpElement = document.querySelectorAll('.pswp')[0];
+    // build the json album images collection
+    var items = [
+      {
+        src: '{{ item.image.file.url }}',
+        w:  {{ item.image.width }},
+        h:  {{ item.image.height }},
+        title: '{{ item.name }}',
+        index: 0
+      },
+      {% for item in images %}
+        {
+          src: '{{ item.file.url }}',
+          w:  {{ item.width }},
+          h:  {{ item.height }},
+          title: '{{ item.name }}',
+          index: {{ forloop.counter }}
+        },
+      {% endfor %}
+    ];
+
+    $("figure").on("click", function (event) {
+      event.preventDefault();
+      var options = {
+        index: 0,
+        bgOpacity: 0.85,
+        showHideOpacity: true
+      }
+      // Initialize PhotoSwipe
+      var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
+      lightBox.init();
+    });
+  </script>
+{% endblock %}
