@@ -27,11 +27,10 @@
             <div class="card card-body bg-white text-center mb-2 style=width">
               <div class="h5 font-georgia text-dark m-0 text-center" style="height:2.5rem;">{{ category.name }}</div>
               <p class="caption text-center pt-1">({{ category.count }} objects)</p>
-              <div href="
+              <a href="
                   {% if archive %}{{ category.get_archive_url }}{% else %}{{ category.get_absolute_url }}{% endif %}">
                 <img src="{{ card_image.url }}">
-                </a>
-              </div>
+              </a>
             </div>
           </div>
         </div>
