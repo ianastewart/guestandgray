@@ -15,15 +15,7 @@ MEDIA_FILE = "media.zip"
 def _create_database(dbuser, pw, db):
     """Creates role and database"""
     print(yellow(f"Start create database {db}"))
-    db_users = sudo(
-        "psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (dbuser),
-        user="postgres",
-    )
-    if not dbuser in db_users:
-        sudo(
-            "psql -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\"" % (dbuser, pw),
-            user="postgres",
-        )
+    _create_user(dbuser, pw)
     databases = sudo(
         'psql -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
         user="postgres",
@@ -74,6 +66,7 @@ def _download_database(local_dev_folder, app, db):
         os.rename(local_path, new_path)
     sudo(f"mkdir -p {site_folder}/{BACKUP_FOLDER}", user="django")
     source_path = f"{site_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
+    _create_user(dbuser, pw=dbuser)
     _grant_priviliges("django", "gray")
     sudo(f"pg_dump {db} -h localhost -Fc -x -U gray >{source_path}", user="django")
     get(source_path, local_path)
@@ -102,8 +95,6 @@ def _upload_dev_db(local_dev_folder, db):
     cmd = f'psql -U postgres -c "{sql}"'
     result = subprocess.check_output(cmd, shell=True)
     print(result)
-
-
 
     os.system(f'psql -U postgres -c "DROP DATABASE {db}"')
     os.system(f'psql -U postgres -c "CREATE DATABASE {db} WITH OWNER django"')

@@ -2,6 +2,7 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import title
 from shop.session import cart_items
+from shop.cat_tree import tree
 from django.contrib import humanize
 
 register = template.Library()
@@ -26,11 +27,36 @@ def breadcrumb(node_list, archive=False):
 
 @register.simple_tag(takes_context=True)
 def shop_is_active_page(context, page, link):
-    # special handling for catalogue andf archive menu items, because they are a link, not a page
+    # special handling for catalogue and archive menu items, because they are a link, not a page
+    # returns True if on catalogue or archive page
     current_url = context["request"].path
     if page:
         return current_url == page.get_url(context["request"])
     return link in current_url
+
+
+@register.simple_tag(takes_context=False)
+def is_catalogue_menu(value):
+    if "link" in value:
+        return value["link"] in ["/catalogue"]
+    return False
+
+
+@register.simple_tag(takes_context=False)
+def is_archive_menu(value):
+    if "link" in value:
+        return value["link"] in ["/archive"]
+    return False
+
+
+@register.simple_tag(takes_context=False)
+def category_tree():
+    return tree()
+
+
+@register.simple_tag(takes_context=False)
+def archive_tree():
+    return tree(archive=True)
 
 
 @register.simple_tag(takes_context=False)

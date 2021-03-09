@@ -6,9 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
-
+from django.http import JsonResponse
 from shop.filters import ItemFilter
-from shop.forms import ArchiveItemForm, ItemForm
+from shop.forms import ArchiveItemForm, ItemForm, ItemCategoriseForm
 from shop.models import CustomImage, Item
 from shop.session import cart_add_item, cart_get_item
 from shop.tables import ItemTable
@@ -51,7 +51,7 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
             ("invisible", "Visible off"),
             ("feature", "Featured on"),
             ("unfeature", "Featured off"),
-            ("category", "Change category"),
+            ("category", "Change category", reverse("item_categorise")),
             ("export", "Export to Excel"),
         ]
 
@@ -68,6 +68,11 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
             self.selected_objects.update(featured=True)
         elif "unfeature" in request.POST:
             self.selected_objects.update(featured=False)
+        elif "category" in request.POST:
+            self.selected_objects.update(category_id=request.POST["new_category"])
+            next_url = reverse("item_list")
+            data = {"next_url": next_url, "target_id": request.POST["x_target_id"]}
+            return JsonResponse(data)
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
@@ -218,3 +223,12 @@ class ItemDetailAjax(LoginRequiredMixin, AjaxCrudView):
         context["images"] = self.object.images.all().exclude(id=self.object.image_id)
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         return context
+
+
+class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):
+    """ get the new category fro selected items """
+
+    template_name = "shop/includes/partial_categorise_form.html"
+    form_class = ItemCategoriseForm
+    target_id = "#modal-action-form"
+    title = "Change category"

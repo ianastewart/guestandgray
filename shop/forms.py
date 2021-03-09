@@ -25,6 +25,7 @@ class CategoryForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["parent_category"] = ModelChoiceField(
             empty_label=None,
+            required=False,
             queryset=Category.objects.all()
             .exclude(
                 pk__in=self.instance.get_descendants().values_list("pk", flat=True)
@@ -35,6 +36,26 @@ class CategoryForm(ModelForm):
 
     category_ref = forms.CharField(required=False, label="Item ref for category image")
     archive_ref = forms.CharField(required=False, label="Item ref for archive image")
+
+    def clean_parent_category(self):
+        parent = self.cleaned_data["parent_category"]
+        if parent is None:
+            if self.instance and self.instance.get_root().pk == self.instance.pk:
+                return parent
+            raise forms.ValidationError("Parent category cannot be empty")
+        return parent
+
+
+class ItemCategoriseForm(ModelForm):
+    class Meta:
+        model = Category
+        fields = ("id",)
+
+    new_category = ModelChoiceField(
+        empty_label=None,
+        required=True,
+        queryset=Category.objects.all().order_by("name"),
+    )
 
 
 class ItemForm(ModelForm):

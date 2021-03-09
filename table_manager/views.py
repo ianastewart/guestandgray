@@ -147,9 +147,12 @@ class FilteredTableView(ExportMixin, SingleTableView):
                 self.export_name = self.heading
             return redirect(path + "&_export=xlsx" "")
 
-        success_url = self.handle_action(request)
-        if success_url:
-            return redirect(success_url)
+        response = self.handle_action(request)
+        if response:
+            if response.__class__.__name__ in ["JsonResponse", "HttpResponse"]:
+                return response
+            # assume its a path to redirect to
+            return redirect(response)
         if "per_page" in request.POST:
             path += f"&per_page={request.POST['per_page']}"
         return redirect(path)
@@ -179,7 +182,12 @@ class FilteredTableView(ExportMixin, SingleTableView):
     def handle_action(self, request):
         """
         The actions are in request.POST as normal
-        self.selected_objects is a queryset that contains the selection to be processed by the action"""
+        self.selected_objects is a queryset that contains the selection to be processed by the action
+        Possible return values:
+        - None: (default) - reloads the last path
+        - url - redirect to the url
+        - JsonResponse - return it
+        """
         return None
 
 
@@ -215,6 +223,7 @@ class AjaxCrudView(ModelFormMixin, View):
             if not no_push:
                 push(request, return_url, True)
             data = {}
+            self.path = request.path
             data["path"] = request.path
             data["target_id"] = self.target_id
             data["html"] = self.render(request, **kwargs)
@@ -230,6 +239,8 @@ class AjaxCrudView(ModelFormMixin, View):
                 self.form = self.get_form()
             self.context = self.get_context_data()
             self.context["buttons"] = self.get_buttons()
+            self.context["x_target_id"] = self.target_id
+            self.context["x_path"] = self.path
             html = render_to_string(self.template_name, self.context, request)
         except TemplateDoesNotExist as e:
             html = self._format_exception("Template does not exist", e)

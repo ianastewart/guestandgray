@@ -8,6 +8,7 @@ from shop.views.item_views import (
     ItemUpdateView,
     ItemUpdateAjax,
     ItemTableView,
+    ItemCategoriseAjax,
 )
 from shop.views.category_views import (
     CategoryCreateView,
@@ -82,6 +83,7 @@ staff_urls = [
     ),
     path("item/list/create/", ItemCreateAjax.as_view(), name="item_create_ajax"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
+    path("item/list/categorise/", ItemCategoriseAjax.as_view(), name="item_categorise"),
     # Categories
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
     path(

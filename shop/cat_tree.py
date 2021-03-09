@@ -58,7 +58,7 @@ def tree_move(node_id, target_id, previous_id, inside):
 
 def tree():
     """
-    Create a json representation of the tree for jqTree to use
+    Create a dictionary representation of the Category tree
     """
     node = Category.objects.get(name="Catalogue")
     if node.sequence == 0:
@@ -67,15 +67,24 @@ def tree():
     kids = descend(node)
     if kids:
         dict["children"] = kids
-    data = "[" + json.dumps(dict) + "]"
-    return data
+    return dict
 
 
-def node_dict(node):
+def tree_json():
+    """ Tree in jqTree format """
+    return "[" + json.dumps(tree()) + "]"
+
+
+def node_dict(node, admin=False, archive=False):
     """ Define content of tree node """
     dict = {"id": node.id}
-    link = reverse("category_detail", kwargs={"pk": node.pk})
-    dict["name"] = f'<a href="{link}">{node.name}</a>  {node.sequence}'
+    if admin:
+        link = reverse("category_detail", kwargs={"pk": node.pk})
+    else:
+        link = reverse("public_catalogue", kwargs={"slugs": node.slug})
+    dict["link"] = link
+    dict["text"] = node.name
+    dict["name"] = f'<a href="{link}">{node.name}</a>'
     return dict
 
 

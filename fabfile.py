@@ -79,7 +79,7 @@ def download():
     app = "gray"
     db = "gray"
     _download_database(_local_dev_folder(), app, db)
-    _download_media(_local_dev_folder(), app)
+    # _download_media(_local_dev_folder(), app)
 
 
 @hosts(HOST)

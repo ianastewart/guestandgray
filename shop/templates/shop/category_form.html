@@ -15,6 +15,11 @@
           {% bootstrap_field form.name %}
           {% bootstrap_field form.short_name %}
           {% bootstrap_field form.description %}
+          {% if is_root %}
+        <p>This is the top level of the catalogue</p>
+        {% else %}
+          {% bootstrap_field form.parent_category %}
+        {% endif %}
           <div class="row">
             <div class="col-4">
               {% bootstrap_field form.category_ref %}

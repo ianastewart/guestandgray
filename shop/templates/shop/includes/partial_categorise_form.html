@@ -1,0 +1,25 @@
+<!-- Action form --->
+{% load bootstrap4 %}
+<div class="modal-dialog" role="document">
+
+  <div class="modal-content">
+    <input type="hidden" name="x_path" value="{{ x_path }}">
+    <div class="modal-header bg-guest-light">
+      <h5 class="modal-title">{{ view.title }}</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      {% bootstrap_form_errors form type="non_fields" %}
+      {% if horizontal_form %}
+        {% bootstrap_form form layout="horizontal" set_placeholder=False %}
+      {% else %}
+        {% bootstrap_form form set_placeholder=False %}
+      {% endif %}
+    </div>
+    <div class="modal-footer bg-white">
+      <button type="button" class="btn btn-primary js-submit" name="category" target_id="{{ x_target_id }}">Change category</button>
+    </div>
+  </div>
+</div>

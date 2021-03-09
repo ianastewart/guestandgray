@@ -1,0 +1,59 @@
+{% load shop_tags %}
+{% category_tree as tree %}
+
+<li class="nav-item dropdown has-megamenu">
+  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% if is_archive %}Archive{% else %}
+    Catalogue{% endif %}</a>
+  <div class="dropdown-menu megamenu" role="menu">
+    {% if is_archive %}Archive{% else %}Catalogue{% endif %}
+    <div class="row">
+      {% for item in tree.children %}
+        <div class="col-lg-3">
+          <div class="col-megamenu">
+            <h4 class="title my-0">{{ item.text }}</h4>
+            <div class="card">
+              <ul class="list-unstyled">
+                {% for level2 in item.children %}
+                  <li><a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a></li>
+                  <ul class="list-unstyled">
+                    {% for level3 in level2.children %}
+                      <li><a class="dropdown-item" href="{{ level3.link }}">{{ level3.text }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</li>
+{#<li class="nav-item dropdown has-megamenu">#}
+{#  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% if is_archive %}Archive{% else %}#}
+{#    Catalogue{% endif %}</a>#}
+{#  <div class="dropdown-menu megamenu" role="menu">#}
+{#    <div class="h4 text-center">{% if is_archive %}Archive{% else %}Catalogue{% endif %}</div>#}
+{#  <a href="/catalogue">Browse the catalogue</a>#}
+{#    <hr>#}
+{#    <div class="d-flex justify-content-around flex-wrap">#}
+{#      {% for item in tree.children %}#}
+{#          <div class="col-megamenu">#}
+{#            <h4 class="title my-0 text-center">{{ item.text }}</h4>#}
+{#            <div class="card m-2">#}
+{#              <ul class="list-unstyled">#}
+{#                {% for level2 in item.children %}#}
+{#                  <a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a>#}
+{#                  <ul class="list-unstyled">#}
+{#                    {% for level3 in level2.children %}#}
+{#                      <li><a class="dropdown-item" href="{{ level3.link }}">{{ level3.text }}</a></li>#}
+{#                    {% endfor %}#}
+{#                  </ul>#}
+{#                {% endfor %}#}
+{#              </ul>#}
+{#            </div>#}
+{#        </div>#}
+{#      {% endfor %}#}
+{#    </div>#}
+{#  </div>#}
+{#</li>#}

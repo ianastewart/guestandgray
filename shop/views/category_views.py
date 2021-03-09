@@ -1,10 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView, View
 
-from shop.cat_tree import *
+from shop.cat_tree import tree_json, tree_move
 from shop.forms import CategoryForm
 from shop.models import Category, Item
 from shop.tables import CategoryTable
@@ -28,8 +28,10 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        cat = self.object.get_parent()
-        initial["parent_category"] = cat.pk
+        cat = self.object
+        self.parent = cat.get_parent()
+        if self.parent:
+            initial["parent_category"] = self.parent.pk
         if cat.image:
             initial["category_ref"] = cat.image.item.ref
         if cat.archive_image:
@@ -39,15 +41,19 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["images_url"] = reverse("category_images")
+        context["is_root"] = self.parent is None
         return context
 
     def form_valid(self, form):
         old_parent = self.object.get_parent()
         new_parent = form.cleaned_data["parent_category"]
         response = super().form_valid(form)
-        if old_parent.id != new_parent.id:
+        if old_parent and old_parent.id != new_parent.id:
             self.object.move(new_parent, "sorted-child")
         return response
+
+    def form_invalid(self, form):
+        pass
 
 
 class CategoryTreeView(LoginRequiredMixin, TemplateView):
@@ -56,7 +62,7 @@ class CategoryTreeView(LoginRequiredMixin, TemplateView):
 
     def get(self, request):
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
-            return JsonResponse(tree(), safe=False)
+            return JsonResponse(tree_json(), safe=False)
         else:
             return super().get(request)
 

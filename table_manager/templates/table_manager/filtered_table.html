@@ -51,6 +51,9 @@
       </div>
       <form method="post">{% csrf_token %}
       {% include "table_manager/column_shifter.html" %}
+        <!-- Modal to hold main partial form -->
+<div class="modal" data-backdrop="static" data-keyboard="false" id="modal-action-form" role="dialog">
+</div>
       </form>
     </div>
     </div>
