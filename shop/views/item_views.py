@@ -71,7 +71,7 @@ class ItemTableView(LoginRequiredMixin, FilteredTableView):
         elif "category" in request.POST:
             self.selected_objects.update(category_id=request.POST["new_category"])
             next_url = reverse("item_list")
-            data = {"next_url": next_url, "target_id": request.POST["x_target_id"]}
+            data = {"next_url": "", "target_id": request.POST["x_target_id"]}
             return JsonResponse(data)
 
 
