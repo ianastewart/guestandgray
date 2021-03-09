@@ -377,20 +377,6 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   margin-right: auto;
 }
 
-/*.navbar {*/
-/*  padding-top: 0;*/
-/*  padding-bottom: 0;*/
-/*}*/
-
-/*.navbar .nav-link {*/
-/*  padding-top: 1rem;*/
-/*  padding-bottom: 1rem;*/
-/*}*/
-
-/*.navbar .has-megamenu {*/
-/*  position: static !important;*/
-
-/*}*/
 
 @media all and (min-width: 992px) {
   .navbar {
@@ -413,6 +399,20 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
+}
+
+.item-card {
+  height:20.5rem;
+  width:250px;
+  position: relative;
+}
+
+.item-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 /*@media all and (min-width: 992px) {*/

@@ -56,19 +56,21 @@
       {% for item in items %}
         {% image item.image max-250x250 as card_image %}
         <div class="mx-3">
-          <div class="card p-0 mb-3 border-0 bg-transparent" style="height:20.5rem; width:250px;">
+          <div class="card p-0 mb-3 border-0 bg-transparent item-card">
             <a href="{% url "public_item" slug='x' pk=item.pk %}">
               <div class="image">
                 <img
                     src="{{ card_image.url }}"
                     class="img img-responsive full-width "/>
               </div>
+              <div class="item-icon bg-danger text-white">Archive</div>
               <div class="caption px-1 text-dark text-center mt-1 mb-3">
                 {{ item.name|titler }}
               </div>
             </a>
           </div>
         </div>
+
       {% endfor %}
     </div>
   </div>
