@@ -15,6 +15,23 @@ class ModelEnum(IntEnum):
         )
 
 
+class CategoryManager(models.Manager):
+    def allowed_parents(self, instance=None):
+        if instance:
+            return self.exclude(
+                pk__in=instance.get_descendants().values_list("pk", flat=True)
+            ).exclude(pk=instance.pk)
+        return self
+
+    def leafs(self):
+        return [cat for cat in self.all().order_by("name") if cat.is_leaf()]
+
+    def leaf_choices(self):
+        return [
+            (cat.id, cat.name) for cat in self.all().order_by("name") if cat.is_leaf()
+        ]
+
+
 class Category(MP_Node):
     name = models.CharField(max_length=100)
     # Slug contains the full path slugified
@@ -40,6 +57,7 @@ class Category(MP_Node):
     sequence = models.PositiveIntegerField(default=0)
     count = models.IntegerField(default=0)
     node_order_by = ["sequence"]
+    objects = CategoryManager()
 
     def __str__(self):
         return self.name

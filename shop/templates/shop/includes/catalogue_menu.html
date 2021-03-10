@@ -3,9 +3,10 @@
 
 <li class="nav-item dropdown has-megamenu">
   <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% if is_archive %}Archive{% else %}
-    Catalogue{% endif %}</a>
+      Catalogue{% endif %}</a>
   <div class="dropdown-menu megamenu" role="menu">
-    {% if is_archive %}Archive{% else %}Catalogue{% endif %}
+    {% if is_archive %}<a href="/archive/"><h4>Browse archive items</h4></a>{% else %}
+      <a href="/catalogue/"><h4>Browse items on sale</h4></a> {% endif %}
     <div class="row">
       {% for item in tree.children %}
         <div class="col-lg-3">

@@ -26,12 +26,7 @@ class CategoryForm(ModelForm):
         self.fields["parent_category"] = ModelChoiceField(
             empty_label=None,
             required=False,
-            queryset=Category.objects.all()
-            .exclude(
-                pk__in=self.instance.get_descendants().values_list("pk", flat=True)
-            )
-            .exclude(pk__in=[self.instance.pk])
-            .order_by("name"),
+            queryset=Category.objects.allowed_parents(self.instance),
         )
 
     category_ref = forms.CharField(required=False, label="Item ref for category image")
@@ -89,6 +84,8 @@ class ItemForm(ModelForm):
             "provenance": forms.Textarea(attrs={"rows": 2}),
             "notes": forms.Textarea(attrs={"rows": 2}),
         }
+
+    category = forms.ChoiceField(required=True, choices=Category.objects.leaf_choices())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
