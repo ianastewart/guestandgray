@@ -15,8 +15,15 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = "shop/category_form.html"
-    success_url = reverse_lazy("category_list")
+    success_url = reverse_lazy("category_tree")
     title = "Create category"
+
+    def form_valid(self, form):
+        d = form.cleaned_data
+        parent = Category.objects.get(id=d["parent_category"].id)
+        node = parent.add_child(name=d["name"], description=d["description"])
+        node.post_save()
+        return redirect("category_tree")
 
 
 class CategoryUpdateView(LoginRequiredMixin, UpdateView):
@@ -24,7 +31,7 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     form_class = CategoryForm
     template_name = "shop/category_form.html"
     success_url = reverse_lazy("category_list")
-    title = "Update category"
+    title = "Edit category"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -66,7 +73,17 @@ class CategoryTreeView(LoginRequiredMixin, TemplateView):
         else:
             return super().get(request)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        a, b, c, d, e = Category.find_problems()
+        context["errors"] = a or b or c or d or e
+        return context
+
     def post(self, request):
+        if "fix" in request.POST:
+            Category.fix_tree()
+            return redirect("category_tree")
+        # Ajax response to move node
         p = request.POST
         tree_move(p["node"], p["target"], p["previous"], p["position"] == "inside")
         return JsonResponse("OK", safe=False)
@@ -90,11 +107,15 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["item_list"] = self.object.item_set.all().order_by("ref")
+        context["shop_items"] = self.object.shop_items()
+        context["archive_items"] = self.object.archive_items()
         context["images_url"] = reverse("category_images")
+
         return context
 
     def post(self, request, **kwargs):
+        if "fix" in request.POST:
+            Category.fix_tree()
         if "delete" in request.POST:
             self.get_object().delete()
         return redirect("category_list")

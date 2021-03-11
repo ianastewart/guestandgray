@@ -4,15 +4,15 @@ A category is an instance of MPnode
 See https://django-treebeard.readthedocs.io/en/latest/api.html
 """
 import json
-import sys
 from shop.models import Category
 from django.shortcuts import reverse
+from django.db import transaction
 
 
+@transaction.atomic
 def tree_move(node_id, target_id, previous_id, inside):
     """
-    Move a node from previous to target
-
+    Action a jqTree move in the database
 
     """
     node = Category.objects.get(id=node_id)
@@ -28,6 +28,7 @@ def tree_move(node_id, target_id, previous_id, inside):
                 seq += 1
         node.sequence = 1
         node.save()
+        node = Category.objects.get(id=node.id)
         node.move(target, "sorted-child")
         # if moved from a different parent, renumber old parent's children
         if previous_id != target_id:
@@ -56,15 +57,15 @@ def tree_move(node_id, target_id, previous_id, inside):
             node.move(target, "sorted-sibling")
 
 
-def tree():
+def tree(admin=False):
     """
     Create a dictionary representation of the Category tree
     """
     node = Category.objects.get(name="Catalogue")
     if node.sequence == 0:
         sequence_tree()
-    dict = node_dict(node)
-    kids = descend(node)
+    dict = node_dict(node, admin)
+    kids = descend(node, admin)
     if kids:
         dict["children"] = kids
     return dict
@@ -72,10 +73,10 @@ def tree():
 
 def tree_json():
     """ Tree in jqTree format """
-    return "[" + json.dumps(tree()) + "]"
+    return "[" + json.dumps(tree(admin=True)) + "]"
 
 
-def node_dict(node, admin=False, archive=False):
+def node_dict(node, admin):
     """ Define content of tree node """
     dict = {"id": node.id}
     if admin:
@@ -83,19 +84,33 @@ def node_dict(node, admin=False, archive=False):
     else:
         link = reverse("public_catalogue", kwargs={"slugs": node.slug})
     dict["link"] = link
-    dict["text"] = node.name
-    dict["name"] = f'<a href="{link}">{node.name}</a>'
+    dict["text"] = f"node.name {node.item_set.count()}"
+    dict["leaf"] = node.is_leaf()
+    shop = node.shop_count()
+    archive = node.archive_count()
+    items = shop + archive
+    dict["items"] = items
+    count_text = (
+        f'<span class="small">(Shop: {shop}, Archive: {archive})</span>'
+        if items > 0
+        else f"{items}"
+    )
+    if not node.is_leaf() and items > 0:
+        count_text = f'<span class="text-danger">{count_text}</span>'
+    dict[
+        "name"
+    ] = f'<b>{node.name}</b> <i>{count_text}</i> <a class="btn btn-outline-info btn-sm py-0" href="{link}">Detail</a>'
     return dict
 
 
-def descend(parent):
+def descend(parent, admin):
     """ Recursively expand the tree """
     children = parent.get_children().order_by("sequence", "name")
     if children:
         kids = []
         for node in children:
-            dict = node_dict(node)
-            next_gen = descend(node)
+            dict = node_dict(node, admin)
+            next_gen = descend(node, admin)
             if next_gen:
                 dict["children"] = next_gen
             kids.append(dict)

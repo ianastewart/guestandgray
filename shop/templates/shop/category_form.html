@@ -2,82 +2,108 @@
 {% load bootstrap4 %}
 {% load wagtailimages_tags %}
 {% block content_body %}
-  <div class="container my-2 py-2 bg-light">
-    <div class="row">
-      <div class="col">
-        <h2 class="my-2">{{ view.title }}</h2>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col col-lg-8">
-        <form method="post" class="form">
-          {% csrf_token %}
-          {% bootstrap_field form.name %}
-          {% bootstrap_field form.short_name %}
-          {% bootstrap_field form.description %}
-          {% if is_root %}
-        <p>This is the top level of the catalogue</p>
-        {% else %}
-          {% bootstrap_field form.parent_category %}
-        {% endif %}
+  <div class="container">
+    <div class="card my-2 bg-light">
+      <form method="post">{% csrf_token %}
+        <div class="card-body">
           <div class="row">
-            <div class="col-4">
-              {% bootstrap_field form.category_ref %}
-            </div>
-            <div class="col-2">
-              <button type="button" class="btn btn-sm btn-secondary mt-4 js-search" id="category_search">Change</button>
-            </div>
-            <div class="col-4">
-              {% bootstrap_field form.archive_ref %}
-            </div>
-            <div class="col-2">
-              <button type="button" class="btn btn-sm btn-secondary mt-4" id="archive_search">Change</button>
+            <div class="col">
+              <h2 class="my-2">{{ view.title }}</h2>
             </div>
           </div>
-          {% buttons %}
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a class="btn btn-outline-secondary" href="{{ category.get_absolute_url }}">View on website</a>
-          {% endbuttons %}
-        </form>
-      </div>
-      <div class="col col-lg-4">
-        {% if category.image %}
-          <img id="id_item_image" width="250" src="{{ category.image.file.url }}">
-          <br> Item ref: <span id="catRef">{{ category.image.item.ref }}</span><br><br>
-        {% else %}:
-          <div class="card card-body bg-white text-center" style="width:300px; height:250px">
-            <i>No category image</i>
+          <div class="row">
+            <div class="col-8 col-sm-6 col-md-4 col-lg-3">
+              <div class="card bg-light {% if category and category.image %}border-0{% endif %}" style="height:250px;">
+                {% if category and category.image %}
+                  {% image category.image max-250x250 as image %}
+                  <div class="image">
+                    <img class="image-responsive" src="{{ image.url }}" id="id_category_image" alt="Main image">
+                  </div>
+                {% else %}
+                  <div class="card-body">
+                    <p><i>No main image</i></p>
+                  </div>
+                {% endif %}
+              </div>
+              {% if category %}
+                <label class="small">Main image</label>
+                <div class="input-group input-group-sm">
+                  <input type="text" class="form-control" id="id_category_ref" name="category_ref"
+                         value="{{ form.category_ref.value }}">
+                  <div class="input-group-append">
+                    <button type=button class="btn btn-secondary js-search" id="category_search">Change</button>
+                  </div>
+                </div>
+                <label class="small text-danger" id="id_category_error"></label>
+              {% else %}<p>You can choose images after the category has been created</p>
+              {% endif %}
+            </div>
+            <div class="col-8 col-sm-6 col-md-4 col-lg-3">
+              <div class="card bg-light {% if category and category.archive_image %}border-0{% endif %}"
+                   style="height:250px;">
+                {% if category and category.archive_image %}
+                  {% image category.archive_image max-250x250 as image %}
+                  <div class="image">
+                    <img class="image-responsive" src="{{ image.url }}" id="id_archive_image" alt="Archive image">
+                  </div>
+                {% else %}
+                  <div class="card-body">
+                    <p><i>No archive image</i></p>
+                  </div>
+                {% endif %}
+              </div>
+              {% if category %}
+                <label class="small">Archive image</label>
+                <div class="input-group input-group-sm">
+                  <input type="text" id="id_archive_ref" class="form-control" name="archive_ref"
+                         value="{{ form.archive_ref.value }}">
+                  <div class="input-group-append">
+                    <button type=button class="btn btn-secondary js-search" id="archive_search">Change</button>
+                  </div>
+                </div>
+                <label class="small text-danger" id="id_archive_error"></label>
+              {% endif %}
           </div>
-        {% endif %}
-        {% if category.archive_image %}
-          <img id="id_archive_image" width="250" src="{{ category.archive_image.file.url }}">
-          <br> {{ category.archive_image.item.ref }} <br>
-        {% else %}
-          <div class="card card-body bg-white text-center" style="width:300px; height:200px">
-            <i>No archive image</i>
+            <div class="col-md-6">
+              {% csrf_token %}
+              {% bootstrap_field form.name %}
+              {% bootstrap_field form.short_name %}
+              {% if is_root %}
+                <p>This is the top level of the catalogue</p>
+              {% else %}
+                {% bootstrap_field form.parent_category %}
+              {% endif %}
+              {% bootstrap_field form.description %}
+            </div>
           </div>
-        {% endif %}
-      </div>
+          </div>
+        <div class="card-footer">
+          <button type=submit class=" btn btn-primary
+        " name="save">Save
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-
-    <div id="images_url" class="d-none">{{ images_url }}</div>
+  <div id="images_url" class="d-none">{{ images_url }}</div>
   <div id="category_id" class="d-none"> {{ category.id }}</div>
 
   <script>
-    $("#category_search").click(function() {
+    $("#category_search").click(function () {
       var ref = document.getElementById("id_category_ref").value;
-      var target = "#id_item_image";
-      ajax_get(ref, target);
+      var target_id = "#id_category_image";
+      var error_id = "#id_category_error"
+      ajax_get(ref, target_id, error_id);
     })
 
-    $("#archive_search").click(function() {
+    $("#archive_search").click(function () {
       var ref = document.getElementById("id_archive_ref").value;
-      var target = "#id_archive_image";
-      ajax_get(ref, target);
+      var target_id = "#id_archive_image";
+      var error_id = "#id_archive_error";
+      ajax_get(ref, target_id, error_id);
     })
 
-    function ajax_get(ref, target) {
+    function ajax_get(ref, target_id, error_id) {
       $.ajax({
         url: document.getElementById("images_url").innerText,
         type: 'get',
@@ -85,15 +111,19 @@
         data: {
           ref: ref,
           category: document.getElementById("category_id").innerText,
-          target: target
+          target: target_id
         },
         success: function (data) {
           if (data.image) {
-            $(target).attr("src", data.image);
+            var d = new Date();
+            $(error_id).text("");
+            $(target_id).attr("src", data.image + "?" + d.getMilliseconds());
+          } else if (data.error) {
+            $(error_id).text(data.error);
           }
         },
         error: function (e) {
-          alert(e);
+          $(error_id).text("Error");
         },
         timeout: 10000
       });

@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from enum import IntEnum
-from treebeard.mp_tree import MP_Node
+from treebeard.mp_tree import MP_Node, MP_NodeManager
 from wagtail.images.models import Image, AbstractImage, AbstractRendition
 from wagtail.search import index
 
@@ -15,7 +15,7 @@ class ModelEnum(IntEnum):
         )
 
 
-class CategoryManager(models.Manager):
+class CategoryManager(MP_NodeManager):
     def allowed_parents(self, instance=None):
         if instance:
             return self.exclude(
@@ -62,14 +62,15 @@ class Category(MP_Node):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
+    def post_save(self):
+        self = Category.objects.get(id=self.id)
         if not self.short_name:
             self.short_name = self.name[:50]
         if self.is_root():
             self.slug = slugify(self.short_name)
         else:
             self.slug = self.get_parent().slug + "/" + slugify(self.short_name)
-        super().save(*args, **kwargs)
+        self.save()
         for child in self.get_children():
             child.save()
 
@@ -90,6 +91,21 @@ class Category(MP_Node):
     def get_archive_url(self):
         url = self.get_absolute_url()
         return url.replace("/catalogue/", "/archive/")
+
+    def archive_slug(self):
+        return self.slug.replace("catalogue/", "archive/")
+
+    def shop_items(self):
+        return self.item_set.filter(archive=False).order_by("ref")
+
+    def shop_count(self):
+        return self.item_set.filter(archive=False).count()
+
+    def archive_items(self):
+        return self.item_set.filter(archive=True).order_by("ref")
+
+    def archive_count(self):
+        return self.item_set.filter(archive=True).count()
 
 
 class Item(index.Indexed, models.Model):

@@ -8,7 +8,12 @@
     <div class="row">
       <div class="col">
         <h1>Categories</h1>
-
+        {% if errors %}
+          {% bootstrap_alert "Tree contains errors" alert_type="danger" %}
+          <form method="post">{% csrf_token %}
+            <input type="submit" class="btn btn-danger mb-2" name="fix" value="Repair tree">
+          </form>
+        {% endif %}
         <div id="tree" data-url="{% url "category_tree" %}"></div>
       </div>
     </div>
@@ -16,68 +21,5 @@
 {% endblock %}
 {% block custom_scripts %}
   <script src="{% static "shop/js/tree.jquery.js" %}"></script>
-  <script>
-    $('#tree').tree({
-      autoOpen: true,
-      autoEscape: false,
-      dragAndDrop: true
-    });
-
-    $('#tree').on(
-      'tree.move',
-      function (event) {
-        event.preventDefault();
-        // do the move first, and _then_ POST back.
-        event.move_info.do_move();
-        data = {
-          'node': event.move_info.moved_node.id,
-          'target': event.move_info.target_node.id,
-          'position': event.move_info.position,
-          'previous': event.move_info.previous_parent.id,
-          'children': child_ids(event.move_info.target_node)
-        }
-        $.post('', data);
-      }
-    );
-
-    function child_ids(node) {
-      var result = [];
-      for (var i = 0; i < node.children.length; i++) {
-        result.push(node.children[i].id);
-      }
-      return result
-    }
-
-    function getCookie(name) {
-      var cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-          var cookie = jQuery.trim(cookies[i]);
-          // Does this cookie string begin with the name we want?
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
-        }
-      }
-      return cookieValue;
-    }
-
-    // from django documentation
-    function csrfSafeMethod(method) {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function (xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
-      }
-    })
-
-
-  </script>
+  <script src ="{% static "shop/js/category_tree.js" %}"></script>
 {% endblock %}
