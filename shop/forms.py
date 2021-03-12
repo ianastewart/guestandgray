@@ -48,7 +48,7 @@ class ItemCategoriseForm(ModelForm):
     new_category = ModelChoiceField(
         empty_label=None,
         required=True,
-        queryset=Category.objects.filter(num_child=0).order_by("name"),
+        queryset=Category.objects.filter(numchild=0).order_by("name"),
     )
 
 
