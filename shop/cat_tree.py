@@ -82,7 +82,8 @@ def node_dict(node, admin):
     if admin:
         link = reverse("category_detail", kwargs={"pk": node.pk})
     else:
-        link = reverse("public_catalogue", kwargs={"slugs": node.slug})
+        link = "/"
+        # link = reverse("public_catalogue", kwargs={"slugs": node.slug})
     dict["link"] = link
     dict["text"] = f"node.name {node.item_set.count()}"
     dict["leaf"] = node.is_leaf()

@@ -58,7 +58,7 @@ class ItemForm(ModelForm):
         fields = (
             "name",
             "description",
-            "category",
+            "category_id",
             "dimensions",
             "condition",
             "provenance",
@@ -84,7 +84,9 @@ class ItemForm(ModelForm):
             "notes": forms.Textarea(attrs={"rows": 2}),
         }
 
-    category = forms.ChoiceField(required=True, choices=Category.objects.leaf_choices())
+    category_id = forms.ChoiceField(
+        required=True, choices=Category.objects.leaf_choices(), label=Category
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
