@@ -77,7 +77,7 @@ def tree_json():
 
 
 def node_dict(node, admin):
-    """ Define content of tree node """
+    """ Define content of a tree node in the dictionary """
     dict = {"id": node.id}
     if admin:
         link = reverse("category_detail", kwargs={"pk": node.pk})
@@ -93,13 +93,13 @@ def node_dict(node, admin):
     count_text = (
         f'<span class="small">(Shop: {shop}, Archive: {archive})</span>'
         if items > 0
-        else f"{items}"
+        else f""
     )
     if not node.is_leaf() and items > 0:
         count_text = f'<span class="text-danger">{count_text}</span>'
     dict[
         "name"
-    ] = f'<b>{node.name}</b> <i>{count_text}</i> <a class="btn btn-outline-info btn-sm py-0" href="{link}">Detail</a>'
+    ] = f'<b>{node.name}</b> <i>{count_text}</i> <a class="btn btn-outline-info btn-sm py-0" href="{link}">View</a>'
     return dict
 
 

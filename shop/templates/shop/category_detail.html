@@ -1,39 +1,50 @@
 {% extends "shop/shop_base.html" %}
-{% load bootstrap4 wagtailimages_tags shop_tags %}
+{% load bootstrap4 wagtailimages_tags shop_tags static %}
 {% block content_body %}
   <div class="container bg-light my-2 p-4">
     <h3 class="my-2">{{ category.name }}</h3>
     {% breadcrumb category.breadcrumb_nodes %}
     <div class="row">
       <div class="col col-md-3">
-        <div class="card bg-light" style="height:250px; width:250px">
-          {% if category.image %}
+        <div class="card bg-light border-0" style="height:250px;">
+          {% if category and category.image %}
             {% image category.image max-250x250 as image %}
-            <img class="card-img-top" src="{{ image.url }}" alt="Main image">
+            <div class="image">
+              <img class="image-responsive" src="{{ image.url }}" id="id_category_image">
+            </div>
           {% else %}
-            <div class="card-body">
-              <p><i>No main image<i/></p>
+            <div class="image">
+              <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_category_image">
             </div>
           {% endif %}
         </div>
+      <p class="small">
         {% if category.image %}
-          <p class="small">{{ category.image.item.ref }} {{ category.image.item.name }} <p>
-        {% endif %}
+          {{ category.image.item.ref }} {{ category.image.item.name }}
+          {% else %}
+          No main image
+        {% endif %}</p>
       </div>
       <div class="col col-md-3">
-        <div class="card bg-light" style="height:250px; width:250px">
-          {% if category.archive_image %}
-            {% image category.image max-250x250 as image %}
-            <img class="card-img-top" src="{{ image.url }}" alt="Archive image">
+        <div class="card bg-light border-0"
+             style="height:250px;">
+          {% if category and category.archive_image %}
+            {% image category.archive_image max-250x250 as image %}
+            <div class="image">
+              <img class="image-responsive" src="{{ image.url }}" id="id_archive_image" alt="Archive image">
+            </div>
           {% else %}
-            <div class="card-body">
-              <p><i>No archive image</i></p>
+            <div class="image">
+              <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_archive_image">
             </div>
           {% endif %}
         </div>
+      <p class="small">
         {% if category.archive_image %}
-          <p class="small">{{ category.archive_image.item.ref }} {{ category.archive_image.item.name }} </p>
-        {% endif %}
+          {{ category.archive_image.item.ref }} {{ category.archive_image.item.name }}
+          {% else %}
+          No archive image
+        {% endif %}</p>
       </div>
       <div class="col col-md-6">
         {% if category.description %}
@@ -46,10 +57,14 @@
     <div class="row">
       <div class="col">
         <form method="post">{% csrf_token %}
-          <a class="btn btn-primary" href="{% url "category_update" pk=category.pk %}">Edit category</a>
-          {% if not shop_items and not archive_items %}
-            <button type="submit" name="delete" class="btn btn-danger">Delete category</button>
+          {% if not category.is_root %}
+            <a class="btn btn-primary" href="{% url "category_update" pk=category.pk %}">Edit category</a>
+            {% if not shop_items and not archive_items and category.is_leaf %}
+              <button type="submit" name="delete" class="btn btn-danger">Delete category</button>
+            {% else %}
+            {% endif %}
           {% else %}
+            <p class="text-danger"> Catalogue root cannot be changed</p>
           {% endif %}
         </form>
       </div>

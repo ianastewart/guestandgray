@@ -6,14 +6,17 @@
 {% block content_body %}
   <div class="container my-2 py-2 bg-light">
     <div class="row">
-      <div class="col">
-        <h1>Categories</h1>
+      <div class="col my-2">
+        <span class="h3">Category tree</span><span class="float-right">
+        <a class="btn btn-primary" href="{% url "category_create" %}">Create new category</a>
+      </span><br><hr>
         {% if errors %}
           {% bootstrap_alert "Tree contains errors" alert_type="danger" %}
           <form method="post">{% csrf_token %}
             <input type="submit" class="btn btn-danger mb-2" name="fix" value="Repair tree">
           </form>
         {% endif %}
+
         <div id="tree" data-url="{% url "category_tree" %}"></div>
       </div>
     </div>

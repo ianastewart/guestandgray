@@ -17,11 +17,23 @@ class ModelEnum(IntEnum):
 
 class CategoryManager(MP_NodeManager):
     def allowed_parents(self, instance=None):
+        """ Returns all possible nodes above the node """
         if instance:
             return self.exclude(
                 pk__in=instance.get_descendants().values_list("pk", flat=True)
             ).exclude(pk=instance.pk)
         return self
+
+    def empty_nodes(self, instance=None):
+        """ returns node above current node that have no item """
+        choices = [
+            (cat.id, cat.name)
+            for cat in self.allowed_parents(instance).order_by("name")
+            if cat.count == 0
+        ]
+        root = Category.objects.get(name="Catalogue")
+        choices.insert(0, (root.id, "Catalogue (root)"))
+        return choices
 
     def leafs(self):
         return [cat for cat in self.all().order_by("name") if cat.is_leaf()]
@@ -33,6 +45,11 @@ class CategoryManager(MP_NodeManager):
 
 
 class Category(MP_Node):
+    """
+    Categeories are organised in a tree using Django Treebeard
+    See also cat_tree.py
+    """
+
     name = models.CharField(max_length=100)
     # Slug contains the full path slugified
     # We don't use a SlugField because the slug can contain / characters
@@ -63,6 +80,7 @@ class Category(MP_Node):
         return self.name
 
     def post_save(self):
+        """ Called after create or update to ensure tree slugs are updated is correct """
         self = Category.objects.get(id=self.id)
         if not self.short_name:
             self.short_name = self.name[:50]
@@ -72,7 +90,7 @@ class Category(MP_Node):
             self.slug = self.get_parent().slug + "/" + slugify(self.short_name)
         self.save()
         for child in self.get_children():
-            child.save()
+            child.post_save()
 
     def breadcrumb_nodes(self, item_view=False):
         breadcrumb = []

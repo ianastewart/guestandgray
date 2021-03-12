@@ -23,10 +23,9 @@ class CategoryForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["parent_category"] = ModelChoiceField(
-            empty_label=None,
-            required=False,
-            queryset=Category.objects.allowed_parents(self.instance),
+        self.fields["parent_category"] = forms.ChoiceField(
+            required=True,
+            choices=Category.objects.empty_nodes(self.instance),
         )
 
     category_ref = forms.CharField(required=False, label="Item ref for category image")

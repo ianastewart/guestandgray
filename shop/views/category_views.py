@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView, View
-
+from django.templatetags.static import static
 from shop.cat_tree import tree_json, tree_move
 from shop.forms import CategoryForm
 from shop.models import Category, Item
@@ -18,11 +18,25 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("category_tree")
     title = "Create category"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["images_url"] = reverse("category_images")
+        return context
+
     def form_valid(self, form):
         d = form.cleaned_data
-        parent = Category.objects.get(id=d["parent_category"].id)
+        parent = Category.objects.get(id=d["parent_category"])
         node = parent.add_child(name=d["name"], description=d["description"])
         node.post_save()
+        ref = d.get("category_ref", None)
+        if ref:
+            item = Item.objects.get(ref=ref)
+            node.image = item.image
+        ref = d.get("archive_ref", None)
+        if ref:
+            item = Item.objects.get(ref=ref)
+            node.archive_image = item.image
+        node.save()
         return redirect("category_tree")
 
 
@@ -30,7 +44,7 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = "shop/category_form.html"
-    success_url = reverse_lazy("category_list")
+    success_url = reverse_lazy("category_tree")
     title = "Edit category"
 
     def get_initial(self):
@@ -52,15 +66,22 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        d = form.cleaned_data
+        ref = d.get("category_ref", None)
+        if ref:
+            item = Item.objects.get(ref=ref)
+            self.object.image = item.image
+        ref = d.get("archive_ref", None)
+        if ref:
+            item = Item.objects.get(ref=ref)
+            self.object.archive_image = item.image
         old_parent = self.object.get_parent()
-        new_parent = form.cleaned_data["parent_category"]
+        new_parent = Category.objects.get(id=d["parent_category"])
         response = super().form_valid(form)
         if old_parent and old_parent.id != new_parent.id:
             self.object.move(new_parent, "sorted-child")
+        new_parent.post_save()
         return response
-
-    def form_invalid(self, form):
-        pass
 
 
 class CategoryTreeView(LoginRequiredMixin, TemplateView):
@@ -110,7 +131,6 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
         context["shop_items"] = self.object.shop_items()
         context["archive_items"] = self.object.archive_items()
         context["images_url"] = reverse("category_images")
-
         return context
 
     def post(self, request, **kwargs):
@@ -118,30 +138,23 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
             Category.fix_tree()
         if "delete" in request.POST:
             self.get_object().delete()
-        return redirect("category_list")
+        return redirect("category_tree")
 
 
 class CategoryImagesView(View):
     def get(self, request, *args, **kwargs):
         ref = request.GET.get("ref", None)
         target = request.GET.get("target", None)
-        cat = request.GET.get("category", None)
-        archive = "archive" in request.GET.get("target")
         data = {}
-        if ref and target and cat:
+        if ref and target:
             try:
                 item = Item.objects.get(ref=ref)
-                category = Category.objects.get(id=cat)
                 if item.image is not None:
-                    if archive:
-                        category.archive_image = item.image
-                    else:
-                        category.image = item.image
-                    category.save()
                     data["image"] = item.image.file.url
                 else:
                     data["error"] = f"Item {ref} has no image"
-
             except Item.DoesNotExist:
                 data["error"] = f"There is no item with reference {ref}"
+        else:
+            data["image"] = static("/shop/images/no_image.png")
         return JsonResponse(data)
