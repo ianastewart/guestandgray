@@ -16,21 +16,12 @@ class ModelEnum(IntEnum):
 
 
 class CategoryManager(MP_NodeManager):
-    def allowed_parents(self, instance=None):
-        """ Returns all possible nodes above the node """
-        if instance:
-            return self.exclude(
-                pk__in=instance.get_descendants().values_list("pk", flat=True)
-            ).exclude(pk=instance.pk)
-        return self
-
     def empty_nodes(self, instance=None):
         """ returns node above current node that have no item """
-        choices = [
-            (cat.id, cat.name)
-            for cat in self.allowed_parents(instance).order_by("name")
-            if cat.count == 0
-        ]
+        cats = Category.objects.all().exclude(name="Catalogue").order_by("name")
+        if instance:
+            cats.exclude(pk=instance.pk)
+        choices = [(cat.id, cat.name) for cat in cats if cat.item_set.count() == 0]
         root = Category.objects.get(name="Catalogue")
         choices.insert(0, (root.id, "Catalogue (root)"))
         return choices
