@@ -82,10 +82,10 @@ def node_dict(node, admin):
     if admin:
         link = reverse("category_detail", kwargs={"pk": node.pk})
     else:
-        link = "/"
-        # link = reverse("public_catalogue", kwargs={"slugs": node.slug})
+        slug = "/" if not node.slug else node.slug
+        link = reverse("public_catalogue", kwargs={"slugs": slug})
     dict["link"] = link
-    dict["text"] = f"node.name {node.item_set.count()}"
+    dict["text"] = node.name
     dict["leaf"] = node.is_leaf()
     shop = node.shop_count()
     archive = node.archive_count()
@@ -96,11 +96,12 @@ def node_dict(node, admin):
         if items > 0
         else f""
     )
+    btn = "btn-outline-info" if node.is_leaf() else "btn-outline-primary"
     if not node.is_leaf() and items > 0:
         count_text = f'<span class="text-danger">{count_text}</span>'
     dict[
         "name"
-    ] = f'<b>{node.name}</b> <i>{count_text}</i> <a class="btn btn-outline-info btn-sm py-0" href="{link}">View</a>'
+    ] = f' <a class="btn {btn} btn-sm py-0 mr-3" href="{link}">View</a><b>{node.name}</b> <i>{count_text}</i>'
     return dict
 
 

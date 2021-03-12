@@ -31,29 +31,6 @@
                     <i>No image</i>
                   </div>
                 {% endif %}
-                {#              {% if object %}#}
-                {#                {% if object.image %}#}
-                {#                  {% if object.category.image == object.image %}<p>Image is used as the category image</p>{% endif %}#}
-                {#                  {% if object.category.archive_image == object.image %}<p>Image is used as the archive image</p>#}
-                {#                  {% endif %}#}
-
-                {#              {% if object.category.image != object.image %}#}
-                {#                <button type="submit" class="btn btn-secondary mt-3 mr-2 js-submit" style="width:210px"#}
-                {#                        name="assign_category">Use as#}
-                {#                  category image#}
-                {#                </button>#}
-                {#              {% endif %}#}
-                {#              {% if object.category.archive_image != object.image %}#}
-                {#                <button type="submit" class="btn btn-secondary mt-3 js-submit" style="width:210px"#}
-                {#                        name="assign_archive">#}
-                {#                  Use as#}
-                {#                  archive image#}
-                {#                </button>#}
-                {#              {% endif %}#}
-                {#                {% endif %}#}
-                {#              {% else %}#}
-                {#                You can add an image after you have saved the item.#}
-                {#              {% endif %}#}
                 <a class="btn btn-secondary btn-sm btn-block m-0" href="{% url 'item_images' pk=object.pk %}">Manage
                   images</a>
               </div>
@@ -73,7 +50,7 @@
             </div>
           </div>
         </div>
-        {% bootstrap_field form.category %}
+        {% bootstrap_field form.category_id %}
         <div class="card card-body bg-light py-1 border-dark">
           {% if object.archive %}
             <fieldset disabled>
