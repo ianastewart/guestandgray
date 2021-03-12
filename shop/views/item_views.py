@@ -126,9 +126,6 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
         context["allow_delete"] = not self.object.lot
         return context
 
-    def get_success_url(self):
-        return reverse("item_detail", kwargs={"pk": self.object.pk})
-
     def post(self, request, *args, **kwargs):
         object = self.get_object()
         if self.post_action(request, object):
@@ -140,6 +137,9 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
             )
             return redirect("item_list")
         return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
 class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
@@ -226,7 +226,7 @@ class ItemDetailAjax(LoginRequiredMixin, AjaxCrudView):
 
 
 class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):
-    """ get the new category fro selected items """
+    """ get the new category for selected items """
 
     template_name = "shop/includes/partial_categorise_form.html"
     form_class = ItemCategoriseForm

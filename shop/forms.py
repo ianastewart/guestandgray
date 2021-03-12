@@ -48,7 +48,7 @@ class ItemCategoriseForm(ModelForm):
     new_category = ModelChoiceField(
         empty_label=None,
         required=True,
-        queryset=Category.objects.all().order_by("name"),
+        queryset=Category.objects.filter(num_child=0).order_by("name"),
     )
 
 
@@ -58,7 +58,7 @@ class ItemForm(ModelForm):
         fields = (
             "name",
             "description",
-            "category_id",
+            "category",
             "dimensions",
             "condition",
             "provenance",
@@ -84,9 +84,7 @@ class ItemForm(ModelForm):
             "notes": forms.Textarea(attrs={"rows": 2}),
         }
 
-    category_id = forms.ChoiceField(
-        required=True, choices=Category.objects.leaf_choices(), label=Category
-    )
+    category = ModelChoiceField(queryset=Category.objects.filter(numchild=0))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
