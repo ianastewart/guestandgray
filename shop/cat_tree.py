@@ -80,7 +80,10 @@ def node_dict(node, admin):
     """ Define content of a tree node in the dictionary """
     dict = {"id": node.id}
     if admin:
-        link = reverse("category_detail", kwargs={"pk": node.pk})
+        link = (
+            reverse("category_detail", kwargs={"pk": node.pk})
+            + f"?return={reverse('category_tree')}"
+        )
     else:
         slug = "/" if not node.slug else node.slug
         link = reverse("public_catalogue", kwargs={"slugs": slug})

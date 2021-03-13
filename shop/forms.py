@@ -19,7 +19,7 @@ from shop.models import (
 class CategoryForm(ModelForm):
     class Meta:
         model = Category
-        fields = ("name", "short_name", "description")
+        fields = ("name", "short_name", "description", "hidden")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

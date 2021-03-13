@@ -11,11 +11,43 @@ from shop.tables import CategoryTable
 from table_manager.views import FilteredTableView
 
 
-class CategoryCreateView(LoginRequiredMixin, CreateView):
+class StackMixin:
+    def clear_stack(self, request):
+        request.session["call_stack"] = []
+
+    def get(self, request, *args, **kwargs):
+        """ get pushes any return path on to the stack """
+        return_path = request.GET.get("return", None)
+        if return_path:
+            stack = request.session.get("call_stack", [])
+            stack.append((request.path, return_path))
+            request.session["call_stack"] = stack
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """ Add the current path as the return path to the context """
+        context = super().get_context_data(**kwargs)
+        context["return"] = f"?return={self.request.path}"
+        return context
+
+    def get_success_url(self):
+        stack = self.request.session.get("call_stack", None)
+        if stack:
+            entry = stack.pop()
+            while entry:
+                if entry[0] == self.request.path:
+                    self.request.session["call_stack"] = stack
+                    return entry[1]
+                else:
+                    entry = stack.pop()
+        self.request.session["call_stack"] = []
+        return "/"
+
+
+class CategoryCreateView(LoginRequiredMixin, StackMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = "shop/category_form.html"
-    success_url = reverse_lazy("category_tree")
     title = "Create category"
 
     def get_context_data(self, **kwargs):
@@ -37,14 +69,13 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
             item = Item.objects.get(ref=ref)
             node.archive_image = item.image
         node.save()
-        return redirect("category_tree")
+        return redirect(self.get_success_url())
 
 
-class CategoryUpdateView(LoginRequiredMixin, UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = "shop/category_form.html"
-    success_url = reverse_lazy("category_tree")
     title = "Edit category"
 
     def get_initial(self):
@@ -84,14 +115,14 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class CategoryTreeView(LoginRequiredMixin, TemplateView):
-
+class CategoryTreeView(LoginRequiredMixin, StackMixin, TemplateView):
     template_name = "shop/category_tree.html"
 
     def get(self, request):
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
             return JsonResponse(tree_json(), safe=False)
         else:
+            self.clear_stack(request)
             return super().get(request)
 
     def get_context_data(self, **kwargs):
@@ -121,7 +152,7 @@ class CategoryListView(LoginRequiredMixin, FilteredTableView):
         return root.get_descendants().order_by("name")
 
 
-class CategoryDetailView(LoginRequiredMixin, DetailView):
+class CategoryDetailView(LoginRequiredMixin, StackMixin, DetailView):
     model = Category
     template_name = "shop/category_detail.html"
     context_object_name = "category"
@@ -134,11 +165,11 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, **kwargs):
-        if "fix" in request.POST:
-            Category.fix_tree()
-        if "delete" in request.POST:
+        if "return" in request.POST:
+            pass
+        elif "delete" in request.POST:
             self.get_object().delete()
-        return redirect("category_tree")
+        return redirect(self.get_success_url())
 
 
 class CategoryImagesView(View):

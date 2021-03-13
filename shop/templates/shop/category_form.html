@@ -11,8 +11,19 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-8 col-sm-6 col-md-4 col-lg-3">
-              <div class="card bg-light border-0" style="height:250px;">
+
+            <div class="col-md-6">
+              {% csrf_token %}
+              {% bootstrap_field form.name %}
+              {% bootstrap_field form.short_name %}
+              {% bootstrap_field form.description %}
+              {% bootstrap_field form.hidden %}
+            </div>
+            <div class="col">
+            {% bootstrap_field form.parent_category %}
+          <div class="row">
+          <div class="col-6">
+              <div class="card bg-light border-0 mt-4" style="height:250px;">
                 {% if category and category.image %}
                   {% image category.image max-250x250 as image %}
                   <div class="image">
@@ -24,7 +35,7 @@
                   </div>
                 {% endif %}
               </div>
-              <label class="small">Main image</label>
+              <label class="small">Shop image</label>
               <div class="input-group input-group-sm">
                 <input type="text" class="form-control" id="id_category_ref" name="category_ref"
                     {% if form.category_ref.value %} value="{{ form.category_ref.value }} {% endif %}">
@@ -34,8 +45,8 @@
               </div>
               <label class="small text-danger" id="id_category_error"></label>
             </div>
-            <div class="col-8 col-sm-6 col-md-4 col-lg-3">
-              <div class="card bg-light border-0"
+            <div class="col-6 col-md-6">
+              <div class="card bg-light border-0 mt-4"
                    style="height:250px;">
                 {% if category and category.archive_image %}
                   {% image category.archive_image max-250x250 as image %}
@@ -58,18 +69,9 @@
               </div>
               <label class="small text-danger" id="id_archive_error"></label>
             </div>
-            <div class="col-md-6">
-              {% csrf_token %}
-              {% bootstrap_field form.name %}
-              {% bootstrap_field form.short_name %}
-              {% if is_root %}
-                <p>This is the top level of the catalogue</p>
-              {% else %}
-                {% bootstrap_field form.parent_category %}
-              {% endif %}
-              {% bootstrap_field form.description %}
-            </div>
           </div>
+            </div>
+        </div>
         </div>
         <div class="card-footer">
           <button type=submit class=" btn btn-primary

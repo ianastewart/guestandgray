@@ -79,14 +79,16 @@ def catalogue_view(request, slugs=None, archive=False):
     context["category"] = category
     context["archive"] = archive
     context["breadcrumb"] = category.breadcrumb_nodes()
-    child_categories = category.get_children()
+    child_categories = category.get_children().filter(hidden=False)
     if child_categories:
         # category has sub categories
         template_name = "shop/public/category_grid.html"
         counter = Counter(category, archive)
         counter.count()
         # need to reload after the count
-        context["categories"] = category.get_children()
+        context["categories"] = category.get_children().filter(
+            hidden=False, count__gt=0
+        )
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"

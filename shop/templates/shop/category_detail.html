@@ -25,6 +25,13 @@
           No main image
         {% endif %}</p>
       </div>
+          <div class="col col-md-6">
+        {% if category.description %}
+          {{ category.description|linebreaksbr }}
+        {% else %}
+          <i>No description</i>
+        {% endif %}
+      </div>
       <div class="col col-md-3">
         <div class="card bg-light border-0"
              style="height:250px;">
@@ -46,19 +53,14 @@
           No archive image
         {% endif %}</p>
       </div>
-      <div class="col col-md-6">
-        {% if category.description %}
-          {{ category.description|linebreaksbr }}
-        {% else %}
-          <i>No description</i>
-        {% endif %}
-      </div>
+
     </div>
     <div class="row">
       <div class="col">
         <form method="post">{% csrf_token %}
+          <button type="submit" name="return" class="btn btn-primary">Back</button>
           {% if not category.is_root %}
-            <a class="btn btn-primary" href="{% url "category_update" pk=category.pk %}">Edit category</a>
+            <a class="btn btn-primary" href="{% url "category_update" pk=category.pk %}{{ return }}">Edit category</a>
             {% if not shop_items and not archive_items and category.is_leaf %}
               <button type="submit" name="delete" class="btn btn-danger">Delete category</button>
             {% else %}

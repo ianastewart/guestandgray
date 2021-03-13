@@ -64,6 +64,7 @@ class Category(MP_Node):
     )
     sequence = models.PositiveIntegerField(default=0)
     count = models.IntegerField(default=0)
+    hidden = models.BooleanField(default=False)
     node_order_by = ["sequence"]
     objects = CategoryManager()
 
