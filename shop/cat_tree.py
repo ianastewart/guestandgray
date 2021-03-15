@@ -57,15 +57,15 @@ def tree_move(node_id, target_id, previous_id, inside):
             node.move(target, "sorted-sibling")
 
 
-def tree(admin=False):
+def tree(admin=False, archive=False):
     """
     Create a dictionary representation of the Category tree
     """
     node = Category.objects.get(name="Catalogue")
     if node.sequence == 0:
         sequence_tree()
-    dict = node_dict(node, admin)
-    kids = descend(node, admin)
+    dict = node_dict(node, admin, archive)
+    kids = descend(node, admin, archive)
     if kids:
         dict["children"] = kids
     return dict
@@ -76,7 +76,7 @@ def tree_json():
     return "[" + json.dumps(tree(admin=True)) + "]"
 
 
-def node_dict(node, admin):
+def node_dict(node, admin, archive):
     """ Define content of a tree node in the dictionary """
     dict = {"id": node.id}
     if admin:
@@ -85,14 +85,17 @@ def node_dict(node, admin):
             + f"?return={reverse('category_tree')}"
         )
     else:
-        slug = "/" if not node.slug else node.slug
-        link = reverse("public_catalogue", kwargs={"slugs": slug})
+        link = "/" + node.slug if node.slug else "/"
+        if archive:
+            link = link.replace("/catalogue", "/archive")
     dict["link"] = link
-    dict["text"] = node.name
+    dict["text"] = node.short_name
     dict["leaf"] = node.is_leaf()
     shop = node.shop_count()
     archive = node.archive_count()
     items = shop + archive
+    dict["shop"] = shop
+    dict["archive"] = archive
     dict["items"] = items
     count_text = (
         f'<span class="small">(Shop: {shop}, Archive: {archive})</span>'
@@ -108,14 +111,14 @@ def node_dict(node, admin):
     return dict
 
 
-def descend(parent, admin):
+def descend(parent, admin, archive):
     """ Recursively expand the tree """
     children = parent.get_children().order_by("sequence", "name")
     if children:
         kids = []
         for node in children:
-            dict = node_dict(node, admin)
-            next_gen = descend(node, admin)
+            dict = node_dict(node, admin, archive)
+            next_gen = descend(node, admin, archive)
             if next_gen:
                 dict["children"] = next_gen
             kids.append(dict)

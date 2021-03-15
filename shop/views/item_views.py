@@ -56,6 +56,8 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
             ("invisible", "Visible off"),
             ("feature", "Featured on"),
             ("unfeature", "Featured off"),
+            ("archive", "Move to archive"),
+            ("unarchive", "Remove from archive"),
             ("category", "Change category", reverse("item_categorise")),
             ("export", "Export to Excel"),
         ]
@@ -73,6 +75,10 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
             self.selected_objects.update(featured=True)
         elif "unfeature" in request.POST:
             self.selected_objects.update(featured=False)
+        elif "archive" in request.POST:
+            self.selected_objects.update(archive=True)
+        elif "unarchive" in request.POST:
+            self.selected_objects.update(archive=False)
         elif "category" in request.POST:
             self.selected_objects.update(category_id=request.POST["new_category"])
             next_url = reverse("item_list")

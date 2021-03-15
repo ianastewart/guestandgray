@@ -28,6 +28,7 @@ class StackMixin:
     def get_success_url(self):
         """ pop the stack and return to that view """
         stack = self.request.session.get("call_stack", None)
+        entry = None
         while stack:
             entry = stack.pop()
             if entry[0] == self.request.path:

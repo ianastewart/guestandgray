@@ -50,7 +50,7 @@ def is_archive_menu(value):
 
 
 @register.simple_tag(takes_context=False)
-def category_tree():
+def catalogue_tree():
     return tree()
 
 
