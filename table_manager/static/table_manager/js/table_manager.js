@@ -223,7 +223,7 @@ $(document).ready(function () {
     } else if (e.target.tagName === 'TD') {
       // redirect when click on row
       if (typeof e.target.parentNode.dataset.url !== 'undefined') {
-        window.document.location = e.target.parentNode.dataset.url;
+        window.document.location = e.target.parentNode.dataset.url + "?return=" + window.location.pathname + window.location.search;
       }
       // ajax get when click on row
       if (typeof e.target.parentNode.dataset.pk !== 'undefined') {
@@ -285,7 +285,7 @@ $(document).ready(function () {
 
   function checkedIds() {
     var array = [];
-    $('.tr-checkbox:checked').each(function(i){
+    $('.tr-checkbox:checked').each(function (i) {
       array.push(this.value);
     })
     return array;

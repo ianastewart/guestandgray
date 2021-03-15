@@ -3,8 +3,11 @@
   {{ form.media }}
   {% if modal %}
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+      <span aria-hidden="true">&times;</span>
+    </button>{% else %}        <form method="post">
+          {% csrf_token %}
+    <button type="submit" class="close js-post m-2" name="back" aria-label="Close"><span aria-hidden="true" style="font-size: 2rem;">&times;</span></button>
+  </form>
   {% endif %}
   <div class="row">
     <div class="col">
@@ -14,24 +17,26 @@
   </div>
   <div class="row">
     <div class="col col-lg-6">
-    <div class="card p-0 mb-2 border-0 bg-transparent">
-      <figure class="image primary mb-0" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
-        {% image item.image original as full_image %}
-        <a href="{{ full_image.url }}" itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" id="main_image" %}</a>
-      </figure>
-    </div>
+      <div class="card p-0 mb-2 border-0 bg-transparent">
+        <figure class="image primary mb-0" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
+                data-index="0">
+          {% image item.image original as full_image %}
+          <a href="{{ full_image.url }}"
+             itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" id="main_image" %}</a>
+        </figure>
+      </div>
       {% if images|length > 1 %}
-      <div class="thumb d-flex flex-wrap">
+        <div class="thumb d-flex flex-wrap">
           {% for image in images %}
             <div class="d-flex flex-column pr-2 pb-2">
-                {% image image original as full_image %}
-{#                <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>#}
+              {% image image original as full_image %}
+              {#                <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>#}
               {% image image max-100x100 class="thumb" full=full_image.url %}
               {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
             </div>
           {% endfor %}
-      </div>
-    {% endif %}
+        </div>
+      {% endif %}
     </div>
     <div class="col-lg-6 mb-4 px-4 ">
       <p class="para">{{ item.description }}</p>
@@ -52,7 +57,7 @@
           <p class="col-12 col-lg-9">{{ item.condition }}</p>
         </div>
       {% endif %}
-          {% if item.archive %}
+      {% if item.archive %}
         <p>ARCHIVE - Not For Sale</p>
       {% else %}
         <div class="row">
@@ -62,9 +67,9 @@
             </div>
           {% endif %}
           {% if public %}
-          <div class="col-6 ">
-            <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#modal-form">Enquire</button>
-          </div>
+            <div class="col-6 ">
+              <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#modal-form">Enquire</button>
+            </div>
           {% endif %}
         </div>
       {% endif %}
@@ -87,20 +92,21 @@
         <p class="mt-4">{{ item.provenance }}</p>
       {% endif %}
       <div class="mt-4">
-      <form method="post">
-        {% csrf_token %}
-        {% if public and request.user.is_authenticated %}
-          <a class="btn btn-outline-secondary" role="button" href="{% url 'item_detail' pk=item.pk %}">Admin view</a>
-        {% endif %}
-        {% if not public %}
-          <a class="btn btn-outline-secondary" role="button" href="{% url 'item_update' pk=item.pk %}">Edit item</a>
-          <a class="btn btn-outline-secondary" role="button" href="{% url 'public_item' slug='x' pk=item.pk %}">Public view</a>
-          {% if in_cart %}
-            <span class="badge badge-info">Added to cart</span>
+        <form method="post">
+          {% csrf_token %}
+          {% if public and request.user.is_authenticated %}
+            <a class="btn btn-outline-secondary" role="button" href="{% url 'item_detail' pk=item.pk %}">Admin view</a>
+          {% endif %}
+          {% if not public %}
+            <a class="btn btn-outline-secondary" role="button" href="{% url 'item_update' pk=item.pk %}{{ return }}">Edit item</a>
+            <a class="btn btn-outline-secondary" role="button" href="{% url 'public_item' slug='x' pk=item.pk %}">Public
+              view</a>
+            {% if in_cart %}
+              <span class="badge badge-info">Added to cart</span>
             {% elif not item.archive %}
               <button type="submit" class="btn btn-outline-secondary" name="add">Add to sale</button>
             {% endif %}
-        {% endif %}
+          {% endif %}
         </form>
       </div>
     </div>
@@ -109,11 +115,11 @@
 </div>
 
 {% block custom_scripts %}
-<script>
-    $(".thumb").click(function() {
+  <script>
+    $(".thumb").click(function () {
       $("#main_image").attr("src", $(this).attr("full"));
     });
-</script>
+  </script>
 
 
 

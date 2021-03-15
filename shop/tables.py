@@ -62,7 +62,11 @@ class ItemTable(ColumnShiftTable):
             "done",
         )
         attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
+        # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
+        row_attrs = {
+            "data-url": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            "class": "table-row pl-4",
+        }
 
     category = tables.Column(accessor="category__name", verbose_name="Category")
     image = ImageColumn(accessor="image")

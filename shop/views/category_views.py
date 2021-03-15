@@ -9,39 +9,7 @@ from shop.forms import CategoryForm
 from shop.models import Category, Item
 from shop.tables import CategoryTable
 from table_manager.views import FilteredTableView
-
-
-class StackMixin:
-    def clear_stack(self, request):
-        request.session["call_stack"] = []
-
-    def get(self, request, *args, **kwargs):
-        """ get pushes any return path on to the stack """
-        return_path = request.GET.get("return", None)
-        if return_path:
-            stack = request.session.get("call_stack", [])
-            stack.append((request.path, return_path))
-            request.session["call_stack"] = stack
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        """ Add the current path as the return path to the context """
-        context = super().get_context_data(**kwargs)
-        context["return"] = f"?return={self.request.path}"
-        return context
-
-    def get_success_url(self):
-        stack = self.request.session.get("call_stack", None)
-        if stack:
-            entry = stack.pop()
-            while entry:
-                if entry[0] == self.request.path:
-                    self.request.session["call_stack"] = stack
-                    return entry[1]
-                else:
-                    entry = stack.pop()
-        self.request.session["call_stack"] = []
-        return "/"
+from table_manager.mixins import StackMixin
 
 
 class CategoryCreateView(LoginRequiredMixin, StackMixin, CreateView):

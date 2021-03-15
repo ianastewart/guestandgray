@@ -15,20 +15,25 @@ from shop.tables import ItemTable
 
 # from shop.tables import ItemTable
 from table_manager.views import AjaxCrudView, FilteredTableView
+from table_manager.mixins import StackMixin
 
 logger = logging.getLogger(__name__)
 
 
-class ItemTableView(LoginRequiredMixin, FilteredTableView):
+class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
     template_name = "shop/filtered_table.html"
     heading = "Items"
     allow_create = True
-    allow_detail = True
+    allow_url = True
     auto_filter = True
     filter_right = True
+
+    def get(self, request, *args, **kwargs):
+        self.clear_stack(request)
+        return super().get(request, *args, **kwargs)
 
     def get_initial_data(self):
         initial = super().get_initial_data()
@@ -109,7 +114,7 @@ class ItemPostMixin:
         return False
 
 
-class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
+class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView, ItemPostMixin):
     model = Item
     template_name = "shop/item_form.html"
 
@@ -137,9 +142,6 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView, ItemPostMixin):
             )
             return redirect("item_list")
         return super().post(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse("item_detail", kwargs={"pk": self.object.pk})
 
 
 class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
@@ -192,7 +194,7 @@ class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
         return super().post(request, *args, **kwargs)
 
 
-class ItemDetailView(LoginRequiredMixin, DetailView):
+class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
     model = Item
     template_name = "shop/item_detail.html"
 
@@ -205,15 +207,18 @@ class ItemDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, **kwargs):
-        item = get_object_or_404(Item, pk=kwargs.get("pk"))
-        cart_add_item(request, item)
-        messages.add_message(
-            request, messages.INFO, f"Item ref: {item.ref} has been added to the cart"
-        )
-        return redirect("item_detail", item.pk)
+        if "add" in request.POST:
+            item = get_object_or_404(Item, pk=kwargs.get("pk"))
+            cart_add_item(request, item)
+            messages.add_message(
+                request,
+                messages.INFO,
+                f"Item ref: {item.ref} has been added to the cart",
+            )
+        return redirect(self.get_success_url())
 
 
-class ItemDetailAjax(LoginRequiredMixin, AjaxCrudView):
+class ItemDetailAjax(LoginRequiredMixin, StackMixin, AjaxCrudView):
     model = Item
     template_name = "shop/item_detail_modal.html"
     modal_class = "modal-xl"
