@@ -4,20 +4,17 @@
   <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% if is_archive %}Archive{% else %}
     Catalogue{% endif %}</a>
   <div class="dropdown-menu megamenu" role="menu">
-    {% if is_archive %}{% archive_tree as tree %}<a href="/archive/"><h4>Browse archive items</h4></a>
+    {% if is_archive %}{% archive_tree as tree %}<a href="/archive/"><h5>Browse archive items</h5></a>
     {% else %}
-      {% catalogue_tree as tree %}<a href="/catalogue/"><h4>Browse items on sale</h4></a>
+      {% catalogue_tree as tree %}<a href="/catalogue/"><h5>Browse items on sale</h5></a>
     {% endif %}
     <div class="row">
       {% for item in tree.children %}
         {% if item.shop and is_catalogue or item.archive and is_archive or item.children %}
-
-          <div class="col-md-3">
-
+          <div class="col col-lg-3">
             <div class="col-megamenu">
-
               <div class="card">
-                <h4 class="title m-2">{{ item.text }}</h4>
+                <h4 class="title m-2">{{ item.text }} {% if is_archive %}Archive{% endif %}</h4>
                 <ul class="list-unstyled">
                   {% for level2 in item.children %}
                     {% if level2.children %}
