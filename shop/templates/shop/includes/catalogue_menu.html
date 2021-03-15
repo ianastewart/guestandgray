@@ -11,21 +11,22 @@
     <div class="row">
       {% for item in tree.children %}
         {% if item.shop and is_catalogue or item.archive and is_archive or item.children %}
-          {% if item.children|length > 4 %}
+
           <div class="col-md-3">
-          {% endif %}
+
             <div class="col-megamenu">
 
-        <div class="card">
-              <h4 class="title m-2">{{ item.text }}</h4>
+              <div class="card">
+                <h4 class="title m-2">{{ item.text }}</h4>
                 <ul class="list-unstyled">
                   {% for level2 in item.children %}
                     {% if level2.children %}
                       <li><a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a></li>
                       <ul class="list-unstyled">
                         {% for level3 in level2.children %}
-                        {% if level3.shop and is_catalogue or level3.archive and is_archive or level3.children %}
-                          <li><a class="dropdown-item" href="{{ level3.link }}"><span class="pl-3">{{ level3.text }}</span></a></li>
+                          {% if level3.shop and is_catalogue or level3.archive and is_archive or level3.children %}
+                            <li><a class="dropdown-item" href="{{ level3.link }}"><span
+                                class="pl-3">{{ level3.text }}</span></a></li>
                           {% endif %}
                         {% endfor %}
                       </ul>
@@ -37,9 +38,9 @@
                 </ul>
               </div>
             </div>
-                    {% if item.children|length > 4 %}
-                      </div>
-          {% endif %}
+
+          </div>
+
         {% endif %}
       {% endfor %}
     </div>
