@@ -51,6 +51,7 @@
   <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
   <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
   <script>
+  var last_index=0;
     var pswpElement = document.querySelectorAll('.pswp')[0];
     // build the json album images collection
     var items = [
@@ -75,7 +76,7 @@
     $("figure").on("click", function (event) {
       event.preventDefault();
       var options = {
-        index: 0,
+        index: last_index,
         bgOpacity: 0.85,
         showHideOpacity: true
       }
@@ -86,6 +87,7 @@
 
     $(".thumb").click(function() {
     $("#main_image").attr("src", $(this).attr("full"));
+    last_index = $(this).attr("index");
 });
   </script>
 {% endblock %}

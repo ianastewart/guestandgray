@@ -30,12 +30,12 @@
         </figure>
       </div>
       {% if images %}
-        <div class="thumb d-flex flex-wrap">
+        <div class="d-flex flex-wrap">
           {% for image in images %}
             <div class="d-flex flex-column pr-2 pb-2">
               {% image image original as full_image %}
               {#                <a href="{{ full_image.url }}" itemprop="contentUrl">{% image image max-100x100 %}</a>#}
-              {% image image max-100x100 class="thumb" full=full_image.url %}
+              {% image image max-100x100 class="thumb" full=full_image.url index=forloop.counter %}
               {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
             </div>
           {% endfor %}
@@ -118,51 +118,3 @@
   </div>
 </div>
 </div>
-
-{% block custom_scripts %}
-  <script>
-    $(".thumb").click(function () {
-      $("#main_image").attr("src", $(this).attr("full"));
-    });
-  </script>
-
-
-
-
-  <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
-  <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
-  <script>
-    var pswpElement = document.querySelectorAll('.pswp')[0];
-    // build the json album images collection
-    var items = [
-      {
-        src: '{{ item.image.file.url }}',
-        w:  {{ item.image.width }},
-        h:  {{ item.image.height }},
-        title: '{{ item.name }}',
-        index: 0
-      },
-      {% for item in images %}
-        {
-          src: '{{ item.file.url }}',
-          w:  {{ item.width }},
-          h:  {{ item.height }},
-          title: '{{ item.name }}',
-          index: {{ forloop.counter }}
-        },
-      {% endfor %}
-    ];
-
-    $("figure").on("click", function (event) {
-      event.preventDefault();
-      var options = {
-        index: 0,
-        bgOpacity: 0.85,
-        showHideOpacity: true
-      }
-      // Initialize PhotoSwipe
-      var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
-      lightBox.init();
-    });
-  </script>
-{% endblock %}
