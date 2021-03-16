@@ -60,7 +60,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
         if self.object.image:
             images.append(self.object.image)
         for image in CustomImage.objects.filter(item_id=self.object.id).order_by(
-            "-show", "title"
+            "-show", "position", "title"
         ):
             if image.id != self.object.image.id:
                 images.append(image)

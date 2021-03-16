@@ -29,7 +29,7 @@
              itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" id="main_image" %}</a>
         </figure>
       </div>
-      {% if images|length > 1 %}
+      {% if images %}
         <div class="thumb d-flex flex-wrap">
           {% for image in images %}
             <div class="d-flex flex-column pr-2 pb-2">

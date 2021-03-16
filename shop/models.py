@@ -453,6 +453,7 @@ class CustomImage(AbstractImage):
         Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images"
     )
     show = models.BooleanField(default=True)
+    position = models.PositiveSmallIntegerField(default=0)
     admin_form_fields = Image.admin_form_fields + ("item",)
 
 

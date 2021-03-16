@@ -206,9 +206,17 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["images"] = (
+        # context[
+        #     "images"
+        # ] = (
+        #     self.object.images.all()  # .exclude(id=self.object.image_id).order_by("-show")
+        # )
+        images = list(
             self.object.images.all().exclude(id=self.object.image_id).order_by("-show")
         )
+        if images:
+            images.insert(0, self.object.image)
+        context["images"] = images
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         return context
 
