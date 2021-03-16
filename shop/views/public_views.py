@@ -15,7 +15,7 @@ from wagtail.search.models import Query
 from coderedcms.forms import SearchForm
 from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
-from shop.models import Item, Category, Contact, Enquiry, Book, Compiler
+from shop.models import Item, Category, Contact, Enquiry, Book, Compiler, CustomImage
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.filters import CompilerFilter
@@ -56,14 +56,15 @@ def item_view(request, slug, pk):
         context["category"] = category
     context["item"] = item
     # context["price"] = int(item.sale_price)
-    images = [item.image]
-    ims = item.images.filter(show=True).exclude(id=item.image_id)
-    if len(ims) > 1:
-        for im in ims:
-            images.append(im)
+    images = []
+    if item.image:
+        images.append(item.image)
+    for image in CustomImage.objects.filter(item_id=item.id).order_by(
+        "-show", "position", "title"
+    ):
+        if image.id != item.image.id:
+            images.append(image)
     context["images"] = images
-    if len(context["images"]) == 1:
-        context["images"] == None
     form = EnquiryForm()
     form.fields["subject"].initial = f"{item.name} ({item.ref})"
     context["form"] = form
