@@ -58,6 +58,7 @@ class ItemTable(ColumnShiftTable):
             "sale_price",
             "archive",
             "featured",
+            "rank",
             "visible",
             "done",
         )

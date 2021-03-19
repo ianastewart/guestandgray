@@ -93,11 +93,9 @@ def catalogue_view(request, slugs=None, archive=False):
     else:
         # category has objects
         template_name = "shop/public/item_grid.html"
-        objects = category.item_set.filter(
-            image__isnull=False, archive=archive, visible=True
-        ).order_by("featured", "rank", "-sale_price")
+        objects = category.archive_items() if archive else category.shop_items()
         context["count"] = objects.count()
-        paginator = Paginator(objects, 32)
+        paginator = Paginator(objects, 36)
         page = request.GET.get("page")
         if paginator.num_pages >= 1 and not page:
             page = 1

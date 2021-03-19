@@ -106,16 +106,20 @@ class Category(MP_Node):
         return self.slug.replace("catalogue/", "archive/")
 
     def shop_items(self):
-        return self.item_set.filter(archive=False).order_by("ref")
+        return self.item_set.filter(
+            archive=False, visible=True, image__isnull=False
+        ).order_by("-featured", "rank", "-sale_price", "name")
 
     def shop_count(self):
-        return self.item_set.filter(archive=False).count()
+        return self.shop_items().count()
 
     def archive_items(self):
-        return self.item_set.filter(archive=True).order_by("ref")
+        return self.item_set.filter(
+            archive=True, visible=True, image__isnull=False
+        ).order_by("-featured", "rank", "-sale_price", "name")
 
     def archive_count(self):
-        return self.item_set.filter(archive=True).count()
+        return self.archive_items().count()
 
 
 class Item(index.Indexed, models.Model):

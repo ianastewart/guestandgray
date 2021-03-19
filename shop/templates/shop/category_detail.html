@@ -79,7 +79,7 @@
         <hr>
         {% if shop_items %}
           {% for item in shop_items %}
-            <a href="{% url 'item_detail' pk=item.pk %}">{{ item.ref }} {{ item.name }}</a><br>
+            {% if item.featured %}*{% endif %}{{ item.rank }} <a href="{% url 'item_detail' pk=item.pk %}">{{ item.ref }} {{ item.name }}</a><br>
           {% endfor %}
         {% else %}
           <p><i>No shop items</i></p>

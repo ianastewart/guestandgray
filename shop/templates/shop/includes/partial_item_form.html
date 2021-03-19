@@ -7,7 +7,7 @@
     <div class="modal-dialog modal-xl bg-white">
     <div class="modal-content">
     <div class="modal-header bg-white">
-      <h5 class="modal-title">{{ form_title }} Ref: {{ object.ref }}</h5>
+      <h5 class="modal-title">{{ form_title }} {% if object %} Ref: {{ object.ref }}{% endif %}</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -20,8 +20,9 @@
       <div class="col-md-6 col-lg-4">
         <div class="row">
           <div class="col-lg-6">
+            {% if object %}
             <div class="card bg-transparent">
-              {% if object and object.image %}
+              {% if object.image %}
                 {% image object.image width-250 as card_image %}
                 <img class="card-img-top" src="{{ card_image.url }}">
               {% endif %}
@@ -35,6 +36,9 @@
                   images</a>
               </div>
             </div>
+            {% else %}
+            <p>You can add images after the item has been saved</p>
+            {% endif %}
           </div>
           <div class="col-lg-6 pl-0">
             <div class="card card-body">
@@ -107,6 +111,7 @@
         </div>
       </div>
       <div class="col-md-6 col-lg-8">
+        {% if not object %} {% bootstrap_field form.ref %} {% endif %}
         {% bootstrap_field form.name %}
         {% bootstrap_field form.description %}
         {% bootstrap_field form.condition %}
