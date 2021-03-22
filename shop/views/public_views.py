@@ -79,7 +79,7 @@ def catalogue_view(request, slugs=None, archive=False):
         slug += "/" + slugs
 
     category = get_object_or_404(Category, slug=slug)
-    context = get_host_context("catalogue", category.title, category.description)
+    context = get_host_context("catalogue", category.name, category.description)
     page = context["page"]
     page.og_image = category.image if category.image else None
     context["category"] = category
