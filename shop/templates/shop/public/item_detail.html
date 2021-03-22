@@ -23,6 +23,12 @@
   <div class="modal fade " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
     <div class="modal-dialog {{ modal_class }}" role="document">
       <div class="modal-content bg-guest-light">
+              <div class="modal-header">
+        <h5 class="modal-title">Enquire</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
         <div class="bg-light px-4 pt-4 pb-2 border">
           <form action="{% url 'public_contact' %}" method="post" class="form">
             {% csrf_token %}
@@ -33,11 +39,11 @@
               <input type="checkbox" class="custom-control-input" id="customCheck1" name="mail_consent">
               <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
             </div>
+          <br>
             {% bootstrap_field form.subject layout='horizontal' %}
             {% bootstrap_field form.message layout='horizontal' %}
-            <p class="text-danger">ToDo: Add recaptcha</p>
             {% buttons %}
-              <button type="submit" class="btn btn-primary">Enquire</button>
+              <button type="submit" class="btn btn-guest">Send enquiry</button>
             {% endbuttons %}
           </form>
           <p class="small"> Your details will not be sold or passed on to any third parties.</p>
@@ -87,7 +93,7 @@
 
     $(".thumb").click(function() {
     $("#main_image").attr("src", $(this).attr("full"));
-    last_index = $(this).attr("index");
+    last_index = parseInt($(this).attr("index"));
 });
   </script>
 {% endblock %}

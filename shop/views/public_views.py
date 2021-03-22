@@ -50,6 +50,11 @@ def item_view(request, slug, pk):
     if item_url:
         return redirect(item_url)
     context = get_host_context("catalogue")
+    page = context["page"]
+    page.title = item.name
+    page.seo_title = item.name
+    page.og_image = item.image if item.image else None
+    page.search_description = item.description[:150] if item.description else ""
     if item.category_id:
         category = get_object_or_404(Category, id=item.category_id)
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
@@ -59,8 +64,8 @@ def item_view(request, slug, pk):
     images = []
     if item.image:
         images.append(item.image)
-    for image in CustomImage.objects.filter(item_id=item.id).order_by(
-        "-show", "position", "title"
+    for image in CustomImage.objects.filter(item_id=item.id, show=True).order_by(
+        "position", "title"
     ):
         if image.id != item.image.id:
             images.append(image)
@@ -77,6 +82,11 @@ def catalogue_view(request, slugs=None, archive=False):
         slug += "/" + slugs
     context = get_host_context("catalogue")
     category = get_object_or_404(Category, slug=slug)
+    page = context["page"]
+    page.title = "Guest and Gray catalogue - " + category.name
+    page.seo_title = page.title
+    page.search_description = category.description if category.description else ""
+    page.og_image = category.image if category.image else None
     context["category"] = category
     context["archive"] = archive
     context["breadcrumb"] = category.breadcrumb_nodes()
@@ -118,6 +128,7 @@ def add_page_context(context, slug):
     except Page.DoesNotExist:
         raise Http404
     context["page"] = page
+    context["self"] = page
     return context
 
 

@@ -42,6 +42,15 @@ h4 {
   color: #454545;
 }
 
+.btn-guest {
+  background-color: #819b80;
+  color: white;
+}
+
+.btn-guest:hover {
+  background-color: #b9d8c2;
+}
+
 .breadcrumb {
   background-color: transparent;
 }
