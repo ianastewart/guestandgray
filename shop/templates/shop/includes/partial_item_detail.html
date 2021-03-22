@@ -46,7 +46,7 @@
         <div class="col col-md-6"><h5>Ref: {{ item.ref }}</h5></div>
         <div class="col col-md-6">
           {% if item.show_price and item.sale_price and not item.archive %}
-            <h5 class="float-right"> £ {{ item.sale_price|intcomma }}</h5>
+            <h5 class="float-right"> £ {{ item.sale_price|integer|intcomma }}</h5>
           {% elif item.archive %}
           <h5 class="float-right"> Archive item - not for sale</h5>
         {% endif %}

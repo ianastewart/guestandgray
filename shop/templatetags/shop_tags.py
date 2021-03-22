@@ -134,3 +134,8 @@ def cart_count(context):
         output = f'<span class ="cart-badge">{len(cart_items(request))}</span>'
         return mark_safe(output)
     return ""
+
+
+@register.filter(name="integer")
+def integer(value):
+    return int(value)

@@ -49,12 +49,9 @@ def item_view(request, slug, pk):
     item, item_url = get_redirected(Item, {"pk": pk}, {"slug": slug})
     if item_url:
         return redirect(item_url)
-    context = get_host_context("catalogue")
+    context = get_host_context("catalogue", item.title, item.description[:150])
     page = context["page"]
-    page.title = item.name
-    page.seo_title = item.name
     page.og_image = item.image if item.image else None
-    page.search_description = item.description[:150] if item.description else ""
     if item.category_id:
         category = get_object_or_404(Category, id=item.category_id)
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
@@ -80,12 +77,10 @@ def catalogue_view(request, slugs=None, archive=False):
     slug = "catalogue"
     if slugs:
         slug += "/" + slugs
-    context = get_host_context("catalogue")
+
     category = get_object_or_404(Category, slug=slug)
+    context = get_host_context("catalogue", category.title, category.description)
     page = context["page"]
-    page.title = "Guest and Gray catalogue - " + category.name
-    page.seo_title = page.title
-    page.search_description = category.description if category.description else ""
     page.og_image = category.image if category.image else None
     context["category"] = category
     context["archive"] = archive
@@ -121,12 +116,22 @@ def get_host_context(slug):
     return add_page_context(context, slug)
 
 
-def add_page_context(context, slug):
+def add_page_context(context, slug, title="", description=""):
     """ add wagtail host page to context. Raise 404 if slug not found """
+    if not title:
+        title = "Guest and Gray"
+    if not description:
+        description = ""
     try:
         page = Page.objects.get(slug=slug, live=True)
     except Page.DoesNotExist:
         raise Http404
+    page.cover_image = None
+    page.og_image = None
+    page.title = title
+    page.description = description
+    page.seo_title = title
+    page.search_description = description
     context["page"] = page
     context["self"] = page
     return context
@@ -279,4 +284,9 @@ class BibliographyView(ListView):
         )
         context["compilers"] = Compiler.objects.order_by("name")
         context = add_page_context(context, "bibliography")
+        page = context["page"]
+        page.title = "Guest and Gray Bibliography"
+        page.seo_title = page.title
+        page.search_description = "List of reference books on antique Chinese porcelain"
+        page.og_image = None
         return context
