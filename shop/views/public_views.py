@@ -49,7 +49,9 @@ def item_view(request, slug, pk):
     item, item_url = get_redirected(Item, {"pk": pk}, {"slug": slug})
     if item_url:
         return redirect(item_url)
-    context = get_host_context("catalogue", item.title, item.description[:150])
+    context = get_host_context(
+        "catalogue", title=item.name, description=item.description[:150]
+    )
     page = context["page"]
     page.og_image = item.image if item.image else None
     if item.category_id:
@@ -79,7 +81,9 @@ def catalogue_view(request, slugs=None, archive=False):
         slug += "/" + slugs
 
     category = get_object_or_404(Category, slug=slug)
-    context = get_host_context("catalogue", category.name, category.description)
+    context = get_host_context(
+        "catalogue", title=category.name, description=category.description
+    )
     page = context["page"]
     page.og_image = category.image if category.image else None
     context["category"] = category
@@ -110,10 +114,10 @@ def catalogue_view(request, slugs=None, archive=False):
     return render(request, template_name, context)
 
 
-def get_host_context(slug):
+def get_host_context(slug, title="", description=""):
     """ Create context with wagtail host page in it. Raise 404 if slug not found """
     context = {}
-    return add_page_context(context, slug)
+    return add_page_context(context, slug, title, description)
 
 
 def add_page_context(context, slug, title="", description=""):
