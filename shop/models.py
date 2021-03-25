@@ -37,7 +37,7 @@ class CategoryManager(MP_NodeManager):
 
 class Category(MP_Node):
     """
-    Categeories are organised in a tree using Django Treebeard
+    Categories are organised in a tree using Django Treebeard
     See also cat_tree.py
     """
 
@@ -189,7 +189,7 @@ class Item(index.Indexed, models.Model):
         return f"{self.ref} {self.name}"
 
     def get_absolute_url(self):
-        return reverse("public_item", kwargs={"slug": self.slug, "pk": self.id})
+        return reverse("public_item", kwargs={"slug": self.slug, "ref": self.ref})
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

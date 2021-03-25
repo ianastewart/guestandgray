@@ -11,7 +11,7 @@ from coderedcms.models import (
     CoderedWebPage,
 )
 from coderedcms.models.page_models import CoderedPage
-
+from website.blocks import MY_LAYOUT_STREAMBLOCKS  # defined in __init__.py
 
 from django.db import models
 from django.utils.text import slugify
@@ -104,5 +104,7 @@ class WebPage(CoderedWebPage):
 
     class Meta:
         verbose_name = "Web Page"
+
+    body = StreamField(MY_LAYOUT_STREAMBLOCKS, null=True, blank=True)
 
     template = "coderedcms/pages/web_page.html"

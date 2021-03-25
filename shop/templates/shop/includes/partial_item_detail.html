@@ -52,7 +52,7 @@
         {% endif %}
       </div>
       </div>
-      {% if public %}
+      {% if public and not item.archive %}
         <div class="d-flex justify-content-center">
         <div>
         <button class="btn btn-guest my-2" data-toggle="modal" data-target="#modal-form">Enquire about this item</button>

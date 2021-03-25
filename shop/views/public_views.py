@@ -42,11 +42,10 @@ def home_view(request):
     return redirect("/pages/")
 
 
-def item_view(request, slug, pk):
+def item_view(request, ref, slug):
     """ Public view of a single object """
-
     template_name = "shop/public/item_detail.html"
-    item, item_url = get_redirected(Item, {"pk": pk}, {"slug": slug})
+    item, item_url = get_redirected(Item, {"ref": ref}, {"slug": slug})
     if item_url:
         return redirect(item_url)
     context = get_host_context(
@@ -73,6 +72,20 @@ def item_view(request, slug, pk):
     form.fields["subject"].initial = f"{item.name} ({item.ref})"
     context["form"] = form
     return render(request, template_name, context)
+
+
+# def item_slug_view(request, slug):
+#     """ Look up by slug """
+#     item = get_object_or_404(Item, slug=slug)
+#     return item_common(request, item)
+#
+#
+# def item_ref_slug_view(request, ref, slug):
+#     """ Look up by reference """
+#     item = get_object_or_404(Item, ref=ref)
+#     if item and slug:
+#         return item_common(request, item)
+#     return redirect(item.get_absolute_url())
 
 
 def catalogue_view(request, slugs=None, archive=False):
