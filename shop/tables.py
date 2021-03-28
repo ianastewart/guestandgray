@@ -70,6 +70,7 @@ class ItemTable(ColumnShiftTable):
         }
 
     category = tables.Column(accessor="category__name", verbose_name="Category")
+    purchased = tables.Column(accessor="lot__purchase__date")
     image = ImageColumn(accessor="image")
     images = tables.Column(accessor="id", verbose_name="Photos")
     selection = tables.TemplateColumn(

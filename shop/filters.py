@@ -1,4 +1,11 @@
-from django_filters import (CharFilter, ChoiceFilter, DateFilter, FilterSet, ModelChoiceFilter)
+from django_filters import (
+    CharFilter,
+    ChoiceFilter,
+    DateFilter,
+    FilterSet,
+    ModelChoiceFilter,
+    BooleanFilter,
+)
 from tempus_dominus.widgets import DatePicker
 
 from shop.models import Category, Compiler
@@ -14,23 +21,56 @@ PER_PAGE_CHOICES = (
 
 
 class ItemFilter(FilterSet):
-    category = ModelChoiceFilter(
-        queryset=Category.objects.filter(numchild=0).order_by("name"),
-        required=None,
-        label="Category",
-        to_field_name="name",
-        empty_label="No filter",
-    )
 
+    category = ChoiceFilter(
+        field_name="category",
+        label="Category",
+        choices=[
+            (0, "-- No category --"),
+        ]
+        + Category.objects.leaf_choices(),
+        empty_label="-- All categories --",
+        method="cat_filter",
+    )
     archive = ChoiceFilter(
         field_name="archive",
         empty_label=None,
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
     )
+    purchased_after = DateFilter(
+        field_name="lot__purchase__date",
+        label="Purchased after",
+        lookup_expr="gt",
+        widget=DatePicker(options={"format": "DD/MM/YYYY"}),
+    )
+    image = ChoiceFilter(
+        field_name="image",
+        empty_label=None,
+        choices=(
+            (
+                0,
+                "No filter",
+            ),
+            (1, "With an image"),
+            (2, "Without an image"),
+        ),
+        method="image_filter",
+    )
     per_page = PaginationFilter()
-    # per_page = ChoiceFilter(
-    #     field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
-    # )
+
+    def cat_filter(self, queryset, name, value):
+        if not value:
+            return queryset
+        elif value == "0":
+            return queryset.filter(category__isnull=True)
+        return queryset.filter(category_id=value)
+
+    def image_filter(self, queryset, name, value):
+        if value == "0":
+            return queryset
+        elif value == "1":
+            return queryset.filter(image__isnull=False)
+        return queryset.filter(image__isnull=True)
 
 
 class CompilerFilter(FilterSet):

@@ -1,6 +1,8 @@
 // Handle checkboxes in tables, and modal forms
 $(document).ready(function () {
+
   'use strict';
+
   let last_path = "";
   let lastChecked = null;
   let chkboxes = $('.tr-checkbox');

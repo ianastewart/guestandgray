@@ -11,7 +11,10 @@ from coderedcms.models import (
     CoderedWebPage,
 )
 from coderedcms.models.page_models import CoderedPage
-from website.blocks import MY_LAYOUT_STREAMBLOCKS  # defined in __init__.py
+from website.blocks import (
+    MY_LAYOUT_STREAMBLOCKS,
+    MY_CONTENT_STREAMBLOCKS,
+)  # defined in __init__.py
 
 from django.db import models
 from django.utils.text import slugify
@@ -41,6 +44,7 @@ class ArticlePage(CoderedArticlePage):
         verbose_name = "Article"
         ordering = ["-first_published_at"]
 
+    body = StreamField(MY_CONTENT_STREAMBLOCKS, null=True, blank=True)
     # Only allow this page to be created beneath an ArticleIndexPage.
     parent_page_types = ["website.ArticleIndexPage"]
 

@@ -9,8 +9,17 @@ from coderedcms.blocks import (
 )
 from wagtail.core import blocks
 from website.blocks.content_blocks import ItemImageBlock
+from website.blocks.layout_blocks import ItemGridBlock
 
 MY_CONTENT_STREAMBLOCKS = CONTENT_STREAMBLOCKS + [
+    (
+        "item_grid",
+        ItemGridBlock(
+            [
+                ("item_image", ItemImageBlock()),
+            ]
+        ),
+    ),
     ("item_image", ItemImageBlock()),
 ]
 
@@ -29,6 +38,14 @@ MY_LAYOUT_STREAMBLOCKS = [
                     ),
                 ),
                 (
+                    "itemgrid",
+                    ItemGridBlock(
+                        [
+                            ("item_image", ItemImageBlock()),
+                        ]
+                    ),
+                ),
+                (
                     "html",
                     blocks.RawHTMLBlock(
                         icon="code", form_classname="monospace", label=_("HTML")
@@ -43,6 +60,14 @@ MY_LAYOUT_STREAMBLOCKS = [
         CardGridBlock(
             [
                 ("card", CardBlock()),
+            ]
+        ),
+    ),
+    (
+        "itemgrid",
+        ItemGridBlock(
+            [
+                ("item_image", ItemImageBlock()),
             ]
         ),
     ),

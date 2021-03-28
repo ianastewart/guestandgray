@@ -15,23 +15,20 @@ class Command(BaseCommand):
         parser.add_argument("workbook", type=str, help="workbook name")
 
     def handle(self, *args, **options):
-        path = os.path.join(settings.MEDIA_ROOT, "excel", options["workbook"])
+        path = os.path.join(settings.MEDIA_ROOT, "documents", options["workbook"])
         if not os.path.exists(path):
             self.stdout.write(f"{path} does not exist")
         else:
             try:
                 self.stdout.write(f">> Start load workbook")
                 wb = load_workbook(filename=path, read_only=True, data_only=True)
-                # self.stdout.write(f"Workbook loaded")
-                # ws = wb.get_sheet_by_name("Buyers")
-                # self.import_buyers(ws)
-                # ws = wb.get_sheet_by_name("Vendors")
-                # self.import_vendors(ws)
-                for ws in wb.worksheets:
-                    if "Sheet1" in ws.title:
-                        self.import_stock(ws)
+                self.stdout.write(f"Workbook loaded")
+                ws_b = wb["Buyers"]
+                ws_vendors = wb["Vendors"]
+                ws_stock = wb["Stock"]
+                self.import_stock(ws_stock)
             except Exception as e:
-                self.stdout.write(f"Exception processing sheet {ws.title} \n{str(e)}")
+                self.stdout.write(f"Exception processing sheet \n{str(e)}")
 
     def import_buyers(self, ws):
         """ Import buyers and create invoices """
@@ -47,8 +44,8 @@ class Command(BaseCommand):
                 self.stdout.write(f"Header error in sheet {ws.title}:\n{str(e)}")
                 return
 
-            Contact.objects.all().delete()
-            Invoice.objects.all().delete()
+            # Contact.objects.all().delete()
+            # Invoice.objects.all().delete()
             row_number = 0
             new_contacts = 0
             existing_contacts = 0
@@ -116,7 +113,7 @@ class Command(BaseCommand):
     def import_vendors(self, ws):
         try:
             self.stdout.write(">> Start import vendors")
-            Contact.objects.filter(vendor=True).delete()
+            # Contact.objects.filter(vendor=True).delete()
             count = 0
             done = False
             for row in ws.iter_rows(min_row=1, min_col=2, max_row=500, max_col=2):
@@ -149,8 +146,8 @@ class Command(BaseCommand):
     def import_stock(self, ws):
         """ Read stock sheet, create missing items, update purchases and invoices """
         self.stdout.write(">> Start import stock")
-        Item.objects.filter(category__isnull=True).delete()
-        Purchase.objects.all().delete()
+        # Item.objects.filter(category__isnull=True).delete()
+        # Purchase.objects.all().delete()
         rowgen = ws.rows
         cols = [c.value for c in next(rowgen)]
         try:
@@ -181,7 +178,9 @@ class Command(BaseCommand):
         try:
             for row in rowgen:
                 row_number = row[0].row
-                ref = row[col_stock_no].value
+                ref = str(row[col_stock_no].value)
+                if ref[0].isdigit():
+                    ref = "#" + ref
                 description = row[col_description].value
                 price, text = parse_decimal(row[col_price].value)
                 if text:
@@ -245,19 +244,18 @@ class Command(BaseCommand):
                     exists += 1
                 except Item.DoesNotExist:
                     self.stdout.write(f"Item {ref} {description} not found")
-                    # item = Item.objects.create(
-                    #     name=truncate(description),
-                    #     ref=ref,
-                    #     description=description,
-                    #     sale_price=Decimal(price),
-                    #     category=None,
-                    #     image=None,
-                    #     archive=archive,
-                    #     visible=False,
-                    # )
-                    # created += 1
+                    item = Item.objects.create(
+                        name=truncate(description),
+                        ref=ref,
+                        description=description,
+                        sale_price=Decimal(price),
+                        category=None,
+                        image=None,
+                        archive=archive,
+                        visible=False,
+                    )
+                    created += 1
                 if item:
-
                     item.cost_price = cost_item
                     item.restoration_cost = cost_rest
 
