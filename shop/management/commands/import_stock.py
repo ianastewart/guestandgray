@@ -295,6 +295,7 @@ class Command(BaseCommand):
                             )
                             inv_created += 1
                         item.invoice = invoice
+                        print(invoice.total, item.sale_price)
                         invoice.total += item.sale_price
                         invoice.save()
                     item.save()
