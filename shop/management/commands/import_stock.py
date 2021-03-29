@@ -237,7 +237,7 @@ class Command(BaseCommand):
                 try:
                     item = Item.objects.get(ref=ref)
                     if not item.sale_price:
-                        item.sale_price=0
+                        item.sale_price = 0
                     if item.sale_price != price:
                         if not item.archive:
                             self.stdout.write(
