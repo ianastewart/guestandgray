@@ -1,45 +1,58 @@
 {% load shop_tags %}
 
-<li class="nav-item dropdown has-megamenu">
-  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% if is_archive %}Archive{% else %}
-    Catalogue{% endif %}</a>
-  <div class="dropdown-menu megamenu" role="menu">
-    {% if is_archive %}{% archive_tree as tree %}<a href="/archive/"><h5>Browse archive items</h5></a>
-    {% else %}
-      {% catalogue_tree as tree %}<a href="/catalogue/"><h5>Browse items on sale</h5></a>
-    {% endif %}
-    <div class="row">
-      {% for item in tree.children %}
-        {% if item.shop and is_catalogue or item.archive and is_archive or item.children %}
-          <div class="col col-lg-3">
-            <div class="col-megamenu">
-              <div class="card">
-                <h4 class="title m-2">{{ item.text }} {% if is_archive %}Archive{% endif %}</h4>
+<li class="nav-item dropdown megamenu"><a id="megamneu" href="" data-toggle="dropdown" aria-haspopup="true"
+                                          aria-expanded="false"
+                                          class="nav-link dropdown-toggle font-weight-bold text-uppercase">Mega Menu</a>
+  <div aria-labelledby="megamneu" class="dropdown-menu border-0 p-0 m-0">
+    <div class="container">
+      <div class="row bg-white rounded-0 m-0 shadow-sm">
+        <div class="col-lg-7 col-xl-8">
+          <div class="p-4">
+            <div class="row">
+              <div class="col-lg-6 mb-4">
+                <h6 class="font-weight-bold text-uppercase">MegaMenu heading</h6>
                 <ul class="list-unstyled">
-                  {% for level2 in item.children %}
-                    {% if level2.children %}
-                      <li><a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a></li>
-                      <ul class="list-unstyled">
-                        {% for level3 in level2.children %}
-                          {% if level3.shop and is_catalogue or level3.archive and is_archive or level3.children %}
-                            <li><a class="dropdown-item" href="{{ level3.link }}"><span
-                                class="pl-3">{{ level3.text }}</span></a></li>
-                          {% endif %}
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
-                    {% if level2.shop and is_catalogue or level2.archive and is_archive %}
-                      <li><a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a></li>
-                    {% endif %}
-                  {% endfor %}
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0">Unique Features</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Image Responsive</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Auto Carousel</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Newsletter Form</a></li>
+                </ul>
+              </div>
+              <div class="col-lg-6 mb-4">
+                <h6 class="font-weight-bold text-uppercase">MegaMenu heading</h6>
+                <ul class="list-unstyled">
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Unique Features</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Image Responsive</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Auto Carousel</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Newsletter Form</a></li>
+                </ul>
+              </div>
+              <div class="col-lg-6 mb-4">
+                <h6 class="font-weight-bold text-uppercase">MegaMenu heading</h6>
+                <ul class="list-unstyled">
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Unique Features</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Image Responsive</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Auto Carousel</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Newsletter Form</a></li>
+                </ul>
+              </div>
+              <div class="col-lg-6 mb-4">
+                <h6 class="font-weight-bold text-uppercase">MegaMenu heading</h6>
+                <ul class="list-unstyled">
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Unique Features</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Image Responsive</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Auto Carousel</a></li>
+                  <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Newsletter Form</a></li>
                 </ul>
               </div>
             </div>
-
           </div>
-
-        {% endif %}
-      {% endfor %}
+        </div>
+        <div class="col-lg-5 col-xl-4 px-0 d-none d-lg-block"
+             style="background: center center url(https://res.cloudinary.com/mhmd/image/upload/v1556990826/mega_bmtcdb.png)no-repeat; background-size: cover;"></div>
+      </div>
     </div>
   </div>
 </li>
+
+

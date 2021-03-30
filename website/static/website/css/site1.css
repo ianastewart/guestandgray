@@ -166,6 +166,22 @@ input[type=number] {
   flex: 0 0 auto;
 }
 
+.card-256l {
+  width: 256px;
+  border: 0px;
+  background: transparent;
+  float: left;
+  margin-right: 1em;
+}
+
+.card-256r {
+  width: 256px;
+  border: 0px;
+  background: transparent;
+  float: right;
+  margin-left: 1em;
+}
+
 /*  https://startbootstrap.com/snippets/sticky-footer-flexbox/ */
 html,
 body {
@@ -380,6 +396,18 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   top: 2.375rem !important;
 }
 
+/*.megamenu {*/
+/*  !*position: static;*!*/
+/*  margin-left: 100px;*/
+/*}*/
+
+/*.megamenu .dropdown-menu {*/
+/*  background: none;*/
+/*  border: none;*/
+/*  width: 100%;*/
+/*}*/
+
+
 .megamenu {
   background: #efefef;
   margin-left: auto;
@@ -392,17 +420,32 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
     padding-top: 0;
     padding-bottom: 0;
   }
-
-  .navbar .has-megamenu {
-    position: static !important;
-  }
-
   .navbar .megamenu {
-    margin-left: 10%;
-    margin-right: 10%;
-    width: 80%;
+    margin-left: 5%;
+    margin-right:5%;
+    width: 90%;
     padding: 20px;
   }
+
+  .navbar .has-megamenu {
+   position: static !important;
+  }
+
+@media all and (min-width: 1200px) {
+  .navbar .megamenu{left:5%; right:0; width:80%; padding:20px;  }
+}
+  @media all and (min-width: 1500px) {
+  .navbar .megamenu{left:10%; right:0; width:70%; padding:20px;  }
+}
+/*.navbar .megamenu{left:0; right:0; width:100%; margin-top:0;  }*/
+
+
+  /*.navbar .megamenu {*/
+  /*  margin-left: 10%;*/
+  /*  margin-right: 10%;*/
+  /*  !* width: 80%; *!*/
+  /*  padding: 20px;*/
+  /*}*/
 
   .navbar .nav-link {
     padding-top: 1rem;

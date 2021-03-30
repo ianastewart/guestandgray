@@ -50,13 +50,13 @@ def is_archive_menu(value):
 
 
 @register.simple_tag(takes_context=False)
-def catalogue_tree():
-    return tree()
+def catalogue_tree(root):
+    return tree(root=root, archive=False)
 
 
 @register.simple_tag(takes_context=False)
-def archive_tree():
-    return tree(archive=True)
+def archive_tree(root):
+    return tree(root=root, archive=True)
 
 
 @register.simple_tag(takes_context=False)

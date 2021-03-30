@@ -57,11 +57,11 @@ def tree_move(node_id, target_id, previous_id, inside):
             node.move(target, "sorted-sibling")
 
 
-def tree(admin=False, archive=False):
+def tree(admin=False, archive=False, root="Catalogue"):
     """
     Create a dictionary representation of the Category tree
     """
-    node = Category.objects.get(name="Catalogue")
+    node = Category.objects.get(name=root)
     if node.sequence == 0:
         sequence_tree()
     dict = node_dict(node, admin, archive)
