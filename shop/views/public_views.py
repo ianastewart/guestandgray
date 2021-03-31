@@ -259,7 +259,7 @@ class ContactView(FormView):
 
     def form_valid(self, form):
 
-        contacts = Contact.objects.filter(email=form.cleaned_data["email"])
+        contacts = Contact.objects.filter(adress__email=form.cleaned_data["email"])
         count = len(contacts)
         if count == 0:
             contact = form.save()

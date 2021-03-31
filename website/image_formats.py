@@ -1,4 +1,8 @@
-from wagtail.images.formats import Format, register_image_format
+from wagtail.images.formats import (
+    Format,
+    register_image_format,
+    unregister_image_format,
+)
 from django.utils.html import format_html
 
 
@@ -42,21 +46,55 @@ class CaptionedImageFormat(Format):
         )
 
 
+unregister_image_format("left")
+unregister_image_format("right")
+unregister_image_format("fullwidth")
+
 register_image_format(
     CaptionedImageFormat(
-        "captioned",
-        "Captioned left",
+        "fullwidth",
+        "Full width",
+        "",
+        "width-800",
+        "card card-full",
+    )
+)
+
+register_image_format(
+    CaptionedImageFormat(
+        "left",
+        "Left-aligned",
+        "",
+        "width-500",
+        "card card-500l",
+    )
+)
+
+register_image_format(
+    CaptionedImageFormat(
+        "right",
+        "Right-aligned",
+        "",
+        "width-500",
+        "card card-500r",
+    )
+)
+
+register_image_format(
+    CaptionedImageFormat(
+        "left-small",
+        "Small left-aligned",
         "",
         "width-256",
-        "card card-256l text-center",
+        "card card-256l",
     )
 )
 register_image_format(
     CaptionedImageFormat(
-        "captioned_right",
-        "Captioned right",
+        "right-small",
+        "Small right-aligned",
         "",
         "width-256",
-        "card card-256r text-center",
+        "card card-256r",
     )
 )

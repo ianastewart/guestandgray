@@ -54,8 +54,10 @@
       <meta property="og:title" content="
 
 
+
           {% block og_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}"/>
       <meta property="og:description" content="
+
 
 
           {% block og_description %}{% if self.search_description %}{{ self.search_description }}{% endif %}{% endblock %}"/>
@@ -142,13 +144,13 @@
   <div class="bg-guest">
     <div class="container">
       <div class="row position-relative">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-8 banner-wrapper">
           <a class="banner-logo" href="/">Guest & Gray</a>
         </div>
-        <div class="col-12 col-lg-6">
-          {% if request.user.is_authenticated %}
-            <a class="banner-text banner-admin" href="/staff">Admin</a>
-          {% endif %}
+        <div class="col-12 col-lg-4">
+                    {% if request.user.is_authenticated %}
+                      <a class="banner-text banner-admin" href="/staff">Admin</a>
+                    {% endif %}
           <p class="d-none d-lg-block banner-text banner-position">Antique Chinese & Japanese Porcelain<br>European
             Ceramics & Works of Art</p>
           <p class="d-xs-block d-lg-none banner-text">Antique Chinese & Japanese Porcelain<br>European Ceramics & Works
@@ -157,8 +159,8 @@
         </div>
       </div>
     </div>
-    {% block navbar %}{% endblock %}
   </div>
+  {% block navbar %}{% endblock %}
 
 
   <div id="content">

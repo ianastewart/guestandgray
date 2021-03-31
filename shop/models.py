@@ -366,6 +366,7 @@ class Contact(models.Model):
     title = models.CharField(max_length=20, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
+
     company = models.CharField(max_length=100, blank=True, null=True)
 
     notes = models.CharField(max_length=500, blank=True, null=True)
