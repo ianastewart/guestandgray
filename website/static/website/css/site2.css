@@ -327,26 +327,6 @@ span.twitter-typeahead .tt-menu {
   cursor: pointer;
 }
 
-/*.dropdown-menu, span.twitter-typeahead .tt-menu {*/
-/*  position: absolute;*/
-/*  top: 100%;*/
-/*  left: 0;*/
-/*  z-index: 1000;*/
-/*  display: none;*/
-/*  float: left;*/
-/*  min-width: 160px;*/
-/*  padding: 5px 0;*/
-/*  margin: 2px 0 0;*/
-/*  font-size: 1rem;*/
-/*  color: #373a3c;*/
-/*  text-align: left;*/
-/*  list-style: none;*/
-/*  background-color: #fff;*/
-/*  background-clip: padding-box;*/
-/*  border: 1px solid rgba(0, 0, 0, 0.15);*/
-/*  border-radius: 0.25rem;*/
-/*}*/
-
 span.twitter-typeahead .tt-suggestion {
   display: block;
   width: 100%;
@@ -386,8 +366,6 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   filter: "progid:DXImageTransform.Microsoft.gradient(enabled = false)";
 }
 
-/*span.twitter-typeahead {*/
-/*  width: 100%; }*/
 .input-group span.twitter-typeahead {
   display: block !important;
 }
@@ -395,18 +373,6 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
 .input-group span.twitter-typeahead .tt-menu {
   top: 2.375rem !important;
 }
-
-/*.megamenu {*/
-/*  !*position: static;*!*/
-/*  margin-left: 100px;*/
-/*}*/
-
-/*.megamenu .dropdown-menu {*/
-/*  background: none;*/
-/*  border: none;*/
-/*  width: 100%;*/
-/*}*/
-
 
 .megamenu {
   background: #efefef;
@@ -467,12 +433,3 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   padding-right: 5px;
 }
 
-/*@media all and (min-width: 992px) {*/
-/*  .navbar .megamenu {*/
-/*    width: 999px;*/
-/*  }*/
-/*}*/
-
-/*@media all and (min-width: 1200px) {*/
-/*  .navbar .megamenu{left:10%; right:0; width:80%; padding:20px;  }*/
-/*}*/

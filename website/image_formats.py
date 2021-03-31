@@ -17,11 +17,26 @@ class CaptionedImageFormat(Format):
         self.figcaption_classes = figcaption_classes
 
     def image_to_html(self, image, alt_text, extra_attributes=None):
+        if image.item:
+            if alt_text == "No caption":
+                caption = ""
+                alt_text = image.item.name
+            elif alt_text[:6] == "Figure":
+                caption = f"{alt_text}. {image.item.name}"
+                alt_text = caption
+            else:
+                caption = image.item.name
+        else:
+            caption = alt_text
+        if caption:
+            caption_html = format_html(
+                f"<figcaption class='small'>{caption}</figcaption>",
+            )
+        else:
+            caption_html = ""
         image_html = super().image_to_html(image, alt_text, extra_attributes)
-        caption = image.item.name if image.item else alt_text
-        caption_html = format_html(
-            f"<figcaption class='small'>{caption}</figcaption>",
-        )
+        if image.item:
+            image_html = f'<a href="/item/{image.item.ref}">{image_html}</a>'
         return format_html(
             f'<figure class="{self.figure_classes}">{image_html}{caption_html}</figure>'
         )
