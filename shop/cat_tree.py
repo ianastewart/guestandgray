@@ -61,7 +61,10 @@ def tree(admin=False, archive=False, root="Catalogue"):
     """
     Create a dictionary representation of the Category tree
     """
-    node = Category.objects.get(name=root)
+    try:
+        node = Category.objects.get(name=root)
+    except Category.DoesNotExist:
+        node = Category.objects.get(name="Catalogue")
     if node.sequence == 0:
         sequence_tree()
     dict = node_dict(node, admin, archive)
