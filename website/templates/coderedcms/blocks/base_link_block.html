@@ -5,7 +5,7 @@
     {% is_catalogue_menu value as is_catalogue %}
     {% is_archive_menu value as is_archive %}
     {% if is_catalogue or is_archive %}
-      {% include "shop/includes/catalogue_menuOLD.html" with is_archive=is_archive %}
+      {% include "shop/includes/catalogue_menu.html" with is_archive=is_archive %}
     {% else %}
       {% is_menu_item_dropdown value as has_dropdown %}
       <li class="{{ liclass }} {% if has_dropdown %}dropdown{% endif %}">

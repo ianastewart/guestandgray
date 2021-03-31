@@ -64,7 +64,8 @@ def tree(admin=False, archive=False, root="Catalogue"):
     try:
         node = Category.objects.get(name=root)
     except Category.DoesNotExist:
-        node = Category.objects.get(name="Catalogue")
+        return {"text": f"'{root}' category not found"}
+
     if node.sequence == 0:
         sequence_tree()
     dict = node_dict(node, admin, archive)
