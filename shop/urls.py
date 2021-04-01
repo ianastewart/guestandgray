@@ -59,13 +59,13 @@ from shop.views.staff_views import StaffHomeView
 from shop.views.public_views import (
     home_view,
     item_view,
-    # item_ref_view,
     catalogue_view,
     search_view,
     ContactView,
     ContactSubmittedView,
     BibliographyView,
 )
+from shop.views.legacy_views import legacy_view
 from shop.views.import_views import upload_view
 from shop.views.image_views import BasicUploadView, ItemImagesView
 
@@ -214,13 +214,11 @@ public_urls = [
     ),
     path("archive/", catalogue_view, {"archive": True}, name="public_archive_root"),
     re_path(
-        r"archive/(?P<slugs>[\w_/-]+)/$",
+        r"archive/(?P<slugs>[\.\w_/-]+)/$",
         catalogue_view,
         {"archive": True},
         name="public_archive",
     ),
-    # path("item/<slug:slug>,<int:pk>/", item_view, name="public_item"),
-    # path("item/<slug:slug>/", item_slug_view, name="public_item_slug"),
     path("item/<str:ref>/<slug:slug>/", item_view, name="public_item"),
     path("item/<str:ref>/", item_view, {"slug": ""}, name="public_item_ref"),
     path("contact/", ContactView.as_view(), name="public_contact"),
@@ -235,4 +233,5 @@ public_urls = [
         BibliographyView.as_view(),
         name="bibliography",
     ),
+    path("acatalog/<str:page>/", legacy_view, name="public_legacy"),
 ]

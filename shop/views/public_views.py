@@ -20,6 +20,7 @@ from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.filters import CompilerFilter
 from shop.cat_tree import Counter
+from shop.views.legacy_views import legacy_view
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,8 @@ def get_redirected(queryset_or_class, lookups, validators):
 
 
 def home_view(request):
+    if "page_id" in request.GET:
+        return legacy_view(request, request.GET["page_id"])
     return redirect("/pages/")
 
 
