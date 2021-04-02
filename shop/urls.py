@@ -61,7 +61,7 @@ from shop.views.public_views import (
     item_view,
     catalogue_view,
     search_view,
-    ContactView,
+    EnquiryView,
     ContactSubmittedView,
     BibliographyView,
 )
@@ -221,7 +221,7 @@ public_urls = [
     ),
     path("item/<str:ref>/<slug:slug>/", item_view, name="public_item"),
     path("item/<str:ref>/", item_view, {"slug": ""}, name="public_item_ref"),
-    path("contact/", ContactView.as_view(), name="public_contact"),
+    path("contact/", EnquiryView.as_view(), name="public_contact"),
     path(
         "contact/submitted/",
         ContactSubmittedView.as_view(),

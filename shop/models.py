@@ -189,7 +189,7 @@ class Item(index.Indexed, models.Model):
         return f"{self.ref} {self.name}"
 
     def get_absolute_url(self):
-        return reverse("public_item", kwargs={"slug": self.slug, "ref": self.ref})
+        return reverse("public_item_ref", kwargs={"ref": self.ref})
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -420,12 +420,10 @@ class Address(models.Model):
 class Enquiry(models.Model):
     date = models.DateField(auto_now_add=True)
     subject = models.CharField(max_length=80, blank=False, null=True)
-    message = models.TextField(blank=False, null=True)
+    message = models.TextField(max_length=1000, blank=False, null=True)
     items = models.ManyToManyField(Item)
-    contact = models.ForeignKey(
-        Contact, on_delete=models.SET_NULL, blank=True, null=True
-    )
     closed = models.BooleanField(default=False)
+    notes = models.CharField(max_length=2000, blank=True, null=True)
 
     def __str__(self):
         return self.date

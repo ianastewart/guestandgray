@@ -205,18 +205,20 @@ class NewContactForm(ContactForm):
     path = reverse_lazy("contact_create")
 
 
-class EnquiryForm(ModelForm):
-    class Meta:
-        model = Contact
-        fields = ("first_name", "last_name")
-
+class MailListForm(Form):
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
     email = forms.EmailField(max_length=100, required=True)
+    mail_consent = forms.BooleanField(
+        required=False, label="Please add me to your mailing list"
+    )
+
+
+class EnquiryForm(MailListForm):
+    phone = forms.CharField(max_length=20, required=False)
     subject = forms.CharField(max_length=50, required=False)
     message = forms.CharField(
         max_length=2000, required=False, widget=forms.Textarea(attrs={"rows": 3})
-    )
-    mail_consent = forms.BooleanField(
-        required=False, label="Please add me to your mailing list"
     )
 
 

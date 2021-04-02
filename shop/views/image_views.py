@@ -124,10 +124,9 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
             with open(source, "r+b") as f:
                 with Image.open(f) as image:
                     im = resize(image, crop, limit)
-            head_tail = os.path.split(photo.file.name)
-            dest = os.path.join("original_images", photo.title)
-            full_path = os.path.join(settings.MEDIA_ROOT, dest)
-            im.save(full_path, optimize=True, quality=70)
+                    dest = os.path.join("original_images", photo.title)
+                    full_path = os.path.join(settings.MEDIA_ROOT, dest)
+                    im.save(full_path, optimize=True, quality=70)
             CustomImage.objects.create(
                 file=dest,
                 title=self.item.ref + " " + self.item.name,

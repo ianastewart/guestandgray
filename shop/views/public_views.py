@@ -1,5 +1,6 @@
 import logging
 from itertools import chain
+from datetime import datetime
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
@@ -15,7 +16,16 @@ from wagtail.search.models import Query
 from coderedcms.forms import SearchForm
 from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
-from shop.models import Item, Category, Contact, Enquiry, Book, Compiler, CustomImage
+from shop.models import (
+    Item,
+    Category,
+    Contact,
+    Enquiry,
+    Book,
+    Compiler,
+    CustomImage,
+    Address,
+)
 from shop.forms import EnquiryForm
 from shop.tables import BookTable
 from shop.filters import CompilerFilter
@@ -23,20 +33,6 @@ from shop.cat_tree import Counter
 from shop.views.legacy_views import legacy_view
 
 logger = logging.getLogger(__name__)
-
-
-# Url structure from https://wellfire.co/learn/fast-and-beautiful-urls-with-django/
-
-
-def get_redirected(queryset_or_class, lookups, validators):
-    """
-    Calls get_object_or_404 and conditionally builds redirect URL
-    """
-    item = get_object_or_404(queryset_or_class, **lookups)
-    for key, value in validators.items():
-        if value != getattr(item, key):
-            return item, item.get_absolute_url()
-    return item, None
 
 
 def home_view(request):
@@ -48,9 +44,9 @@ def home_view(request):
 def item_view(request, ref, slug):
     """ Public view of a single object """
     template_name = "shop/public/item_detail.html"
-    item, item_url = get_redirected(Item, {"ref": ref}, {"slug": slug})
-    if item_url:
-        return redirect(item_url)
+    item = get_object_or_404(Item, ref=ref)
+    if not slug:
+        return redirect("public_item", ref=ref, slug=item.slug)
     context = get_host_context(
         "catalogue", title=item.name, description=item.description[:150]
     )
@@ -75,20 +71,6 @@ def item_view(request, ref, slug):
     form.fields["subject"].initial = f"{item.name} ({item.ref})"
     context["form"] = form
     return render(request, template_name, context)
-
-
-# def item_slug_view(request, slug):
-#     """ Look up by slug """
-#     item = get_object_or_404(Item, slug=slug)
-#     return item_common(request, item)
-#
-#
-# def item_ref_slug_view(request, ref, slug):
-#     """ Look up by reference """
-#     item = get_object_or_404(Item, ref=ref)
-#     if item and slug:
-#         return item_common(request, item)
-#     return redirect(item.get_absolute_url())
 
 
 def catalogue_view(request, slugs=None, archive=False):
@@ -251,7 +233,7 @@ def search_view(request, public):
     )
 
 
-class ContactView(FormView):
+class EnquiryView(FormView):
     form_class = EnquiryForm
     template_name = "shop/public/contact_form.html"
     success_url = reverse_lazy("public_contact_submitted")
@@ -261,16 +243,33 @@ class ContactView(FormView):
         return add_page_context(context, "contact")
 
     def form_valid(self, form):
-
-        contacts = Contact.objects.filter(adress__email=form.cleaned_data["email"])
-        count = len(contacts)
-        if count == 0:
-            contact = form.save()
-        else:
-            contact = contacts[0]
+        d = form.cleaned_data
+        contact = Contact.objects.filter(
+            address__email=form.cleaned_data["email"]
+        ).first()
+        if contact:
+            if d["phone"]:
+                if not (
+                    contact.address.work_phone == d["phone"]
+                    or contact.address.mobile_phone == d["phone"]
+                ):
+                    contact = None
+        if not contact:
+            contact = Contact.objects.create(
+                first_name=d["first_name"],
+                last_name=d["last_name"],
+                mail_consent=d["mail_consent"],
+            )
+            Address.objects.create(
+                mobile_phone=d["mobile_phone"], email=d["email"], contact=contact
+            )
+        if d["mail_consent"]:
+            contact.mail_consent = True
+            contact.consent_date = datetime.now().date()
+        contact.save()
         enquiry = Enquiry.objects.create(
-            subject=form.cleaned_data["subject"],
-            message=form.cleaned_data["message"],
+            subject=d["subject"],
+            message=d["message"],
             contact=contact,
         )
         self.request.session["enquiry_pk"] = enquiry.pk

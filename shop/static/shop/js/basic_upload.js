@@ -24,7 +24,7 @@ $(function () {
     done: function (e, data) {
       if (data.result.is_valid) {
         $("#gallery tbody").prepend(
-          "<tr><td>data.result.name</td></tr>"
+          "<tr><td>"+ data.result.name+ "</td></tr>"
         )
       }
     }
