@@ -216,7 +216,7 @@ class MailListForm(Form):
 
 class EnquiryForm(MailListForm):
     phone = forms.CharField(max_length=20, required=False)
-    subject = forms.CharField(max_length=50, required=False)
+    subject = forms.CharField(max_length=78, required=True)
     message = forms.CharField(
         max_length=2000, required=False, widget=forms.Textarea(attrs={"rows": 3})
     )

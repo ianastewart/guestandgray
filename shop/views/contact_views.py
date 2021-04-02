@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseNotFound
 from shop.models import Contact, Enquiry, Address
-from shop.forms import ContactForm
+from shop.forms import ContactForm, EnquiryForm
 from shop.tables import ContactTable, ContactTableTwo, EnquiryTable
 from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import ContactFilter
@@ -114,10 +114,16 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
     model = Enquiry
     table_class = EnquiryTable
     table_pagination = {"per_page": 10}
-    allow_update = True
+    allow_detail = True
+    template_name = "shop/filtered_table.html"
 
     def get_queryset(self):
         return Enquiry.objects.all().order_by("-date")
+
+
+class EnquiryDetailAjax(LoginRequiredMixin, AjaxCrudView):
+    model = Enquiry
+    template_name = "shop/enquiry_detail.html"
 
 
 class ContactCreateAjax(LoginRequiredMixin, AjaxCrudView):

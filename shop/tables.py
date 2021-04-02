@@ -218,9 +218,9 @@ class EnquiryTable(tables.Table):
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
-    first_name = tables.Column(accessor="contact.first_name")
-    last_name = tables.Column(accessor="contact.company", verbose_name="Last name")
-    email = tables.Column(accessor="contact.email")
+    first_name = tables.Column(accessor="contact__first_name")
+    last_name = tables.Column(accessor="contact__last_name", verbose_name="Last name")
+    email = tables.Column(accessor="contact__mani_address__email")
     mail_consent = tables.Column(accessor="contact.mail_consent")
 
     def render_mail_consent(self, value):

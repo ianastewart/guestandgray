@@ -25,6 +25,7 @@ from shop.views.contact_views import (
     VendorListView,
     BuyerListView,
     EnquiryListView,
+    EnquiryDetailAjax,
     contact_lookup,
 )
 from shop.views.book_views import (
@@ -174,6 +175,11 @@ staff_urls = [
     ),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
+    path(
+        "enquiry/list/detail/<int:pk>/",
+        EnquiryDetailAjax.as_view(),
+        name="enquiry_update",
+    ),
     # Compilers
     path("compilers/", CompilerListView.as_view(), name="compiler_list"),
     path("compilers/create/", CompilerCreateView.as_view(), name="compiler_create"),

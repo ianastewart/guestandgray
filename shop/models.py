@@ -424,6 +424,9 @@ class Enquiry(models.Model):
     items = models.ManyToManyField(Item)
     closed = models.BooleanField(default=False)
     notes = models.CharField(max_length=2000, blank=True, null=True)
+    contact = models.ForeignKey(
+        Contact, null=False, blank=False, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return self.date

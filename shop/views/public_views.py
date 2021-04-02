@@ -68,7 +68,7 @@ def item_view(request, ref, slug):
             images.append(image)
     context["images"] = images
     form = EnquiryForm()
-    form.fields["subject"].initial = f"{item.name} ({item.ref})"
+    form.fields["subject"].initial = f"Enquiry about {item.ref}"
     context["form"] = form
     return render(request, template_name, context)
 
@@ -245,7 +245,7 @@ class EnquiryView(FormView):
     def form_valid(self, form):
         d = form.cleaned_data
         contact = Contact.objects.filter(
-            address__email=form.cleaned_data["email"]
+            main_address__email=form.cleaned_data["email"]
         ).first()
         if contact:
             if d["phone"]:
@@ -258,11 +258,11 @@ class EnquiryView(FormView):
             contact = Contact.objects.create(
                 first_name=d["first_name"],
                 last_name=d["last_name"],
-                mail_consent=d["mail_consent"],
             )
-            Address.objects.create(
-                mobile_phone=d["mobile_phone"], email=d["email"], contact=contact
+            address = Address.objects.create(
+                mobile_phone=d["phone"], email=d["email"], contact=contact
             )
+            contact.main_address = address
         if d["mail_consent"]:
             contact.mail_consent = True
             contact.consent_date = datetime.now().date()
@@ -282,6 +282,12 @@ class ContactSubmittedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["enquiry"] = Enquiry.objects.get(pk=self.request.session["enquiry_pk"])
+        context["email"] = (
+            context["enquiry"]
+            .contact.address_set.filter(email__isnull=False)
+            .first()
+            .email
+        )
         return context
 
 

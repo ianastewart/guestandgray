@@ -34,14 +34,15 @@
             {% csrf_token %}
             {% bootstrap_field form.first_name layout='horizontal' %}
             {% bootstrap_field form.last_name layout='horizontal' %}
-            {#            {% bootstrap_field form.email layout='horizontal' %}#}
+            {% bootstrap_field form.email layout='horizontal' %}
+            {% bootstrap_field form.phone layout='horizontal' %}
+            {% bootstrap_field form.subject layout='horizontal' %}
+            {% bootstrap_field form.message layout='horizontal' %}
+            {% bootstrap_field form.mail_consent layout='horizontal' %}
             <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="customCheck1" name="mail_consent">
               <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
             </div>
-          <br>
-            {% bootstrap_field form.subject layout='horizontal' %}
-            {% bootstrap_field form.message layout='horizontal' %}
             {% buttons %}
               <button type="submit" class="btn btn-guest">Send enquiry</button>
             {% endbuttons %}
