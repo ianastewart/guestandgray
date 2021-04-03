@@ -67,7 +67,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                     images.append(image)
             else:
                 self.object.image = image
-                self.objects.save()
+                self.object.save()
         context["images"] = images
         # Clear photos and associated files
         Photo.objects.all().delete()
