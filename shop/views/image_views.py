@@ -62,8 +62,12 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
         for image in CustomImage.objects.filter(item_id=self.object.id).order_by(
             "-show", "position", "title"
         ):
-            if image.id != self.object.image.id:
-                images.append(image)
+            if self.object.image:
+                if image.id != self.object.image.id:
+                    images.append(image)
+            else:
+                self.object.image = image
+                self.objects.save()
         context["images"] = images
         # Clear photos and associated files
         Photo.objects.all().delete()

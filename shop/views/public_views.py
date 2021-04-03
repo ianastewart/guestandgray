@@ -65,7 +65,8 @@ def item_view(request, ref, slug):
         "position", "title"
     ):
         if not item.image:
-            images.append(image)
+            item.image = image
+            item.save()
         elif image.id != item.image.id:
             images.append(image)
     context["images"] = images
