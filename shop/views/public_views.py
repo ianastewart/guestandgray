@@ -64,7 +64,9 @@ def item_view(request, ref, slug):
     for image in CustomImage.objects.filter(item_id=item.id, show=True).order_by(
         "position", "title"
     ):
-        if image.id != item.image.id:
+        if not item.image:
+            images.append(image)
+        elif image.id != item.image.id:
             images.append(image)
     context["images"] = images
     form = EnquiryForm()
