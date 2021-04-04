@@ -37,9 +37,9 @@
             </div>
             <hr>
             <p class="small">The fields below are optional:</p>
+            {% bootstrap_field form.phone layout='horizontal' %}
             {% bootstrap_field form.subject layout='horizontal' %}
             {% bootstrap_field form.message layout='horizontal' %}
-            <p class="text-danger">ToDo: Add recaptcha</p>
             {% buttons %}
               <button type="submit" class="btn btn-primary">Submit</button>
             {% endbuttons %}

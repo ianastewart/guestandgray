@@ -88,6 +88,23 @@ class ContactFilter(FilterSet):
     )
 
 
+class EnquiryFilter(FilterSet):
+    state = ChoiceFilter(
+        field_name="closed",
+        choices=((0, "Open enquiries"), (1, "Closed enquiries"), (2, "All enquiries")),
+        empty_label=None,
+        method="state_filter",
+        label="State",
+    )
+
+    def state_filter(self, queryset, name, value):
+        if value == "0":
+            return queryset.filter(closed=False)
+        elif value == "1":
+            return queryset.filter(closed=True)
+        return queryset
+
+
 class InvoiceFilter(FilterSet):
     number = CharFilter()
 

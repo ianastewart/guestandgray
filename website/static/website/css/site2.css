@@ -56,7 +56,7 @@ h4 {
 }
 
 .banner-wrapper {
-  text-align:center;
+  text-align: center;
 }
 
 .banner-logo, .banner-logo:hover {
@@ -74,21 +74,23 @@ h4 {
   text-align: center;
 }
 
-  .banner-position {
-    position: absolute;
-    top: 25%;
-    left: 15px;
-  }
+.banner-position {
+  position: absolute;
+  top: 25%;
+  left: 15px;
+}
 
 @media all and (min-width: 992px) {
-  .banner-wrapper{
-    text-align:left;
+  .banner-wrapper {
+    text-align: left;
   }
+
   .banner-position {
     position: absolute;
     top: 25%;
     right: 15px;
   }
+
   .banner-logo {
     text-align: left;
   }
@@ -433,33 +435,41 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
     padding-top: 0;
     padding-bottom: 0;
   }
+
   .navbar .megamenu {
     margin-left: 5%;
-    margin-right:5%;
+    margin-right: 5%;
     width: 90%;
     padding: 20px;
   }
 
   .navbar .has-megamenu {
-   position: static !important;
+    position: static !important;
   }
 
-@media all and (min-width: 1200px) {
-  .navbar .megamenu{left:5%; right:0; width:80%; padding:20px;  }
-}
+  @media all and (min-width: 1200px) {
+    .navbar .megamenu {
+      left: 5%;
+      right: 0;
+      width: 80%;
+      padding: 20px;
+    }
+  }
   @media all and (min-width: 1500px) {
-  .navbar .megamenu{left:10%; right:0; width:70%; padding:20px;  }
-}
-/*.navbar .megamenu{left:0; right:0; width:100%; margin-top:0;  }*/
-
-
+    .navbar .megamenu {
+      left: 10%;
+      right: 0;
+      width: 70%;
+      padding: 20px;
+    }
+  }
+  /*.navbar .megamenu{left:0; right:0; width:100%; margin-top:0;  }*/
   /*.navbar .megamenu {*/
   /*  margin-left: 10%;*/
   /*  margin-right: 10%;*/
   /*  !* width: 80%; *!*/
   /*  padding: 20px;*/
   /*}*/
-
   .navbar .nav-link {
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -467,8 +477,8 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
 }
 
 .item-card {
-  height:20.5rem;
-  width:250px;
+  height: 20.5rem;
+  width: 250px;
   position: relative;
 }
 
@@ -480,3 +490,27 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   padding-right: 5px;
 }
 
+
+.darken:hover > .overlay {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 99.5%;
+  left: 0;
+  background-color: #000;
+  opacity: 0.4;
+  display: block;
+}
+
+.darken:hover .info {
+  display: block;
+  color: white;
+  font-size: large;
+}
+
+.info {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  display: none;
+}

@@ -5,7 +5,7 @@ from shop.models import Contact, Enquiry, Address
 from shop.forms import ContactForm, EnquiryForm
 from shop.tables import ContactTable, ContactTableTwo, EnquiryTable
 from table_manager.views import FilteredTableView, AjaxCrudView
-from shop.filters import ContactFilter
+from shop.filters import ContactFilter, EnquiryFilter
 
 
 class ContactListView(LoginRequiredMixin, FilteredTableView):
@@ -113,6 +113,7 @@ class ContactUpdateView(LoginRequiredMixin, AjaxCrudView):
 class EnquiryListView(LoginRequiredMixin, FilteredTableView):
     model = Enquiry
     table_class = EnquiryTable
+    filter_class = EnquiryFilter
     table_pagination = {"per_page": 10}
     allow_detail = True
     template_name = "shop/filtered_table.html"
@@ -124,6 +125,14 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
 class EnquiryDetailAjax(LoginRequiredMixin, AjaxCrudView):
     model = Enquiry
     template_name = "shop/enquiry_detail.html"
+
+    def handle_action(self, action, **kwargs):
+        if action == "open":
+            self.object.closed = False
+        elif action == "close":
+            self.object.closed = True
+        self.object.save()
+        return
 
 
 class ContactCreateAjax(LoginRequiredMixin, AjaxCrudView):

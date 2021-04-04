@@ -1,5 +1,48 @@
-<div class="modal-dialog modal-xl" role="document">
+<div class="modal-dialog modal-lg" role="document">
   <div class="modal-content bg-white border-1">
-    <h3 class="my-2">Enquiry</h3>
+    <div class="modal-header">
+      <h3>Enquiry</h3>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <table class="table table-sm table-borderless">
+        <tr>
+          <td>From:</td>
+          <td>{{ enquiry.contact.first_name }} {{ enquiry.contact.last_name }}</td>
+        </tr>
+        <tr>
+          <td>Received:</td>
+          <td>{{ enquiry.date }}</td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td>{{ enquiry.contact.main_address.email }}</td>
+        </tr>
+        <tr>
+          <td>Phone:</td>
+          <td>{{ enquiry.contact.main_address.phone }}</td>
+        </tr>
+        <tr>
+          <td>Subject:</td>
+          <td>{{ enquiry.subject }}</td>
+        </tr>
+        <tr>
+          <td>Message:</td>
+          <td>{{ enquiry.message }}</td>
+        </tr>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+    <form method="post" action="{{ path }}" class="js-form" >{% csrf_token %}
+      {% if enquiry.closed %}
+        <button name="submit_open" class="btn btn-secondary js-submit">Reopen</button>
+      {% else %}
+        <button name="submit_close" class="btn btn-secondary js-submit">Mark as closed</button>
+      {% endif %}
+    </form>
+    </div>
   </div>
 </div>

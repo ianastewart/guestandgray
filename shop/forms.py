@@ -206,12 +206,13 @@ class NewContactForm(ContactForm):
 
 
 class MailListForm(Form):
-    first_name = forms.CharField(required=True)
-    last_name = forms.CharField(required=True)
+    first_name = forms.CharField(max_length=30, required=True)
+    last_name = forms.CharField(max_length=30, required=True)
     email = forms.EmailField(max_length=100, required=True)
     mail_consent = forms.BooleanField(
         required=False, label="Please add me to your mailing list"
     )
+    ref = forms.CharField(max_length=10, required=False)
 
 
 class EnquiryForm(MailListForm):

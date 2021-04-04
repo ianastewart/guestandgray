@@ -32,19 +32,16 @@
         <div class="bg-light px-4 pt-4 pb-2 border">
           <form action="{% url 'public_contact' %}" method="post" class="form">
             {% csrf_token %}
-            {% bootstrap_field form.first_name layout='horizontal' %}
-            {% bootstrap_field form.last_name layout='horizontal' %}
-            {% bootstrap_field form.email layout='horizontal' %}
-            {% bootstrap_field form.phone layout='horizontal' %}
-            {% bootstrap_field form.subject layout='horizontal' %}
-            {% bootstrap_field form.message layout='horizontal' %}
+          <input type="hidden" name="ref" value="{{ item.ref }}">
+            {% bootstrap_field form.first_name layout='horizontal' placeholder="" %}
+            {% bootstrap_field form.last_name layout='horizontal'  placeholder="" %}
+            {% bootstrap_field form.email layout='horizontal'  placeholder="" %}
+            {% bootstrap_field form.phone layout='horizontal'  placeholder="" %}
+            {% bootstrap_field form.subject layout='horizontal'  placeholder="" %}
+            {% bootstrap_field form.message layout='horizontal'  placeholder="" %}
             {% bootstrap_field form.mail_consent layout='horizontal' %}
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="customCheck1" name="mail_consent">
-              <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
-            </div>
             {% buttons %}
-              <button type="submit" class="btn btn-guest">Send enquiry</button>
+              <button type="submit" class="btn btn-guest mt-2">Send enquiry</button>
             {% endbuttons %}
           </form>
           <p class="small"> Your details will not be sold or passed on to any third parties.</p>

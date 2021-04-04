@@ -64,10 +64,13 @@ def item_view(request, ref, slug):
     for image in CustomImage.objects.filter(item_id=item.id, show=True).order_by(
         "position", "title"
     ):
-        if not item.image:
+        if item.image:
+            if image.id != item.image.id:
+                images.append(image)
+        else:
+            #  missing image case
             item.image = image
             item.save()
-        elif image.id != item.image.id:
             images.append(image)
     context["images"] = images
     form = EnquiryForm()
@@ -237,6 +240,10 @@ def search_view(request, public):
 
 
 class EnquiryView(FormView):
+    """
+    Handles mailing list form in footer, enquiry on an item and general contact page
+    """
+
     form_class = EnquiryForm
     template_name = "shop/public/contact_form.html"
     success_url = reverse_lazy("public_contact_submitted")
@@ -245,18 +252,25 @@ class EnquiryView(FormView):
         context = super().get_context_data(**kwargs)
         return add_page_context(context, "contact")
 
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
     def form_valid(self, form):
         d = form.cleaned_data
+        item = None
+        if d["ref"] != "mail_list":
+            item = Item.objects.filter(ref=self.request.POST["ref"]).first()
         contact = Contact.objects.filter(
             main_address__email=form.cleaned_data["email"]
         ).first()
-        if contact:
-            if d["phone"]:
-                if not (
-                    contact.address.work_phone == d["phone"]
-                    or contact.address.mobile_phone == d["phone"]
-                ):
-                    contact = None
+        if not "phone" in d.keys():
+            d["phone"] = ""
+        if contact and d["phone"]:
+            if not (
+                contact.main_address.work_phone == d["phone"]
+                or contact.main_address.mobile_phone == d["phone"]
+            ):
+                contact = None
         if not contact:
             contact = Contact.objects.create(
                 first_name=d["first_name"],
@@ -271,9 +285,7 @@ class EnquiryView(FormView):
             contact.consent_date = datetime.now().date()
         contact.save()
         enquiry = Enquiry.objects.create(
-            subject=d["subject"],
-            message=d["message"],
-            contact=contact,
+            subject=d["subject"], message=d["message"], contact=contact, item=item
         )
         self.request.session["enquiry_pk"] = enquiry.pk
         return redirect(self.success_url)

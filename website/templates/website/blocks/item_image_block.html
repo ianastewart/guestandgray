@@ -5,13 +5,15 @@
   {% image self.image fill-256x256 as img_large %}
   {% image self.image fill-180x180 as img_medium %}
   {% image self.image fill-100x100 as img_small %}
-  {% if self.link_item %}<a href="/item/{{ self.image.item.ref }}/{{ self.image.item.slug }}">{% endif %}
-  <img class="card-img-top" sizes="(max-width: 500px) 100px, (max-width: 1200px) 180px, 256px"
-       src="{{ img_small.url }}"
+  {% if self.link_item and self.image %}<a href="/item/{{ self.image.item.ref }}/{{ self.image.item.slug }}">{% endif %}
+  <img class="card-img-top hover" sizes="(max-width: 500px) 100px, (max-width: 1200px) 180px, 256px"
+       src="{{ img_large.url }}"
        srcset="{{ img_small.url }} 100w, {{ img_medium.url }} 180w,{{ img_large.url }} 256w"
       alt="{{ self.image.name }}"/>
+  <div class="overlay"></div>
+  <div class="info p-2 text-center">{% if self.caption %}<span class="h3 text-center">{{ self.caption }}</span>{% else %}{{ self.image.item.name }}{% endif %}</div>
   {% if self.show_caption %}
-      <div class="card-text text-dark">{% if self.caption %}self.caption{% else %}{{ self.image.item.name }}{% endif %}</div>
+      <div class="card-text text-dark">{% if self.caption %}{{ self.caption }}{% else %}{{ self.image.item.name }}{% endif %}</div>
   {% endif %}
   {% if self.link_item %}</a>{% endif %}
 </div>

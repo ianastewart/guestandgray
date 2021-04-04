@@ -220,11 +220,15 @@ class EnquiryTable(tables.Table):
 
     first_name = tables.Column(accessor="contact__first_name")
     last_name = tables.Column(accessor="contact__last_name", verbose_name="Last name")
-    email = tables.Column(accessor="contact__mani_address__email")
+    email = tables.Column(accessor="contact__main_address__email")
     mail_consent = tables.Column(accessor="contact.mail_consent")
+    state = tables.Column(accessor="closed")
 
     def render_mail_consent(self, value):
         return "Yes" if value else ""
+
+    def render_state(self, value):
+        return "Closed" if value else "Open"
 
 
 class BookTable(tables.Table):

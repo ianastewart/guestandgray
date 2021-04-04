@@ -421,11 +421,11 @@ class Enquiry(models.Model):
     date = models.DateField(auto_now_add=True)
     subject = models.CharField(max_length=80, blank=False, null=True)
     message = models.TextField(max_length=1000, blank=False, null=True)
-    items = models.ManyToManyField(Item)
+    item = models.ForeignKey(Item, blank=True, null=True, on_delete=models.SET_NULL)
     closed = models.BooleanField(default=False)
     notes = models.CharField(max_length=2000, blank=True, null=True)
     contact = models.ForeignKey(
-        Contact, null=False, blank=False, on_delete=models.CASCADE
+        Contact, null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):
