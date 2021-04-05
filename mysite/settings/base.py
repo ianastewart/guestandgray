@@ -71,9 +71,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     # Save pages to cache. Must be FIRST.
-    "wagtailcache.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "wagtailcache.cache.UpdateCacheMiddleware",
     # Common functionality
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
