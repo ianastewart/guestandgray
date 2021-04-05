@@ -15,6 +15,7 @@ ALLOWED_HOSTS = [
     "213.171.212.38",
     "chinese-porcelain-art.com",
     "chinese-porcelain-art.net",
+    "www.chinese-porcelain-art.com",
     "gray.iskt.co.uk",
     "localhost",
 ]
