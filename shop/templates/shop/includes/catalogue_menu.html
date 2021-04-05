@@ -6,20 +6,16 @@
   <div class="dropdown-menu megamenu" role="menu">
     <div class="row">
       <div class="col col-md-6">
-        <div class="card card-body m-2">
           {% if is_archive %}{% archive_tree "Chinese" as tree %}{% else %}{% catalogue_tree "Chinese" as tree %}{% endif %}
           {% include "shop/includes/menu_card.html" %}
       </div>
-      </div>
       <div class="col col-md-6">
-      <div class="card card-body m-2">
           {% if is_archive %}{% archive_tree "Japanese & Eastern" as tree %}{% else %}{% catalogue_tree "Japanese & Eastern" as tree %}{% endif %}
           {% include "shop/includes/menu_card.html" %}
            {% if is_archive %}{% archive_tree "European" as tree %}{% else %}{% catalogue_tree "European" as tree %}{% endif %}
           {% include "shop/includes/menu_card.html" %}
           {% if is_archive %}{% archive_tree "Other" as tree %}{% else %}{% catalogue_tree "Other" as tree %}{% endif %}
           {% include "shop/includes/menu_card.html" %}
-      </div>
       </div>
     </div>
   </div>

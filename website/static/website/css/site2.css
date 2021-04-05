@@ -1,6 +1,6 @@
 
 h1, h2 {
-  font-family: 'Georgia', serif;
+  font-family: 'Playfair Display', serif;
 }
 
 h4 {
@@ -424,7 +424,7 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
 }
 
 .megamenu {
-  background: #efefef;
+  background: #e9f8f2;
   margin-left: auto;
   margin-right: auto;
 }

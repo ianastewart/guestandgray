@@ -1,19 +1,19 @@
-<h4 class="title m-2">{{ tree.text }} {% if is_archive %}Archive{% endif %}</h4>
+<div class="h5 title m-1">{{ tree.text }} {% if is_archive %}Archive{% endif %}</div>
 <ul class="list-unstyled">
   {% for level2 in tree.children %}
     {% if level2.children %}
-      <li><a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a></li>
+      <li><a class="dropdown-item pb-0" href="{{ level2.link }}">{{ level2.text }}</a></li>
       <ul class="list-unstyled">
         {% for level3 in level2.children %}
           {% if level3.shop and is_catalogue or level3.archive and is_archive or level3.children %}
-            <li><a class="dropdown-item" href="{{ level3.link }}"><span
+            <li><a class="dropdown-item pb-0" href="{{ level3.link }}"><span
                 class="pl-3">{{ level3.text }}</span></a></li>
           {% endif %}
         {% endfor %}
       </ul>
     {% endif %}
     {% if level2.shop and is_catalogue or level2.archive and is_archive %}
-      <li><a class="dropdown-item" href="{{ level2.link }}">{{ level2.text }}</a></li>
+      <li><a class="dropdown-item pb-0" href="{{ level2.link }}">{{ level2.text }}</a></li>
     {% endif %}
   {% endfor %}
 </ul>
