@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django_tables2",
     "django_tables2_column_shifter",
     "tempus_dominus",
+    "cookielaw",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.table_block",
     "wagtail.contrib.routable_page",
     "wagtail.contrib.postgres_search",
+    "wagtail.contrib.sitemaps",
     "wagtail.admin",
     # Django
     "django.contrib.admin",

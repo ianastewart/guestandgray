@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import include, path
 from django.contrib import admin
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.contrib.sitemaps.views import sitemap
 from coderedcms import admin_urls as coderedadmin_urls
 from coderedcms import search_urls as coderedsearch_urls
 from coderedcms import urls as codered_urls
@@ -19,6 +20,7 @@ urlpatterns = [
     path("admin/", include(coderedadmin_urls)),
     # Documents
     path("docs/", include(wagtaildocs_urls)),
+    path("sitemap.xml", sitemap),
     # Search
     # path("search/", include(coderedsearch_urls)),
     path("staff/", include(staff_urls)),

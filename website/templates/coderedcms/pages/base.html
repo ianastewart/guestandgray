@@ -1,4 +1,6 @@
 {% load static coderedcms_tags i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags wagtailuserbar %}
+{% load cookielaw_tags %}
+{% cookielaw_banner %}
 {% get_settings %}
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
@@ -101,7 +103,7 @@
   {% endblock %}
 
   {% block custom_assets %}
-    {#    <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">#}
+    <link rel="stylesheet" type="text/css" href="{% static 'cookielaw/css/cookielaw.css' %}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:weight@500&family=Lato&display=swap" rel="stylesheet">
 {#    <link href="https://fonts.googleapis.com/css?family=Cinzel|Lato&display=swap" rel="stylesheet">#}
@@ -218,6 +220,7 @@
 
 {% block frontend_scripts %}
   <script src="{% static 'coderedcms/vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
 {% endblock %}
 
 {% block coderedcms_scripts %}
@@ -226,7 +229,7 @@
 
 {% block custom_scripts %}
   {# Legacy behavior, remove this in the future and leave blank for client sites to implement. #}
-  <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>
+{#  <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>#}
 {% endblock %}
 
 {# Structured data JSON-LD #}
