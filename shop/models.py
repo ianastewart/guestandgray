@@ -184,6 +184,7 @@ class Item(index.Indexed, models.Model):
     lot = models.ForeignKey("Lot", null=True, blank=True, on_delete=models.SET_NULL)
     search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
     book = models.ForeignKey("Book", null=True, blank=True, on_delete=models.SET_NULL)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.ref} {self.name}"

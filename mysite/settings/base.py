@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django_tables2_column_shifter",
     "tempus_dominus",
     "cookielaw",
+    "robots",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",

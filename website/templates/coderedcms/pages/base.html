@@ -57,8 +57,10 @@
 
 
 
+
           {% block og_title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}"/>
       <meta property="og:description" content="
+
 
 
 
@@ -105,8 +107,9 @@
   {% block custom_assets %}
     <link rel="stylesheet" type="text/css" href="{% static 'cookielaw/css/cookielaw.css' %}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:weight@500&family=Lato&display=swap" rel="stylesheet">
-{#    <link href="https://fonts.googleapis.com/css?family=Cinzel|Lato&display=swap" rel="stylesheet">#}
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display:wght@500&display=swap"
+          rel="stylesheet">
+    {#    <link href="https://fonts.googleapis.com/css?family=Cinzel|Lato&display=swap" rel="stylesheet">#}
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/site2.css' %}">
   {% endblock %}
 
@@ -229,7 +232,7 @@
 
 {% block custom_scripts %}
   {# Legacy behavior, remove this in the future and leave blank for client sites to implement. #}
-{#  <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>#}
+  {#  <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>#}
 {% endblock %}
 
 {# Structured data JSON-LD #}

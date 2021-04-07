@@ -83,7 +83,7 @@ CACHES = {
         "TIMEOUT": 14400,  # in seconds
     }
 }
-
+ROBOTS_CACHE_TIMEOUT = 60 * 60 * 24
 
 # https://www.webforefront.com/django/setupdjangologging.html
 # LOGGING = {

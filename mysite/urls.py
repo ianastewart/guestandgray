@@ -1,26 +1,28 @@
-from django.conf import settings
-from django.urls import include, path
-from django.contrib import admin
-from wagtail.documents import urls as wagtaildocs_urls
-from wagtail.contrib.sitemaps.views import sitemap
 from coderedcms import admin_urls as coderedadmin_urls
-from coderedcms import search_urls as coderedsearch_urls
 from coderedcms import urls as codered_urls
-from shop.urls import staff_urls, public_urls
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
+from django.urls import include, path, re_path
+from wagtail.contrib.sitemaps.sitemap_generator import Sitemap as WagtailSitemap
+from wagtail.documents import urls as wagtaildocs_urls
 
-
-def trigger_error(request):
-    div = 1 / 0
+from shop.sitemap import ItemSitemap
+from shop.urls import public_urls, staff_urls
 
 
 urlpatterns = [
-    path("sentry-debug/", trigger_error),
     # Admin
     path("django-admin/", admin.site.urls),
     path("admin/", include(coderedadmin_urls)),
     # Documents
     path("docs/", include(wagtaildocs_urls)),
-    path("sitemap.xml", sitemap),
+    path(
+        "sitemap.xml",
+        sitemap,
+        {"sitemaps": {"wagtail": WagtailSitemap, "items": ItemSitemap}},
+    ),
+    re_path(r"^robots\.txt", include("robots.urls")),
     # Search
     # path("search/", include(coderedsearch_urls)),
     path("staff/", include(staff_urls)),
@@ -35,7 +37,6 @@ if settings.DEBUG_TOOLBAR:
     import debug_toolbar
 
     urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
-
 
 if settings.DEBUG:
     from django.conf.urls.static import static
