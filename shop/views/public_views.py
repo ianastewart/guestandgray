@@ -59,11 +59,12 @@ def item_view(request, ref, slug):
     context["item"] = item
     # context["price"] = int(item.sale_price)
     images = []
-    if item.image:
-        images.append(item.image)
-    for image in CustomImage.objects.filter(item_id=item.id, show=True).order_by(
+    extra_images = CustomImage.objects.filter(item_id=item.id, show=True).order_by(
         "position", "title"
-    ):
+    )
+    if item.image and len(extra_images) > 1:
+        images.append(item.image)
+    for image in extra_images:
         if item.image:
             if image.id != item.image.id:
                 images.append(image)

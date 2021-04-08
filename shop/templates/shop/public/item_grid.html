@@ -30,7 +30,7 @@
         {% image item.image max-250x250 as card_image %}
         <div class="mx-3">
           <div class="card p-0 mb-3 border-0 bg-transparent item-card">
-            <a href="{% url "public_item_ref" ref=item.ref %}">
+            <a href="{% url "public_item" ref=item.ref slug=item.slug %}">
               <div class="image">
                 <img
                     src="{{ card_image.url }}"
