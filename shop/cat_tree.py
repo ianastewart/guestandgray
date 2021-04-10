@@ -95,6 +95,7 @@ def node_dict(node, admin, archive):
     dict["link"] = link
     dict["text"] = node.short_name
     dict["leaf"] = node.is_leaf()
+
     shop = node.shop_count()
     archive = node.archive_count()
     items = shop + archive

@@ -1,0 +1,17 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+<div class="card border-1 bg-dark text-center {{ self.settings.custom_css_class }} float-right"
+     style="width:500px;"
+     {% if self.settings.custom_id %}id="{{ self.settings.custom_id }}"{% endif %}>
+  {% image self.image fill-180x180 as img_medium %}
+  {% image self.image fill-100x100 as img_small %}
+  <div class="d-flex">
+    <img class="hover" sizes="(max-width: 500px) 100px, 180px"
+         src="{{ img_medium.url }}"
+         srcset="{{ img_small.url }} 100w, {{ img_medium.url }} 180w"
+         alt="{{ self.image.name }}"/>
+    <div class="d-flex flex-column pl-2 justify-content-center" style="width: 320px;">
+      <h2 class="text-white pt-2">{{ self.title }}</h2>
+      <p class="text-white ">{{ self.text }}</p>
+    </div>
+  </div>
+</div>

@@ -2,9 +2,6 @@ from .base import *
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-env_path = os.path.join(BASE_DIR, ".env")
-environ.Env.read_env(env_path)
-
 sentry_sdk.init(dsn=env.str("SENTRY"), integrations=[DjangoIntegration()])
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -20,15 +17,8 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-# INSTALLED_APPS += ["raven.contrib.django.raven_compat"]
-
-# To send email from the server, we recommend django_sendmail_backend
-# Or specify your own email backend such as an SMTP server.
-# https://docs.djangoproject.com/en/2.2/ref/settings/#email-backend
 EMAIL_BACKEND = "django_sendmail_backend.backends.EmailBackend"
 
-# Default email address used to send messages from the website.
-DEFAULT_FROM_EMAIL = "Guest and Gray <info@localhost>"
 
 # A list of people who get error notifications.
 ADMINS = [("Administrator", "is@iskt.co.uk")]
@@ -68,12 +58,6 @@ TEMPLATES = [
         },
     }
 ]
-# TEMPLATES[0]["APP_DIRS"] = False
-# TEMPLATES[0]["OPTIONS"]["loaders"] = [
-#     "django.template.loaders.cached.Loader",
-#     "django.template.loaders.filesystem.Loader",
-#     "django.template.loaders.app_directories.Loader",
-# ]
 
 CACHES = {
     "default": {

@@ -39,3 +39,32 @@ class ItemImageBlock(BaseBlock):
         template = "website/blocks/item_image_block.html"
         icon = "image"
         label = _("Item image")
+
+
+class LinkBlock(BaseBlock):
+    image = ImageChooserBlock(
+        required=True,
+        max_length=255,
+        label=_("Image"),
+    )
+    title = blocks.CharBlock(
+        required=False,
+        max_length=100,
+        label=_("Title"),
+    )
+    text = blocks.CharBlock(
+        required=False,
+        max_length=500,
+        label=_("Text"),
+    )
+    link = blocks.CharBlock(
+        required=False,
+        max_length=100,
+        label=_("Link"),
+        help_text=_("Enter item or catalogue slug"),
+    )
+
+    class Meta:
+        template = "website/blocks/link_block.html"
+        icon = "image"
+        label = _("Link block")

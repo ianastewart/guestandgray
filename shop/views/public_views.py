@@ -8,6 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
 from django.views.generic import FormView, TemplateView, ListView
 from django.urls import reverse_lazy
+from django.conf import settings
+from django.core.mail import send_mail
 
 from wagtail.core.models import Page
 from wagtail.search.backends import db, get_search_backend
@@ -259,7 +261,8 @@ class EnquiryView(FormView):
     def form_valid(self, form):
         d = form.cleaned_data
         item = None
-        if d["ref"] != "mail_list":
+        mail_list = True if d["ref"] == "mail_list" else False
+        if not mail_list:
             item = Item.objects.filter(ref=self.request.POST["ref"]).first()
         contact = Contact.objects.filter(
             main_address__email=form.cleaned_data["email"]
@@ -287,6 +290,27 @@ class EnquiryView(FormView):
         contact.save()
         enquiry = Enquiry.objects.create(
             subject=d["subject"], message=d["message"], contact=contact, item=item
+        )
+        # Inform staff
+        send_mail(
+            d["subject"],
+            d["message"],
+            settings.DJANGO_EMAIL,
+            [settings.INFORM_EMAIL],
+            fail_silently=False,
+        )
+        message = (
+            "You have been added to our mail list."
+            if mail_list
+            else "Thank you for your enquiry. We will respond as soon as possible."
+        )
+        # Confirm to customer
+        send_mail(
+            "Confirmation from chinese-porcelain-art.com",
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [contact.main_address.email],
+            fail_silently=False,
         )
         self.request.session["enquiry_pk"] = enquiry.pk
         return redirect(self.success_url)
