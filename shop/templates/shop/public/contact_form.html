@@ -41,9 +41,9 @@
             {% bootstrap_field form.subject layout='horizontal' %}
             {% bootstrap_field form.message layout='horizontal' %}
               <script src='https://www.google.com/recaptcha/api.js' async defer></script>
-              <div class="g-recaptcha" data-sitekey={{ catptcha_site }}></div>
+              <div class="g-recaptcha" data-sitekey="{{ captcha_site }}"></div>
             {% buttons %}
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn btn-guest mt-2">Submit</button>
             {% endbuttons %}
           </form>
           <p class="small"> Your details will not be sold or passed on to any third parties.</p>
