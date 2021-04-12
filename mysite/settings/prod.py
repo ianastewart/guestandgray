@@ -17,9 +17,6 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-EMAIL_BACKEND = "django_sendmail_backend.backends.EmailBackend"
-
-
 # A list of people who get error notifications.
 ADMINS = [("Administrator", "is@iskt.co.uk")]
 
