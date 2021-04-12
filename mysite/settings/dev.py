@@ -10,7 +10,9 @@ if DEBUG_TOOLBAR:
 
 INSTALLED_APPS += ["django_waitress", "django_sass"]
 
-if not LIVE_EMAIL:
+if LIVE_EMAIL:
+    INFORM_EMAIL = "is@iskt.co.uk"
+else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 DATABASES = {"default": env.db_url("DATABASE_URL")}

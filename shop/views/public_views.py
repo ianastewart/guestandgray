@@ -1,4 +1,6 @@
 import logging
+import json
+import urllib
 from itertools import chain
 from datetime import datetime
 
@@ -10,6 +12,7 @@ from django.views.generic import FormView, TemplateView, ListView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.core.mail import send_mail
+from django.contrib import messages
 
 from wagtail.core.models import Page
 from wagtail.search.backends import db, get_search_backend
@@ -260,6 +263,20 @@ class EnquiryView(FormView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        recaptcha_response = self.request.POST.get("g-recaptcha-response")
+        url = "https://www.google.com/recaptcha/api/siteverify"
+        values = {
+            "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            "response": recaptcha_response,
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        if not result["success"]:
+            messages.error(self.request, "Invalid reCAPTCHA. Please try again.")
+            return self.form_invalid(form)
+        # Recaptcha is valid
         d = form.cleaned_data
         item = None
         mail_list = True if d["ref"] == "mail_list" else False
@@ -296,7 +313,7 @@ class EnquiryView(FormView):
         send_mail(
             d["subject"],
             d["message"],
-            settings.DJANGO_EMAIL,
+            d["email"],
             [settings.INFORM_EMAIL],
             fail_silently=False,
         )

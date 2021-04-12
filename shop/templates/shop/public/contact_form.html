@@ -1,12 +1,12 @@
 {% extends 'coderedcms/pages/web_page_notitle.html' %}
 {% load bootstrap4 %}
 {% load wagtailimages_tags shop_tags %}
+{% block messages %}{% endblock %}
 {% block content_body %}
   <div class="container shadow">
-
     <div class="row my-2 bg-white">
       <div class="col-12 col-lg-6 mt-4 px-5">
-        <h3 class="font-georgia">Guest & Gray</h3>
+        <h2>Guest & Gray</h2>
         <address>
           58 Davies Street <br>
           London<br>
@@ -26,15 +26,13 @@
       <div class="col-12 col-lg-6 mt-4">
         <p>Use the form below to sign up to our mailing list or to make an enquiry.</p>
         <div class="bg-light px-4 pt-4 pb-2 border">
+          {% bootstrap_messages %}
           <form action="{% url 'public_contact' %}" method="post" class="form">
             {% csrf_token %}
             {% bootstrap_field form.first_name layout='horizontal' %}
             {% bootstrap_field form.last_name layout='horizontal' %}
             {% bootstrap_field form.email layout='horizontal' %}
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="customCheck1" name="mail_consent">
-              <label class="custom-control-label" for="customCheck1">{{ form.mail_consent.label }}</label>
-            </div>
+            {% bootstrap_field form.mail_consent layout='horizontal' %}
             <hr>
             <p class="small">The fields below are optional:</p>
             {% bootstrap_field form.phone layout='horizontal' %}
