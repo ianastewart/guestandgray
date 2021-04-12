@@ -262,7 +262,7 @@ class EnquiryView(FormView):
         d = form.cleaned_data
         item = None
         mail_list = True if d["ref"] == "mail_list" else False
-        if not mail_list:
+        if not mail_list and "ref" in self.request.POST:
             item = Item.objects.filter(ref=self.request.POST["ref"]).first()
         contact = Contact.objects.filter(
             main_address__email=form.cleaned_data["email"]
