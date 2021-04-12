@@ -47,7 +47,7 @@ def item_view(request, ref, slug):
     """ Public view of a single object """
     template_name = "shop/public/item_detail.html"
     item = get_object_or_404(Item, ref=ref)
-    if not slug:
+    if not slug and item.slug:
         return redirect("public_item", ref=ref, slug=item.slug)
     context = get_host_context(
         "catalogue", title=item.name, description=item.description[:150]

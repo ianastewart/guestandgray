@@ -67,4 +67,4 @@ class LinkBlock(BaseBlock):
     class Meta:
         template = "website/blocks/link_block.html"
         icon = "image"
-        label = _("Link block")
+        label = _("Wide card")

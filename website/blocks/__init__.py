@@ -21,7 +21,7 @@ MY_CONTENT_STREAMBLOCKS = CONTENT_STREAMBLOCKS + [
         ),
     ),
     ("item_image", ItemImageBlock()),
-    ("link_block", LinkBlock()),
+    ("wide_card", LinkBlock()),
 ]
 
 MY_LAYOUT_STREAMBLOCKS = [

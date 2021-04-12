@@ -104,7 +104,7 @@
           {% if not public %}
             <a class="btn btn-outline-secondary" role="button" href="{% url 'item_update' pk=item.pk %}{{ return }}">Edit
               item</a>
-            <a class="btn btn-outline-secondary" role="button" href="{% url 'public_item' ref=item.ref slug=item.slug %}">Public
+            <a class="btn btn-outline-secondary" role="button" href="{% url 'public_item_ref' ref=item.ref %}">Public
               view</a>
             {% if in_cart %}
               <span class="badge badge-info">Added to cart</span>
