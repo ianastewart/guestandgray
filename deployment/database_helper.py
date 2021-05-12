@@ -17,25 +17,30 @@ def _create_database(dbuser, pw, db):
     print(yellow(f"Start create database {db}"))
     _create_user(dbuser, pw)
     databases = sudo(
-        'psql -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
+        'psql -p 5433 -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
         user="postgres",
     )
     if db in databases:
         print(cyan(f"Dropping existing database {db}"))
         sudo(f"dropdb {db}", user="postgres")
-    sudo('psql -c "CREATE DATABASE %s WITH OWNER %s"' % (db, dbuser), user="postgres")
+    sudo(
+        'psql -p 5433 -c "CREATE DATABASE %s WITH OWNER %s"' % (db, dbuser),
+        user="postgres",
+    )
     _grant_priviliges(dbuser, db)
     print(green(f"End create database {db}"))
 
 
 def _create_user(dbuser, pw):
     db_users = sudo(
-        "psql -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\"" % (dbuser),
+        "psql -p 5433 -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\""
+        % (dbuser),
         user="postgres",
     )
     if not dbuser in db_users:
         sudo(
-            "psql -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\"" % (dbuser, pw),
+            "psql -p 5433 -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\""
+            % (dbuser, pw),
             user="postgres",
         )
     print(green(f"User {dbuser} created"))
@@ -90,16 +95,29 @@ def _upload_database(local_dev_folder, app, dbuser, pw, db):
 def _upload_dev_db(local_dev_folder, db):
     """ Replace database only dev system"""
     print(f"Replace dev database {db}")
-    sql = f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity \
-        WHERE pg_stat_activity.datname = '{db}' AND pid <> pg_backend_pid()"
-    cmd = f'psql -U postgres -c "{sql}"'
-    result = subprocess.check_output(cmd, shell=True)
-    print(result)
-
-    os.system(f'psql -U postgres -c "DROP DATABASE {db}"')
-    os.system(f'psql -U postgres -c "CREATE DATABASE {db} WITH OWNER django"')
+    # sql = f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity \
+    #     WHERE pg_stat_activity.datname = '{db}' AND pid <> pg_backend_pid()"
+    # cmd = f'psql -U postgres -c "{sql}"'
+    # result = subprocess.check_output(cmd, shell=True)
+    # print(result)
+    dbuser = "gray"
     os.system(
-        f"pg_restore -U postgres -d {db} {local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
+        f"psql -U postgres -p 5433 -c \"CREATE USER gray WITH CREATEDB PASSWORD 'guest'\""
+    )
+    os.system(
+        f'psql -U postgres -p 5433 -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"'
+    ),
+    os.system(
+        f'psql -U postgres -p 5433 -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"'
+    ),
+    os.system(
+        f'psql -U postgres -p 5433 -d {db} -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to {dbuser};"'
+    ),
+    print(f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}")
+    os.system(f'psql -U postgres -p 5433 -c "DROP DATABASE {db}"')
+    os.system(f'psql -U postgres -p 5433 -c "CREATE DATABASE {db} WITH OWNER gray"')
+    os.system(
+        f"pg_restore -U postgres -p 5433 -d {db} {local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     )
     venv = f"{local_dev_folder}/venv/Scripts/python.exe"
     os.system(
