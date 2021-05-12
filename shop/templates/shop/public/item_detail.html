@@ -2,6 +2,9 @@
 
 
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
+{% block canonical %}
+  {{ self.get_url_parts.1 }}/item/{{ item.ref }}/{{ item.slug }}/
+{% endblock %}
 {% block extra_head %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static 'shop/css/photoswipe.css' %}">

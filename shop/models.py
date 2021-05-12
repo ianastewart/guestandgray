@@ -202,6 +202,9 @@ class Item(index.Indexed, models.Model):
         return f"{self.ref} {self.name}"
 
     def get_absolute_url(self):
+        if self.slug:
+            return reverse("public_item", kwargs={"ref": self.ref, "slug": self.slug})
+        # handle items that have no name
         return reverse("public_item_ref", kwargs={"ref": self.ref})
 
     def save(self, *args, **kwargs):
