@@ -194,7 +194,12 @@ class Item(index.Indexed, models.Model):
         "Invoice", null=True, blank=True, on_delete=models.SET_NULL
     )
     lot = models.ForeignKey("Lot", null=True, blank=True, on_delete=models.SET_NULL)
-    search_fields = [index.SearchField("name", boost=3), index.SearchField("ref")]
+    search_fields = [
+        index.SearchField("name", boost=3),
+        index.SearchField("ref"),
+        index.FilterField("image_id"),
+        index.FilterField("archive"),
+    ]
     book = models.ForeignKey("Book", null=True, blank=True, on_delete=models.SET_NULL)
     updated = models.DateTimeField(auto_now=True)
 

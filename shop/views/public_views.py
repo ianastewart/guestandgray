@@ -49,11 +49,17 @@ def home_view(request):
 def item_view(request, ref, slug):
     """ Public view of a single object """
     template_name = "shop/public/item_detail.html"
-    item = get_object_or_404(Item, ref=ref)
+    # item = get_object_or_404(Item, ref=ref)
+    item = Item.objects.filter(ref=ref).first()
+    if not item:
+        raise Http404
     if not slug and item.slug:
         return redirect("public_item", ref=ref, slug=item.slug)
+    item.description = (
+        "No description available" if not item.description else item.description[:150]
+    )
     context = get_host_context(
-        "catalogue", title=item.name, description=item.description[:150]
+        "catalogue", title=item.name, description=item.description
     )
     page = context["page"]
     page.og_image = item.image if item.image else None
@@ -176,41 +182,17 @@ def search_view(request, public):
         # get backend
         backend = get_search_backend()
 
-        # DB search. Since this backend can't handle inheritance or scoring,
-        # search specified page types in the desired order and chain the results together.
-        # This provides better search results than simply searching limited fields on CoderedPage.
-        db_models = []
-        if backend.__class__ == db.SearchBackend:
-            for model in get_page_models():
-                if model.search_db_include:
-                    db_models.append(model)
-            db_models = sorted(db_models, reverse=True, key=lambda k: k.search_db_boost)
-
-        if backend.__class__ == db.SearchBackend and db_models:
-            for model in db_models:
-                # if search_model is provided, only search on that model
-                if (
-                    not search_model
-                    or search_model == ContentType.objects.get_for_model(model).model
-                ):  # noqa
-                    curr_results = model.objects.live().search(search_query)
-                    if results:
-                        results = list(chain(results, curr_results))
-                    else:
-                        results = curr_results
-
-        # Fallback for any other search backend
-        else:
-            if search_model:
-                try:
-                    model = ContentType.objects.get(model=search_model).model_class()
-                    results = model.objects.live().search(search_query)
-                except search_model.DoesNotExist:
-                    results = None
-            else:
-                # Custom code for shop
-                results = backend.search(search_query, Item)
-
+        # Custom search code
+        items_1 = Item.objects.filter(image__isnull=False, archive=False)
+        items_3 = Item.objects.filter(image__isnull=False, archive=True)
+        items_2 = Item.objects.filter(image__isnull=True, archive=False)
+        items_4 = Item.objects.filter(image__isnull=True, archive=True)
+        results_1 = backend.search(search_query, items_1)
+        results_2 = backend.search(search_query, items_2)
+        results_3 = backend.search(search_query, items_3)
+        results_4 = backend.search(search_query, items_4)
+        results_page = backend.search(search_query, Page)
+        results = list(chain(results_1, results_2, results_3, results_4, results_page))
         # paginate results
         if results:
             paginator = Paginator(

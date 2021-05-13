@@ -269,7 +269,7 @@ def _deploy_django(venv, app, settings, branch, collect_static=True, fast=False)
     with cd(site_folder):
         run("git fetch --all")
         run(f"git reset --hard origin/{branch}")
-        put(".env", site_folder + "/.env")
+        # put(".env", site_folder + "/.env")
         if fast:
             print(green("End fast deploy Django"))
             return

@@ -1,15 +1,27 @@
 {% load wagtailimages_tags %}
 <div class="row">
-<div class="col-2">
-    <a href="{% url "public_item_ref" ref=item.ref %}">
-  {% image item.image max-100x100 class="img-fluid"%}
-  </a>
-</div>
-<div class="col">
-    <a href="{% url "public_item_ref" ref=item.ref %}">
-      <h5>{{ item.name}}</h5></a>
-  {% if item.description %}
-    <p>{{ item.description|truncatewords:30}}</p>
-  {% endif %}
+  <div class="col-2">
+    {% if item.ref %}
+      {% if item.image %}
+      <a href="{% url "public_item_ref" ref=item.ref %}">
+        {% image item.image max-100x100 class="img-fluid" %}
+      </a>
+        {% else %}
+        <p><i>No image</i></p>
+        {% endif %}
+    {% else %}
+      <b>Article</b><br>
+    {% endif %}
+  </div>
+  <div class="col">
+    {% if item.ref %}
+      <a href="{% url "public_item_ref" ref=item.ref %}">
+        <h5>{{ item.name }}{% if item.archive %} (Archive item){% endif %}</h5></a>
+      {% if item.description %}
+        <p>{{ item.description|truncatewords:30 }}</p>
+      {% endif %}
+    {% else %}
+      <a href="{{ item.url }}"><h5>{{ item.title }}</h5></a>
+    {% endif %}
   </div>
 </div>
