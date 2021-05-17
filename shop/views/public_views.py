@@ -55,9 +55,8 @@ def item_view(request, ref, slug):
         raise Http404
     if not slug and item.slug:
         return redirect("public_item", ref=ref, slug=item.slug)
-    item.description = (
-        "No description available" if not item.description else item.description[:150]
-    )
+    if not item.description:
+        item.description = "No description available"
     context = get_host_context(
         "catalogue", title=item.name, description=item.description
     )
