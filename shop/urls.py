@@ -63,7 +63,6 @@ from shop.views.public_views import (
     catalogue_view,
     search_view,
     EnquiryView,
-    ContactSubmittedView,
     BibliographyView,
 )
 from shop.views.legacy_views import legacy_view
@@ -228,11 +227,6 @@ public_urls = [
     path("item/<str:ref>/<slug:slug>/", item_view, name="public_item"),
     path("item/<str:ref>/", item_view, {"slug": ""}, name="public_item_ref"),
     path("contact/", EnquiryView.as_view(), name="public_contact"),
-    path(
-        "contact/submitted/",
-        ContactSubmittedView.as_view(),
-        name="public_contact_submitted",
-    ),
     path("bibliography/", BibliographyView.as_view(), name="bibliography"),
     path(
         "pages/information/bibliography/",

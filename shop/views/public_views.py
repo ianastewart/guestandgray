@@ -311,23 +311,13 @@ class EnquiryView(FormView):
             [contact.main_address.email],
             fail_silently=False,
         )
-        self.request.session["enquiry_pk"] = enquiry.pk
-        return redirect(self.success_url)
-
-
-class ContactSubmittedView(TemplateView):
-    template_name = "shop/public/contact_submitted.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["enquiry"] = Enquiry.objects.get(pk=self.request.session["enquiry_pk"])
-        context["email"] = (
-            context["enquiry"]
-            .contact.address_set.filter(email__isnull=False)
-            .first()
-            .email
-        )
-        return context
+        context = {
+            "enquiry": enquiry,
+            "email": (
+                enquiry.contact.address_set.filter(email__isnull=False).first().email
+            ),
+        }
+        return render(self.request, "shop/public/contact_submitted.html", context)
 
 
 class BibliographyView(ListView):

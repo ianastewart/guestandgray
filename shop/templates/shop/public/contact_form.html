@@ -27,7 +27,7 @@
         <p>Use the form below to sign up to our mailing list or to make an enquiry.</p>
         <div class="bg-light px-4 pt-4 pb-2 border">
           {% bootstrap_messages %}
-          <form action="{% url 'public_contact' %}" method="post" class="form">
+          <form action="{% url 'public_contact' %}" method="post" class="form" novalidate>
             {% csrf_token %}
             {% bootstrap_field form.first_name layout='horizontal' %}
             {% bootstrap_field form.last_name layout='horizontal' %}
