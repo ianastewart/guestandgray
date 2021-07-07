@@ -11,7 +11,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnIn
 from django.views.generic import FormView, TemplateView, ListView
 from django.urls import reverse_lazy
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage, get_connection
 from django.contrib import messages
 
 from wagtail.core.models import Page
@@ -298,6 +298,19 @@ class EnquiryView(FormView):
             [settings.INFORM_EMAIL],
             fail_silently=False,
         )
+        connection = get_connection(
+            fail_silently=False,
+        )
+        email = EmailMessage(
+            subject=d["subject"],
+            body=d["message"],
+            from_email=d["email"],
+            to=[settings.INFORM_EMAIL],
+            reply_to=[d["email"]],
+            connection=connection,
+        )
+        email.send(fail_silently=False)
+
         message = (
             "You have been added to our mail list."
             if mail_list

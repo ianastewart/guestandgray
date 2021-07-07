@@ -215,14 +215,32 @@ class EnquiryTable(tables.Table):
     class Meta:
         model = Enquiry
         fields = ("date", "subject", "message")
-        attrs = {"class": "table table-sm table-hover hover-link"}
+        sequence = ("selection", "date", "...")
+        attrs = {"class": "table table-sm table-hover hover-link table-responsive"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
+    subject = tables.Column(
+        attrs={
+            "th": {"class": "subject"},
+            "td": {"class": "subject"},
+        }
+    )
+    message = tables.Column(
+        attrs={
+            "th": {"class": "message"},
+            "td": {"class": "message"},
+        }
+    )
     first_name = tables.Column(accessor="contact__first_name")
     last_name = tables.Column(accessor="contact__last_name", verbose_name="Last name")
-    email = tables.Column(accessor="contact__main_address__email")
+    # email = tables.Column(accessor="contact__main_address__email")
     mail_consent = tables.Column(accessor="contact.mail_consent")
     state = tables.Column(accessor="closed")
+    selection = tables.TemplateColumn(
+        accessor="pk",
+        template_name="table_manager/custom_checkbox.html",
+        verbose_name="",
+    )
 
     def render_mail_consent(self, value):
         return "Yes" if value else ""

@@ -392,6 +392,11 @@ span.page-link {
   padding: 1rem;
 }
 
+th.subject {
+  width:20%;
+}
+
+
 /* Twitter typeahead for Bootstrap 4 */
 
 span.twitter-typeahead .tt-menu {

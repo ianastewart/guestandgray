@@ -119,11 +119,27 @@ class EnquiryListView(LoginRequiredMixin, FilteredTableView):
     template_name = "shop/filtered_table.html"
 
     def get_queryset(self):
-        return Enquiry.objects.all().order_by("-date")
+        return Enquiry.objects.all().order_by("-id")
+
+    def get_actions(self):
+        return [
+            ("set_open", "Set open"),
+            ("set_closed", "Set closed"),
+            ("delete", "Delete"),
+        ]
+
+    def handle_action(self, request):
+        if "set_open" in request.POST:
+            self.selected_objects.update(closed=False)
+        elif "set_closed" in request.POST:
+            self.selected_objects.update(closed=True)
+        elif "delete" in request.POST:
+            self.selected_objects.delete()
 
 
 class EnquiryDetailAjax(LoginRequiredMixin, AjaxCrudView):
     model = Enquiry
+    allow_delete = True
     template_name = "shop/enquiry_detail.html"
 
     def handle_action(self, action, **kwargs):

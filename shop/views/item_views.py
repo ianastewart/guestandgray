@@ -59,6 +59,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
             ("archive", "Move to archive"),
             ("unarchive", "Remove from archive"),
             ("category", "Change category", reverse("item_categorise")),
+            ("delete", "Delete"),
             ("export", "Export to Excel"),
         ]
 
@@ -81,9 +82,15 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
             self.selected_objects.update(archive=False)
         elif "category" in request.POST:
             self.selected_objects.update(category_id=request.POST["new_category"])
-            next_url = reverse("item_list")
-            data = {"next_url": "", "target_id": request.POST["x_target_id"]}
-            return JsonResponse(data)
+
+        elif "delete" in request.POST:
+            for item in self.selected_objects:
+                if item.image:
+                    item.image.delete()
+                item.delete()
+            # next_url = reverse("item_list")
+            # data = {"next_url": "", "target_id": request.POST["x_target_id"]}
+            # return JsonResponse(data)
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):

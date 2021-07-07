@@ -450,7 +450,7 @@ class Enquiry(models.Model):
     )
 
     def __str__(self):
-        return self.date
+        return f"{self.date} {self.subject}"
 
 
 class Compiler(models.Model):
