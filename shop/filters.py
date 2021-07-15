@@ -56,6 +56,7 @@ class ItemFilter(FilterSet):
         ),
         method="image_filter",
     )
+    ref = CharFilter(field_name="ref", label="Reference")
     per_page = PaginationFilter()
 
     def cat_filter(self, queryset, name, value):
