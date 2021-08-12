@@ -151,14 +151,6 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-
-/*.navbar-dark .navbar-nav .nav-link.active {*/
-/*  border: red;*/
-/*  border-bottom: #b9d8c2;*/
-/*  border-bottom-width: 3px;*/
-/*  background-color: #587d71 ;*/
-/*}*/
-
 .navbar-expand-md .navbar-nav .nav-link {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -173,7 +165,6 @@ input[type=number] {
   background-color: #b9d8c2;
   color: black;
 }
-
 
 .nav-item {
   position: relative;

@@ -9,13 +9,9 @@
         <div class="card bg-light border-0" style="height:250px;">
           {% if category and category.image %}
             {% image category.image max-250x250 as image %}
-            <div class="image">
               <img class="image-responsive" src="{{ image.url }}" id="id_category_image">
-            </div>
           {% else %}
-            <div class="image">
               <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_category_image">
-            </div>
           {% endif %}
         </div>
       <p class="small">
@@ -37,13 +33,9 @@
              style="height:250px;">
           {% if category and category.archive_image %}
             {% image category.archive_image max-250x250 as image %}
-            <div class="image">
               <img class="image-responsive" src="{{ image.url }}" id="id_archive_image" alt="Archive image">
-            </div>
           {% else %}
-            <div class="image">
               <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_archive_image">
-            </div>
           {% endif %}
         </div>
       <p class="small">

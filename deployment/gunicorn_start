@@ -12,7 +12,7 @@ GROUP=django
 BIND=unix:/home/django/$NAME/run/gunicorn.sock
 DJANGO_SETTINGS_MODULE=mysite.settings.$SETTINGS
 DJANGO_WSGI_MODULE=mysite.wsgi
-LOG_LEVEL=debug
+LOG_LEVEL=info
 
 cd $DIR
 source $VENV/bin/activate

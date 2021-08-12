@@ -124,6 +124,7 @@ class ItemPostMixin:
             return True
         elif "add" in request.POST:
             cart_add_item(request, item)
+            return True
         return False
 
 

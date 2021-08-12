@@ -22,7 +22,7 @@
   <div class="row">
     <div class="col col-lg-6">
       <div class="card p-0 mb-2 border-0 bg-transparent">
-        <figure class="image primary mb-0" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
+        <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
                 data-index="0">
           {% image item.image original as full_image %}
           <a href="{{ full_image.url }}"
@@ -48,15 +48,16 @@
           {% if item.show_price and item.sale_price and not item.archive %}
             <h5 class="float-right"> £ {{ item.sale_price|integer|intcomma }}</h5>
           {% elif item.archive %}
-          <h5 class="float-right"> Archive item - not for sale</h5>
-        {% endif %}
-      </div>
+            <h5 class="float-right"> Archive item - not for sale</h5>
+          {% endif %}
+        </div>
       </div>
       {% if public and not item.archive %}
         <div class="d-flex justify-content-center">
-        <div>
-        <button class="btn btn-guest my-2" data-toggle="modal" data-target="#modal-form">Enquire about this item</button>
-        </div>
+          <div>
+            <button class="btn btn-guest my-2" data-toggle="modal" data-target="#modal-form">Enquire about this item
+            </button>
+          </div>
         </div>
       {% endif %}
       <hr>
@@ -78,6 +79,7 @@
 
       {% if item.notes %}
         <hr>
+        <div class="row">
           <p class="text-muted mb-1">Notes:</p>
           <p>{{ item.notes }}</p>
         </div>
@@ -115,5 +117,3 @@
       </div>
     </div>
   </div>
-</div>
-</div>
