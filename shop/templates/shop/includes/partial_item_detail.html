@@ -66,35 +66,43 @@
         <hr>
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
-          <p class="col-12 col-lg-9">{{ item.dimensions }}</p>
+          <p class="col-12 col-lg-9 mb-1">{{ item.dimensions }}</p>
         </div>
       {% endif %}
       {% if item.condition %}
         <hr>
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
-          <p class="col-12 col-lg-9">{{ item.condition }}</p>
+          <p class="col-12 col-lg-9 mb-1">{{ item.condition }}</p>
         </div>
       {% endif %}
 
       {% if item.notes %}
         <hr>
         <div class="row">
+        <div class="col">
           <p class="text-muted mb-1">Notes:</p>
-          <p>{{ item.notes }}</p>
+          <p class="mb-1">{{ item.notes }}</p>
+        </div>
         </div>
       {% endif %}
       {% if item.book %}
         <hr>
         <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Recommended book:</p>
-          <p class="col-12 col-lg-9">{{ item.book.title }}</p>
+        <div class="col">
+          <p class="text-muted mb-1">Recommended book:</p>
+          <p class="mb-1">{{ item.book.title }}</p>
+        </div>
         </div>
       {% endif %}
-      <hr>
       {% if item.provenance %}
         <hr>
-        <p class="mt-4">{{ item.provenance }}</p>
+        <div class="row">
+        <div class="col">
+        <p class="text-muted mb-1">Provenance:</p>
+        <p>{{ item.provenance }}</p>
+        </div>
+        </div>
       {% endif %}
       <div class="mt-4">
         <form method="post">
