@@ -5,6 +5,7 @@ from enum import IntEnum
 from treebeard.mp_tree import MP_Node, MP_NodeManager
 from wagtail.images.models import Image, AbstractImage, AbstractRendition
 from wagtail.search import index
+from coderedcms.models.page_models import CoderedPage
 
 
 class ModelEnum(IntEnum):
@@ -13,6 +14,14 @@ class ModelEnum(IntEnum):
         return list(
             (x.value, x.name.lower().capitalize().replace("_", " ")) for x in cls
         )
+
+
+class HostPage(CoderedPage):
+    template = "coderedcms/pages/base.html"
+
+    def get_url_parts(self, *args, **kwargs):
+        site_id, root_url, page_path = super().get_url_parts(*args, **kwargs)
+        return site_id, root_url, self.path
 
 
 class CategoryManager(MP_NodeManager):

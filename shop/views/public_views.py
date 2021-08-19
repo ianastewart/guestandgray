@@ -22,6 +22,7 @@ from coderedcms.forms import SearchForm
 from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
 
 from shop.models import (
+    HostPage,
     Item,
     Category,
     Contact,
@@ -57,8 +58,12 @@ def item_view(request, ref, slug):
         return redirect("public_item", ref=ref, slug=item.slug)
     if not item.description:
         item.description = "No description available"
-    context = get_host_context(
-        "catalogue", title=item.name, description=item.description
+    context = add_page_context(
+        request,
+        context={},
+        path=request.path,
+        title=item.name,
+        description=item.description,
     )
     page = context["page"]
     page.og_image = item.image if item.image else None
@@ -96,8 +101,12 @@ def catalogue_view(request, slugs=None, archive=False):
         slug += "/" + slugs
 
     category = get_object_or_404(Category, slug=slug)
-    context = get_host_context(
-        "catalogue", title=category.name, description=category.description
+    context = add_page_context(
+        request,
+        context={},
+        path=request.path,
+        title=category.name,
+        description=category.description,
     )
     page = context["page"]
     page.og_image = category.image if category.image else None
@@ -129,27 +138,19 @@ def catalogue_view(request, slugs=None, archive=False):
     return render(request, template_name, context)
 
 
-def get_host_context(slug, title="", description=""):
-    """ Create context with wagtail host page in it. Raise 404 if slug not found """
-    context = {}
-    return add_page_context(context, slug, title, description)
-
-
-def add_page_context(context, slug, title="", description=""):
+def add_page_context(request, context, path, title="", description=""):
     """ add wagtail host page to context. Raise 404 if slug not found """
     if not title:
         title = "Guest and Gray"
     if not description:
         description = ""
     try:
-        page = Page.objects.get(slug=slug, live=True)
-    except Page.DoesNotExist:
+        page = HostPage.objects.filter(live=True).first()
+    except HostPage.DoesNotExist:
         raise Http404
-    page.cover_image = None
-    page.og_image = None
+    # page.cover_image = None
+    page.path = path
     page.title = title
-    page.description = description
-    page.seo_title = title
     page.search_description = description
     context["page"] = page
     context["self"] = page
@@ -238,7 +239,13 @@ class EnquiryView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["captcha_site"] = settings.GOOGLE_RECAPTCHA_SITE_KEY
-        return add_page_context(context, "contact")
+        return add_page_context(
+            self.request,
+            context,
+            path=self.request.path,
+            title="Enquiry",
+            description="Enquiry form",
+        )
 
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
@@ -350,7 +357,13 @@ class BibliographyView(ListView):
             self.request.GET, queryset=self.get_queryset()
         )
         context["compilers"] = Compiler.objects.order_by("name")
-        context = add_page_context(context, "bibliography")
+        context = add_page_context(
+            self.request,
+            context,
+            path=self.request.path,
+            title="Bibliography",
+            description="Recommended books",
+        )
         page = context["page"]
         page.title = "Guest and Gray Bibliography"
         page.seo_title = page.title

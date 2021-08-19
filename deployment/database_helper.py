@@ -33,13 +33,13 @@ def _create_database(dbuser, pw, db):
 
 def _create_user(dbuser, pw):
     db_users = sudo(
-        "psql -p 5433 -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\""
+        "psql -p 5432 -c \"SELECT rolname FROM pg_roles WHERE rolname = '%s';\""
         % (dbuser),
         user="postgres",
     )
     if not dbuser in db_users:
         sudo(
-            "psql -p 5433 -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\""
+            "psql -p 5432 -c \"CREATE USER %s WITH CREATEDB PASSWORD '%s'\""
             % (dbuser, pw),
             user="postgres",
         )
