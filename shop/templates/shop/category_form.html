@@ -12,66 +12,68 @@
           </div>
           <div class="row">
 
-            <div class="col-md-6">
+            <div class="col col-md-6">
               {% csrf_token %}
               {% bootstrap_field form.name %}
               {% bootstrap_field form.short_name %}
+              {% bootstrap_field form.seo_description %}
               {% bootstrap_field form.description %}
               {% bootstrap_field form.hidden %}
             </div>
-            <div class="col">
-            {% bootstrap_field form.parent_category %}
-          <div class="row">
-          <div class="col-6">
-              <div class="card bg-light border-0 mt-4" style="height:250px;">
-                {% if category and category.image %}
-                  {% image category.image max-250x250 as image %}
+            <div class="col col-md-6">
+              {% bootstrap_field form.parent_category %}
+              <div class="row">
+                <div class="col col-md-6">
+                  <div class="card bg-light border-0 mt-4" style="height:250px;">
+                    {% if category and category.image %}
+                      {% image category.image max-250x250 as image %}
 
-                    <img class="image-responsive" src="{{ image.url }}" id="id_category_image">
+                      <img class="image-responsive" src="{{ image.url }}" id="id_category_image">
 
-                {% else %}
+                    {% else %}
 
-                    <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_category_image">
+                      <img class="image-responsive" src="{% static "shop/images/no_image.png" %}"
+                           id="id_category_image">
 
-                {% endif %}
-              </div>
-              <label class="small">Shop image</label>
-              <div class="input-group input-group-sm">
-                <input type="text" class="form-control" id="id_category_ref" name="category_ref"
-                    {% if form.category_ref.value %} value="{{ form.category_ref.value }} {% endif %}">
-                <div class="input-group-append">
-                  <button type=button class="btn btn-secondary js-search" id="category_search">Change</button>
+                    {% endif %}
+                  </div>
+                  <label class="small">Shop image</label>
+                  <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" id="id_category_ref" name="category_ref"
+                        {% if form.category_ref.value %} value="{{ form.category_ref.value }} {% endif %}">
+                    <div class="input-group-append">
+                      <button type=button class="btn btn-secondary js-search" id="category_search">Change</button>
+                    </div>
+                  </div>
+                  <label class="small text-danger" id="id_category_error"></label>
+                </div>
+                <div class="col-6 col-md-6">
+                  <div class="card bg-light border-0 mt-4"
+                       style="height:250px;">
+                    {% if category and category.archive_image %}
+                      {% image category.archive_image max-250x250 as image %}
+
+                      <img class="image-responsive" src="{{ image.url }}" id="id_archive_image" alt="Archive image">
+
+                    {% else %}
+
+                      <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_archive_image">
+
+                    {% endif %}
+                  </div>
+                  <label class="small">Archive image</label>
+                  <div class="input-group input-group-sm">
+                    <input type="text" id="id_archive_ref" class="form-control" name="archive_ref"
+                        {% if form.archive_ref.value %} value="{{ form.archive_ref.value }} {% endif %}">
+                    <div class="input-group-append">
+                      <button type=button class="btn btn-secondary js-search" id="archive_search">Change</button>
+                    </div>
+                  </div>
+                  <label class="small text-danger" id="id_archive_error"></label>
                 </div>
               </div>
-              <label class="small text-danger" id="id_category_error"></label>
-            </div>
-            <div class="col-6 col-md-6">
-              <div class="card bg-light border-0 mt-4"
-                   style="height:250px;">
-                {% if category and category.archive_image %}
-                  {% image category.archive_image max-250x250 as image %}
-
-                    <img class="image-responsive" src="{{ image.url }}" id="id_archive_image" alt="Archive image">
-
-                {% else %}
-
-                    <img class="image-responsive" src="{% static "shop/images/no_image.png" %}" id="id_archive_image">
-
-                {% endif %}
-              </div>
-              <label class="small">Archive image</label>
-              <div class="input-group input-group-sm">
-                <input type="text" id="id_archive_ref" class="form-control" name="archive_ref"
-                    {% if form.archive_ref.value %} value="{{ form.archive_ref.value }} {% endif %}">
-                <div class="input-group-append">
-                  <button type=button class="btn btn-secondary js-search" id="archive_search">Change</button>
-                </div>
-              </div>
-              <label class="small text-danger" id="id_archive_error"></label>
             </div>
           </div>
-            </div>
-        </div>
         </div>
         <div class="card-footer">
           <button type=submit class=" btn btn-primary

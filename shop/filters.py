@@ -25,10 +25,7 @@ class ItemFilter(FilterSet):
     category = ChoiceFilter(
         field_name="category",
         label="Category",
-        choices=[
-            (0, "-- No category --"),
-        ]
-        + Category.objects.leaf_choices(),
+        choices=[],
         empty_label="-- All categories --",
         method="cat_filter",
     )
@@ -58,6 +55,13 @@ class ItemFilter(FilterSet):
     )
     ref = CharFilter(field_name="ref", label="Reference")
     per_page = PaginationFilter()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # dynamically create the choices now
+        self.filters["category"].extra["choices"] = [
+            (0, "-- No category --"),
+        ] + Category.objects.leaf_choices()
 
     def cat_filter(self, queryset, name, value):
         if not value:

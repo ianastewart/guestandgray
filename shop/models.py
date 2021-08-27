@@ -17,6 +17,10 @@ class ModelEnum(IntEnum):
 
 
 class HostPage(CoderedPage):
+    """
+    Used for catalogue and item pages where we can override the seo fields
+    """
+
     template = "coderedcms/pages/base.html"
 
     def get_url_parts(self, *args, **kwargs):
@@ -57,6 +61,7 @@ class Category(MP_Node):
     slug = models.CharField(max_length=400)
     short_name = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    seo_description = models.CharField(max_length=200, null=True, blank=True)
     image = models.ForeignKey(
         "CustomImage",
         null=True,
@@ -103,6 +108,20 @@ class Category(MP_Node):
             breadcrumb.insert(0, parent)
             parent = parent.get_parent()
         return breadcrumb
+
+    def seo_prefix(self):
+        """ Returns the prefix used for item title """
+        breadcrumb = self.breadcrumb_nodes()
+        result = ""
+        for node in breadcrumb:
+            for dup in result.split(" "):
+                if dup in node.short_name:
+                    node.short_name = node.short_name.replace(dup, "")
+            if node.short_name == "Catalogue":
+                result = "Antique "
+            else:
+                result += node.short_name + " "
+        return " ".join(result.split())
 
     def get_absolute_url(self):
         return "/" + self.slug + "/"
@@ -162,6 +181,7 @@ class Item(index.Indexed, models.Model):
         null=False, blank=True, max_length=10, default="", db_index=True
     )
     description = models.TextField(null=True, blank=True)
+    seo_description = models.CharField(max_length=200, null=True, blank=True)
     category = models.ForeignKey(
         Category, null=True, blank=True, on_delete=models.SET_NULL
     )

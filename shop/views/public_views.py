@@ -1,41 +1,40 @@
-import logging
 import json
+import logging
 import urllib
-from itertools import chain
 from datetime import datetime
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404
-from django.contrib.contenttypes.models import ContentType
-from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
-from django.views.generic import FormView, TemplateView, ListView
-from django.urls import reverse_lazy
-from django.conf import settings
-from django.core.mail import send_mail, EmailMessage, get_connection
-from django.contrib import messages
-
-from wagtail.core.models import Page
-from wagtail.search.backends import db, get_search_backend
-from wagtail.search.models import Query
+from itertools import chain
 
 from coderedcms.forms import SearchForm
-from coderedcms.models import CoderedPage, get_page_models, GeneralSettings
+from coderedcms.models import GeneralSettings, get_page_models
+from django.conf import settings
+from django.contrib import messages
+from django.core.mail import EmailMessage, get_connection, send_mail
+from django.core.paginator import EmptyPage, InvalidPage, PageNotAnInteger, Paginator
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import FormView, ListView
+from wagtail.core.models import Page, Site
+from wagtail.search.backends import get_search_backend
+from wagtail.search.models import Query
+from wagtailseo.utils import StructDataEncoder, get_struct_data_images
 
+from shop.cat_tree import Counter
+from shop.filters import CompilerFilter
+from shop.forms import EnquiryForm
 from shop.models import (
+    Address,
+    Book,
+    Category,
+    Compiler,
+    Contact,
+    CustomImage,
+    Enquiry,
     HostPage,
     Item,
-    Category,
-    Contact,
-    Enquiry,
-    Book,
-    Compiler,
-    CustomImage,
-    Address,
 )
-from shop.forms import EnquiryForm
 from shop.tables import BookTable
-from shop.filters import CompilerFilter
-from shop.cat_tree import Counter
+from shop.truncater import truncate
 from shop.views.legacy_views import legacy_view
 
 logger = logging.getLogger(__name__)
@@ -63,7 +62,7 @@ def item_view(request, ref, slug):
         context={},
         path=request.path,
         title=item.name,
-        description=item.description,
+        description=truncate(item.description, 200),
     )
     page = context["page"]
     page.og_image = item.image if item.image else None
@@ -71,6 +70,7 @@ def item_view(request, ref, slug):
         category = get_object_or_404(Category, id=item.category_id)
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
         context["category"] = category
+        page.title = f"{category.seo_prefix()} {item.ref}"
     context["item"] = item
     # context["price"] = int(item.sale_price)
     images = []
@@ -89,6 +89,19 @@ def item_view(request, ref, slug):
             item.save()
             images.append(image)
     context["images"] = images
+    # Structured data
+    sd_dict = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "category": category.name,
+        "name": item.name,
+        "description": item.description,
+    }
+    if item.image:
+        sd_dict["image"] = get_struct_data_images(
+            site=Site.find_for_request(request), image=item.image
+        )
+    page.structured_data = json.dumps(sd_dict, cls=StructDataEncoder)
     form = EnquiryForm()
     form.fields["subject"].initial = f"Enquiry about {item.ref}"
     context["form"] = form
@@ -106,9 +119,13 @@ def catalogue_view(request, slugs=None, archive=False):
         context={},
         path=request.path,
         title=category.name,
-        description=category.description,
+        description=category.seo_description
+        if category.seo_description
+        else truncate(category.description, 70),
     )
     page = context["page"]
+    prefix = "Archive of" if archive else "Catalogue of"
+    page.title = f"{prefix} {category.seo_prefix()}"
     page.og_image = category.image if category.image else None
     context["category"] = category
     context["archive"] = archive
@@ -129,11 +146,15 @@ def catalogue_view(request, slugs=None, archive=False):
         objects = category.archive_items() if archive else category.shop_items()
         context["count"] = objects.count()
         paginator = Paginator(objects, 36)
-        page = request.GET.get("page")
-        if paginator.num_pages >= 1 and not page:
-            page = 1
-        context["page_number"] = f"Page {page} of {paginator.num_pages}"
-        context["items"] = paginator.get_page(page)
+        page_no = request.GET.get("page")
+        if paginator.num_pages >= 1 and not page_no:
+            page_no = 1
+        context["page_number"] = f"Page {page_no} of {paginator.num_pages}"
+        # Canonical for the first page never has a page query string'
+        if paginator.num_pages >= 1 and int(page_no) > 1:
+            page.canonical_url = page.seo_canonical_url + f"?page={page_no}"
+            context["breadcrumb"][-1].page_number = f" Page {page_no}"
+        context["items"] = paginator.get_page(page_no)
 
     return render(request, template_name, context)
 

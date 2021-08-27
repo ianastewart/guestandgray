@@ -8,6 +8,10 @@ h4 {
   margin-bottom: 2rem;
 }
 
+.font-heading {
+  font-size: 32px;
+}
+
 .font-custom {
   font-family: 'Cinzel', serif;
   font-size: 18px;
@@ -259,6 +263,15 @@ body {
   flex-shrink: 0;
 }
 
+/*html {*/
+/*  position: relative;*/
+/*  min-height: 100%;*/
+/*}*/
+/*body {*/
+/*  margin-bottom: 60px; !* Margin bottom by footer height *!*/
+/*}*/
+
+
 .cinzel {
   font-family: 'Cinzel';
 }
@@ -447,6 +460,10 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   margin-right: auto;
 }
 
+.megamenu .dropdown-item:hover {
+  background: #819b80;
+  color: white;
+}
 
 @media all and (min-width: 992px) {
   .navbar {
@@ -531,4 +548,10 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   left: 0px;
   top: 0px;
   display: none;
+}
+
+@media (min-width: 768px) {
+  .codered-article > img {
+    margin-bottom: -40vw;
+  }
 }

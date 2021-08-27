@@ -12,6 +12,7 @@ from shop.forms import ArchiveItemForm, ItemForm, ItemCategoriseForm
 from shop.models import CustomImage, Item
 from shop.session import cart_add_item, cart_get_item
 from shop.tables import ItemTable
+from shop.truncater import truncate
 
 # from shop.tables import ItemTable
 from table_manager.views import AjaxCrudView, FilteredTableView
@@ -226,6 +227,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
             images.insert(0, self.object.image)
         context["images"] = images
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
+        context["seo"] = truncate(self.object.description, 200)
         return context
 
     def post(self, request, **kwargs):

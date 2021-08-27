@@ -4,17 +4,17 @@
 {% block content_body %}
   <div class="container">
     {% breadcrumb breadcrumb archive %}
-    <h2 class="my-4 font-georgia">{{ category.name }}
+    <h1 class="my-4 font-heading">{{ category.name }}
       {% if archive %}Archive{% else %} {% endif %}
+    </h1>
 
-    </h2>
     <div class="row mt-4">
       {% for category in categories %}
         {% image category.image width-250 as card_image %}
         <div class="col-sm-6 col-md-4 col-lg-3 align-content-center">
-          <div class="card p-2 mb-3 border-1 bg-white shadow d-none d-sm-block " style="height:21rem;">
-            <div class="h5 font-georgia text-dark m-0 text-center" style="height:2.5rem;">{{ category.name }}</div>
-            <p class="text-center pt-1">({{ category.count }} objects)</p>
+          <div class="card p-2 mb-3 border-1 bg-white shadow d-none d-sm-block " style="height:22rem;">
+            <div class="h5 text-dark m-0 text-center" style="height:4rem;">{{ category.name }}</div>
+            <p class="text-center pt-1 mb-0">({{ category.count }} objects)</p>
             <a href="
                 {% if archive %}{{ category.get_archive_url }}{% else %}{{ category.get_absolute_url }}{% endif %}">
               <div class="image image-hover-zoom">
@@ -24,8 +24,8 @@
           </div>
 
           <div class="d-block d-sm-none">
-            <div class="card card-body bg-white text-center mb-2 style=width">
-              <div class="h5 font-georgia text-dark m-0 text-center" style="height:2.5rem;">{{ category.name }}</div>
+            <div class="card card-body bg-white text-center mb-2" style="width:300px;">
+              <div class="h5 text-dark m-0 text-center" style="height:3.5rem;">{{ category.name }}</div>
               <p class="caption text-center pt-1">({{ category.count }} objects)</p>
               <a href="
                   {% if archive %}{{ category.get_archive_url }}{% else %}{{ category.get_absolute_url }}{% endif %}">

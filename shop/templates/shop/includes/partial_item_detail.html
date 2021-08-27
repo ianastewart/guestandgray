@@ -15,7 +15,7 @@
   {% endif %}
   <div class="row">
     <div class="col">
-      <h2 class="my-4">{{ item.name|titler }}</h2>
+      <h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
       {% if not public %}<h5>Category: {{ item.category.name }}</h5>{% endif %}
     </div>
   </div>
@@ -123,5 +123,13 @@
           {% endif %}
         </form>
       </div>
+    {% if not public %}
+      <br>
+      {{ item.name|length }}<br>
+      {{ seo }}
+    <hr>
+    {{ seo|length }} characters
+    {% endif %}
     </div>
   </div>
+</div>

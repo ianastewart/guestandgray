@@ -5,15 +5,15 @@ def truncate(string, max=60):
         string = string.replace("Chinese famille", "famille")
     if len(string) <= max:
         return string
-    has_date = truncate_at_date(string)
-    if has_date and len(has_date) <= max:
-        return has_date
-    commas = [pos for pos, char in enumerate(string) if char == ","]
+    # has_date = truncate_at_date(string)
+    # if has_date and len(has_date) <= max:
+    #     return has_date
+    seps = [pos for pos, char in enumerate(string) if char in [",", ";", "."]]
     result = string
-    for comma in commas:
-        if comma > max:
+    for sep in seps:
+        if sep > max:
             break
-        result = string[:comma]
+        result = string[:sep] + "."
     if len(result) < max:
         return result
     # no smart point to truncate at found, so truncate at first symbol after max

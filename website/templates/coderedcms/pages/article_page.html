@@ -8,7 +8,7 @@
         {% image self.cover_image fill-2000x1000 as cover_image %}
         <img src="{{cover_image.url}}" class="w-100" />
         {% endif %}
-        <div class="container">
+        <div class="container bg-white shadow px-5">
             <div class="article-header">
                 <h1 {% if not self.cover_image %}class="mt-5"{% endif %}>{{ self.title }}</h1>
                 {% if self.caption %}
@@ -22,9 +22,9 @@
                     {% endif %}
                     <span class="article-author">{{self.seo_author}}</span>
 
-                    <span class="mx-2">&bull;</span>
-
-                    <span class="article-date">{{ self.seo_published_at }}</span>
+{#                    <span class="mx-2">&bull;</span>#}
+{##}
+{#                    <span class="article-date">{{ self.seo_published_at }}</span>#}
                 </p>
                 <hr>
             </div>

@@ -12,13 +12,16 @@ register = template.Library()
 def breadcrumb(node_list, archive=False):
     output = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-0">'
     for node in node_list:
+        name = (
+            node.name + node.page_number if hasattr(node, "page_number") else node.name
+        )
         if node.active:
-            output += f'<li class="breadcrumb-item active" aria-current="page">{node.name}</li>'
+            output += (
+                f'<li class="breadcrumb-item active" aria-current="page">{name}</li>'
+            )
         else:
             url = node.get_archive_url() if archive else node.get_absolute_url()
-            output += (
-                f'<li class="breadcrumb-item"><a href="{url}">{node.name}</a></li>'
-            )
+            output += f'<li class="breadcrumb-item"><a href="{url}">{name}</a></li>'
     output += "</ol>"
     if archive:
         output = output.replace("Catalogue", "Archive")

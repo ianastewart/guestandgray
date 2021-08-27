@@ -19,7 +19,7 @@ from shop.models import (
 class CategoryForm(ModelForm):
     class Meta:
         model = Category
-        fields = ("name", "short_name", "description", "hidden")
+        fields = ("name", "short_name", "description", "seo_description", "hidden")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,6 +28,12 @@ class CategoryForm(ModelForm):
             choices=Category.objects.empty_nodes(self.instance),
         )
 
+    name = forms.CharField(help_text="Shown at top of a category page")
+    short_name = forms.CharField(help_text="Shown in mega-menu")
+    seo_description = forms.CharField(
+        required=False,
+        help_text="Shown in search results and on category page - defaults to truncated description",
+    )
     category_ref = forms.CharField(required=False, label="Item ref for category image")
     archive_ref = forms.CharField(required=False, label="Item ref for archive image")
 

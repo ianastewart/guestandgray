@@ -142,7 +142,7 @@ class CategoryDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
 class CategoryImagesView(View):
     def get(self, request, *args, **kwargs):
-        ref = request.GET.get("ref", None)
+        ref = request.GET.get("ref", None).strip()
         target = request.GET.get("target", None)
         data = {}
         if ref and target:
