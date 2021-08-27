@@ -7,7 +7,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("coderedcms", "0023_auto_20210819_0828"),
         ("shop", "0039_item_updated"),
     ]
 
