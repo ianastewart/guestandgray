@@ -1,4 +1,6 @@
 def truncate(string, max=60):
+    if not string:
+        return ""
     if string[:7] == "Chinese":
         string = string[8:9].capitalize() + string[9:]
     else:
