@@ -90,18 +90,19 @@ def item_view(request, ref, slug):
             images.append(image)
     context["images"] = images
     # Structured data
-    sd_dict = {
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        "category": category.name,
-        "name": item.name,
-        "description": item.description,
-    }
-    if item.image:
-        sd_dict["image"] = get_struct_data_images(
-            site=Site.find_for_request(request), image=item.image
-        )
-    page.structured_data = json.dumps(sd_dict, cls=StructDataEncoder)
+    if item.category_id:
+        sd_dict = {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "category": category.name,
+            "name": item.name,
+            "description": item.description,
+        }
+        if item.image:
+            sd_dict["image"] = get_struct_data_images(
+                site=Site.find_for_request(request), image=item.image
+            )
+        page.structured_data = json.dumps(sd_dict, cls=StructDataEncoder)
     form = EnquiryForm()
     form.fields["subject"].initial = f"Enquiry about {item.ref}"
     context["form"] = form
