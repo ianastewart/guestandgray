@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = True
-DEBUG_TOOLBAR = True
+DEBUG_TOOLBAR = False
 LIVE_EMAIL = True
 
 if DEBUG_TOOLBAR:

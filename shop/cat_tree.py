@@ -96,8 +96,8 @@ def node_dict(node, admin, archive):
     dict["text"] = node.short_name
     dict["leaf"] = node.is_leaf()
     if not admin:
-        # todo Why Do we need this?
-        dict["shop"] = True
+        dict["shop"] = not archive
+        dict["archive"] = archive
         return dict
     # admin only code
     shop = node.shop_count()
