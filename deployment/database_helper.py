@@ -17,14 +17,14 @@ def _create_database(dbuser, pw, db):
     print(yellow(f"Start create database {db}"))
     _create_user(dbuser, pw)
     databases = sudo(
-        'psql -p 5433 -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
+        'psql -p 5432 -c "SELECT datname FROM pg_database WHERE datistemplate = false;"',
         user="postgres",
     )
     if db in databases:
         print(cyan(f"Dropping existing database {db}"))
         sudo(f"dropdb {db}", user="postgres")
     sudo(
-        'psql -p 5433 -c "CREATE DATABASE %s WITH OWNER %s"' % (db, dbuser),
+        'psql -p 5432 -c "CREATE DATABASE %s WITH OWNER %s"' % (db, dbuser),
         user="postgres",
     )
     _grant_priviliges(dbuser, db)
@@ -102,22 +102,22 @@ def _upload_dev_db(local_dev_folder, db):
     # print(result)
     dbuser = "gray"
     os.system(
-        f"psql -U postgres -p 5433 -c \"CREATE USER gray WITH CREATEDB PASSWORD 'guest'\""
+        f"psql -U postgres -p 5432 -c \"CREATE USER gray WITH CREATEDB PASSWORD 'guest'\""
     )
     os.system(
-        f'psql -U postgres -p 5433 -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"'
+        f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"'
     ),
     os.system(
-        f'psql -U postgres -p 5433 -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"'
+        f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"'
     ),
     os.system(
-        f'psql -U postgres -p 5433 -d {db} -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to {dbuser};"'
+        f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to {dbuser};"'
     ),
     print(f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}")
-    os.system(f'psql -U postgres -p 5433 -c "DROP DATABASE {db}"')
-    os.system(f'psql -U postgres -p 5433 -c "CREATE DATABASE {db} WITH OWNER gray"')
+    os.system(f'psql -U postgres -p 5432 -c "DROP DATABASE {db}"')
+    os.system(f'psql -U postgres -p 5432 -c "CREATE DATABASE {db} WITH OWNER gray"')
     os.system(
-        f"pg_restore -U postgres -p 5433 -d {db} {local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
+        f"pg_restore -U postgres -p 5432 -d {db} {local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     )
     venv = f"{local_dev_folder}/venv/Scripts/python.exe"
     os.system(
