@@ -147,9 +147,13 @@ def catalogue_view(request, slugs=None, archive=False):
         objects = category.archive_items() if archive else category.shop_items()
         context["count"] = objects.count()
         paginator = Paginator(objects, 36)
-        page_no = request.GET.get("page")
-        if paginator.num_pages >= 1 and not page_no:
-            page_no = 1
+        page_no = request.GET.get("page", 1)
+        try:
+            page_no = int(page_no)
+        except ValueError:
+            raise Http404
+        if page_no > paginator.num_pages:
+            page_no = paginator.num_pages
         context["page_number"] = f"Page {page_no} of {paginator.num_pages}"
         # Canonical for the first page never has a page query string'
         if paginator.num_pages >= 1 and int(page_no) > 1:

@@ -23,9 +23,9 @@ class HostPage(CoderedPage):
 
     template = "coderedcms/pages/base.html"
 
-    def get_url_parts(self, *args, **kwargs):
-        site_id, root_url, page_path = super().get_url_parts(*args, **kwargs)
-        return site_id, root_url, self.path
+    # def get_url_parts(self, *args, **kwargs):
+    #     site_id, root_url, page_path = super().get_url_parts(*args, **kwargs)
+    #     return site_id, root_url, page_path
 
 
 class CategoryManager(MP_NodeManager):
