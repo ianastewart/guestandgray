@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     "tempus_dominus",
     "cookielaw",
     "robots",
+    "markdownify.apps.MarkdownifyConfig",
+    "django_htmx",
     # CodeRed CMS
     "coderedcms",
     "bootstrap4",
@@ -78,6 +80,7 @@ MIDDLEWARE = [
     #'django.middleware.common.BrokenLinkEmailsMiddleware',
     # CMS functionality
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     # Fetch from cache. Must be LAST.
     "wagtailcache.cache.FetchFromCacheMiddleware",
 ]
@@ -177,6 +180,24 @@ BOOTSTRAP4 = {
     "success_css_class": "",
 }
 
+MARKDOWNIFY = {
+    "default": {
+        "WHITELIST_TAGS": [
+            "a",
+            "abbr",
+            "acronym",
+            "b",
+            "blockquote",
+            "em",
+            "i",
+            "li",
+            "ol",
+            "p",
+            "strong",
+            "ul",
+        ]
+    }
+}
 
 # Tags
 TAGGIT_CASE_INSENSITIVE = True

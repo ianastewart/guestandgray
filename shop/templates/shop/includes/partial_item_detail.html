@@ -1,4 +1,4 @@
-{% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
+{% load static wagtailimages_tags shop_tags bootstrap4 humanize markdownify %}
 <div class="container bg-white my-2 py-2">
   {{ form.media }}
   {% if not public %}
@@ -61,19 +61,19 @@
         </div>
       {% endif %}
       <hr>
-      <p class="para">{{ item.description }}</p>
+      <p class="para">{{ item.description|markdownify|linebreaks }}</p>
       {% if item.dimensions %}
         <hr>
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
-          <p class="col-12 col-lg-9 mb-1">{{ item.dimensions }}</p>
+          <p class="col-12 col-lg-9 mb-1">{{ item.dimensions|capfirst }}</p>
         </div>
       {% endif %}
       {% if item.condition %}
         <hr>
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
-          <p class="col-12 col-lg-9 mb-1">{{ item.condition }}</p>
+          <p class="col-12 col-lg-9 mb-1">{{ item.condition|linebreaks }}</p>
         </div>
       {% endif %}
 
@@ -82,7 +82,7 @@
         <div class="row">
         <div class="col">
           <p class="text-muted mb-1">Notes:</p>
-          <p class="mb-1">{{ item.notes }}</p>
+          <p class="mb-1">{{ item.notes|markdownify|linebreaks }}</p>
         </div>
         </div>
       {% endif %}
@@ -100,7 +100,7 @@
         <div class="row">
         <div class="col">
         <p class="text-muted mb-1">Provenance:</p>
-        <p>{{ item.provenance }}</p>
+        {{ item.provenance|markdownify|linebreaks }}
         </div>
         </div>
       {% endif %}
@@ -124,11 +124,9 @@
         </form>
       </div>
     {% if not public %}
-      <br>
-      {{ item.name|length }}<br>
+      <p class="text-muted mt-3 mb-0 border-bottom">
+        SEO title: {{ item.name|length }} characters <span class="float-right">SEO description: {{ seo|length }} characters</span> </p>
       {{ seo }}
-    <hr>
-    {{ seo|length }} characters
     {% endif %}
     </div>
   </div>

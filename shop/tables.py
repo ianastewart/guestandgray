@@ -65,7 +65,7 @@ class ItemTable(ColumnShiftTable):
         attrs = {"class": "table table-sm table-hover hover-link"}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
-            "data-url": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            "data-url": lambda record: reverse("item_update", kwargs={"pk": record.pk}),
             "class": "table-row pl-4",
         }
 

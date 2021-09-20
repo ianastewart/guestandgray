@@ -1,3 +1,4 @@
+from decimal import Decimal
 import django.forms as forms
 from django.urls import reverse_lazy
 from django.forms import Form, ModelForm, ModelChoiceField, ValidationError
@@ -91,6 +92,12 @@ class ItemForm(ModelForm):
         }
 
     category = ModelChoiceField(queryset=Category.objects.filter(numchild=0))
+    total_cost = forms.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        required=False,
+        widget=forms.Textarea(attrs={"readonly": 1}),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -101,6 +108,25 @@ class ItemForm(ModelForm):
         if rank < 1 or rank > 10:
             raise forms.ValidationError("Rank must be between 1 and 10")
         return self.cleaned_data["rank"]
+
+    def clean(self):
+        # remove input mask from currency fields and set cleaned data to decimal value
+        for field in [
+            "cost_price",
+            "restoration_cost",
+            "total_cost",
+            "sale_price",
+            "minimum_price",
+        ]:
+            raw = self.data[field].replace("£ ", "").replace(",", "")
+            if not raw:
+                raw = 0
+            self.cleaned_data[field] = Decimal(raw)
+            try:
+                del self.errors[field]
+            except KeyError:
+                pass
+        return self.cleaned_data
 
 
 class ArchiveItemForm(ItemForm):

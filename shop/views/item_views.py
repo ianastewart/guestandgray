@@ -13,10 +13,12 @@ from shop.models import CustomImage, Item
 from shop.session import cart_add_item, cart_get_item
 from shop.tables import ItemTable
 from shop.truncater import truncate
+from shop.templatetags.shop_tags import unmarkdown
 
 # from shop.tables import ItemTable
 from table_manager.views import AjaxCrudView, FilteredTableView
 from table_manager.mixins import StackMixin
+from table_manager.buttons import BsButton
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
     filter_class = ItemFilter
     template_name = "shop/filtered_table.html"
     heading = "Items"
-    allow_create = True
+    allow_create = False
     allow_url = True
     auto_filter = True
     filter_right = True
@@ -93,6 +95,9 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
             # data = {"next_url": "", "target_id": request.POST["x_target_id"]}
             # return JsonResponse(data)
 
+    def get_buttons(self):
+        return [BsButton("New item", href=reverse("item_create"))]
+
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
@@ -132,12 +137,7 @@ class ItemPostMixin:
 class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView, ItemPostMixin):
     model = Item
     template_name = "shop/item_form.html"
-
-    def get_form(self, form_class=None):
-        if self.object.archive:
-            return ArchiveItemForm(**self.get_form_kwargs())
-        else:
-            return ItemForm(**self.get_form_kwargs())
+    form_class = ItemForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -147,66 +147,43 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView, ItemPostMixin):
         return context
 
     def post(self, request, *args, **kwargs):
-        object = self.get_object()
-        if self.post_action(request, object):
-            return redirect("item_update", object.pk)
+        return super().post(request, *args, **kwargs)
+
         if "delete" in request.POST:
-            object.delete()
+            item = self.get_object()
+            item.delete()
             messages.add_message(
-                request, messages.INFO, f"Item ref: {object.ref} has been deleted"
+                request, messages.INFO, f"Item ref: {item.ref} has been deleted"
             )
             return redirect("item_list")
-        return super().post(request, *args, **kwargs)
-
-
-class ItemUpdateAjax(LoginRequiredMixin, AjaxCrudView, ItemPostMixin):
-    model = Item
-    form_class = ItemForm
-    template_name = "shop/includes/partial_item_form.html"
-    modal_class = "modal-xl"
-    update = True
-    allow_delete = True
-
-    def get_form_class(self):
-        return ArchiveItemForm if self.object.archive else ItemForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        item = self.object
-        margin = Decimal(0)
-        min_margin = Decimal(0)
-        profit = Decimal(0)
-        min_profit = Decimal(0)
-        if item.cost_price:
-            cost = item.cost_price + item.restoration_cost
-            profit = item.sale_price - cost
-            if item.minimum_price:
-                min_profit = item.minimum_price - cost
-            else:
-                item.minimum_price = Decimal(0)
-                min_profit = Decimal(0)
-            if item.sale_price > 0 and profit > 0:
-                margin = profit / item.sale_price * 100
-            if item.minimum_price > 0 and min_profit > 0:
-                min_margin = min_profit / item.minimum_price * 100
+        form = self.get_form()
+        if form.is_valid():
+            form.save()
+            if "preview" in request.POST:
+                return redirect("item_detail", pk=item.pk)
+            return redirect("item_list")
         else:
-            cost = Decimal(0)
-        context["item"] = item
-        context["total_cost"] = cost
-        context["margin"] = margin
-        context["min_margin"] = min_margin
-        context["profit"] = profit
-        context["min_profit"] = min_profit
-        if item.lot:
-            context["purchase"] = item.lot.purchase
-        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
-        return context
+            return self.form_invalid(form)
+            # save and preview
+        # category = item.category
+        # if "assign_category" in request.POST:
+        #     category.image = item.image
+        #     category.save()
+        #     return redirect("item_update", object.pk)
+        # elif "assign_archive" in request.POST:
+        #     category.archive_image = item.image
+        #     category.save()
+        #     return redirect("item_update", object.pk)
+        # elif "add" in request.POST:
+        #     cart_add_item(request, item)
+        #     return redirect("item_update", object.pk)
 
-    def post(self, request, *args, **kwargs):
-        object = self.get_object(**kwargs)
-        if self.post_action(request, object):
-            return redirect("item_update_ajax", object.pk)
         return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        if "preview" in self.request.POST:
+            return reverse("item_detail", kwargs={"pk": self.object.pk})
+        return super().get_success_url()
 
 
 class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
@@ -215,11 +192,6 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context[
-        #     "images"
-        # ] = (
-        #     self.object.images.all()  # .exclude(id=self.object.image_id).order_by("-show")
-        # )
         images = list(
             self.object.images.all().exclude(id=self.object.image_id).order_by("-show")
         )
@@ -227,7 +199,8 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
             images.insert(0, self.object.image)
         context["images"] = images
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
-        context["seo"] = truncate(self.object.description, 200)
+        clean_description = unmarkdown(self.object.description).replace("\n", " ")
+        context["seo"] = truncate(clean_description, 200)
         return context
 
     def post(self, request, **kwargs):
@@ -240,18 +213,6 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
                 f"Item ref: {item.ref} has been added to the cart",
             )
         return redirect(self.get_success_url())
-
-
-class ItemDetailAjax(LoginRequiredMixin, StackMixin, AjaxCrudView):
-    model = Item
-    template_name = "shop/item_detail_modal.html"
-    modal_class = "modal-xl"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["images"] = self.object.images.all().exclude(id=self.object.image_id)
-        context["in_cart"] = cart_get_item(self.request, self.object.pk)
-        return context
 
 
 class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):

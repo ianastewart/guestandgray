@@ -36,6 +36,7 @@ from shop.models import (
 from shop.tables import BookTable
 from shop.truncater import truncate
 from shop.views.legacy_views import legacy_view
+from shop.templatetags.shop_tags import unmarkdown
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +58,13 @@ def item_view(request, ref, slug):
         return redirect("public_item", ref=ref, slug=item.slug)
     if not item.description:
         item.description = "No description available"
+    clean_description = unmarkdown(item.description).replace("\n", " ")
     context = add_page_context(
         request,
         context={},
         path=request.path,
         title=item.name,
-        description=truncate(item.description, 200),
+        description=truncate(clean_description, 200),
     )
     page = context["page"]
     page.og_image = item.image if item.image else None
@@ -96,7 +98,7 @@ def item_view(request, ref, slug):
             "@type": "Product",
             "category": category.name,
             "name": item.name,
-            "description": item.description,
+            "description": clean_description,
         }
         if item.image:
             sd_dict["image"] = get_struct_data_images(
@@ -177,6 +179,7 @@ def add_page_context(request, context, path, title="", description=""):
     # page.cover_image = None
     page.path = path
     page.title = title
+    page.canonical_url = page.get_full_url().replace("/pages/host-page/", path)
     page.search_description = description
     context["page"] = page
     context["self"] = page

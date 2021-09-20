@@ -4,9 +4,7 @@ from shop.views.item_views import (
     ItemCreateView,
     ItemCreateAjax,
     ItemDetailView,
-    ItemDetailAjax,
     ItemUpdateView,
-    ItemUpdateAjax,
     ItemTableView,
     ItemCategoriseAjax,
 )
@@ -72,17 +70,10 @@ from shop.views.image_views import BasicUploadView, ItemImagesView
 staff_urls = [
     path("", StaffHomeView.as_view(), name="staff_home"),
     # Items
+    path("item/list/", ItemTableView.as_view(), name="item_list"),
     path("item/create/", ItemCreateView.as_view(), name="item_create"),
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
-    path("item/list/", ItemTableView.as_view(), name="item_list"),
-    path(
-        "item/list/update/<int:pk>/", ItemUpdateAjax.as_view(), name="item_update_ajax"
-    ),
-    path(
-        "item/list/detail/<int:pk>/", ItemDetailAjax.as_view(), name="item_detail_ajax"
-    ),
-    path("item/list/create/", ItemCreateAjax.as_view(), name="item_create_ajax"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("item/list/categorise/", ItemCategoriseAjax.as_view(), name="item_categorise"),
     # Categories

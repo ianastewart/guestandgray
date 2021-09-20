@@ -1,3 +1,5 @@
+import markdown
+from bs4 import BeautifulSoup
 from django import template
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import title
@@ -71,6 +73,16 @@ def checkbox(box):
     return mark_safe(output)
 
 
+# https://github.com/RobinHerbots/Inputmask
+MASK = "'alias': 'currency', 'groupSeparator': ',', 'digits': 2, 'digitsOptional': false, 'prefix': '£ ', 'placeholder': '0', 'autoUnmask' : true"
+
+
+@register.simple_tag(takes_context=False)
+def currency_field(field):
+    spec = f'input name="{field.html_name}" value="{field.initial}" id="{field.auto_id}" inputmode="decimal" style="text-align: right;" class="cell"'
+    return mark_safe("<" + spec + 'data-inputmask="' + MASK + '">')
+
+
 @register.filter(name="titler")
 def titler(value):
     text = title(value)
@@ -142,3 +154,10 @@ def cart_count(context):
 @register.filter(name="integer")
 def integer(value):
     return int(value)
+
+
+@register.filter(name="unmarkdown")
+def unmarkdown(text):
+    html = markdown.markdown(text)
+    soup = BeautifulSoup(html, features="html.parser")
+    return soup.get_text()
