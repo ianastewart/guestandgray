@@ -58,12 +58,11 @@
             </div>
           </div>
           {% bootstrap_field form.category %}
-          <div class="card card-body bg-light py-1 border-dark">
-            {% if object.archive %}
-              <fieldset disabled>
+          <div class="card card-body">
+            <fieldset>
+            {% if item.archive %}
               <legend>Archived item</legend>
             {% else %}
-              <fieldset>
               <legend>Stock item</legend>
             {% endif %}
             {% if item.lot %}
@@ -109,8 +108,6 @@
                 </tr>
               {% endif %}
             </table>
-
-            {% if object.archive %}</fieldset>{% endif %}
             </fieldset>
           </div>
         </div>

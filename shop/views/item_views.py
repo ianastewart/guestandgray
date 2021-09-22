@@ -91,9 +91,6 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
                 if item.image:
                     item.image.delete()
                 item.delete()
-            # next_url = reverse("item_list")
-            # data = {"next_url": "", "target_id": request.POST["x_target_id"]}
-            # return JsonResponse(data)
 
     def get_buttons(self):
         return [BsButton("New item", href=reverse("item_create"))]
@@ -112,29 +109,7 @@ class ItemCreateAjax(LoginRequiredMixin, AjaxCrudView):
     template_name = "shop/includes/partial_item_form.html"
 
 
-class ItemPostMixin:
-    """
-    Common post actions used in both regular and json item update views
-    Returns True if a command has been actioned ""
-    """
-
-    def post_action(self, request, item):
-        category = item.category
-        if "assign_category" in request.POST:
-            category.image = item.image
-            category.save()
-            return True
-        elif "assign_archive" in request.POST:
-            category.archive_image = item.image
-            category.save()
-            return True
-        elif "add" in request.POST:
-            cart_add_item(request, item)
-            return True
-        return False
-
-
-class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView, ItemPostMixin):
+class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     model = Item
     template_name = "shop/item_form.html"
     form_class = ItemForm
@@ -147,8 +122,6 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView, ItemPostMixin):
         return context
 
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
         if "delete" in request.POST:
             item = self.get_object()
             item.delete()
@@ -156,28 +129,6 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView, ItemPostMixin):
                 request, messages.INFO, f"Item ref: {item.ref} has been deleted"
             )
             return redirect("item_list")
-        form = self.get_form()
-        if form.is_valid():
-            form.save()
-            if "preview" in request.POST:
-                return redirect("item_detail", pk=item.pk)
-            return redirect("item_list")
-        else:
-            return self.form_invalid(form)
-            # save and preview
-        # category = item.category
-        # if "assign_category" in request.POST:
-        #     category.image = item.image
-        #     category.save()
-        #     return redirect("item_update", object.pk)
-        # elif "assign_archive" in request.POST:
-        #     category.archive_image = item.image
-        #     category.save()
-        #     return redirect("item_update", object.pk)
-        # elif "add" in request.POST:
-        #     cart_add_item(request, item)
-        #     return redirect("item_update", object.pk)
-
         return super().post(request, *args, **kwargs)
 
     def get_success_url(self):

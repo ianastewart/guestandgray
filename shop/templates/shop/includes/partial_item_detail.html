@@ -61,7 +61,7 @@
         </div>
       {% endif %}
       <hr>
-      <p class="para">{{ item.description|markdownify|linebreaks }}</p>
+      <p class="para">{{ item.description|markdownify }}</p>
       {% if item.dimensions %}
         <hr>
         <div class="row">
@@ -73,7 +73,7 @@
         <hr>
         <div class="row">
           <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
-          <p class="col-12 col-lg-9 mb-1">{{ item.condition|linebreaks }}</p>
+          <p class="col-12 col-lg-9 mb-1">{{ item.condition }}</p>
         </div>
       {% endif %}
 
@@ -81,8 +81,8 @@
         <hr>
         <div class="row">
         <div class="col">
-          <p class="text-muted mb-1">Notes:</p>
-          <p class="mb-1">{{ item.notes|markdownify|linebreaks }}</p>
+          <p class="text-muted mb-1">Notes:<br>
+          {{ item.notes|markdownify}}</p>
         </div>
         </div>
       {% endif %}
@@ -99,8 +99,8 @@
         <hr>
         <div class="row">
         <div class="col">
-        <p class="text-muted mb-1">Provenance:</p>
-        {{ item.provenance|markdownify|linebreaks }}
+        <p class="text-muted mb-1">Provenance:
+        {{ item.provenance|markdownify }}</p>
         </div>
         </div>
       {% endif %}
