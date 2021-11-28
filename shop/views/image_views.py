@@ -98,7 +98,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
             image.save()
             if primary:
                 # if we delete the primary, try to make first remaining image primary
-                images = CustomImage.objects.filter(item_id=self.object.id, show=True)
+                images = CustomImage.objects.filter(item_id=self.item.id, show=True)
                 if images:
                     self.item.image = images[0]
                 else:
