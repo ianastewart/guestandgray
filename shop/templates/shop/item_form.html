@@ -29,8 +29,8 @@
                     {% image image width-250 as card_image %}
                     <img class="card-img-top" src="{{ card_image.url }}">
                    {% else %}
-                    <p class="text-danger text-center my-5">Main image is missing<br>
-                      There are {{ bad_images|length }} images in total missing</p>
+                    <p class="text-danger text-center my-5">Primary image is missing.<br>
+                      There are {{ bad_images|length }} images in total missing.</p>
                   {% endif %}
                   <div class="p-2">
                     {% if object and not object.image %}

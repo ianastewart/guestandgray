@@ -149,6 +149,9 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["images"], context["bad_images"] = self.object.associated_images()
+        context["image"] = (
+            self.object.image if self.object.image in context["images"] else None
+        )
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         clean_description = unmarkdown(self.object.description).replace("\n", " ")
         context["seo"] = truncate(clean_description, 200)

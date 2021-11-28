@@ -2,20 +2,21 @@
 {% load wagtailimages_tags static shop_tags bootstrap4 django_htmx %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
-  <div class="container my-2 py-2 bg-light">
+  <div class="container-fluid my-2 py-2 bg-light">
     <div class="row">
       <div class="col">
         <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
       </div>
     </div>
+    {% if not image %}<span class="text-danger h5">Warning: Primary image has not been set.</span>{% endif %}
     {% if images %}
       <div class="d-flex flex-wrap">
         {% for image in images %}
           <div>
             {% image image max-250x250 as card_image %}
             {% image image original as full_image %}
-            <div class="card p-0 mt-2 mr-3 mb-0 border-1 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
-                 style="width:200px">
+            <div class="card p-0 mt-2 mr-3 mb-2 border-3 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
+                 style="width:200px;">
               <a href="{{ full_image.url }}">
                 <div class="image">
                   <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
@@ -56,14 +57,13 @@
               </span>
             </div>
             {% if item.image.id == image.id %}<div class="small text-muted text-center p-0">Primary image</div>{% endif %}
-
           </div>
         {% endfor %}
       </div>
     {% endif %}
     {% if bad_images %}
-      <div id="bad-images" class="card bg-guest-lighter card-body">
-        <h5>These image files are missing</h5>
+      <div id="bad-images" class="card bg-white card-body mt-2" style="width:600px">
+        <span class="text-danger h5">Warning: These image files are missing:</span>
         {% for image in bad_images %}
           {{ image.filename }} <br>
         {% endfor %}
