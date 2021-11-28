@@ -22,12 +22,24 @@
   <div class="row">
     <div class="col col-lg-6">
       <div class="card p-0 mb-2 border-0 bg-transparent">
+        {% if images %}
         <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
                 data-index="0">
-          {% image item.image original as full_image %}
+          {% image images.0 original as full_image %}
           <a href="{{ full_image.url }}"
-             itemprop="contentUrl">{% image item.image max-1000x1000 class="img-fluid" id="main_image" %}</a>
+             itemprop="contentUrl">{% image images.0 max-1000x1000 class="img-fluid" id="main_image" %}</a>
         </figure>
+        {% elif public %}
+          <i>Sorry, there is currently no image for this item</i>
+        {% else %}
+          <div class="card-body text-danger">
+          <p>{% if bad_ids|length == 1 %}There is 1 missing images.
+            {% else %}There are {{ bad_images|length }} missing images.
+            {% endif %}
+          </p>
+            <p>Edit the item and use 'Manage images' to correct this problem.</p>
+          </div>
+        {% endif %}
       </div>
       {% if images %}
         <div class="d-flex flex-wrap">

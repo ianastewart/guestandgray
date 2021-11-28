@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.conf import settings
 from django.views.generic import DetailView, View
@@ -46,6 +46,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
     model = Item
     template_name = "shop/item_images.html"
     form_class = ImageForm
+    item = None
 
     def get_initial(self):
         initial = super().get_initial()
@@ -55,22 +56,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # primary image always first in list
-        images = []
-        if self.object.image:
-            images.append(self.object.image)
-        for image in CustomImage.objects.filter(item_id=self.object.id).order_by(
-            "-show", "position", "title"
-        ):
-            if self.object.image:
-                if image.id != self.object.image.id:
-                    images.append(image)
-            else:
-                # handle item with no image
-                self.object.image = image
-                self.object.save()
-                images.append(image)
-        context["images"] = images
+        context["images"], context["bad_images"] = self.object.associated_images()
         # Clear photos and associated files
         Photo.objects.all().delete()
         folder = os.path.join(settings.MEDIA_ROOT, "photos")
@@ -81,6 +67,15 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         self.item = self.get_object()
+        if request.htmx:
+            if request.htmx.trigger_name == "delete_missing":
+                images, bad_images = self.item.associated_images()
+                for image in bad_images:
+                    image.delete()
+                return HttpResponse(
+                    f"<h5>Missing images have been deleted</h5>",
+                    content_type="text/plain",
+                )
         if "process" in request.POST:
             crop = "crop" in request.POST
             limit = int(request.POST["limit"])

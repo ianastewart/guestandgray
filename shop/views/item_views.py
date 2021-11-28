@@ -19,6 +19,7 @@ from shop.templatetags.shop_tags import unmarkdown
 from table_manager.views import AjaxCrudView, FilteredTableView
 from table_manager.mixins import StackMixin
 from table_manager.buttons import BsButton
+from wagtail.images.models import SourceImageIOError
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,11 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = self.object
-        context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
+        context["images"], context["bad_images"] = self.object.associated_images()
+        context["image"] = (
+            self.object.image if self.object.image in context["images"] else None
+        )
+        # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         context["allow_delete"] = not self.object.lot
         return context
 
@@ -143,12 +148,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        images = list(
-            self.object.images.all().exclude(id=self.object.image_id).order_by("-show")
-        )
-        if images:
-            images.insert(0, self.object.image)
-        context["images"] = images
+        context["images"], context["bad_images"] = self.object.associated_images()
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         clean_description = unmarkdown(self.object.description).replace("\n", " ")
         context["seo"] = truncate(clean_description, 200)
@@ -171,5 +171,5 @@ class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):
 
     template_name = "shop/includes/partial_categorise_form.html"
     form_class = ItemCategoriseForm
-    target_id = "#modal-action-form"
+    target_id = "#modal-form"
     title = "Change category"

@@ -1,7 +1,6 @@
 <!-- Action form --->
 {% load bootstrap4 %}
 <div class="modal-dialog" role="document">
-
   <div class="modal-content">
     <input type="hidden" name="x_path" value="{{ x_path }}">
     <div class="modal-header bg-guest-light">
@@ -19,7 +18,7 @@
       {% endif %}
     </div>
     <div class="modal-footer bg-white">
-      <button type="button" class="btn btn-primary js-submit" name="category" target_id="{{ x_target_id }}">Change category</button>
+      <button type="submit" class="btn btn-primary " name="category" target_id="{{ x_target_id }}">Change category</button>
     </div>
   </div>
 </div>

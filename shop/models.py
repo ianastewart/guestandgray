@@ -246,6 +246,24 @@ class Item(index.Indexed, models.Model):
 
         super().save(*args, **kwargs)
 
+    def associated_images(self):
+        image_list = self.images.all().order_by("-show", "position", "title")
+        if self.image:
+            image_list = list(image_list.exclude(id=self.image_id))
+            image_list.insert(0, self.image)
+        else:
+            image_list = list(image_list)
+        good_images = []
+        bad_images = []
+        for image in image_list:
+            try:
+                len(image.file)
+                good_images.append(image)
+            except OSError:
+                bad_images.append(image)
+        # main_image = self.image if self.image in good_images else None
+        return good_images, bad_images
+
 
 class Purchase(models.Model):
     """ Purchase can be a lot with multiple items linked """

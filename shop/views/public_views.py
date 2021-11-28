@@ -17,6 +17,7 @@ from django.views.generic import FormView, ListView
 from wagtail.core.models import Page, Site
 from wagtail.search.backends import get_search_backend
 from wagtail.search.models import Query
+from wagtail.images.models import SourceImageIOError
 from wagtailseo.utils import StructDataEncoder, get_struct_data_images
 
 from shop.cat_tree import Counter
@@ -67,44 +68,32 @@ def item_view(request, ref, slug):
         description=truncate(clean_description, 200),
     )
     page = context["page"]
-    page.og_image = item.image if item.image else None
+    context["item"] = item
+    images, _ = item.associated_images()
+    if images:
+        image = images[0]
+        context["images"] = images
+    else:
+        image = None
     if item.category_id:
         category = get_object_or_404(Category, id=item.category_id)
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
         context["category"] = category
         page.title = f"{category.seo_prefix()} {item.ref}"
-    context["item"] = item
-    # context["price"] = int(item.sale_price)
-    images = []
-    extra_images = CustomImage.objects.filter(item_id=item.id, show=True).order_by(
-        "position", "title"
-    )
-    if item.image and len(extra_images) > 1:
-        images.append(item.image)
-    for image in extra_images:
-        if item.image:
-            if image.id != item.image.id:
-                images.append(image)
-        else:
-            #  missing image case
-            item.image = image
-            item.save()
-            images.append(image)
-    context["images"] = images
-    # Structured data
-    if item.category_id:
-        sd_dict = {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "category": category.name,
-            "name": item.name,
-            "description": clean_description,
-        }
-        if item.image:
-            sd_dict["image"] = get_struct_data_images(
-                site=Site.find_for_request(request), image=item.image
-            )
-        page.structured_data = json.dumps(sd_dict, cls=StructDataEncoder)
+        # SEO data when category and image exist
+        if image:
+            sd_dict = {
+                "@context": "https://schema.org/",
+                "@type": "Product",
+                "category": category.name,
+                "name": item.name,
+                "description": clean_description,
+                "image": get_struct_data_images(
+                    site=Site.find_for_request(request), image=image
+                ),
+            }
+            page.structured_data = json.dumps(sd_dict, cls=StructDataEncoder)
+            page.og_image = image
     form = EnquiryForm()
     form.fields["subject"].initial = f"Enquiry about {item.ref}"
     context["form"] = form

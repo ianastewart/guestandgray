@@ -1,5 +1,5 @@
 {% extends "shop/shop_base.html" %}
-{% load wagtailimages_tags static shop_tags bootstrap4 %}
+{% load wagtailimages_tags static shop_tags bootstrap4 django_htmx %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
   <div class="container my-2 py-2 bg-light">
@@ -8,25 +8,23 @@
         <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
       </div>
     </div>
-    <div class="d-flex flex-wrap">
-      {% if images %}
+    {% if images %}
+      <div class="d-flex flex-wrap">
         {% for image in images %}
-{#          <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 px-2">#}
-          <div class="">
+          <div>
             {% image image max-250x250 as card_image %}
             {% image image original as full_image %}
-            <div class="card p-0 m-2 border-1 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}" style="width:200px">
+            <div class="card p-0 mt-2 mr-3 mb-0 border-1 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
+                 style="width:200px">
               <a href="{{ full_image.url }}">
-              <div class="image">
-                <img
-                    src="{{ card_image.url }}"
-                    class="img img-responsive full-width "/>
-              </div>
+                <div class="image">
+                  <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
+                </div>
               </a>
-              <div class="text-center py-0" style="font-family: sans-serif">
+              <span class="text-center py-0" style="font-family: sans-serif">
                 <p class="small text-muted mt-0 mb-0 p-0">{{ image.filename }}<br> {{ image.width }}w
-                  x {{ image.height }}h</p>
-                {% if item.image.id != image.id %}
+                  x {{ image.height }}h
+                </p>
                   <div class="dropdown">
                     <form method="post">{% csrf_token %}
                       <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button"
@@ -38,7 +36,7 @@
                         {% if item.image.id != image.id %}
                           <button class="dropdown-item" name="action-primary-{{ image.id }}" type="submit">Make primary
                           </button>
-                        {% endif %}
+
                         {% if image.show %}
                           <button class="dropdown-item" name="action-hide-{{ image.id }}" type="submit">Hide image from
                             public
@@ -48,23 +46,38 @@
                             public
                           </button>
                         {% endif %}
+                          {% endif %}
                         </button>
                         <button class="dropdown-item" name="action-delete-{{ image.id }}" type="submit">Delete image
                         </button>
                       </div>
                     </form>
                   </div>
-                {% else %}
-                  <div class="badge-success p-2 mb-0">Primary image</div>
-                {% endif %}
-              </div>
+              </span>
             </div>
+            {% if item.image.id == image.id %}<div class="small text-muted text-center p-0">Primary image</div>{% endif %}
+
           </div>
         {% endfor %}
-      {% else %}
-        <p class="m-5">There are no images for this item.</p>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
+    {% if bad_images %}
+      <div id="bad-images" class="card bg-guest-lighter card-body">
+        <h5>These image files are missing</h5>
+        {% for image in bad_images %}
+          {{ image.filename }} <br>
+        {% endfor %}
+        <div class="button-group">
+          <button class="btn btn-danger" hx-post="" hx-target="#bad-images" name="delete_missing">Delete missing
+            images
+          </button>
+        </div>
+      </div>
+    {% endif %}
+    {% if not images and not bad_images %}
+      <p class="m-5">There are no images for this item.</p>
+    {% endif %}
+
     <div class="row my-3">
       <div class="col-md-8">
         <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
@@ -122,6 +135,12 @@
   {# PHOTOS PAGE SCRIPTS #}
   <script src="{% static 'shop/js/basic_upload.js' %}"></script>
   {#    <script src="{% static 'shop/js/image_management.js' %}"></script>#}
+  <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+  <script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+  </script>
 {% endblock %}
 
 
