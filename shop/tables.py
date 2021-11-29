@@ -56,6 +56,7 @@ class ItemTable(ColumnShiftTable):
             "purchased",
             "cost_price",
             "sale_price",
+            "state",
             "archive",
             "featured",
             "rank",

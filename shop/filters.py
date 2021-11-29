@@ -8,7 +8,7 @@ from django_filters import (
 )
 from tempus_dominus.widgets import DatePicker
 
-from shop.models import Category, Compiler
+from shop.models import Category, Compiler, Item
 from table_manager.filters import PaginationFilter
 
 PER_PAGE_CHOICES = (
@@ -33,6 +33,9 @@ class ItemFilter(FilterSet):
         field_name="archive",
         empty_label=None,
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
+    )
+    state = ChoiceFilter(
+        field_name="state", empty_label="-- All --", choices=Item.State.choices()
     )
     purchased_after = DateFilter(
         field_name="lot__purchase__date",
