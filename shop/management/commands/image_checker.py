@@ -23,14 +23,20 @@ class Command(BaseCommand):
         for id in image_ids:
             if id:
                 image = CustomImage.objects.get(id=id)
-                try:
-                    l = len(image.file)
-                except Exception as e:
-                    print("Image", image.item.id, image.item.ref, str(e))
-                try:
-                    image.get_rendition("max-250x250")
-                except Exception as e:
-                    print("Rendition", image.item.id, image.item.ref, str(e))
+
+                thumb = image.get_rendition("max-100x100")
+                path = "media/" + thumb.file.name
+                if not os.path.exists(path):
+                    print(image.item.ref, "Error")
+
+                # try:
+                #     l = len(image.file)
+                # except Exception as e:
+                #     print("Image", image.item.id, image.item.ref, str(e))
+                # try:
+                #     image.get_rendition("max-250x250")
+                # except Exception as e:
+                #     print("Rendition", image.item.id, image.item.ref, str(e))
                 # count += 1
                 # batch += 1
                 # if batch == 100:

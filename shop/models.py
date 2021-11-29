@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
@@ -256,12 +257,13 @@ class Item(index.Indexed, models.Model):
         good_images = []
         bad_images = []
         for image in image_list:
-            try:
-                len(image.file)
+            # Try to generate a thumbnail to ensure files are present
+            thumb = image.get_rendition("max-100x100")
+            path = "media/" + thumb.file.name
+            if os.path.exists(path):
                 good_images.append(image)
-            except OSError:
+            else:
                 bad_images.append(image)
-        # main_image = self.image if self.image in good_images else None
         return good_images, bad_images
 
 
