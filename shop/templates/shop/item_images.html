@@ -8,7 +8,7 @@
         <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
       </div>
     </div>
-    {% if not image %}<span class="text-danger h5">Warning: Primary image has not been set.</span>{% endif %}
+    {% if not image %}<span class="text-danger strong">Warning: Primary image has not been set.</span>{% endif %}
     {% if images %}
       <div class="d-flex flex-wrap">
         {% for image in images %}
@@ -63,7 +63,7 @@
     {% endif %}
     {% if bad_images %}
       <div id="bad-images" class="card bg-white card-body mt-2" style="width:600px">
-        <span class="text-danger h5">Warning: These image files are missing:</span>
+        <span class="text-danger strong">Warning: These jpeg files are missing:</span>
         {% for image in bad_images %}
           {{ image.filename }} <br>
         {% endfor %}
@@ -75,7 +75,7 @@
       </div>
     {% endif %}
     {% if not images and not bad_images %}
-      <p class="m-5">There are no images for this item.</p>
+      <p class="text-danger strong">There are no images for this item.</p>
     {% endif %}
 
     <div class="row my-3">

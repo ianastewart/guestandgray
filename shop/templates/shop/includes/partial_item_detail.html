@@ -33,13 +33,22 @@
           {% endif %}
         {% elif public %}
           <i>Sorry, there is currently no image for this item</i>
+        {% elif not public %}
+          <p class="text-danger text-center strong">There are no images for this item.</p>
         {% endif %}
-        {% if bad_images and not public %}
-          <div class="text-danger">
-            <p>{% if bad_images|length == 1 %}There is 1 missing image.
-            {% else %}There are {{ bad_images|length }} missing images.
-            {% endif %}
-            </p>
+        {% if not public %}
+          {% if bad_images %}
+            <div class="text-danger">
+              <p>{% if bad_images|length == 1 %}There is 1 missing image.
+              {% else %}There are {{ bad_images|length }} missing images.
+              {% endif %}
+              </p>
+              <a class="btn btn-secondary btn-sm m-0" href="{% url 'item_images' pk=item.pk %}">Manage
+                images</a>
+            </div>
+          {% endif %}
+
+          <div class="text-center">
             <a class="btn btn-secondary btn-sm m-0" href="{% url 'item_images' pk=item.pk %}">Manage
               images</a>
           </div>
