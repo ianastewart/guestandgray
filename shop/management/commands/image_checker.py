@@ -15,20 +15,28 @@ class Command(BaseCommand):
     help = "Check items for image errors"
 
     def handle(self, *args, **options):
+        no_primary = (
+            Item.objects.filter(image_id__isnull=True, state=1)
+            .order_by("ref")
+            .values_list("ref", flat=True)
+        )
+        for ref in no_primary:
+            print(ref, "no image")
+
         image_ids = (
-            Item.objects.all().order_by("ref").values_list("image_id", flat=True)
+            Item.objects.filter(image_id__isnull=False)
+            .order_by("ref")
+            .values_list("image_id", flat=True)
         )
         count = 0
         batch = 0
         for id in image_ids:
-            if id:
-                image = CustomImage.objects.get(id=id)
-
-                thumb = image.get_rendition("max-100x100")
-                path = "media/" + thumb.file.name
-                if not os.path.exists(path):
-                    print(image.item.ref, "Error")
-
+            image = CustomImage.objects.get(id=id)
+            thumb = image.get_rendition("max-100x100")
+            path = "media/" + thumb.file.name
+            count += 1
+            if not os.path.exists(path):
+                print(image.item.ref, "Cannot create thumbnail")
                 # try:
                 #     l = len(image.file)
                 # except Exception as e:
@@ -42,4 +50,4 @@ class Command(BaseCommand):
                 # if batch == 100:
                 #     print(f"{count} of {len(image_ids)}")
                 #     batch = 0
-        print("done")
+        print(count, "items checked")
