@@ -38,25 +38,28 @@
                           <button class="dropdown-item" name="action-primary-{{ image.id }}" type="submit">Make primary
                           </button>
 
-                        {% if image.show %}
-                          <button class="dropdown-item" name="action-hide-{{ image.id }}" type="submit">Hide image from
+                          {% if image.show %}
+                            <button class="dropdown-item" name="action-hide-{{ image.id }}" type="submit">Hide image from
                             public
                           </button>
-                        {% else %}
-                          <button class="dropdown-item" name="action-unhide-{{ image.id }}" type="submit">Show image to
+                          {% else %}
+                            <button class="dropdown-item" name="action-unhide-{{ image.id }}" type="submit">Show image to
                             public
                           </button>
-                        {% endif %}
                           {% endif %}
+                        {% endif %}
                         </button>
-                        <button class="dropdown-item" name="action-delete-{{ image.id }}" type="submit">Delete image
-                        </button>
+                        <button class="dropdown-item" name="action-unlink-{{ image.id }}"
+                                type="submit">Unlink image</button>
+                        <button class="dropdown-item" name="action-delete-{{ image.id }}"
+                                type="submit">Delete image</button>
                       </div>
                     </form>
                   </div>
               </span>
             </div>
-            {% if item.image.id == image.id %}<div class="small text-muted text-center p-0">Primary image</div>{% endif %}
+            {% if item.image.id == image.id %}
+              <div class="small text-muted text-center p-0">Primary image</div>{% endif %}
           </div>
         {% endfor %}
       </div>
@@ -77,7 +80,10 @@
     {% if not images and not bad_images %}
       <p class="text-danger strong">There are no images for this item.</p>
     {% endif %}
-
+    <div id="unlinked">
+      {% include "shop/item_images__unlinked.html" %}
+    </div>
+{#
     <div class="row my-3">
       <div class="col-md-8">
         <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
@@ -85,45 +91,46 @@
         <button type="button" class="btn btn-primary my-2 js-upload-photos">
           <span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
         </button>
+
         <input id="fileupload" type="file" name="file" multiple
                style="display: none;"
                data-url="{% url 'basic_upload' %}"
                data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
       </div>
     </div>
-  </div>
+    </div>
 
-  <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-      <div class="modal-content bg-light">
-        <div class="modal-body">
-          <h4 class="text-center mt-0">Upload photos</h4>
-          <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-          </div>
-          <table id="gallery" class="table table-sm table-borderless">
-            <thead>
-            <tr>
-              <th>Uploaded Photos</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-          <form method="post" id="crop_form">{% csrf_token %}
-            <div class="row">
-              <div class="col-8">
-                {% bootstrap_field form.crop %}
-                {% bootstrap_field form.limit %}
-              </div>
+    <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content bg-light">
+          <div class="modal-body">
+            <h4 class="text-center mt-0">Upload photos</h4>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
             </div>
-            <button type="submit" name="process" class="btn btn-secondary">Process images</button>
-            <button type="submit" name="cancel" class="btn btn-secondary">Cancel</button>
-          </form>
+            <table id="gallery" class="table table-sm table-borderless">
+              <thead>
+              <tr>
+                <th>Uploaded Photos</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <form method="post" id="crop_form">{% csrf_token %}
+              <div class="row">
+                <div class="col-8">
+                  {% bootstrap_field form.crop %}
+                  {% bootstrap_field form.limit %}
+                </div>
+              </div>
+              <button type="submit" name="process" class="btn btn-secondary">Process images</button>
+              <button type="submit" name="cancel" class="btn btn-secondary">Cancel</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
   </div>
 {% endblock %}

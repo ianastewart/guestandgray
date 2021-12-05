@@ -48,6 +48,24 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
     form_class = ImageForm
     item = None
 
+    def get(self, request, *args, **kwargs):
+        self.item = self.get_object()
+        if request.htmx:
+            if request.htmx.trigger_name == "view_unlinked":
+                request.session["view_unlinked"] = True
+            elif request.htmx.trigger_name == "hide_unlinked":
+                request.session["view_unlinked"] = False
+            context = {}
+            self.add_unlinked_context(context)
+            return render(request, "shop/item_images__unlinked.html", context)
+        return super().get(request, *args, **kwargs)
+
+    def add_unlinked_context(self, context):
+        context["unlinked_images"] = CustomImage.objects.filter(
+            item=None, title__startswith=self.item.ref + " "
+        ).order_by("file")
+        context["view_unlinked"] = self.request.session.get("view_unlinked", False)
+
     def get_initial(self):
         initial = super().get_initial()
         initial["crop"] = True
@@ -60,6 +78,8 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
         context["image"] = (
             self.object.image if self.object.image in context["images"] else None
         )
+        self.add_unlinked_context(context)
+
         # Clear photos and associated files
         Photo.objects.all().delete()
         folder = os.path.join(settings.MEDIA_ROOT, "photos")
@@ -91,21 +111,26 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                 action = bits[1]
                 image = CustomImage.objects.get(id=bits[2])
                 break
-        if action == "delete":
-            primary = self.item.image_id == image.id
+
+        if action == "unlink":
             # Just remove the reference to the item, leaving image in the database
             image.item = None
             image.save()
-            if primary:
-                # if we delete the primary, try to make first remaining image primary
-                images = CustomImage.objects.filter(item_id=self.item.id, show=True)
-                if images:
-                    self.item.image = images[0]
-                else:
-                    self.item.image = None
-                self.item.save()
 
-        elif action == "primary":
+        elif action == "delete":
+            image.delete()
+
+        if (
+            action == "unlink" or action == "delete"
+        ) and self.item.image_id == image.id:
+            self.item.image = (
+                CustomImage.objects.filter(item_id=self.item.id, show=True)
+                .order_by("file")
+                .first()
+            )
+            self.item.save()
+
+        if action == "primary":
             image.show = True
             image.save()
             self.item.image = image
@@ -118,6 +143,11 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
         elif action == "hide":
             image.show = False
             image.save()
+
+        elif action == "link":
+            image.item = self.item
+            image.save()
+
         return self.get(request, *args, **kwargs)
 
     def process_photos(self, crop: bool, limit: int):
