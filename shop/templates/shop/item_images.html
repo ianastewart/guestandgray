@@ -1,137 +1,49 @@
 {% extends "shop/shop_base.html" %}
 {% load wagtailimages_tags static shop_tags bootstrap4 django_htmx %}
-{% block body_class %}bg-guest-light{% endblock %}
+{% block body_class %}bg-guest-lighter{% endblock %}
 {% block content_body %}
-  <div class="container-fluid my-2 py-2 bg-light">
-    <div class="row">
-      <div class="col">
-        <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
-      </div>
-    </div>
-    {% if not image %}<span class="text-danger strong">Warning: Primary image has not been set.</span>{% endif %}
-    {% if images %}
-      <div class="d-flex flex-wrap">
-        {% for image in images %}
-          <div>
-            {% image image max-250x250 as card_image %}
-            {% image image original as full_image %}
-            <div class="card p-0 mt-2 mr-3 mb-2 border-3 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
-                 style="width:200px;">
-              <a href="{{ full_image.url }}">
-                <div class="image">
-                  <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
-                </div>
-              </a>
-              <span class="text-center py-0" style="font-family: sans-serif">
-                <p class="small text-muted mt-0 mb-0 p-0">{{ image.filename }}<br> {{ image.width }}w
-                  x {{ image.height }}h
-                </p>
-                  <div class="dropdown">
-                    <form method="post">{% csrf_token %}
-                      <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button"
-                              id="dropdownMenuButton"
-                              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Action
-                      </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        {% if item.image.id != image.id %}
-                          <button class="dropdown-item" name="action-primary-{{ image.id }}" type="submit">Make primary
-                          </button>
-
-                          {% if image.show %}
-                            <button class="dropdown-item" name="action-hide-{{ image.id }}" type="submit">Hide image from
-                            public
-                          </button>
-                          {% else %}
-                            <button class="dropdown-item" name="action-unhide-{{ image.id }}" type="submit">Show image to
-                            public
-                          </button>
-                          {% endif %}
-                        {% endif %}
-                        </button>
-                        <button class="dropdown-item" name="action-unlink-{{ image.id }}"
-                                type="submit">Unlink image</button>
-                        <button class="dropdown-item" name="action-delete-{{ image.id }}"
-                                type="submit">Delete image</button>
-                      </div>
-                    </form>
-                  </div>
-              </span>
-            </div>
-            {% if item.image.id == image.id %}
-              <div class="small text-muted text-center p-0">Primary image</div>{% endif %}
+  <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
+  <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary mb-2">Close</a>
+  <button type="button" class="btn btn-primary mb-2 js-upload-photos">
+    <span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
+  </button>
+  <input id="fileupload" type="file" name="file" multiple
+         style="display: none;"
+         data-url="{% url 'basic_upload' %}"
+         data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+  <div id="images">
+    {% include "shop/item_images__all.html" %}
+  </div>
+  <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content bg-light">
+        <div class="modal-body">
+          <h4 class="text-center mt-0">Upload photos</h4>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
           </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-    {% if bad_images %}
-      <div id="bad-images" class="card bg-white card-body mt-2" style="width:600px">
-        <span class="text-danger strong">Warning: These jpeg files are missing:</span>
-        {% for image in bad_images %}
-          {{ image.filename }} <br>
-        {% endfor %}
-        <div class="button-group">
-          <button class="btn btn-danger" hx-post="" hx-target="#bad-images" name="delete_missing">Delete missing
-            images
-          </button>
-        </div>
-      </div>
-    {% endif %}
-    {% if not images and not bad_images %}
-      <p class="text-danger strong">There are no images for this item.</p>
-    {% endif %}
-    <div id="unlinked">
-      {% include "shop/item_images__unlinked.html" %}
-    </div>
-{#
-    <div class="row my-3">
-      <div class="col-md-8">
-        <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary">Done</a>
-        {#        <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Upload images</button>#}
-        <button type="button" class="btn btn-primary my-2 js-upload-photos">
-          <span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
-        </button>
-
-        <input id="fileupload" type="file" name="file" multiple
-               style="display: none;"
-               data-url="{% url 'basic_upload' %}"
-               data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
-      </div>
-    </div>
-    </div>
-
-    <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
-      <div class="modal-dialog">
-        <div class="modal-content bg-light">
-          <div class="modal-body">
-            <h4 class="text-center mt-0">Upload photos</h4>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-            </div>
-            <table id="gallery" class="table table-sm table-borderless">
-              <thead>
-              <tr>
-                <th>Uploaded Photos</th>
-              </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-            <form method="post" id="crop_form">{% csrf_token %}
-              <div class="row">
-                <div class="col-8">
-                  {% bootstrap_field form.crop %}
-                  {% bootstrap_field form.limit %}
-                </div>
+          <table id="gallery" class="table table-sm table-borderless">
+            <thead>
+            <tr>
+              <th>Uploaded Photos</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <form method="post" id="crop_form">{% csrf_token %}
+            <div class="row">
+              <div class="col-8">
+                {% bootstrap_field form.crop %}
+                {% bootstrap_field form.limit %}
               </div>
-              <button type="submit" name="process" class="btn btn-secondary">Process images</button>
-              <button type="submit" name="cancel" class="btn btn-secondary">Cancel</button>
-            </form>
-          </div>
+            </div>
+            <button type="submit" name="process" class="btn btn-secondary">Process images</button>
+            <button type="submit" name="cancel" class="btn btn-secondary">Cancel</button>
+          </form>
         </div>
       </div>
     </div>
-
   </div>
 {% endblock %}
 {% block custom_scripts %}

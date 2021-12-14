@@ -257,11 +257,15 @@ class Item(index.Indexed, models.Model):
         good_images = []
         bad_images = []
         for image in image_list:
-            # Try to generate a thumbnail to ensure files are present
-            thumb = image.get_rendition("max-100x100")
-            path = "media/" + thumb.file.name
+            path = "media/" + image.file.name
             if os.path.exists(path):
-                good_images.append(image)
+                # Try to generate a thumbnail to ensure files are present
+                thumb = image.get_rendition("max-100x100")
+                path = "media/" + thumb.file.name
+                if os.path.exists(path):
+                    good_images.append(image)
+                else:
+                    bad_images.append(image)
             else:
                 bad_images.append(image)
         return good_images, bad_images

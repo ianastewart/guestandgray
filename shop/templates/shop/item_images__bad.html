@@ -1,0 +1,14 @@
+{% load wagtailimages_tags %}
+{% if bad_images %}
+  <div id="bad-images" class="card bg-white card-body mt-2" style="width:600px">
+    <span class="text-danger strong">Warning: These jpeg files are missing:</span>
+    {% for image in bad_images %}
+      {{ image.filename }} <br>
+    {% endfor %}
+    <div class="button-group">
+      <button class="btn btn-danger" hx-post="" hx-target="#bad-images" name="delete_missing">Delete missing
+        images
+      </button>
+    </div>
+  </div>
+{% endif %}

@@ -1,13 +1,16 @@
 {% load wagtailimages_tags %}
 {% if unlinked_images %}
-  <p>{% if unlinked_images|length == 1 %}There is 1 unlinked image.{% else %}There are {{ unlinked_images|length }}
-    unlinked images.{% endif %} </p>
+  <div class="card bg-light my-2">
+  <div class="h4 m-2">{% if unlinked_images|length == 1 %}1 unlinked image.{% else %}{{ unlinked_images|length }}
+    unlinked images.{% endif %}
   {% if not view_unlinked %}
-    <button class="btn btn-link" hx-get="" hx-target="#unlinked" name="view_unlinked">View</button>
+    <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="view_unlinked">View</button>
   {% else %}
-    <button class="btn btn-link" hx-get="" hx-target="#unlinked" name="hide_unlinked">Hide</button>
-
-    <div class="d-flex flex-wrap">
+    <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="hide_unlinked">Hide</button>
+    {% endif %}
+  </div>
+  {% if view_unlinked and unlinked_images %}
+    <div class=" d-flex flex-wrap m-2">
       {% for image in unlinked_images %}
         <div>
           {% image image max-250x250 as card_image %}
@@ -21,23 +24,15 @@
               </div>
             </a>
             <span class="text-center py-0" style="font-family: sans-serif">
-            <p class="small text-muted mt-0 mb-0 p-0">{{ image.filename }}<br> {{ image.width }}w
-              x {{ image.height }}h
+            <p class="small text-muted mt-0 mb-0 p-0">{{ image.filename }}<br> {{ image.width }}w x {{ image.height }}h
             </p>
             <div class="dropdown">
-              <form method="post">{% csrf_token %}
-                <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button"
-                        id="dropdownMenuButton-{{ image.id }}"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Action
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-{{ image.id }}">
-                  <button class="dropdown-item" name="action-link-{{ image.id }}"
-                          type="submit">Link to item</button>
-                  <button class="dropdown-item" name="action-delete-{{ image.id }}"
-                          type="submit">Delete image</button>
-                </div>
-              </form>
+              <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" id="dropdown-{{ image.id }}"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+              <div class="dropdown-menu" aria-labelledby="dropdown-{{ image.id }}">
+                <button class="dropdown-item" hx-post=""  name="link-{{ image.id }}" hx-target="#images">Link to item</button>
+                <button class="dropdown-item" hx-post=""  name="delete-{{ image.id }}" hx-target="#unlinked_images">Delete image</button>
+              </div>
             </div>
           </span>
           </div>
@@ -46,5 +41,7 @@
         </div>
       {% endfor %}
     </div>
+    </div>
+    <br>
   {% endif %}
 {% endif %}

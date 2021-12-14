@@ -60,6 +60,12 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
             return render(request, "shop/item_images__unlinked.html", context)
         return super().get(request, *args, **kwargs)
 
+    def add_linked_context(self, context):
+        context["images"], context["bad_images"] = self.item.associated_images()
+        context["image"] = (
+            self.item.image if self.item.image in context["images"] else None
+        )
+
     def add_unlinked_context(self, context):
         context["unlinked_images"] = CustomImage.objects.filter(
             item=None, title__startswith=self.item.ref + " "
@@ -74,12 +80,8 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["images"], context["bad_images"] = self.object.associated_images()
-        context["image"] = (
-            self.object.image if self.object.image in context["images"] else None
-        )
+        self.add_linked_context(context)
         self.add_unlinked_context(context)
-
         # Clear photos and associated files
         Photo.objects.all().delete()
         folder = os.path.join(settings.MEDIA_ROOT, "photos")
@@ -91,7 +93,43 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
     def post(self, request, *args, **kwargs):
         self.item = self.get_object()
         if request.htmx:
-            if request.htmx.trigger_name == "delete_missing":
+            bits = request.htmx.trigger_name.split("-")
+            action = bits[0]
+            if len(bits) == 2:
+                image = CustomImage.objects.get(id=bits[1])
+            context = {"item": self.item}
+
+            if action == "unlink":
+                # Just remove the reference to the item, leaving image in the database
+                image.item = None
+                image.show = True
+                image.save()
+                self.check_primary(image)
+
+            elif action == "delete":
+                self.check_primary(image)
+                image.delete()
+                self.check_primary(image)
+
+            if action == "primary":
+                image.show = True
+                image.save()
+                self.item.image = image
+                self.item.save()
+
+            elif action == "unhide":
+                image.show = True
+                image.save()
+
+            elif action == "hide":
+                image.show = False
+                image.save()
+
+            elif action == "link":
+                image.item = self.item
+                image.save()
+
+            elif action == "delete_missing":
                 images, bad_images = self.item.associated_images()
                 for image in bad_images:
                     image.delete()
@@ -99,56 +137,33 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                     f"<h5>Missing images have been deleted</h5>",
                     content_type="text/plain",
                 )
+            if request.htmx.target == "images":
+                self.add_linked_context(context)
+                self.add_unlinked_context(context)
+                template = "shop/item_images__all.html"
+            elif request.htmx.target == "linked_images":
+                self.add_linked_context(context)
+                template = "shop/item_images__linked.html"
+            elif request.htmx.target == "unlinked_images":
+                self.add_unlinked_context(context)
+                template = "shop/item_images__unlinked.html"
+            return render(request, template, context)
+
         if "process" in request.POST:
             crop = "crop" in request.POST
             limit = int(request.POST["limit"])
             self.process_photos(crop, limit)
+        return self.get(request, *args, **kwargs)
 
-        action = None
-        for entry in request.POST:
-            if "action" in entry:
-                bits = entry.split("-")
-                action = bits[1]
-                image = CustomImage.objects.get(id=bits[2])
-                break
-
-        if action == "unlink":
-            # Just remove the reference to the item, leaving image in the database
-            image.item = None
-            image.save()
-
-        elif action == "delete":
-            image.delete()
-
-        if (
-            action == "unlink" or action == "delete"
-        ) and self.item.image_id == image.id:
+    def check_primary(self, image):
+        # if we delete or unlink primary make first item in list the primary item
+        if self.item.image_id == image.id:
             self.item.image = (
                 CustomImage.objects.filter(item_id=self.item.id, show=True)
                 .order_by("file")
                 .first()
             )
             self.item.save()
-
-        if action == "primary":
-            image.show = True
-            image.save()
-            self.item.image = image
-            self.item.save()
-
-        elif action == "unhide":
-            image.show = True
-            image.save()
-
-        elif action == "hide":
-            image.show = False
-            image.save()
-
-        elif action == "link":
-            image.item = self.item
-            image.save()
-
-        return self.get(request, *args, **kwargs)
 
     def process_photos(self, crop: bool, limit: int):
         collection = Collection.objects.filter(name="Shop images").first()

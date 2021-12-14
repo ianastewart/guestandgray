@@ -1,0 +1,13 @@
+{% load wagtailimages_tags %}
+<div id="linked_images">
+  {% include "shop/item_images__linked.html" %}
+</div>
+{% if not images and not bad_images %}
+  <p class="text-danger strong">There are no images for this item.</p>
+{% endif %}
+<div id="unlinked_images">
+  {% include "shop/item_images__unlinked.html" %}
+</div>
+<div id="bad_images">
+  {% include "shop/item_images__bad.html" %}
+</div>

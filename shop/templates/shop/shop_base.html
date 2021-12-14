@@ -17,7 +17,7 @@
   {% block head %}
   {% endblock %}
 </head>
-<body class="bg-guest-light">
+<body class="{% block body_class %}bg-guest-light{% endblock %}">
 {% block navbar %}
   {% include "shop/includes/navbar.html" %}
 {% endblock %}
