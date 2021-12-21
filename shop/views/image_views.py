@@ -61,15 +61,16 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
     def add_linked_context(self, context):
-        context["images"], context["bad_images"] = self.item.associated_images()
+        context["images"], context["bad_images"] = self.item.visible_images()
         context["image"] = (
             self.item.image if self.item.image in context["images"] else None
         )
 
     def add_unlinked_context(self, context):
-        context["unlinked_images"] = CustomImage.objects.filter(
-            item=None, title__startswith=self.item.ref + " "
-        ).order_by("file")
+        context["unlinked_images"] = self.item.hidden_images()
+        # context["unlinked_images"] = CustomImage.objects.filter(
+        #     item=None, title__startswith=self.item.ref + " "
+        # ).order_by("file")
         context["view_unlinked"] = self.request.session.get("view_unlinked", False)
 
     def get_initial(self):
@@ -93,11 +94,24 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
     def post(self, request, *args, **kwargs):
         self.item = self.get_object()
         if request.htmx:
-            bits = request.htmx.trigger_name.split("-")
-            action = bits[0]
-            if len(bits) == 2:
-                image = CustomImage.objects.get(id=bits[1])
             context = {"item": self.item}
+            if request.htmx.trigger == "group":
+                image_ids = request.POST.getlist("image")
+                pos = 0
+                for image_id in image_ids:
+                    image = CustomImage.objects.get(id=image_id)
+                    image.position = pos
+                    image.save()
+                    if pos == 0:
+                        self.item.image = image
+                        self.item.save()
+                    pos += 1
+                action = ""
+            else:
+                bits = request.htmx.trigger_name.split("-")
+                action = bits[0]
+                if len(bits) == 2:
+                    image = CustomImage.objects.get(id=bits[1])
 
             if action == "unlink":
                 # Just remove the reference to the item, leaving image in the database
@@ -111,14 +125,10 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                 image.delete()
                 self.check_primary(image)
 
-            if action == "primary":
-                image.show = True
-                image.save()
-                self.item.image = image
-                self.item.save()
-
             elif action == "unhide":
                 image.show = True
+                image.item = self.item
+                image.position = self.item.last_position()
                 image.save()
 
             elif action == "hide":
@@ -130,7 +140,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                 image.save()
 
             elif action == "delete_missing":
-                images, bad_images = self.item.associated_images()
+                images, bad_images = self.item.visible_images()
                 for image in bad_images:
                     image.delete()
                 return HttpResponse(

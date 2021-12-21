@@ -247,8 +247,9 @@ class Item(index.Indexed, models.Model):
 
         super().save(*args, **kwargs)
 
-    def associated_images(self):
-        image_list = self.images.all().order_by("-show", "position", "title")
+    def visible_images(self):
+        """ return images with primary in first position"""
+        image_list = self.images.filter(show=True).order_by("position", "title")
         if self.image:
             image_list = list(image_list.exclude(id=self.image_id))
             image_list.insert(0, self.image)
@@ -269,6 +270,15 @@ class Item(index.Indexed, models.Model):
             else:
                 bad_images.append(image)
         return good_images, bad_images
+
+    def hidden_images(self):
+        return self.images.filter(show=False).order_by("title")
+
+    def last_position(self):
+        last = self.images.filter(show=True).order_by("position", "title").last()
+        if last:
+            return last.position + 1
+        return 0
 
 
 class Purchase(models.Model):

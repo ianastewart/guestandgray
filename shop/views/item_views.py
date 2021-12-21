@@ -118,7 +118,7 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = self.object
-        context["images"], context["bad_images"] = self.object.associated_images()
+        context["images"], context["bad_images"] = self.object.visible_images()
         context["image"] = (
             self.object.image if self.object.image in context["images"] else None
         )
@@ -148,7 +148,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["images"], context["bad_images"] = self.object.associated_images()
+        context["images"], context["bad_images"] = self.object.visible_images()
         context["image"] = (
             self.object.image if self.object.image in context["images"] else None
         )

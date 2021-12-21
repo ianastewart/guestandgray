@@ -30,7 +30,7 @@
               <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" id="dropdown-{{ image.id }}"
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
               <div class="dropdown-menu" aria-labelledby="dropdown-{{ image.id }}">
-                <button class="dropdown-item" hx-post=""  name="link-{{ image.id }}" hx-target="#images">Link to item</button>
+                <button class="dropdown-item" hx-post=""  name="unhide-{{ image.id }}" hx-target="#images">Unhide</button>
                 <button class="dropdown-item" hx-post=""  name="delete-{{ image.id }}" hx-target="#unlinked_images">Delete image</button>
               </div>
             </div>

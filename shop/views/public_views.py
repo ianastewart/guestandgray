@@ -69,7 +69,7 @@ def item_view(request, ref, slug):
     )
     page = context["page"]
     context["item"] = item
-    images, _ = item.associated_images()
+    images, _ = item.visible_images()
     if images:
         image = images[0]
         context["images"] = images

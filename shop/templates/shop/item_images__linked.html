@@ -1,50 +1,69 @@
-{% load wagtailimages_tags %}
+{% load wagtailimages_tags static %}
 {% if not image %}<span class="text-danger strong">Warning: Primary image has not been set.</span>{% endif %}
 {% if images %}
   <div class="card bg-light">
-  <div class="h4 m-2">Linked images</div>
-  <div class="d-flex flex-wrap m-2">
-    {% for image in images %}
-      <div>
-        {% image image max-250x250 as card_image %}
-        {% image image original as full_image %}
-        <div class="card p-0 mt-2 mr-3 mb-2 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
-             style="width:200px;">
-          <a href="{{ full_image.url }}">
-            <div class="image">
-              <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
-            </div>
-          </a>
-          <span class="text-center py-0" style="font-family: sans-serif">
-                <p class="small text-muted mt-0 mb-0 p-0">{{ image.filename }}<br> {{ image.width }}w x {{ image.height }}h
+    <div class="h4 m-2">Linked images</div>
+    <form class="d-flex flex-wrap m-2" id="group" hx-post="" hx-trigger="end" hx-target="#linked_images">
+      {% for image in images %}
+        <div>
+          <input type="hidden" name="image" value="{{ image.id }}"/>
+          {% image image max-250x250 as card_image %}
+          {% image image original as full_image %}
+          <div class="card p-0 mt-2 mr-3 mb-2 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
+               style="width:200px;">
+            <a href="{{ full_image.url }}">
+              <div class="image">
+                <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
+              </div>
+            </a>
+            <span class="text-center py-0" style="font-family: sans-serif">
+                <p class="small text-muted mt-0 mb-0 px-1">{{ image.filename }}<br> {{ image.width }}w x {{ image.height }}h
+<button class="btn btn-outline-secondary mb-1 mr-1 py-0 float-right" hx-post="" name="hide-{{ image.id }}"
+        hx-target="#images">Hide
+
+</button>
                 </p>
-                <div class="dropdown">
-                  <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button"
-                          id="dropdown-{{ image.id }}"
-                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                    <div class="dropdown-menu" aria-labelledby="dropdown-{{ image.id }}">
-                      {% if item.image.id != image.id %}
-                        <button class="dropdown-item" hx-post="" name="primary-{{ image.id }}" hx-target="#linked_images">Make primary</button>
-                        {% if image.show %}
-                          <button class="dropdown-item" hx-post="" name="hide-{{ image.id }}" hx-target="#linked_images">Hide from public</button>
-                        {% else %}
-                          <button class="dropdown-item" hx-post="" name="unhide-{{ image.id }}" hx-target="#linked_images">Show to public</button>
-                        {% endif %}
-                        {% if forloop.counter > 2 %}
-                        <button class="dropdown-item" hx-post="" name="move-{{ image.id }}" hx-target="#linked_images">Move left</button>
-                        {% endif %}
-                      {% endif %}
-                      <button class="dropdown-item" hx-post="" name="unlink-{{ image.id }}" hx-target="#images">Unlink image</button>
-                      <button class="dropdown-item" hx-post="" name="delete-{{ image.id }}" hx-target="#images">Delete image</button>
-                    </div>
-                </div>
-                  {% if item.image.id == image.id %}
-          <div class="small text-muted text-center p-0">Primary image</div>
-        {% endif %}
-              </span>
+{#                <div class="dropdown">#}
+{#                  <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button"#}
+{#                          id="dropdown-{{ image.id }}"#}
+{#                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>#}
+{#                    <div class="dropdown-menu" aria-labelledby="dropdown-{{ image.id }}">#}
+{#                      {% if item.image.id != image.id %}#}
+{#                        <button class="dropdown-item" hx-post="" name="primary-{{ image.id }}"#}
+{#                                hx-target="#linked_images">Make primary</button>#}
+{#                        {% if image.show %}#}
+{#                          <button class="dropdown-item" hx-post="" name="hide-{{ image.id }}"#}
+{#                                  hx-target="#linked_images">Hide from public</button>#}
+{#                        {% else %}#}
+{#                          <button class="dropdown-item" hx-post="" name="unhide-{{ image.id }}"#}
+{#                                  hx-target="#linked_images">Show to public</button>#}
+{#                        {% endif %}#}
+{#                        {% if forloop.counter > 2 %}#}
+{#                          <button class="dropdown-item" hx-post="" name="move-{{ image.id }}"#}
+{#                                  hx-target="#linked_images">Move left</button>#}
+{#                        {% endif %}#}
+{#                      {% endif %}#}
+{#                      <button class="dropdown-item" hx-post="" name="unlink-{{ image.id }}" hx-target="#images">Unlink image</button>#}
+{#                      <button class="dropdown-item" hx-post="" name="delete-{{ image.id }}" hx-target="#images">Delete image</button>#}
+{#                    </div>#}
+{#                </div>#}
+              {% if item.image.id == image.id %}
+                <div class="small text-muted text-center p-0">Primary image</div>
+              {% endif %}
+          </span>
+          </div>
         </div>
-      </div>
-    {% endfor %}
-  </div>
+      {% endfor %}
+    </form>
   </div>
 {% endif %}
+{% block scripts %}
+  <script src="{% static 'js/htmx.min.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script>
+    new Sortable(group, {
+      animation: 150,
+      ghostClass: "Blue-background-class"
+    })
+  </script>
+{% endblock %}
