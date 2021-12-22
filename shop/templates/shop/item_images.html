@@ -14,6 +14,7 @@
   <div id="images">
     {% include "shop/item_images__all.html" %}
   </div>
+  <div id="modals-here"></div>
   <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
       <div class="modal-content bg-light">
@@ -55,10 +56,11 @@
   <script src="{% static 'shop/js/basic_upload.js' %}"></script>
   {#    <script src="{% static 'shop/js/image_management.js' %}"></script>#}
   <script src="https://unpkg.com/htmx.org@1.6.1"></script>
-  <script>
-    document.body.addEventListener('htmx:configRequest', (event) => {
-      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    })
+  <script src="{% static "shop/js/htmx_helper.js" %}"></script>
+ <script>
+document.body.addEventListener('htmx:configRequest', (event) => {
+  event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+})
   </script>
 {% endblock %}
 

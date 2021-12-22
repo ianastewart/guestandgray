@@ -60,7 +60,7 @@
     {% if results_paginated.object_list %}
       {% for item in results_paginated.object_list %}
         <div class="mb-1">
-          {% with item=item %}
+          {% with item=item public=public %}
             {% include 'shop/public/search_result.html' %}
           {% endwith %}
         </div>

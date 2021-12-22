@@ -65,13 +65,21 @@
         </div>
       </li>
     </ul>
-    <form class="form-inline ml-auto" action="{% url 'codered_search' %}" method="GET">
-        {% load bootstrap4 %}
-        {% get_searchform request as form %}
-        {% bootstrap_form form layout='inline' %}
-        <div class="form-group">
-          <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">
-        </div>
+    <form class="form-inline ml-auto" action="{% url 'admin_search' %}" method="GET">
+{#        {% load bootstrap4 %}#}
+{#        {% get_searchform request as form %}#}
+{#        {% bootstrap_form form layout='inline' %}#}
+{#        <div class="form-group">#}
+{#          <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">#}
+{#        </div>#}
+      <div class="input-group" style="width: 250px">
+            <input type="text" class="form-control" name="s" placeholder="Search">
+            <div class=" input-group-append">
+              <button class="btn btn-light" type="submit" name="staff" value="refer">
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+          </div>
     </form>
     <a href="{% url 'cart_contents' %}" class="nav-item px-2" style="font-size: 2.5em; color:white;"><i class="fa fa-shopping-cart"></i>
       {% cart_count %}</a>

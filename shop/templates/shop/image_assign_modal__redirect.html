@@ -1,0 +1,5 @@
+<div class="modal-body">
+<p>{{ image.filename }} is now {% if image.show %}visible{% else %}hidden{% endif %} on {{ new_item.ref }}</p>
+<a class="btn btn-block btn-secondary mb-2" href="{{ old_path }}">Continue with {{ old_item.ref }}</a>
+<a class="btn btn-block btn-secondary" href="{{ new_path }}">Go to {{ new_item.ref }}</a>
+</div>

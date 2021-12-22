@@ -244,7 +244,6 @@ class Item(index.Indexed, models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-
         super().save(*args, **kwargs)
 
     def visible_images(self):

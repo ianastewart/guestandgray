@@ -1,0 +1,17 @@
+{% if new_item %}
+  {% if new_item == image.item %}
+    This is the current item
+  {% else %}
+    {{ new_item.name }}<br>
+    <form hx-post="{% url "image_assign" image_pk=image.pk %}" hx-target="#modal-content">
+      <input type="hidden" , name="new_item" , value="{{ new_item.id }}">
+      <div class="custom-control custom-checkbox my-1">
+  <input type="checkbox" class="custom-control-input mb-2" id="hidden" name="hidden">
+  <label class="custom-control-label" for="hidden">Make hidden</label>
+</div>
+      <button type="submit" class="btn btn-secondary mt-2" name="assign">Assign to {{ new_item.ref }}</button>
+    </form>
+  {% endif %}
+{% else %}
+  No matching item
+{% endif %}

@@ -1,46 +1,52 @@
 {% load wagtailimages_tags %}
 {% if unlinked_images %}
   <div class="card bg-light my-2">
-  <div class="h4 m-2">{% if unlinked_images|length == 1 %}1 unlinked image.{% else %}{{ unlinked_images|length }}
-    unlinked images.{% endif %}
-  {% if not view_unlinked %}
-    <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="view_unlinked">View</button>
-  {% else %}
-    <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="hide_unlinked">Hide</button>
+  <div class="h4 m-2">{% if unlinked_images|length == 1 %}1 hidden image.{% else %}{{ unlinked_images|length }}
+    hidden images.{% endif %}
+    {% if not view_unlinked %}
+      <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="view_unlinked">View</button>
+    {% else %}
+      <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="hide_unlinked">Hide</button>
     {% endif %}
   </div>
   {% if view_unlinked and unlinked_images %}
     <div class=" d-flex flex-wrap m-2">
       {% for image in unlinked_images %}
         <div>
-          {% image image max-250x250 as card_image %}
-          {% image image original as full_image %}
-          <div
-              class="card p-0 mt-2 mr-3 mb-2 border-3 {% if image.show %}bg-white{% else %}bg-guest-light{% endif %}"
-              style="width:200px;">
-            <a href="{{ full_image.url }}">
-              <div class="image">
-                <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
-              </div>
-            </a>
-            <span class="text-center py-0" style="font-family: sans-serif">
+        {% image image max-250x250 as card_image %}
+        {% image image original as full_image %}
+        <div class="card p-0 mt-2 mr-3 mb-2 border-3 bg-light" style="width:200px;">
+          <a href="{{ full_image.url }}">
+            <div class="image">
+              <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
+            </div>
+          </a>
+          <div class="text-center py-0" style="font-family: sans-serif">
             <p class="small text-muted mt-0 mb-0 p-0">{{ image.filename }}<br> {{ image.width }}w x {{ image.height }}h
             </p>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" id="dropdown-{{ image.id }}"
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+            <div class="dropdown m-0">
+              <button class="btn btn-sm btn-secondary dropdown-toggle m-0" type="button" id="dropdown-{{ image.id }}"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action
+              </button>
               <div class="dropdown-menu" aria-labelledby="dropdown-{{ image.id }}">
-                <button class="dropdown-item" hx-post=""  name="unhide-{{ image.id }}" hx-target="#images">Unhide</button>
-                <button class="dropdown-item" hx-post=""  name="delete-{{ image.id }}" hx-target="#unlinked_images">Delete image</button>
+                <button class="dropdown-item" hx-post="" name="unhide-{{ image.id }}" hx-target="#images">Unhide
+                </button>
+                <button class="dropdown-item" hx-post="" name="delete-{{ image.id }}" hx-target="#unlinked_images">
+                  Delete image
+                </button>
+                <button class="dropdown-item" hx-post="" name="wagtail-{{ image.id }}" hx-target="#unlinked_images">
+                  Edit in Wagtail
+                </button>
+                <button class="dropdown-item" hx-get="" name="reassign-{{ image.id }}" hx-target="#modals-here">
+                  Reassign
+                </button>
               </div>
             </div>
-          </span>
           </div>
-          {% if item.image.id == image.id %}
-            <div class="small text-muted text-center p-0">Primary image</div>{% endif %}
+        </div>
         </div>
       {% endfor %}
-    </div>
+      </div>
     </div>
     <br>
   {% endif %}

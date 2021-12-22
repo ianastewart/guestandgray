@@ -241,6 +241,7 @@ def search_view(request, public):
             "form": search_form,
             "results": results,
             "results_paginated": results_paginated,
+            "public": public,
         },
     )
 

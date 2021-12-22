@@ -1,0 +1,27 @@
+{% load bootstrap4 wagtailimages_tags %}
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+  <div class="modal-dialog modal-dialog-centered" style="width: 280px;">
+    <div class="modal-content" id="modal-content">
+      <div class="modal-header">
+        <span class="h4">Reassign image</span>    <button type="button" class="close" onclick="closeModal()">&times;</span>
+    </button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        {% image image max-250x250 as card_image %}
+        <img src="{{ card_image.url }}" class="img img-responsive"/>
+        <form hx-get="{% url "image_assign" image_pk=image.pk %}" hx-target="#result">
+          <div class="input-group mt-2" style="width: 250px">
+            <input type="text" class="form-control" name="reference" placeholder="Target item reference">
+            <div class=" input-group-append">
+              <button class="btn btn-secondary" type="submit">
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+        <div id="result" class="my-2"></div>
+      </div>
+    </div>
+  </div>
+</div>

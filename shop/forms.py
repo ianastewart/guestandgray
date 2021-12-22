@@ -162,6 +162,10 @@ class ImageForm(Form):
     crop = forms.BooleanField(label="Crop nearly square images", required=False)
 
 
+class SelectItemForm(Form):
+    reference = forms.CharField(max_length=10, label="Target item reference")
+
+
 class CartPriceForm(ModelForm):
     class Meta:
         model = Item

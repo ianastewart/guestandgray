@@ -1,20 +1,19 @@
 import logging
 import os
-import shutil
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+
+from PIL import Image
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, reverse
 from django.views.generic import DetailView, View
 from django.views.generic.edit import FormMixin
-from shop.forms import ImageForm, PhotoForm
-from shop.models import CustomImage, Item, Photo
-from wagtail.core.models import Collection
-from django.core.files.storage import default_storage
-from PIL import Image
+from django_htmx.http import HttpResponseClientRedirect
 from resizeimage import resizeimage
+from wagtail.core.models import Collection
 
-# from shop.tables import ItemTable
+from shop.forms import ImageForm, PhotoForm, SelectItemForm
+from shop.models import CustomImage, Item, Photo
 
 logger = logging.getLogger(__name__)
 
@@ -47,13 +46,26 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
     template_name = "shop/item_images.html"
     form_class = ImageForm
     item = None
+    action = None
+    image = None
 
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         self.item = self.get_object()
         if request.htmx:
-            if request.htmx.trigger_name == "view_unlinked":
+            if request.htmx.trigger_name:
+                bits = request.htmx.trigger_name.split("-")
+                self.action = bits[0]
+                if len(bits) == 2:
+                    self.image = CustomImage.objects.get(id=bits[1])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if request.htmx:
+            if self.action == "reassign":
+                return image_assign_view(request, image_pk=self.image.pk)
+            if self.action == "view_unlinked":
                 request.session["view_unlinked"] = True
-            elif request.htmx.trigger_name == "hide_unlinked":
+            elif self.action == "hide_unlinked":
                 request.session["view_unlinked"] = False
             context = {}
             self.add_unlinked_context(context)
@@ -68,9 +80,6 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
 
     def add_unlinked_context(self, context):
         context["unlinked_images"] = self.item.hidden_images()
-        # context["unlinked_images"] = CustomImage.objects.filter(
-        #     item=None, title__startswith=self.item.ref + " "
-        # ).order_by("file")
         context["view_unlinked"] = self.request.session.get("view_unlinked", False)
 
     def get_initial(self):
@@ -106,40 +115,30 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                         self.item.image = image
                         self.item.save()
                     pos += 1
-                action = ""
-            else:
-                bits = request.htmx.trigger_name.split("-")
-                action = bits[0]
-                if len(bits) == 2:
-                    image = CustomImage.objects.get(id=bits[1])
 
-            if action == "unlink":
-                # Just remove the reference to the item, leaving image in the database
-                image.item = None
-                image.show = True
-                image.save()
-                self.check_primary(image)
+            if self.action == "wagtail":
+                return HttpResponseClientRedirect(f"/admin/images/{self.image.id}")
 
-            elif action == "delete":
-                self.check_primary(image)
-                image.delete()
-                self.check_primary(image)
+            elif self.action == "delete":
+                self.image.delete()
 
-            elif action == "unhide":
-                image.show = True
-                image.item = self.item
-                image.position = self.item.last_position()
-                image.save()
+            elif self.action == "unhide":
+                self.image.show = True
+                self.image.item = self.item
+                self.image.position = self.item.last_position()
+                self.image.save()
 
-            elif action == "hide":
-                image.show = False
-                image.save()
+            elif self.action == "hide":
+                self.image.show = False
+                self.image.save()
+                if self.item.image == self.image:
+                    self.item.image = None
+                    self.item.save()
+                    images, _ = self.item.visible_images()
+                    self.item.image = images[0]
+                    self.item.save()
 
-            elif action == "link":
-                image.item = self.item
-                image.save()
-
-            elif action == "delete_missing":
+            elif self.action == "delete_missing":
                 images, bad_images = self.item.visible_images()
                 for image in bad_images:
                     image.delete()
@@ -165,16 +164,6 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
             self.process_photos(crop, limit)
         return self.get(request, *args, **kwargs)
 
-    def check_primary(self, image):
-        # if we delete or unlink primary make first item in list the primary item
-        if self.item.image_id == image.id:
-            self.item.image = (
-                CustomImage.objects.filter(item_id=self.item.id, show=True)
-                .order_by("file")
-                .first()
-            )
-            self.item.save()
-
     def process_photos(self, crop: bool, limit: int):
         collection = Collection.objects.filter(name="Shop images").first()
         photos = Photo.objects.all()
@@ -195,6 +184,34 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
             )
 
 
+def image_assign_view(request, **kwargs):
+    """ Modal to reassign an image to another item """
+    image = CustomImage.objects.get(pk=kwargs["image_pk"])
+    context = {"image": image}
+    if request.method == "GET":
+        if "reference" in request.GET:
+            new_item = Item.objects.filter(ref=request.GET["reference"].upper()).first()
+            context["new_item"] = new_item
+            return render(request, "shop/image_assign_modal__result.html", context)
+        return render(request, "shop/image_assign_modal.html", context)
+    else:
+        new_item = Item.objects.get(pk=request.POST["new_item"])
+        old_item = image.item
+        image.item = new_item
+        image.title = f"{new_item.ref} {new_item.name}"
+        image.position = new_item.last_position()
+        image.show = False if "hidden" in request.POST else True
+        image.save()
+        context = {
+            "image": image,
+            "old_item": old_item,
+            "new_item": new_item,
+            "old_path": reverse("item_images", kwargs={"pk": old_item.pk}),
+            "new_path": reverse("item_images", kwargs={"pk": new_item.pk}),
+        }
+        return render(request, "shop/image_assign_modal__redirect.html", context)
+
+
 def resize(im, crop, limit):
     """
     Resize image to limit if limit > 0
@@ -205,13 +222,13 @@ def resize(im, crop, limit):
 
     if width == height:
         size = width
-        if limit > 0 and width > limit:
+        if 0 < limit < width:
             size = limit
             im = resizeimage.resize_width(im, size)
 
     elif width > height:
         size = height
-        if limit > 0 and height > limit:
+        if 0 < limit < height:
             size = limit
         if crop and (width - height) / width < 0.09:
             im = resizeimage.resize_crop(im, [size, size])

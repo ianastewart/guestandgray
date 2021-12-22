@@ -3,9 +3,15 @@
   <div class="col-2">
     {% if item.ref %}
       {% if item.image %}
+        {% if public %}
       <a href="{% url "public_item_ref" ref=item.ref %}">
         {% image item.image max-100x100 class="img-fluid" %}
       </a>
+          {% else %}
+       <a href="{% url "item_detail" pk=item.pk %}">
+        {% image item.image max-100x100 class="img-fluid" %}
+      </a>
+          {% endif %}
         {% else %}
         <p><i>No image</i></p>
         {% endif %}
@@ -15,7 +21,11 @@
   </div>
   <div class="col">
     {% if item.ref %}
+      {% if public %}
       <a href="{% url "public_item_ref" ref=item.ref %}">
+      {% else %}
+        <a href="{% url "item_detail" pk=item.pk %}">
+      {% endif %}
         <h5>{{ item.name }}{% if item.archive %} (Archive item){% endif %}</h5></a>
       {% if item.description %}
         <p>{{ item.description|truncatewords:30 }}</p>

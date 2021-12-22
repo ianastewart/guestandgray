@@ -65,16 +65,18 @@ from shop.views.public_views import (
 )
 from shop.views.legacy_views import legacy_view
 from shop.views.import_views import upload_view
-from shop.views.image_views import BasicUploadView, ItemImagesView
+from shop.views.image_views import BasicUploadView, ItemImagesView, image_assign_view
 
 staff_urls = [
     path("", StaffHomeView.as_view(), name="staff_home"),
+    path("admin_search/", search_view, {"public": False}, name="admin_search"),
     # Items
     path("item/list/", ItemTableView.as_view(), name="item_list"),
     path("item/create/", ItemCreateView.as_view(), name="item_create"),
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
+    path("image/assign/<int:image_pk>/", image_assign_view, name="image_assign"),
     path("item/list/categorise/", ItemCategoriseAjax.as_view(), name="item_categorise"),
     # Categories
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
