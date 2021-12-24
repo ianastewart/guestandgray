@@ -186,7 +186,6 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                     uploaded_by_user=self.request.user,
                     item=self.item,
                 )
-                messages.info(self.request, f"User:{user}, {full_path}")
             return True
         except PermissionError as e:
             messages.error(self.request, f"Permission error User:{user}, {full_path}")
