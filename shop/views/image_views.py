@@ -1,8 +1,10 @@
+import getpass
 import logging
 import os
 
 from PIL import Image
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse
@@ -12,7 +14,7 @@ from django_htmx.http import HttpResponseClientRedirect
 from resizeimage import resizeimage
 from wagtail.core.models import Collection
 
-from shop.forms import ImageForm, PhotoForm, SelectItemForm
+from shop.forms import ImageForm, PhotoForm
 from shop.models import CustomImage, Item, Photo
 
 logger = logging.getLogger(__name__)
@@ -165,23 +167,29 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
         return self.get(request, *args, **kwargs)
 
     def process_photos(self, crop: bool, limit: int):
+        user = getpass.getuser()
         collection = Collection.objects.filter(name="Shop images").first()
         photos = Photo.objects.all()
-        for photo in photos:
-            source = os.path.join(settings.MEDIA_ROOT, photo.file.name)
-            with open(source, "r+b") as f:
-                with Image.open(f) as image:
-                    im = resize(image, crop, limit)
-                    dest = os.path.join("original_images", photo.title)
-                    full_path = os.path.join(settings.MEDIA_ROOT, dest)
-                    im.save(full_path, optimize=True, quality=70)
-            CustomImage.objects.create(
-                file=dest,
-                title=self.item.ref + " " + self.item.name,
-                collection_id=collection.id,
-                uploaded_by_user=self.request.user,
-                item=self.item,
-            )
+        try:
+            for photo in photos:
+                source = os.path.join(settings.MEDIA_ROOT, photo.file.name)
+                with open(source, "r+b") as f:
+                    with Image.open(f) as image:
+                        im = resize(image, crop, limit)
+                        dest = os.path.join("original_images", photo.title)
+                        full_path = os.path.join(settings.MEDIA_ROOT, dest)
+                        im.save(full_path, optimize=True, quality=70)
+                CustomImage.objects.create(
+                    file=dest,
+                    title=self.item.ref + " " + self.item.name,
+                    collection_id=collection.id,
+                    uploaded_by_user=self.request.user,
+                    item=self.item,
+                )
+                messages.info(self.request, f"User:{user}, {full_path}")
+            return True
+        except PermissionError as e:
+            messages.error(self.request, f"Permission error User:{user}, {full_path}")
 
 
 def image_assign_view(request, **kwargs):

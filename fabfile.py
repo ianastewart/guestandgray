@@ -361,3 +361,7 @@ def _read_env():
             if match is not None:
                 result[match.group(1)] = match.group(2)
     return result
+
+
+# Start Shell
+# ./venv/bin/python manage.py shell --settings=mysite.settings.prod

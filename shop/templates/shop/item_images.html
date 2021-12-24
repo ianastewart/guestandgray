@@ -2,6 +2,7 @@
 {% load wagtailimages_tags static shop_tags bootstrap4 django_htmx %}
 {% block body_class %}bg-guest-lighter{% endblock %}
 {% block content_body %}
+  {% bootstrap_messages %}
   <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
   <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary mb-2">Close</a>
   <button type="button" class="btn btn-primary mb-2 js-upload-photos">
