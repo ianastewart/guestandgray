@@ -1,30 +1,46 @@
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize markdownify %}
-<div class="container bg-white my-2 py-2">
+ <div class="container mt-2 p-0">
   {{ form.media }}
   {% if not public %}
-    {% if modal %}
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>{% else %}
-      <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn close js-post mt-2" name="back" aria-label="Close" style="width:50px">
-          <span aria-hidden="true" style="font-size: 2rem;">&times;</span></button>
-      </form>
-    {% endif %}
-  {% endif %}
-  <div class="row">
-    <div class="col">
-      <h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
-      {% if not public %}<h5>Category: {{ item.category.name }}</h5>{% endif %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-guest-lighter border-bottom py-0">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#subNavbar"
+              aria-controls="subNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="subNavbar">
+        <ul class="navbar-nav mr-auto form-inline">
+          <li class="nav-item">
+            <a class="btn btn-secondary mr-2" href="{% url 'item_update' pk=item.pk %}">Edit item <span
+                class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-secondary mr-2" href="{% url 'item_images' pk=item.pk %}">Manage images</a>
+          </li>
+
+        </ul>
+        <form method="post" class="form-inline">
+          {% csrf_token %}
+          {% if in_cart %}
+            <span class="badge badge-danger mr-3">Added to cart</span>
+          {% elif not item.archive %}
+            <button type="submit" class="btn btn-secondary" name="add">Add to sale</button>
+          {% endif %}
+          <button type="submit" class="btn js-post" name="back" aria-label="Close" style="width:50px;">
+            <span aria-hidden="true" style="font-size: 2rem;">&times;</span></button>
+        </form>
+      </div>
+    </nav>
     </div>
-  </div>
+  {% endif %}
+<div class="container bg-white">
+  {% if not public %}<p>Category: {{ item.category.name }}</p>{% endif %}
+  <h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
+
   <div class="row">
     <div class="col col-lg-6">
       <div class="card p-0 mb-2 border-0 bg-transparent">
         {% if images %}
-          <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject"
-                  data-index="0">
+          <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
             {% image images.0 original as full_image %}
             <a href="{{ full_image.url }}"
                itemprop="contentUrl">{% image images.0 max-1000x1000 class="img-fluid" id="main_image" %}</a>
@@ -34,7 +50,7 @@
         {% elif public %}
           <i>Sorry, there is currently no image for this item</i>
         {% elif not public %}
-          <p class="text-danger text-center strong">There are no good images for this item.</p>
+          <p class="text-danger text-center strong">There are no images for this item.</p>
         {% endif %}
         {% if not public %}
           {% if bad_images %}
@@ -45,11 +61,6 @@
               </p>
             </div>
           {% endif %}
-
-          <div class="text-center">
-            <a class="btn btn-secondary btn-sm m-0" href="{% url 'item_images' pk=item.pk %}">Manage
-              images</a>
-          </div>
         {% endif %}
       </div>
       {% if images|length > 1 %}
@@ -64,26 +75,34 @@
         </div>
       {% endif %}
     </div>
-    <div class="col-lg-6 mb-4 px-4 ">
-      <div class="row">
-        <div class="col col-md-6"><h5>Ref: {{ item.ref }}</h5></div>
-        <div class="col col-md-6">
+    <div class="col-lg-6 mb-2 px-4 ">
+      <div class="d-flex justify-content-between flex-wrap">
+        <div><h5>Ref: {{ item.ref }}</h5>
           {% if item.show_price and item.sale_price and not item.archive %}
-            <h5 class="float-right"> £ {{ item.sale_price|integer|intcomma }}</h5>
+            <h5> £ {{ item.sale_price|integer|intcomma }}</h5>
           {% elif item.archive %}
-            <h5 class="float-right"> Archive item - not for sale</h5>
+            <h5> Archive item - not for sale</h5>
           {% endif %}
         </div>
-      </div>
-      {% if public and not item.archive %}
-        <div class="d-flex justify-content-center">
-          <div>
-            <button class="btn btn-guest my-2" data-toggle="modal" data-target="#modal-form">Enquire about this item
+
+          {% if public and request.user.is_authenticated %}
+            <div>
+            <a class="btn btn-secondary mx-1" href="{% url "item_detail" pk=item.pk %}">Admin view</a>
+            </div>
+          {% endif %}
+          {% if not public %}
+            <div>
+            <a class="btn btn-secondary mx-1" href="{% url 'public_item_ref' ref=item.ref %}">Public view</a>
+            </div>
+          {% endif %}
+                {% if public and not item.archive %}
+            <div>
+            <button class="btn btn-guest float-right" data-toggle="modal" data-target="#modal-form">Enquire about this
+              item
             </button>
-          </div>
-        </div>
-      {% endif %}
-      <hr>
+            </div>
+          {% endif %}
+      </div>
       <p class="para">{{ item.description|markdownify }}</p>
       {% if item.dimensions %}
         <hr>
@@ -127,25 +146,6 @@
           </div>
         </div>
       {% endif %}
-      <div class="mt-4">
-        <form method="post">
-          {% csrf_token %}
-          {% if public and request.user.is_authenticated %}
-            <a class="btn btn-outline-secondary" role="button" href="{% url 'item_detail' pk=item.pk %}">Admin view</a>
-          {% endif %}
-          {% if not public %}
-            <a class="btn btn-outline-secondary" role="button" href="{% url 'item_update' pk=item.pk %}{{ return }}">Edit
-              item</a>
-            <a class="btn btn-outline-secondary" role="button" href="{% url 'public_item_ref' ref=item.ref %}">Public
-              view</a>
-            {% if in_cart %}
-              <span class="badge badge-info">Added to cart</span>
-            {% elif not item.archive %}
-              <button type="submit" class="btn btn-outline-secondary" name="add">Add to sale</button>
-            {% endif %}
-          {% endif %}
-        </form>
-      </div>
       {% if not public %}
         <p class="text-muted mt-3 mb-0 border-bottom">
           SEO title: {{ item.name|length }} characters <span class="float-right">SEO description: {{ seo|length }} characters</span>
