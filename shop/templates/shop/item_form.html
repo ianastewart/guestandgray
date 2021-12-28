@@ -2,172 +2,167 @@
 {% load bootstrap4 wagtailimages_tags shop_tags static django_htmx %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
-<form method="post">{% csrf_token %}
-  <div class="container mt-2  bg-guest-lighter  py-2 border-bottom">
-    <div class="d-flex">
-      <div>
-        <button type="submit" class="btn btn-secondary mr-1" name="save">Save</button>
-      </div>
-      <div>
-        <button type="submit" class="btn btn-secondary mr-1" name="preview">Preview</button>
-      </div>
-          {% if allow_delete %}
-        <button class="btn btn-danger" type="submit" name="delete">Delete</button>
-      {% endif %}
-      {% if object %}
-        <div class="ml-auto">
-        <a class="btn btn-outline-primary" href={% url 'item_detail' pk=object.pk %}>Cancel</a>
+  <form method="post">{% csrf_token %}
+    <div class="container bg-transparent p-0">
+      <div class="card">
+        <div class="card-header bg-guest-lighter">
+          <div class="d-flex">
+              <button type="submit" class="btn btn-secondary mr-2" name="save">Save</button>
+              <button type="submit" class="btn btn-secondary mr-1" name="preview">Save & preview</button>
+            {% if allow_delete %}
+              <button class="btn btn-danger" type="submit" name="delete">Delete</button>
+            {% endif %}
+            {% if object %}
+              <div class="ml-auto">
+                <a class="btn btn-outline-secondary" href={% url 'item_detail' pk=object.pk %}>Cancel</a>
+              </div>
+            {% endif %}
+          </div>
         </div>
-      {% endif %}
-    </div>
-  </div>
-  <div class="container py-2 bg-light">
-
-    <div class="row">
-      <div class="col">
-        {% if item %}
-          <div class="h4 py-2">Edit Item Ref: {{ item.ref }}</div>
-        {% else %}
-          <div class="h4">New item</div>
-        {% endif %}
-      </div>
-    </div>
-
-
-      <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
-      {% bootstrap_messages %}
-      {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
-      <div class="row">
-        <div class="col-md-6 col-lg-5">
-          <div class="row">
-            <div class="col-lg-6">
-              {% if object %}
-                <div class="card bg-white">
-                {% if image %}
-                  {% image image max-1000x1000 as card_image %}
-                  <img class="card-img-top" src="{{ card_image.url }}">
-                {% else %}
-                  <p class="text-danger text-center my-5">Primary image is missing.
-                    {% if bad_images|length > 0 %}
-                      <br>
-                      {% if bad_images|length == 1 %}There is 1 bad image file.
-                      {% else %}
-                        There are {{ bad_images|length }} bad images files.
-                      {% endif %}
-                    {% endif %}
-                  </p>
-                {% endif %}
-                </div>
+        <div class="card-body bg-light">
+        <div class="h4 my-0">
+              {% if item %}
+                Edit Item Ref: {{ item.ref }}
               {% else %}
-                <div class="card card-body bg-white">
-                  <p><i>You can add images after the item has been saved.</i></p>
-                </div>
+                New item
               {% endif %}
-
-            </div>
-            <div class="col-lg-6 pl-0">
+        </div>
+          <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
+          {% bootstrap_messages %}
+          {% if form.errors %}<p class="text-danger">Please correct the errors on this form.</p>{% endif %}
+          <div class="row">
+            <div class="col-md-6 col-lg-5">
+              <div class="row">
+                <div class="col-lg-6">
+                  {% if object %}
+                    <label>&nbsp;</label>
+                    <div class="card bg-white mb-2">
+                      {% if image %}
+                        {% image image max-1000x1000 as card_image %}
+                        <img class="card-img-top" src="{{ card_image.url }}">
+                      {% else %}
+                        <p class="text-danger text-center my-5">Primary image is missing.
+                          {% if bad_images|length > 0 %}
+                            <br>
+                            {% if bad_images|length == 1 %}There is 1 bad image file.
+                            {% else %}
+                              There are {{ bad_images|length }} bad images files.
+                            {% endif %}
+                          {% endif %}
+                        </p>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <div class="card card-body my-5 bg-white">
+                      <p><i>You can add images after the item has been saved.</i></p>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-lg-6">
+                <label>Key settings</label>
+                  <div class="card card-body">
+                    {% bootstrap_field form.state show_label=False %}
+                    {% bootstrap_field form.rank %}
+                    {% checkbox form.visible %}
+                    {% if not object.archive %}
+                      {% checkbox form.featured %}
+                      {% checkbox form.show_price %}
+                      {% checkbox form.done %}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% bootstrap_field form.category %}
               <div class="card card-body">
-                <h5>Key settings</h5>
-                {% bootstrap_field form.state show_label=False %}
-                {% bootstrap_field form.rank %}
-                {% checkbox form.visible %}
-                {% if not object.archive %}
-                  {% checkbox form.featured %}
-                  {% checkbox form.show_price %}
-                  {% checkbox form.done %}
-                {% endif %}
+                <fieldset>
+                  {% if item.archive %}
+                    <legend>Archived item</legend>
+                  {% else %}
+                    <legend>Stock item</legend>
+                  {% endif %}
+                  {% if item.lot %}
+                    <p>Vendor: {{ item.lot.purchase.vendor.company }}<br>
+                      Purchased on {{ item.lot.purchase.date|date }}</p>
+                  {% else %}
+                    <p> Purchase details unknown</p>
+                  {% endif %}
+                  <table>
+                    {% if form.location %}
+                      <tr>
+                        <td style="width: 140px;">{% bootstrap_label "Location" %}</td>
+                        <td colspan="3">{% bootstrap_field form.location show_label=False %}</td>
+                      </tr>
+                    {% endif %}
+                    <tr>
+                      <td style="width: 140px;"><label>Purchase cost</label></td>
+                      <td>{% currency_field form.cost_price %}</td>
+                    </tr>
+                    <tr>
+                      <td style="width: 140px;">Restoration cost</td>
+                      <td>{% currency_field form.restoration_cost %}</td>
+                    </tr>
+                    <tr>
+                      <td style="width: 140px;" class="label">Total cost</td>
+                      {#              <td>£ <input type="number" name="total_cost" id="id_total_cost" class="cell" readonly></td>#}
+                      <td>{% currency_field form.total_cost %}</td>
+                    </tr>
+                    {% if form.sale_price %}
+                      <tr class="mt-3">
+                        <td style="width: 140px;">Sale price</td>
+                        <td> {% currency_field form.sale_price %}</td>
+                        <td>
+                        <td class="small"><span id="id_margin"></span></td>
+                      </tr>
+                    {% endif %}
+                    {% if form.minimum_price %}
+                      <tr>
+                        <td style="width: 140px;">Minimum price</td>
+                        <td>{% currency_field form.minimum_price %}</td>
+                        <td></td>
+                        <td class="small"><span id="id_min_margin"></span></td>
+                      </tr>
+                    {% endif %}
+                  </table>
+                </fieldset>
               </div>
             </div>
+            <div class="col-md-6 col-lg-7">
+              {% if not object %} {% bootstrap_field form.ref %} {% endif %}
+              {% bootstrap_field form.name %}
+              {% bootstrap_field form.description %}
+              {% bootstrap_field form.condition %}
+              {% bootstrap_field form.dimensions %}
+              {% bootstrap_field form.provenance %}
+              {% bootstrap_field form.notes %}
+              {% bootstrap_field form.book %}
+            </div>
           </div>
-          {% bootstrap_field form.category %}
-          <div class="card card-body">
-            <fieldset>
-              {% if item.archive %}
-                <legend>Archived item</legend>
-              {% else %}
-                <legend>Stock item</legend>
-              {% endif %}
-              {% if item.lot %}
-                <p>Vendor: {{ item.lot.purchase.vendor.company }}<br>
-                  Purchased on {{ item.lot.purchase.date|date }}</p>
-              {% else %}
-                <p> Purchase details unknown</p>
-              {% endif %}
-              <table>
-                {% if form.location %}
-                  <tr>
-                    <td style="width: 140px;">{% bootstrap_label "Location" %}</td>
-                    <td colspan="3">{% bootstrap_field form.location show_label=False %}</td>
-                  </tr>
-                {% endif %}
-                <tr>
-                  <td style="width: 140px;"><label>Purchase cost</label></td>
-                  <td>{% currency_field form.cost_price %}</td>
-                </tr>
-                <tr>
-                  <td style="width: 140px;">Restoration cost</td>
-                  <td>{% currency_field form.restoration_cost %}</td>
-                </tr>
-                <tr>
-                  <td style="width: 140px;" class="label">Total cost</td>
-                  {#              <td>£ <input type="number" name="total_cost" id="id_total_cost" class="cell" readonly></td>#}
-                  <td>{% currency_field form.total_cost %}</td>
-                </tr>
-                {% if form.sale_price %}
-                  <tr class="mt-3">
-                    <td style="width: 140px;">Sale price</td>
-                    <td> {% currency_field form.sale_price %}</td>
-                    <td>
-                    <td class="small"><span id="id_margin"></span></td>
-                  </tr>
-                {% endif %}
-                {% if form.minimum_price %}
-                  <tr>
-                    <td style="width: 140px;">Minimum price</td>
-                    <td>{% currency_field form.minimum_price %}</td>
-                    <td></td>
-                    <td class="small"><span id="id_min_margin"></span></td>
-                  </tr>
-                {% endif %}
-              </table>
-            </fieldset>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-7">
-          {% if not object %} {% bootstrap_field form.ref %} {% endif %}
-          {% bootstrap_field form.name %}
-          {% bootstrap_field form.description %}
-          {% bootstrap_field form.condition %}
-          {% bootstrap_field form.dimensions %}
-          {% bootstrap_field form.provenance %}
-          {% bootstrap_field form.notes %}
-          {% bootstrap_field form.book %}
-
         </div>
       </div>
-    </form>
-    <script src="/static/shop/js/jquery.inputmask.min.js"></script>
-    <script src="/static/shop/js/inputmask.binding.js"></script>
-    <script src="{% static 'shop/js/margin_calc.js' %}"></script>
-    <script>
-      $('body').on('keydown', 'input, select', function (e) {
-        if (e.key === "Enter") {
-          var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
-          focusable = form.find('input,a,select,button,textarea').filter(':visible');
-          next = focusable.eq(focusable.index(this) + 1);
-          if (next.length) {
-            next.focus();
-          } else {
-            form.submit();
-          }
-          return false;
+    </div>
+  </form>
+  <script src="/static/shop/js/jquery.inputmask.min.js"></script>
+  <script src="/static/shop/js/inputmask.binding.js"></script>
+  <script src="{% static 'shop/js/margin_calc.js' %}"></script>
+  <script>
+    $('body').on('keydown', 'input, select', function (e) {
+      if (e.key === "Enter") {
+        var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+        focusable = form.find('input,a,select,button,textarea').filter(':visible');
+        next = focusable.eq(focusable.index(this) + 1);
+        if (next.length) {
+          next.focus();
+        } else {
+          form.submit();
         }
-      });
+        return false;
+      }
+    });
+    margin_calc();
+    $('.cell').change(function () {
       margin_calc();
-      $('.cell').change(function () {
-        margin_calc();
-      });
-    </script>
+    });
+  </script>
   </div>
   <div id="modals-here"></div>
 {% endblock %}

@@ -4,9 +4,9 @@
 
 {% block content %}
   {% if allow_update %}
-    <div id="allow_update" style="display: none"></div>{% endif %}
+    <div id="ajax_update" style="display: none"></div>{% endif %}
   {% if allow_detail %}
-    <div id="allow_detail" style="display: none"></div>{% endif %}
+    <div id="ajax_detail" style="display: none"></div>{% endif %}
 
   {% if filter %}
     {{ filter.form.media }}
@@ -83,7 +83,7 @@
     {% endif %}
   {% else %} <!-- No filter -->
     <div class="container-fluid bg-guest-light">
-      <div class="panel">
+      <div class="card">
         {% include "table_manager/table_data.html"  with heading=""%}
       </div>
     </div>

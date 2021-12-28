@@ -1,5 +1,3 @@
-# BASE SETTINGS
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import environ
 
@@ -14,6 +12,7 @@ INSTALLED_APPS = [
     # This project
     "shop",
     "website",
+    "notes",
     "table_manager",
     "import_export",
     "keyvaluestore",

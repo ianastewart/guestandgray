@@ -3,5 +3,38 @@
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content_body %}
   {% bootstrap_messages %}
-  {% include 'shop/includes/partial_item_detail.html' with public=False %}
+  <div class="container bg-transparent p-0">
+    <div class="card">
+      <div class="card-header bg-guest-lighter">
+        <form method="post">{% csrf_token %}
+        <div class="d-flex">
+          <div>
+          <a class="btn btn-secondary mr-2" href="{% url 'item_update' pk=item.pk %}">Edit item <span
+              class="sr-only">(current)</span></a>
+          </div>
+          <div>
+          <a class="btn btn-secondary mr-2" href="{% url 'item_images' pk=item.pk %}">Manage images</a>
+          </div>
+
+            {% if in_cart %}
+              <span class="badge badge-danger mr-3">Added to cart</span>
+            {% elif not item.archive %}
+              <div class="ml-auto">
+              <button type="submit" class="btn btn-secondary mr-2" name="add">Add to sale</button>
+              </div>
+            {% endif %}
+        <div>
+            <button type="submit" class="btn btn-outline-secondary js-post" name="back" aria-label="Close">
+              <span aria-hidden="true" >Close<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x" viewBox="0 0 12 16">
+  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+</svg></span></button>
+        </div>
+        </div>
+        </form>
+      </div>
+      <div class="card-body">
+        {% include 'shop/includes/partial_item_detail.html' with public=False %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

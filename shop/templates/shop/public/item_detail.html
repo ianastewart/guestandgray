@@ -12,36 +12,34 @@
 {% endblock %}
 
 {% block content_body %}
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        {% breadcrumb breadcrumb item.archive %}
-      </div>
+  <div class="container p-0">
+    <div class="card card-body border-0">
+      {% breadcrumb breadcrumb item.archive %}
+      {% include 'shop/includes/partial_item_detail.html' with public=True %}
+      {% include 'shop/includes/photoswipe.html' %}
     </div>
   </div>
-  {% include 'shop/includes/partial_item_detail.html' with public=True %}
-  {% include 'shop/includes/photoswipe.html' %}
 
   <!-- Modal to hold enquiry form -->
   <div class="modal fade " data-backdrop="static" data-keyboard="false" id="modal-form" role="dialog">
     <div class="modal-dialog {{ modal_class }}" role="document">
       <div class="modal-content bg-guest-light">
-              <div class="modal-header">
-        <h5 class="modal-title">Enquire</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+        <div class="modal-header">
+          <h5 class="modal-title">Enquire</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
         <div class="bg-light px-4 pt-4 pb-2 border">
           <form action="{% url 'public_contact' %}" method="post" class="form">
             {% csrf_token %}
-          <input type="hidden" name="ref" value="{{ item.ref }}">
+            <input type="hidden" name="ref" value="{{ item.ref }}">
             {% bootstrap_field form.first_name layout='horizontal' placeholder="" %}
-            {% bootstrap_field form.last_name layout='horizontal'  placeholder="" %}
-            {% bootstrap_field form.email layout='horizontal'  placeholder="" %}
-            {% bootstrap_field form.phone layout='horizontal'  placeholder="" %}
-            {% bootstrap_field form.subject layout='horizontal'  placeholder="" %}
-            {% bootstrap_field form.message layout='horizontal'  placeholder="" %}
+            {% bootstrap_field form.last_name layout='horizontal' placeholder="" %}
+            {% bootstrap_field form.email layout='horizontal' placeholder="" %}
+            {% bootstrap_field form.phone layout='horizontal' placeholder="" %}
+            {% bootstrap_field form.subject layout='horizontal' placeholder="" %}
+            {% bootstrap_field form.message layout='horizontal' placeholder="" %}
             {% bootstrap_field form.mail_consent layout='horizontal' %}
             {% buttons %}
               <button type="submit" class="btn btn-guest mt-2">Send enquiry</button>
@@ -58,7 +56,7 @@
   <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
   <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
   <script>
-  var last_index=0;
+    var last_index = 0;
     var pswpElement = document.querySelectorAll('.pswp')[0];
     // build the json album images collection
     var items = [
@@ -92,9 +90,9 @@
       lightBox.init();
     });
 
-    $(".thumb").click(function() {
-    $("#main_image").attr("src", $(this).attr("full"));
-    last_index = parseInt($(this).attr("index"));
-});
+    $(".thumb").click(function () {
+      $("#main_image").attr("src", $(this).attr("full"));
+      last_index = parseInt($(this).attr("index"));
+    });
   </script>
 {% endblock %}

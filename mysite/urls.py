@@ -9,7 +9,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from shop.sitemap import ItemSitemap
 from shop.urls import public_urls, staff_urls
-
+from notes.urls import notes_urls
 
 urlpatterns = [
     # Admin
@@ -17,20 +17,19 @@ urlpatterns = [
     path("admin/", include(coderedadmin_urls)),
     # Documents
     path("docs/", include(wagtaildocs_urls)),
+    path("staff/", include(staff_urls)),
+    path("notes/", include(notes_urls)),
+    # public
+    path("", include(public_urls)),
+    # sitemap and robots
     path(
         "sitemap.xml",
         sitemap,
         {"sitemaps": {"wagtail": WagtailSitemap, "items": ItemSitemap}},
     ),
     re_path(r"^robots\.txt", include("robots.urls")),
-    # Search
-    # path("search/", include(coderedsearch_urls)),
-    path("staff/", include(staff_urls)),
-    # public
-    path("", include(public_urls)),
     # For anything not caught by a more specific rule above, hand over to
-    # the page serving mechanism. This should be the last pattern in
-    # the list:
+    # the page serving mechanism. This should be the last pattern in the list:
     path("pages/", include(codered_urls)),
 ]
 if settings.DEBUG_TOOLBAR:

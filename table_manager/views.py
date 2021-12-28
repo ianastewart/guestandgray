@@ -31,7 +31,6 @@ class FilteredTableView(ExportMixin, SingleTableView):
     as_list = False
     heading = ""
     horizontal_form = False
-    wide_screen = False
     allow_create = False
     allow_update = False
     allow_detail = False
@@ -40,7 +39,6 @@ class FilteredTableView(ExportMixin, SingleTableView):
     column_shifter = None
     object_name = ""
     filter_left = False
-    filter_right = False
     css_title = "bg-white"
     css_filter = "bg-light"
     css_actions = "bg-white"
@@ -128,7 +126,6 @@ class FilteredTableView(ExportMixin, SingleTableView):
         context["heading"] = self.heading
         context["filter_button"] = self.filter_button
         context["filter_left"] = self.filter_left
-        context["filter_right"] = self.filter_right
         context["column_shifter"] = self.column_shifter
         return context
 

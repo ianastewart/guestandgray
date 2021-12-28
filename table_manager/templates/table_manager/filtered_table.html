@@ -18,11 +18,11 @@
       <div class="col-12 col-md-3 col-xl-2 {{ view.css_filter }} flex-md-grow-1">
         {% include "table_manager/_filter_fields.html" with filter_column=True %}
       </div>
-                <form method="post">{% csrf_token %}
+      <form method="post">{% csrf_token %}
       <div class="col-12 col-md-9 col-xl-10 border-left bg-white flex-grow-1 p-0">
         {% include "table_manager/column_shifter.html" %}
       </div>
-                </form>
+      </form>
     </div>
   {% elif filter_right1 %}
     <div class="row">

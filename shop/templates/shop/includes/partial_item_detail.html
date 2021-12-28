@@ -1,38 +1,5 @@
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize markdownify %}
- <div class="container mt-2 p-0">
-  {{ form.media }}
-  {% if not public %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-guest-lighter border-bottom py-0">
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#subNavbar"
-              aria-controls="subNavbar" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="subNavbar">
-        <ul class="navbar-nav mr-auto form-inline">
-          <li class="nav-item">
-            <a class="btn btn-secondary mr-2" href="{% url 'item_update' pk=item.pk %}">Edit item <span
-                class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-secondary mr-2" href="{% url 'item_images' pk=item.pk %}">Manage images</a>
-          </li>
 
-        </ul>
-        <form method="post" class="form-inline">
-          {% csrf_token %}
-          {% if in_cart %}
-            <span class="badge badge-danger mr-3">Added to cart</span>
-          {% elif not item.archive %}
-            <button type="submit" class="btn btn-secondary" name="add">Add to sale</button>
-          {% endif %}
-          <button type="submit" class="btn js-post" name="back" aria-label="Close" style="width:50px;">
-            <span aria-hidden="true" style="font-size: 2rem;">&times;</span></button>
-        </form>
-      </div>
-    </nav>
-    </div>
-  {% endif %}
-<div class="container bg-white">
   {% if not public %}<p>Category: {{ item.category.name }}</p>{% endif %}
   <h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
 
@@ -154,4 +121,3 @@
       {% endif %}
     </div>
   </div>
-</div>
