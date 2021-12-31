@@ -555,3 +555,31 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
     margin-bottom: -40vw;
   }
 }
+
+.note {
+  background-color: #feff9c;
+}
+
+.btn-note {
+  background-color: #feff9c;
+  border-color: #d49520;
+}
+
+.note-title {
+  border: None;
+  background-color: #feff9c;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-size: 1.5rem;
+}
+.note-content {
+  border: None;
+  background-color: #feff9c;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-size: 1rem;
+}
+[x-cloak] { display: none; }
+

@@ -3,7 +3,8 @@
   {% include "shop/item_images__linked.html" %}
 </div>
 {% if not images and not bad_images %}
-  <p class="text-danger strong">There are no images for this item.</p>
+  <div class="container">
+  <div class="alert alert-danger text-center mt-2 h5">Warning: No visible images</div></div>
 {% endif %}
 <div id="unlinked_images">
   {% include "shop/item_images__unlinked.html" %}

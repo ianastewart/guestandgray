@@ -1,8 +1,7 @@
 {% load wagtailimages_tags static %}
-{% if not image %}<span class="text-danger strong">Warning: Primary image has not been set.</span>{% endif %}
 {% if images %}
   <div class="card bg-light">
-    <form class="d-flex flex-wrap m-2" id="group" hx-post="" hx-trigger="end" hx-target="#linked_images">
+    <form class="d-flex flex-wrap m-2 justify-content-center" id="group" hx-post="" hx-trigger="end" hx-target="#linked_images">
       {% for image in images %}
         <div>
           <div class="small text-muted text-center p-0 m-0">

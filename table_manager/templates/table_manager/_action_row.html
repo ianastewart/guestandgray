@@ -1,9 +1,9 @@
 {% load render_table querystring from django_tables2 %}{% load static bootstrap4 %}
 {% if actions or buttons %}
   <div class="container-fluid p-0">
-    <div class="d-flex justify-content-between bg-light">
+    <div class="d-flex justify-content-between bg-light pl-1">
 
-      <div class="d-flex pt-1 border-right">
+      <div class="d-flex pt-1">
         <input type="hidden" name="query" value={% querystring without "page" "per_page" %}>
         {% if actions or buttons %}
           <div class="px-2">
@@ -29,7 +29,6 @@
                   <button class="dropdown-item {% if action.2 %}js-action{% endif %}" type="submit" name="{{ action.0 }}" {% if action.2 %}action="{{ action.2 }}"{% endif %}>{{ action.1 }}</button>
                   {% endif %}
                 {% endfor %}
-
               </div>
             </div>
           </div>

@@ -1,0 +1,10 @@
+{% load bootstrap4 shop_tags %}
+<div>
+  {% if item.archive %}
+    <h3>Archived item</h3>
+    <button class="btn btn-secondary btn-sm" hx-get="" hx-target="#pricing" name="unarchive">Move to stock</button>
+  {% else %}
+    <h3>Stock item</h3>
+    <button class="btn btn-secondary btn-sm" hx-get="" hx-target="#pricing" name="archive">Move to archive</button>
+  {% endif %}
+</div>

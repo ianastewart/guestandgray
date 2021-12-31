@@ -229,6 +229,7 @@ class Item(index.Indexed, models.Model):
         index.SearchField("ref"),
         index.FilterField("image_id"),
         index.FilterField("archive"),
+        index.FilterField("visible"),
     ]
     book = models.ForeignKey("Book", null=True, blank=True, on_delete=models.SET_NULL)
     updated = models.DateTimeField(auto_now=True)

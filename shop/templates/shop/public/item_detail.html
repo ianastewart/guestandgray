@@ -1,6 +1,4 @@
 {% extends 'coderedcms/pages/web_page_notitle.html' %}
-
-
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
 {% block canonical %}
   {{ self.get_url_parts.1 }}/item/{{ item.ref }}/{{ item.slug }}/
@@ -11,8 +9,8 @@
   <link rel="stylesheet" href="{% static 'shop/css/default-skin.css' %}">
 {% endblock %}
 
-{% block content_body %}
-  <div class="container p-0">
+{% block content %}
+  <div class="container-lg p-0">
     <div class="card card-body border-0">
       {% breadcrumb breadcrumb item.archive %}
       {% include 'shop/includes/partial_item_detail.html' with public=True %}

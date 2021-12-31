@@ -1,0 +1,4 @@
+<button class="btn mr-2 {% if note %}btn-note{% else %}btn-secondary{% endif %}"
+        name="note-{{ item.pk }}" hx-get="{% url "notes:htmx" %}" hx-target="#modals-here">
+  {% if note %}View note{% else %}Add note{% endif %}
+</button>

@@ -1,48 +1,75 @@
 {% extends "shop/shop_base.html" %}
 {% load wagtailimages_tags static shop_tags bootstrap4 django_htmx %}
-{% block body_class %}bg-guest-lighter{% endblock %}
-{% block content_body %}
+{% block body_class %}bg-white{% endblock %}
+{% block content %}
   {% bootstrap_messages %}
-  <h3 class="my-3">{{ item.ref }} {{ item.name }}</h3>
-  <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-primary mb-2">Close</a>
-  <button type="button" class="btn btn-primary mb-2 js-upload-photos">
-    <span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
-  </button>
-  <input id="fileupload" type="file" name="file" multiple
-         style="display: none;"
-         data-url="{% url 'basic_upload' %}"
-         data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
-  <div id="images">
-    {% include "shop/item_images__all.html" %}
-  </div>
-  <div id="modals-here"></div>
-  <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-      <div class="modal-content bg-light">
-        <div class="modal-body">
-          <h4 class="text-center mt-0">Upload photos</h4>
-          <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-          </div>
-          <table id="gallery" class="table table-sm table-borderless">
-            <thead>
-            <tr>
-              <th>Uploaded Photos</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-          <form method="post" id="crop_form">{% csrf_token %}
-            <div class="row">
-              <div class="col-8">
-                {% bootstrap_field form.crop %}
-                {% bootstrap_field form.limit %}
+  <div class="card border-0">
+    <div class="card-header bg-guest-lighter">
+      <div class="container">
+        <form method="post">{% csrf_token %}
+          <div class="d-flex">
+            <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-secondary mr-2">Preview</a>
+            <div>
+              <button type="button" class="btn btn-secondary js-upload-photos">Upload photos</button>
+            </div>
+            <input id="fileupload" type="file" name="file" multiple
+                   style="display: none;"
+                   data-url="{% url 'basic_upload' %}"
+                   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+            <div class="ml-auto">
+              <div id="note-button">
+                {% include "notes/_note_button.html" %}
               </div>
             </div>
-            <button type="submit" name="process" class="btn btn-secondary">Process images</button>
-            <button type="submit" name="cancel" class="btn btn-secondary">Cancel</button>
-          </form>
+              <div>
+                <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-outline-secondary">Close
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                       fill="currentColor" class="bi bi-x" viewBox="0 0 12 16">
+                    <path
+                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                  </svg>
+                </a></div>
+          </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="h4 text-center m-0">{{ item.ref }} {{ item.name }}</div>
+      <div id="images">
+        {% include "shop/item_images__all.html" %}
+      </div>
+      <div id="modals-here"></div>
+      <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+          <div class="modal-content bg-light">
+            <div class="modal-body">
+              <h4 class="text-center mt-0">Upload photos</h4>
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+              </div>
+              <table id="gallery" class="table table-sm table-borderless">
+                <thead>
+                <tr>
+                  <th>Uploaded Photos</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+              <form method="post" id="crop_form">{% csrf_token %}
+                <div class="row">
+                  <div class="col-8">
+                    {% bootstrap_field form.crop %}
+                    {% bootstrap_field form.limit %}
+                  </div>
+                </div>
+                <button type="submit" name="process" class="btn btn-secondary">Process images</button>
+                <button type="submit" name="cancel" class="btn btn-secondary">Cancel</button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -57,10 +84,10 @@
   <script src="{% static 'shop/js/basic_upload.js' %}"></script>
   <script src="https://unpkg.com/htmx.org@1.6.1"></script>
   <script src="{% static "shop/js/htmx_helper.js" %}"></script>
- <script>
-document.body.addEventListener('htmx:configRequest', (event) => {
-  event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-})
+  <script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
   </script>
 {% endblock %}
 

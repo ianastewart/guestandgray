@@ -24,16 +24,6 @@
       </div>
       </form>
     </div>
-  {% elif filter_right1 %}
-    <div class="row">
-      <div class="col col-md-9 col-xl-10">
-        {% include "table_manager/column_shifter.html" %}
-        {% include "table_manager/_action_row.html" %}
-      </div>
-      <div class="col col-md-3 col-xl-2">
-        {% include "table_manager/_filter_fields.html" with filter_column=True %}
-      </div>
-    </div>
   {% else %}
     <div class="row">
     <div class="col p-0 bg-white">

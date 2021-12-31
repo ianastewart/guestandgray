@@ -1,7 +1,7 @@
 {% load wagtailimages_tags %}
 {% if unlinked_images %}
   <div class="card bg-light my-2">
-  <div class="h4 m-2">{% if unlinked_images|length == 1 %}1 hidden image.{% else %}{{ unlinked_images|length }}
+  <div class="h4 text-center">{% if unlinked_images|length == 1 %}1 hidden image.{% else %}{{ unlinked_images|length }}
     hidden images.{% endif %}
     {% if not view_unlinked %}
       <button class="btn btn-link" hx-get="" hx-target="#unlinked_images" name="view_unlinked">View</button>
@@ -10,7 +10,7 @@
     {% endif %}
   </div>
   {% if view_unlinked and unlinked_images %}
-    <div class=" d-flex flex-wrap m-2">
+    <div class=" d-flex flex-wrap m-2 justify-content-center">
       {% for image in unlinked_images %}
         <div>
         {% image image max-250x250 as card_image %}

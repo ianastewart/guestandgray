@@ -14,6 +14,7 @@ from django_htmx.http import HttpResponseClientRedirect
 from resizeimage import resizeimage
 from wagtail.core.models import Collection
 
+from notes.models import Note
 from shop.forms import ImageForm, PhotoForm
 from shop.models import CustomImage, Item, Photo
 
@@ -92,6 +93,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["note"] = Note.objects.filter(item=self.object).first()
         self.add_linked_context(context)
         self.add_unlinked_context(context)
         # Clear photos and associated files
@@ -129,16 +131,20 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
                 self.image.item = self.item
                 self.image.position = self.item.last_position()
                 self.image.save()
+                if not self.item.image:
+                    self.item.image = self.image
+                    self.item.save()
 
             elif self.action == "hide":
                 self.image.show = False
                 self.image.save()
-                if self.item.image == self.image:
+                if self.item.image_id == self.image.id:
                     self.item.image = None
                     self.item.save()
                     images, _ = self.item.visible_images()
-                    self.item.image = images[0]
-                    self.item.save()
+                    if images:
+                        self.item.image = images[0]
+                        self.item.save()
 
             elif self.action == "delete_missing":
                 images, bad_images = self.item.visible_images()

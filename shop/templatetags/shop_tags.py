@@ -78,9 +78,23 @@ MASK = "'alias': 'currency', 'groupSeparator': ',', 'digits': 2, 'digitsOptional
 
 
 @register.simple_tag(takes_context=False)
-def currency_field(field):
-    spec = f'input name="{field.html_name}" value="{field.initial}" id="{field.auto_id}" inputmode="decimal" style="text-align: right;" class="cell"'
-    return mark_safe("<" + spec + 'data-inputmask="' + MASK + '">')
+def currency_field(field, disabled=False):
+    state = "disabled=disabled" if disabled else ""
+    id = field.auto_id + "_d" if disabled else field.auto_id
+    spec = (
+        f'input name="{field.html_name}" value="{field.initial}" id="{id}"'
+        f' inputmode="decimal" style="text-align: right;" class="cell" {state}'
+    )
+    return mark_safe("<" + spec + ' data-inputmask="' + MASK + '">')
+
+
+@register.simple_tag(takes_context=False)
+def currency_field_spec(field):
+    spec = (
+        f'input name="{field.html_name}" value="{field.initial}" id="{field.auto_id}"'
+        f' inputmode="decimal" style="text-align: right;" class="cell"'
+    )
+    return mark_safe(spec + ' data-inputmask="' + MASK + '"')
 
 
 @register.filter(name="titler")

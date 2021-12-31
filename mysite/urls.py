@@ -9,7 +9,9 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from shop.sitemap import ItemSitemap
 from shop.urls import public_urls, staff_urls
-from notes.urls import notes_urls
+
+# from notes.urls import notes_urls
+
 
 urlpatterns = [
     # Admin
@@ -18,7 +20,7 @@ urlpatterns = [
     # Documents
     path("docs/", include(wagtaildocs_urls)),
     path("staff/", include(staff_urls)),
-    path("notes/", include(notes_urls)),
+    path("notes/", include("notes.urls")),
     # public
     path("", include(public_urls)),
     # sitemap and robots

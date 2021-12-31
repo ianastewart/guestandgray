@@ -12,12 +12,12 @@
             <a href="{{ full_image.url }}"
                itemprop="contentUrl">{% image images.0 max-1000x1000 class="img-fluid" id="main_image" %}</a>
           </figure>
-          {% if not image and not public %}<p class="text-danger">Warning: Primary image has not been defined.</p>
+          {% if not image and not public %}<p class="text-danger text-center">Warning: Primary image has not been defined.</p>
           {% endif %}
         {% elif public %}
-          <i>Sorry, there is currently no image for this item</i>
+          <i>Sorry, there is currently no image for this item.</i>
         {% elif not public %}
-          <p class="text-danger text-center strong">There are no images for this item.</p>
+          <p class="text-danger text-center strong">There are no visible images for this item.</p>
         {% endif %}
         {% if not public %}
           {% if bad_images %}
@@ -58,8 +58,13 @@
             </div>
           {% endif %}
           {% if not public %}
+
             <div>
+              {% if item.visible %}
             <a class="btn btn-secondary mx-1" href="{% url 'public_item_ref' ref=item.ref %}">Public view</a>
+                {% else %}
+                <h5 class="btn btn-secondary mx-1 disabled">Not public</h5>
+                {% endif %}
             </div>
           {% endif %}
                 {% if public and not item.archive %}

@@ -205,6 +205,11 @@ def search_view(request, public):
         items_3 = Item.objects.filter(image__isnull=False, archive=True)
         items_2 = Item.objects.filter(image__isnull=True, archive=False)
         items_4 = Item.objects.filter(image__isnull=True, archive=True)
+        if public:
+            items_1 = items_1.filter(visible=True)
+            items_2 = items_2.filter(visible=True)
+            items_3 = items_3.filter(visible=True)
+            items_4 = items_4.filter(visible=True)
         results_1 = backend.search(search_query, items_1)
         results_2 = backend.search(search_query, items_2)
         results_3 = backend.search(search_query, items_3)

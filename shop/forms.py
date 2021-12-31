@@ -111,21 +111,22 @@ class ItemForm(ModelForm):
 
     def clean(self):
         # remove input mask from currency fields and set cleaned data to decimal value
-        for field in [
-            "cost_price",
-            "restoration_cost",
-            "total_cost",
-            "sale_price",
-            "minimum_price",
-        ]:
-            raw = self.data[field].replace("£ ", "").replace(",", "")
-            if not raw:
-                raw = 0
-            self.cleaned_data[field] = Decimal(raw)
-            try:
-                del self.errors[field]
-            except KeyError:
-                pass
+        if not self.cleaned_data["archive"]:
+            for field in [
+                "cost_price",
+                "restoration_cost",
+                "total_cost",
+                "sale_price",
+                "minimum_price",
+            ]:
+                raw = self.data[field].replace("£ ", "").replace(",", "")
+                if not raw:
+                    raw = 0
+                self.cleaned_data[field] = Decimal(raw)
+                try:
+                    del self.errors[field]
+                except KeyError:
+                    pass
         return self.cleaned_data
 
 

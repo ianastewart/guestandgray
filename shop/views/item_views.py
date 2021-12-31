@@ -1,9 +1,9 @@
 import logging
 from decimal import *
-
+from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.http import JsonResponse
@@ -14,6 +14,8 @@ from shop.session import cart_add_item, cart_get_item
 from shop.tables import ItemTable
 from shop.truncater import truncate
 from shop.templatetags.shop_tags import unmarkdown
+from notes.models import Note
+from notes.forms import NoteForm
 
 # from shop.tables import ItemTable
 from table_manager.views import AjaxCrudView, FilteredTableView
@@ -115,20 +117,35 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     template_name = "shop/item_form.html"
     form_class = ItemForm
 
+    def get(self, request, *args, **kwargs):
+        if request.htmx:
+            item = self.get_object()
+            item.archive = request.htmx.trigger_name == "archive"
+            item.save()
+            template = "shop/item_form__pricing.html"
+            context = {"item": item}
+            return render(request, template, context)
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = self.object
+        context["item"] = self.object
         context["images"], context["bad_images"] = self.object.visible_images()
         context["image"] = (
             self.object.image if self.object.image in context["images"] else None
         )
         # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         context["allow_delete"] = not self.object.lot
+        context["note"] = Note.objects.filter(item=self.object).first()
         return context
 
     def post(self, request, *args, **kwargs):
+        item = self.get_object()
+        item.archive = request.POST["archive"] == "true"
+        item.save()
+        if request.htmx:
+            return HttpResponse("")
         if "delete" in request.POST:
-            item = self.get_object()
             item.delete()
             messages.add_message(
                 request, messages.INFO, f"Item ref: {item.ref} has been deleted"
@@ -155,6 +172,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         clean_description = unmarkdown(self.object.description).replace("\n", " ")
         context["seo"] = truncate(clean_description, 200)
+        context["note"] = Note.objects.filter(item=self.object).first()
         return context
 
     def post(self, request, **kwargs):
