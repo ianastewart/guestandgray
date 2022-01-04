@@ -1,27 +1,23 @@
 import logging
-from decimal import *
-from django.http import HttpResponse
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
-from django.http import JsonResponse
+
+from notes.models import Note
 from shop.filters import ItemFilter
-from shop.forms import ArchiveItemForm, ItemForm, ItemCategoriseForm
-from shop.models import CustomImage, Item
+from shop.forms import ItemCategoriseForm, ItemForm
+from shop.models import Item
 from shop.session import cart_add_item, cart_get_item
 from shop.tables import ItemTable
-from shop.truncater import truncate
 from shop.templatetags.shop_tags import unmarkdown
-from notes.models import Note
-from notes.forms import NoteForm
-
-# from shop.tables import ItemTable
-from table_manager.views import AjaxCrudView, FilteredTableView
-from table_manager.mixins import StackMixin
+from shop.truncater import truncate
 from table_manager.buttons import BsButton
-from wagtail.images.models import SourceImageIOError
+from table_manager.mixins import StackMixin
+from table_manager.views import AjaxCrudView, FilteredTableView
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +31,6 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
     allow_create = False
     allow_url = True
     auto_filter = True
-    filter_right = True
 
     def get(self, request, *args, **kwargs):
         self.clear_stack(request)
@@ -47,12 +42,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
         return initial
 
     def get_queryset(self):
-        return (
-            Item.objects.all()
-            .select_related("category")
-            .prefetch_related("book")
-            .order_by("featured", "rank", "-sale_price")
-        )
+        return Item.objects.all()
 
     def get_actions(self):
         return [

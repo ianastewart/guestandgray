@@ -86,6 +86,8 @@ class Category(MP_Node):
     def __str__(self):
         return self.name
 
+    search_fields = [index.SearchField("name", boost=1)]
+
     def post_save(self):
         """ Called after create or update to ensure tree slugs are updated is correct """
         self = Category.objects.get(id=self.id)
@@ -228,6 +230,7 @@ class Item(index.Indexed, models.Model):
         index.SearchField("name", boost=3),
         index.SearchField("ref"),
         index.FilterField("image_id"),
+        index.FilterField("category_id"),
         index.FilterField("archive"),
         index.FilterField("visible"),
     ]

@@ -190,12 +190,12 @@ def search_view(request, public):
         search_query = search_form.cleaned_data["s"]
         search_model = search_form.cleaned_data["t"]
 
-        # get all codered models
-        pagemodels = sorted(get_page_models(), key=lambda k: k.search_name)
-        # get filterable models
-        for model in pagemodels:
-            if model.search_filterable:
-                pagetypes.append(model)
+        # # get all codered models
+        # pagemodels = sorted(get_page_models(), key=lambda k: k.search_name)
+        # # get filterable models
+        # for model in pagemodels:
+        #     if model.search_filterable:
+        #         pagetypes.append(model)
 
         # get backend
         backend = get_search_backend()

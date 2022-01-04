@@ -4,10 +4,9 @@ from django_filters import (
     DateFilter,
     FilterSet,
     ModelChoiceFilter,
-    BooleanFilter,
 )
 from tempus_dominus.widgets import DatePicker
-
+from django.contrib.postgres.search import SearchVector
 from shop.models import Category, Compiler, Item
 from table_manager.filters import PaginationFilter
 
@@ -20,6 +19,7 @@ PER_PAGE_CHOICES = (
 )
 
 
+# noinspection PyUnusedLocal
 class ItemFilter(FilterSet):
 
     category = ChoiceFilter(
@@ -47,16 +47,13 @@ class ItemFilter(FilterSet):
         field_name="image",
         empty_label=None,
         choices=(
-            (
-                0,
-                "No filter",
-            ),
+            (0, "No filter"),
             (1, "With an image"),
             (2, "Without an image"),
         ),
         method="image_filter",
     )
-    ref = CharFilter(field_name="ref", label="Reference")
+    search = CharFilter(method="search_filter", label="Search")
     per_page = PaginationFilter()
 
     def __init__(self, *args, **kwargs):
@@ -66,14 +63,25 @@ class ItemFilter(FilterSet):
             (0, "-- No category --"),
         ] + Category.objects.leaf_choices()
 
-    def cat_filter(self, queryset, name, value):
+    @staticmethod
+    def search_filter(queryset, name, value):
+        # https://django.cowhite.com/blog/mastering-search-in-django-postgres/
+        if not value:
+            return queryset
+        return queryset.annotate(
+            search=SearchVector("name", "ref"),
+        ).filter(search=value)
+
+    @staticmethod
+    def cat_filter(queryset, name, value):
         if not value:
             return queryset
         elif value == "0":
             return queryset.filter(category__isnull=True)
         return queryset.filter(category_id=value)
 
-    def image_filter(self, queryset, name, value):
+    @staticmethod
+    def image_filter(queryset, name, value):
         if value == "0":
             return queryset
         elif value == "1":
@@ -96,6 +104,7 @@ class ContactFilter(FilterSet):
     )
 
 
+# noinspection PyUnusedLocal
 class EnquiryFilter(FilterSet):
     state = ChoiceFilter(
         field_name="closed",
@@ -105,7 +114,8 @@ class EnquiryFilter(FilterSet):
         label="State",
     )
 
-    def state_filter(self, queryset, name, value):
+    @staticmethod
+    def state_filter(queryset, name, value):
         if value == "0":
             return queryset.filter(closed=False)
         elif value == "1":

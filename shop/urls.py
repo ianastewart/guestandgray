@@ -63,6 +63,7 @@ from shop.views.public_views import (
     EnquiryView,
     BibliographyView,
 )
+
 from shop.views.legacy_views import legacy_view
 from shop.views.import_views import upload_view
 from shop.views.image_views import BasicUploadView, ItemImagesView, image_assign_view
