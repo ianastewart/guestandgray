@@ -89,7 +89,7 @@ class Category(MP_Node):
     search_fields = [index.SearchField("name", boost=1)]
 
     def post_save(self):
-        """ Called after create or update to ensure tree slugs are updated is correct """
+        """ Called after create or update to ensure tree slugs are updated """
         self = Category.objects.get(id=self.id)
         if not self.short_name:
             self.short_name = self.name[:50]

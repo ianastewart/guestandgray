@@ -1,5 +1,5 @@
 """
-All Code for managaging the tree of Categories
+All Code for managing the tree of Categories
 A category is an instance of MPnode
 See https://django-treebeard.readthedocs.io/en/latest/api.html
 """
