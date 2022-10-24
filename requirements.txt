@@ -1,7 +1,7 @@
 alabaster==0.7.12
 anyascii==0.1.7
 appdirs==1.4.3
-asgiref==3.3.1
+asgiref==3.5.2
 asn1crypto==0.24.0
 atomicwrites==1.3.0
 attrs==19.3.0
@@ -16,7 +16,7 @@ certifi==2019.6.16
 cffi==1.12.3
 chardet==3.0.4
 click==7.1.2
-coderedcms==0.22.0
+coderedcms==0.23.1
 colorama==0.4.1
 coreapi==2.3.3
 coreschema==0.0.4
@@ -25,9 +25,9 @@ cssselect==1.1.0
 decorator==4.4.0
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==3.1.6
+Django==3.2.16
 django-appconf==1.0.4
-django-bootstrap4==2.3.1
+django-bootstrap4==22.1
 django-classy-tags==2.0.0
 django-cookie-law==2.0.5
 django-debug-toolbar==3.2
@@ -38,15 +38,15 @@ django-htmx==1.6.0
 django-import-export==2.5.0
 django-keyvaluestore==0.3
 django-markdownify==0.9.0
-django-modelcluster==5.1
+django-modelcluster==5.3
 django-sass==1.0.0
 django-sendmail-backend==0.1.2
 django-stubs==1.7.0
 django-tables2==2.3.4
 django-tables2-column-shifter==0.5.2
-django-taggit==1.1.0
+django-taggit==2.1.0
 django-tempus-dominus==5.1.2.13
-django-treebeard==4.3
+django-treebeard==4.5.1
 django-waitress==0.1.0
 djangorestframework==3.12.2
 djangorestframework-stubs==1.4.0
@@ -131,7 +131,7 @@ Unidecode==1.1.1
 uritemplate==3.0.1
 urllib3==1.25.3
 w3lib==1.21.0
-wagtail==2.14.1
+wagtail==2.16.3
 wagtail-cache==1.0.2
 wagtail-import-export==0.2
 wagtail-robots==0.3.1
