@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.table_block",
     "wagtail.contrib.routable_page",
-    "wagtail.contrib.postgres_search",
     "wagtail.contrib.sitemaps",
     "wagtail.admin",
     # Django
@@ -161,7 +160,7 @@ WAGTAILIMAGES_IMAGE_MODEL = "shop.CustomImage"
 
 WAGTAILSEARCH_BACKENDS = {
     "default": {
-        "BACKEND": "wagtail.contrib.postgres_search.backend",
+        "BACKEND": "wagtail.search.backends.database",
         "SEARCH_CONFIG": "english",
     }
 }
@@ -220,3 +219,5 @@ EMAIL_HOST_USER = DJANGO_EMAIL  # "sitemail@chinese-porcelain-art.com"
 EMAIL_HOST_PASSWORD = env.str("SITEMAIL")
 GOOGLE_RECAPTCHA_SECRET_KEY = env.str("CAPTCHA_SECRET")
 GOOGLE_RECAPTCHA_SITE_KEY = env.str("CAPTCHA_SITE")
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
