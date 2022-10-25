@@ -201,7 +201,7 @@ staff_urls = [
 
 public_urls = [
     path("", home_view, name="public_home"),
-    path("search/", search_view, {"public": True}, name="codered_search"),
+    path("search/", search_view, {"public": True}, name="crx_search"),
     path(
         "catalogue/", catalogue_view, {"archive": False}, name="public_catalogue_root"
     ),

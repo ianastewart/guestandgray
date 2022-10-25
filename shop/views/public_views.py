@@ -5,7 +5,7 @@ from datetime import datetime
 from itertools import chain
 
 from coderedcms.forms import SearchForm
-from coderedcms.models import GeneralSettings, get_page_models
+from coderedcms.models import LayoutSettings, get_page_models
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import EmailMessage, get_connection, send_mail
@@ -219,7 +219,7 @@ def search_view(request, public):
         # paginate results
         if results:
             paginator = Paginator(
-                results, GeneralSettings.for_request(request).search_num_results
+                results, LayoutSettings.for_request(request).search_num_results
             )
             page = request.GET.get("p", 1)
             try:

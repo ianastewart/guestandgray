@@ -16,7 +16,8 @@ certifi==2019.6.16
 cffi==1.12.3
 chardet==3.0.4
 click==7.1.2
-coderedcms==0.25.2
+coderedcms==1.0.1
+coderedcms-bootstrap4==1.0.1
 colorama==0.4.1
 coreapi==2.3.3
 coreschema==0.0.4
@@ -27,7 +28,8 @@ defusedxml==0.6.0
 diff-match-patch==20181111
 Django==3.2.16
 django-appconf==1.0.4
-django-bootstrap4==22.1
+django-bootstrap4==22.2
+django-bootstrap5==21.3
 django-classy-tags==2.0.0
 django-cookie-law==2.0.5
 django-debug-toolbar==3.2
@@ -38,7 +40,8 @@ django-htmx==1.6.0
 django-import-export==2.5.0
 django-keyvaluestore==0.3
 django-markdownify==0.9.0
-django-modelcluster==5.3
+django-modelcluster==6.0
+django-permissionedforms==0.1
 django-sass==1.0.0
 django-sendmail-backend==0.1.2
 django-stubs==1.7.0
@@ -131,11 +134,11 @@ Unidecode==1.1.1
 uritemplate==3.0.1
 urllib3==1.25.3
 w3lib==1.21.0
-wagtail==2.16.3
-wagtail-cache==1.0.2
+wagtail==3.0.3
+wagtail-cache==2.2.0
 wagtail-import-export==0.2
 wagtail-robots==0.3.1
-wagtail-seo==1.0.0
+wagtail-seo==2.3.0
 wagtailfontawesome==1.2.1
 waitress==1.4.4
 wcwidth==0.1.7

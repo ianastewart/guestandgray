@@ -1,43 +1,60 @@
-{% load static coderedcms_tags i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags wagtailuserbar %}
+{% load coderedcms_tags i18n static wagtailcore_tags wagtailimages_tags wagtailsettings_tags wagtailuserbar %}
 {% load cookielaw_tags %}{% cookielaw_banner %} <!-- customised -->
 {% get_settings %}
-{% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 {% wagtail_site as site %}
-
-
 <!doctype html>
 <html prefix="og: http://ogp.me/ns#" lang="{{ LANGUAGE_CODE }}">
-  <head>
-        {% block tracking %}
-        {% if settings.coderedcms.AnalyticsSettings.ga_tracking_id %}
-            <!-- Global site tag (gtag.js) - Google Analytics -->
-            <script async src="https://www.googletagmanager.com/gtag/js?id={{settings.coderedcms.AnalyticsSettings.ga_tracking_id}}"></script>
-            <script>
-              cr_track_clicks = {{settings.coderedcms.AnalyticsSettings.ga_track_button_clicks|yesno:"true,false"}};
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '{{settings.coderedcms.AnalyticsSettings.ga_tracking_id}}');
-            </script>
-        {% endif %}
-        {% if settings.coderedcms.AnalyticsSettings.head_scripts %}
-            {{settings.coderedcms.AnalyticsSettings.head_scripts|safe}}
-        {% endif %}
-        {% endblock %}
 
-        {# Pass in CMS variables to JavaScript #}
-        <script>
-            cr_site_url = "{{site.root_url}}";
-            cr_external_new_tab = {{settings.coderedcms.GeneralSettings.external_new_tab|yesno:"true,false"}};
-        </script>
+<head>
+  {% block tracking %}
+  {% if settings.coderedcms.AnalyticsSettings.ga_tracking_id or settings.coderedcms.AnalyticsSettings.ga_g_tracking_id %}
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  {% if settings.coderedcms.AnalyticsSettings.ga_tracking_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{settings.coderedcms.AnalyticsSettings.ga_tracking_id}}"></script>
+  {% else %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{settings.coderedcms.AnalyticsSettings.ga_g_tracking_id}}"></script>
+  {% endif %}
+  <script>
+    cr_track_clicks = {{settings.coderedcms.AnalyticsSettings.ga_track_button_clicks|yesno:"true,false"}};
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    // {% if settings.coderedcms.AnalyticsSettings.ga_tracking_id %}
+    gtag('config', '{{settings.coderedcms.AnalyticsSettings.ga_tracking_id}}');
+    // {% endif %} {% if settings.coderedcms.AnalyticsSettings.ga_g_tracking_id %}
+    gtag('config', '{{settings.coderedcms.AnalyticsSettings.ga_g_tracking_id}}');
+    // {% endif %}
+  </script>
+  {% endif %}
+  {% if settings.coderedcms.AnalyticsSettings.gtm_id %}
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{settings.coderedcms.AnalyticsSettings.gtm_id}}');
+  </script>
+  <!-- End Google Tag Manager -->
+  {% endif %}
+  {% if settings.coderedcms.AnalyticsSettings.head_scripts %}
+  {{settings.coderedcms.AnalyticsSettings.head_scripts|safe}}
+  {% endif %}
+  {% endblock %}
 
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {# Pass in CMS variables to JavaScript #}
+  <script>
+    cr_site_url = "{{site.root_url}}";
+    cr_external_new_tab = {{settings.coderedcms.LayoutSettings.external_new_tab|yesno:"true,false"}};
+    cr_version = "{% coderedcms_version %}";
+  </script>
 
-        {# SEO Metadata #}
-        {% include "wagtailseo/meta.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {# SEO Metadata #}
+  {% include "wagtailseo/meta.html" %}
 {#  Customised#}
         {% if self.structured_data %}
           <script type="application/ld+json">
@@ -45,59 +62,60 @@
           </script>
         {% endif %}
 {#  End customised#}
-        {% block frontend_assets %}
-            {% if settings.coderedcms.LayoutSettings.frontend_theme %}
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/{{settings.coderedcms.LayoutSettings.frontend_theme}}/bootstrap.min.css" />
-            {% else %}
-            <link rel="stylesheet" href="{% static 'coderedcms/vendor/bootstrap/dist/css/bootstrap.min.css' %}" />
-            {% endif %}
-        {% endblock %}
+  {% block frontend_assets %}
+  {% if settings.coderedcms.LayoutSettings.frontend_theme %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.2.0/{{settings.coderedcms.LayoutSettings.frontend_theme}}/bootstrap.min.css">
+  {% else %}
+  <link rel="stylesheet" href="{% static 'coderedcms/vendor/bootstrap/dist/css/bootstrap.min.css' %}?v={% coderedcms_version %}">
+  {% endif %}
+  {% endblock %}
 
-        {% block coderedcms_assets %}
-        {% if "DEBUG"|django_settings %}
-        <link rel="stylesheet" type="text/css" href="{% static 'coderedcms/css/codered-front.css' %}">
-        {% else %}
-        <link rel="stylesheet" type="text/css" href="{% static 'coderedcms/css/codered-front.min.css' %}">
-        {% endif %}
-        {% endblock %}
+  {% block coderedcms_assets %}
+  {% if "DEBUG"|django_settings %}
+  <link rel="stylesheet" href="{% static 'coderedcms/css/crx-front.css' %}?v={% coderedcms_version %}">
+  {% else %}
+  <link rel="stylesheet" href="{% static 'coderedcms/css/crx-front.min.css' %}?v={% coderedcms_version %}">
+  {% endif %}
+  {% endblock %}
 
-        {% block custom_assets %}
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+  {% block custom_assets %}
+{#  Customised#}
+      <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display:wght@500&display=swap"
           rel="stylesheet">
-    {#    <link href="https://fonts.googleapis.com/css?family=Cinzel|Lato&display=swap" rel="stylesheet">#}
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/site3.css' %}">
-        {% endblock %}
-        {% block favicon %}
-            {% if settings.coderedcms.LayoutSettings.favicon %}
-                {# See https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/app-icon/ #}
-                {% image settings.coderedcms.LayoutSettings.favicon fill-120x120 format-png as favicon_iphone %}
-                {% image settings.coderedcms.LayoutSettings.favicon fill-180x180 format-png as favicon_iphone_plus %}
-                {% image settings.coderedcms.LayoutSettings.favicon fill-152x152 format-png as favicon_ipad %}
-                {% image settings.coderedcms.LayoutSettings.favicon fill-167x167 format-png as favicon_ipad_pro %}
-                <link rel="icon" type="image/png" href="{{ favicon_iphone_plus.url }}" />
-                <link rel="apple-touch-icon" href="{{ favicon_iphone_plus.url }}">
-                <link rel="apple-touch-icon" sizes="120x120" href="{{ favicon_iphone.url }}">
-                <link rel="apple-touch-icon" sizes="180x180" href="{{ favicon_iphone_plus.url }}">
-                <link rel="apple-touch-icon" sizes="152x152" href="{{ favicon_ipad.url }}">
-                <link rel="apple-touch-icon" sizes="167x167" href="{{ favicon_ipad_pro.url }}">
-            {% endif %}
-        {% endblock %}
+{#  End customised#}
+  {% endblock %}
 
-        {% block extra_head %}{% endblock %}
-    </head>
+  {% block favicon %}
+  {% if settings.coderedcms.LayoutSettings.favicon %}
+  {# See https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/app-icon/ #}
+  {% image settings.coderedcms.LayoutSettings.favicon fill-256x256 format-webp as favicon_webp %}
+  {% image settings.coderedcms.LayoutSettings.favicon fill-120x120 format-png as favicon_iphone %}
+  {% image settings.coderedcms.LayoutSettings.favicon fill-180x180 format-png as favicon_iphone_plus %}
+  {% image settings.coderedcms.LayoutSettings.favicon fill-152x152 format-png as favicon_ipad %}
+  {% image settings.coderedcms.LayoutSettings.favicon fill-167x167 format-png as favicon_ipad_pro %}
+  <link rel="icon" type="image/webp" href="{{ favicon_webp.url }}">
+  <link rel="apple-touch-icon" href="{{ favicon_iphone_plus.url }}">
+  <link rel="apple-touch-icon" sizes="120x120" href="{{ favicon_iphone.url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ favicon_iphone_plus.url }}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{{ favicon_ipad.url }}">
+  <link rel="apple-touch-icon" sizes="167x167" href="{{ favicon_ipad_pro.url }}">
+  {% endif %}
+  {% endblock %}
 
-    <body class="d-flex flex-column coderedcms-{{page.content_type.model}} {% if page.get_parent %}parent-page-{{page.get_parent.id}}{% endif %} {% block body_class %}{% endblock %}" id="page-{{page.id}}">
-    <div id="page-content"> <!-- Customised for sticky footer -->
-        {% include "coderedcms/includes/codered_banner.html" %}
+  {% block extra_head %}{% endblock %}
+</head>
 
-        {% wagtailuserbar %}
+<body class="d-flex flex-column crx-{{page.content_type.model}} {% if page.get_parent %}parent-page-{{page.get_parent.id}}{% endif %} {% block body_class %}{% endblock %}" id="page-{{page.id}}">
+<div id="page-content"> <!-- Customised for sticky footer with d-flex flex-column above -->
+{% include "coderedcms/includes/crx_banner.html" %}
 
-        {% block ada_skip %}
-            {% if settings.coderedcms.ADASettings.skip_navigation %}
-                <a href='#content' title='Skip Navigation'>Skip Navigation</a>
-            {% endif %}
-        {% endblock %}
+  {% block ada_skip %}
+  <a class="visually-hidden-focusable" href="#content">Skip navigation</a>
+  {% endblock %}
+
+  {% wagtailuserbar %}
   <!-- Customised Header and Navbar -->
   <div class="bg-guest">
     <div class="container">
@@ -113,85 +131,87 @@
             Art</p>
         </div>
       </div>
+      {% block navbar %}{% endblock %}
     </div>
   </div>
     <!-- -->
-        {% block navbar %}{% endblock %}
 
-        <div id="content">
-            {% block content %}
-                {% block messages %}
-                    {% if messages %}
-                        <div class="container">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags|map_to_bootstrap_alert }}" role="alert">{{ message }}</div>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endblock %}
-                {% block content_pre_body %}{% endblock %}
 
-                {% block content_body %}
-                {% include_block page.body with settings=settings %}
-                {% endblock %}
+  <div id="content">
+    {% block content %}
+    {% block messages %}
+    {% if messages %}
+    <div class="container">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags|map_to_bootstrap_alert }}" role="alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endblock %}
+    {% block content_pre_body %}{% endblock %}
 
-                {% block content_post_body %}{% endblock %}
+    {% block content_body %}
+    {% for block in page.body %}
+    {% include_block block with settings=settings %}
+    {% endfor %}
+    {% endblock %}
 
-                {% block index_filters %}
-                {% if page.index_show_subpages and page.index_classifiers.exists %}
-                    {% include "coderedcms/includes/classifier_dropdowns.html" with formclass="form-inline" %}
-                {% endif %}
-                {% endblock %}
+    {% block content_post_body %}{% endblock %}
 
-                {% block index_content %}
-                {% if page.index_show_subpages %}
-                    <ul>
-                    {% for child in index_paginated %}
-                        <li><a href="{% pageurl child %}">{{child.title}}</a></li>
-                    {% endfor %}
-                    </ul>
-                    {% include "coderedcms/includes/pagination.html" with items=index_paginated %}
-                {% endif %}
-                {% endblock %}
+    {% block index_filters %}
+    {% if page.index_show_subpages and page.index_classifiers.exists %}
+    {% include "coderedcms/includes/classifier_dropdowns.html" with formclass="d-flex" formid="filter" %}
+    {% endif %}
+    {% endblock %}
 
-            {% endblock %}
-        </div>
-        </div> <!-- Customised end page-content -->
-        <div id="content-walls">
-            {% block content_walls %}
-                {% for content_wall in content_walls %}
-                    {% include_block content_wall with settings=settings %}
-                {% endfor %}
-            {% endblock %}
-        </div>
-        {% include "shop/public/_footer.html" %} <!-- Customised -->
-        {% block footer %}{% endblock %}
+    {% block index_content %}
+    {% if page.index_show_subpages %}
+    <ul>
+      {% for child in index_paginated %}
+      <li><a href="{% pageurl child %}">{{child.title}}</a></li>
+      {% endfor %}
+    </ul>
+    {% include "coderedcms/includes/pagination.html" with items=index_paginated %}
+    {% endif %}
+    {% endblock %}
 
-        {% block required_scripts %}
-        <script src="{% static 'coderedcms/vendor/jquery/jquery-3.5.1.min.js' %}" ></script>
-        {% endblock %}
+    {% endblock %}
+  </div>
+</div> <!-- Customised end page-content -->
+  <div id="content-walls">
+    {% block content_walls %}
+    {% for content_wall in content_walls %}
+    {% include_block content_wall with settings=settings %}
+    {% endfor %}
+    {% endblock %}
+  </div>
+{% include "shop/public/_footer.html" %} <!-- Customised -->
+  {% block footer %}{% endblock %}
 
-        {% block frontend_scripts %}
-          <script src="{% static 'coderedcms/vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-{#          Customised#}
-          <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
-        {% endblock %}
+  {% block frontend_scripts %}
+  <script src="{% static 'coderedcms/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}?v={% coderedcms_version %}"></script>
+  <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>{# Customised #}
+  {% endblock %}
 
-        {% block coderedcms_scripts %}
-        <script type="text/javascript" src="{% static 'coderedcms/js/codered-front.js' %}"></script>
-        {% endblock %}
+  {% block coderedcms_scripts %}
+  <script src="{% static 'coderedcms/js/crx-front.js' %}?v={% coderedcms_version %}"></script>
+  {% endblock %}
 
-        {% block custom_scripts %}
-        {# Legacy behavior, remove this in the future and leave blank for client sites to implement. #}
-{#        <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>#}
-        {% endblock %}
+  {% block custom_scripts %}{% endblock %}
 
-        {% include "wagtailseo/struct_data.html" %}
+  {% include "wagtailseo/struct_data.html" %}
 
-        {% block body_tracking_scripts %}
-        {% if settings.coderedcms.AnalyticsSettings.body_scripts %}
-            {{settings.coderedcms.AnalyticsSettings.body_scripts|safe}}
-        {% endif %}
-        {% endblock %}
-    </body>
+  {% block body_tracking_scripts %}
+  {% if settings.coderedcms.AnalyticsSettings.gtm_id %}
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{settings.coderedcms.AnalyticsSettings.gtm_id}}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  {% endif %}
+  {% if settings.coderedcms.AnalyticsSettings.body_scripts %}
+  {{settings.coderedcms.AnalyticsSettings.body_scripts|safe}}
+  {% endif %}
+  {% endblock %}
+</body>
+
 </html>

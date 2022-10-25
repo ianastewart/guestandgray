@@ -109,6 +109,8 @@ class WebPage(CoderedWebPage):
     class Meta:
         verbose_name = "Web Page"
 
-    body = StreamField(MY_LAYOUT_STREAMBLOCKS, null=True, blank=True)
+    body = StreamField(
+        MY_LAYOUT_STREAMBLOCKS, null=True, blank=True, use_json_field=True
+    )
 
     template = "coderedcms/pages/web_page.html"
