@@ -64,9 +64,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     # Save pages to cache. Must be FIRST.
-    # "django.middleware.security.SecurityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     # "whitenoise.middleware.WhiteNoiseMiddleware",
-    # "wagtailcache.cache.UpdateCacheMiddleware",
+    "wagtailcache.cache.UpdateCacheMiddleware",
     # Common functionality
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -81,7 +81,7 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     # Fetch from cache. Must be LAST.
-    # "wagtailcache.cache.FetchFromCacheMiddleware",
+    "wagtailcache.cache.FetchFromCacheMiddleware",
 ]
 
 ROOT_URLCONF = "mysite.urls"
