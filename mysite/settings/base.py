@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.core",
     "wagtail.contrib.settings",
+    "wagtail.contrib.styleguide",
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.table_block",
     "wagtail.contrib.routable_page",
@@ -167,7 +168,7 @@ WAGTAILSEARCH_BACKENDS = {
         "SEARCH_CONFIG": "english",
     }
 }
-
+WAGTAIL_CACHE = True
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "http://localhost"
