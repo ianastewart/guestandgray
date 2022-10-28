@@ -21,7 +21,7 @@ coderedcms-bootstrap4==1.0.1
 colorama==0.4.1
 coreapi==2.3.3
 coreschema==0.0.4
-cryptography==38.0.2
+cryptography==38.0.1
 cssselect==1.1.0
 decorator==4.4.0
 defusedxml==0.6.0
@@ -140,7 +140,7 @@ wagtail-import-export==0.2
 wagtail-robots==0.3.1
 wagtail-seo==2.3.0
 wagtailfontawesome==1.2.1
-waitress==2.1.2
+waitress==1.4.4
 wcwidth==0.1.7
 webencodings==0.5.1
 websockets==8.0.2
