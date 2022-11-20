@@ -1,0 +1,45 @@
+{% extends "coderedcms/blocks/base_block.html" %}
+{% load wagtailcore_tags wagtailimages_tags static %}
+{% block block_render %}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keen-slider@latest/keen-slider.min.css">
+  <link rel="stylesheet" href="{% static "/website/css/keen_nav.css" %}">
+  <script src="https://cdn.jsdelivr.net/npm/keen-slider@latest/keen-slider.js"></script>
+  <script src="{% static "/website/js/keen_nav.js" %}"></script>
+
+
+
+  <div id="my-keen-slider" class="keen-slider mt-2">
+    {% for slide in self.carousel.carousel_slides.all %}
+      <div class="keen-slider__slide">
+        {% if slide.image %}
+          <a href="/item/{{ slide.image.item.ref }}/{{ slide.image.item.slug }}">
+            {% image slide.image fill-500x500 as carouselimage %}
+            <img src="{{ carouselimage.url }}" alt="{{ carouselimage.image.title }}"/>
+          </a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <script>
+      var slider = new KeenSlider("#my-keen-slider", {
+          loop: true,
+          breakpoints: {
+              "(min-width: 768px)": {
+                  slides: {perView: 2, spacing: 5},
+              },
+              "(min-width: 992px)": {
+                  slides: {perView: 3, spacing: 10},
+              },
+              "(min-width: 1200px)": {
+                  slides: {perView: 4, spacing: 10},
+              },
+          },
+          slides: {
+              perView: 1,
+              spacing: 15,
+          },
+      },
+      [automatic, navigation])
+  </script>
+{% endblock %}

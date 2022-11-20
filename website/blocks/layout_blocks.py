@@ -1,4 +1,5 @@
 from coderedcms.blocks import BaseLayoutBlock
+from coderedcms.blocks.content_blocks import CarouselBlock
 from django.utils.translation import gettext_lazy as _
 from wagtail.core import blocks
 

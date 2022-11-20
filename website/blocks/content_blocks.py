@@ -3,6 +3,7 @@ from wagtail.core import blocks
 from wagtail.images.blocks import ImageChooserBlock
 
 from coderedcms.blocks.base_blocks import BaseBlock
+from coderedcms.blocks.content_blocks import CarouselBlock
 
 
 class ItemImageBlock(BaseBlock):
@@ -68,3 +69,10 @@ class LinkBlock(BaseBlock):
         template = "website/blocks/link_block.html"
         icon = "image"
         label = _("Wide card")
+
+
+class SwiperBlock(CarouselBlock):
+    class Meta:
+        icon = "image"
+        label = _("Swiper")
+        template = "website/blocks/keen_block.html"
