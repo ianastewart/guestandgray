@@ -71,8 +71,8 @@ class LinkBlock(BaseBlock):
         label = _("Wide card")
 
 
-class SwiperBlock(CarouselBlock):
+class KeenSwiperBlock(CarouselBlock):
     class Meta:
         icon = "image"
-        label = _("Swiper")
+        label = _("KeenSwiper")
         template = "website/blocks/keen_block.html"

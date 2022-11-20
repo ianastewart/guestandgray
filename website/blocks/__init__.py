@@ -22,7 +22,7 @@ MY_CONTENT_STREAMBLOCKS = CONTENT_STREAMBLOCKS + [
     ),
     ("item_image", ItemImageBlock()),
     ("wide_card", LinkBlock()),
-    ("swiper", SwiperBlock()),
+    ("swiper", KeenSwiperBlock()),
 ]
 
 MY_LAYOUT_STREAMBLOCKS = [
