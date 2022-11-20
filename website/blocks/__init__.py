@@ -8,7 +8,7 @@ from coderedcms.blocks import (
     CardBlock,
 )
 from wagtail.core import blocks
-from website.blocks.content_blocks import ItemImageBlock, LinkBlock, SwiperBlock
+from website.blocks.content_blocks import ItemImageBlock, LinkBlock, KeenSwiperBlock
 from website.blocks.layout_blocks import ItemGridBlock
 
 MY_CONTENT_STREAMBLOCKS = CONTENT_STREAMBLOCKS + [
