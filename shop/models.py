@@ -335,7 +335,9 @@ class Lot(models.Model):
     )
 
     def __str__(self):
-        return f"Lot: {self.number} Purchase id: {self.purchase.id}"
+        if self:
+            return f"Lot: {self.number} Purchase id: {self.purchase.id}"
+        return "Lot is empty"
 
 
 class PurchaseExpense(models.Model):
