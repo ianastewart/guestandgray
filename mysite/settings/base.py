@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.sitemaps",
     "wagtail.admin",
     # Django
-    "jazzmin",
+    # "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
