@@ -22,7 +22,7 @@ from wagtailseo.utils import StructDataEncoder, get_struct_data_images
 
 from shop.cat_tree import Counter
 from shop.filters import CompilerFilter
-from shop.forms import EnquiryForm
+from shop.forms import EnquiryForm, MailListForm
 from shop.models import (
     Address,
     Book,
@@ -249,6 +249,42 @@ def search_view(request, public):
             "public": public,
         },
     )
+
+
+def mail_list_view(request):
+    if request.htmx:
+        return render(request, "shop/public/mail_list_modal.html")
+
+
+class MailListModalView(FormView):
+    # GET and POST are htmx calls
+    form_class = MailListForm
+    template_name = "shop/public/mail_list_modal.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["captcha_site"] = settings.GOOGLE_RECAPTCHA_SITE_KEY
+        return context
+
+    def form_valid(self, form):
+        if recaptcha_is_valid(self.request):
+            return render(self.request, "shop/public/mail_list_added_modal.html")
+        context = self.get_context_data(form=form)
+        context["recaptcha_error"] = "Please complete the reCAPTCHA"
+        return self.render_to_response(context)
+
+
+def recaptcha_is_valid(request):
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    values = {
+        "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+        "response": request.POST.get("g-recaptcha-response"),
+    }
+    data = urllib.parse.urlencode(values).encode()
+    req = urllib.request.Request(url, data=data)
+    response = urllib.request.urlopen(req)
+    result = json.loads(response.read().decode())
+    return result["success"]
 
 
 class EnquiryView(FormView):

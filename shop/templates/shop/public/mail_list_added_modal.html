@@ -1,0 +1,15 @@
+{% load static %}
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-guest-dark text-white">
+        <h5 class="modal-title">You have been added to the mailing list</h5>
+      </div>
+      <div class="modal-body bg-guest-light">
+        <button class="btn bg-guest-dark text-white mt-3" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'shop/js/htmx_helper.js' %}"></script>

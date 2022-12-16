@@ -1,3 +1,4 @@
+{% load static %}
 <div class="bg-guest mt-2">
   <div class="container">
     <div class="row ">
@@ -16,7 +17,8 @@
         <a href="#"><span class="text-white pt-4 d-lg-none">Site by KT Consultants</span></a><br>
       </div>
       <div class="col col-md-4 col-lg-3 text-white text-lg-center mt-4">
-        <a href="#" class="text-white h5 mb-2" data-toggle="modal" data-target="#mailModal">Join our mailing list</a><br><br>
+{#        <a href="#" class="text-white h5 mb-2" data-toggle="modal" data-target="#mailModal">Join our mailing list</a><br><br>#}
+        <a href="#" class="text-white h5 mb-2" hx-get="{% url "mail_list" %}" hx-target="#modals-here">Join our mailing list</a><br><br>
         <a href="https://www.instagram.com/guestandgraychineseporcelain/" class="m-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" class="bi bi-instagram"
                viewBox="0 0 16 16">
@@ -56,51 +58,53 @@
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal" data-backdrop="static" id="mailModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
-     aria-hidden="true" data>
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-guest-light">
-        <h5 class="modal-title" id="modalLabel">Please add me to the mail list</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body bg-light">
-        <form method="post" action="{% url "public_contact" %}" id="modalForm">{% csrf_token %}
-          <input type="hidden" name="ref" value="mail_list">
-          <input type="hidden" name="phone" value="">
-          <input type="hidden" name="mail_consent" value="true">
-          <input type="hidden" name="subject" value="Add to mail list">
-          <input type="hidden" name="message" value="">
-          <div class="mb-2">
-            <input type="text" class="form-control" name="first_name" placeholder="First name" required
-                   max-length="30">
-          </div>
-          <div class="mb-2">
-            <input type="text" class="form-control" name="last_name" placeholder="Last name" required max-length="30">
-          </div>
-          <div class="mb-2">
-            <input type="email" class="form-control" name="email" placeholder="Email" required max-length="80">
-          </div>
-          <script src='https://www.google.com/recaptcha/api.js' async defer></script>
-          <div class="g-recaptcha" data-sitekey="6Le25qYaAAAAAD1wG31clis_yHlL5bH-bE0Ll27D"></div>
-          <p class="small mt-2">Your details will not be sold or passed to a third party.</p>
-          <button type="submit" class="btn btn-guest">Submit</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="modals-here"></div>
 
-<script>
-  function fillFields(f) {
+{#<!-- Modal -->#}
+{#<div class="modal" data-backdrop="static" id="mailModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"#}
+{#     aria-hidden="true" data>#}
+{#  <div class="modal-dialog" role="document">#}
+{#    <div class="modal-content">#}
+{#      <div class="modal-header bg-guest-light">#}
+{#        <h5 class="modal-title" id="modalLabel">Please add me to the mail list</h5>#}
+{#        <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#          <span aria-hidden="true">&times;</span>#}
+{#        </button>#}
+{#      </div>#}
+{#      <div class="modal-body bg-light">#}
+{#        <form method="post" action="{% url "public_contact" %}" id="modalForm">{% csrf_token %}#}
+{#          <input type="hidden" name="ref" value="mail_list">#}
+{#          <input type="hidden" name="phone" value="">#}
+{#          <input type="hidden" name="mail_consent" value="true">#}
+{#          <input type="hidden" name="subject" value="Add to mail list">#}
+{#          <input type="hidden" name="message" value="">#}
+{#          <div class="mb-2">#}
+{#            <input type="text" class="form-control" name="first_name" placeholder="First name" required#}
+{#                   max-length="30">#}
+{#          </div>#}
+{#          <div class="mb-2">#}
+{#            <input type="text" class="form-control" name="last_name" placeholder="Last name" required max-length="30">#}
+{#          </div>#}
+{#          <div class="mb-2">#}
+{#            <input type="email" class="form-control" name="email" placeholder="Email" required max-length="80">#}
+{#          </div>#}
+{#          <script src='https://www.google.com/recaptcha/api.js' async defer></script>#}
+{#          <div class="g-recaptcha" data-sitekey="6Le25qYaAAAAAD1wG31clis_yHlL5bH-bE0Ll27D"></div>#}
+{#          <p class="small mt-2">Your details will not be sold or passed to a third party.</p>#}
+{#          <button type="submit" class="btn btn-guest">Submit</button>#}
+{#        </form>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
 
-    m_form = document.getElementById("modalForm")
-    m_form.first_name.value = f.first_name.value;
-    m_form.last_name.value = f.last_name.value;
-    m_form.email.value = f.email.value;
-    $("#mailModal").modal("show");
-  }
-</script>
+{#<script>#}
+{#  function fillFields(f) {#}
+{##}
+{#    m_form = document.getElementById("modalForm")#}
+{#    m_form.first_name.value = f.first_name.value;#}
+{#    m_form.last_name.value = f.last_name.value;#}
+{#    m_form.email.value = f.email.value;#}
+{#    $("#mailModal").modal("show");#}
+{#  }#}
+{#</script>#}

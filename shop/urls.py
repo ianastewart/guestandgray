@@ -60,6 +60,7 @@ from shop.views.public_views import (
     item_view,
     catalogue_view,
     search_view,
+    MailListModalView,
     EnquiryView,
     BibliographyView,
 )
@@ -220,6 +221,7 @@ public_urls = [
     ),
     path("item/<str:ref>/<slug:slug>/", item_view, name="public_item"),
     path("item/<str:ref>/", item_view, {"slug": ""}, name="public_item_ref"),
+    path("mail_list/", MailListModalView.as_view(), name="mail_list"),
     path("contact/", EnquiryView.as_view(), name="public_contact"),
     path("bibliography/", BibliographyView.as_view(), name="bibliography"),
     path(

@@ -36,7 +36,7 @@ django-debug-toolbar==3.7.0
 django-environ==0.4.5
 django-eventtools==1.0.3
 django-filter==2.4.0
-django-htmx==1.6.0
+django-htmx==1.13.0
 django-import-export==2.5.0
 django-jazzmin==2.6.0
 django-keyvaluestore==0.3
