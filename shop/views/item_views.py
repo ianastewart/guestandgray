@@ -18,16 +18,18 @@ from shop.truncater import truncate
 from table_manager.buttons import BsButton
 from table_manager.mixins import StackMixin
 from table_manager.views import AjaxCrudView, FilteredTableView
+from table_manager.new_views import ExtendedTableView
 
 logger = logging.getLogger(__name__)
 
 
-class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
+class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
-    template_name = "shop/filtered_table.html"
-    heading = "Items"
+    # template_name = "shop/filtered_table.html"
+    template_name = "table_manager/htmx_table.html"
+    header = "Items"
     allow_create = False
     allow_url = True
     auto_filter = True
@@ -86,7 +88,12 @@ class ItemTableView(LoginRequiredMixin, StackMixin, FilteredTableView):
                 item.delete()
 
     def get_buttons(self):
-        return [BsButton("New item", href=reverse("item_create"))]
+        return [
+            BsButton("New item", href=reverse("item_create")),
+            #BsButton("New item", hx_get="", hx_target="#modals-here"),
+            BsButton("New item", href=reverse("item_create")),
+            BsButton("New item", href=reverse("item_create")),
+        ]
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
@@ -121,9 +128,7 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["item"] = self.object
         context["images"], context["bad_images"] = self.object.visible_images()
-        context["image"] = (
-            self.object.image if self.object.image in context["images"] else None
-        )
+        context["image"] = self.object.image if self.object.image in context["images"] else None
         # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         context["allow_delete"] = not self.object.lot
         context["note"] = Note.objects.filter(item=self.object).first()
@@ -137,9 +142,7 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
             return HttpResponse("")
         if "delete" in request.POST:
             item.delete()
-            messages.add_message(
-                request, messages.INFO, f"Item ref: {item.ref} has been deleted"
-            )
+            messages.add_message(request, messages.INFO, f"Item ref: {item.ref} has been deleted")
             return redirect("item_list")
         return super().post(request, *args, **kwargs)
 
@@ -156,9 +159,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["images"], context["bad_images"] = self.object.visible_images()
-        context["image"] = (
-            self.object.image if self.object.image in context["images"] else None
-        )
+        context["image"] = self.object.image if self.object.image in context["images"] else None
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         clean_description = unmarkdown(self.object.description).replace("\n", " ")
         context["seo"] = truncate(clean_description, 200)
@@ -178,7 +179,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
 
 class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):
-    """ get the new category for selected items """
+    """get the new category for selected items"""
 
     template_name = "shop/includes/partial_categorise_form.html"
     form_class = ItemCategoriseForm

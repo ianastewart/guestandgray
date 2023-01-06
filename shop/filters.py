@@ -21,6 +21,9 @@ PER_PAGE_CHOICES = (
 
 # noinspection PyUnusedLocal
 class ItemFilter(FilterSet):
+    class Meta:
+        model = Item
+        fields = ["category"]
 
     category = ChoiceFilter(
         field_name="category",
@@ -34,9 +37,7 @@ class ItemFilter(FilterSet):
         empty_label=None,
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
     )
-    state = ChoiceFilter(
-        field_name="state", empty_label="-- All --", choices=Item.State.choices()
-    )
+    state = ChoiceFilter(field_name="state", empty_label="-- All --", choices=Item.State.choices())
     purchased_after = DateFilter(
         field_name="lot__purchase__date",
         label="Purchased after",
@@ -90,18 +91,14 @@ class ItemFilter(FilterSet):
 
 
 class CompilerFilter(FilterSet):
-    compiler = ModelChoiceFilter(
-        queryset=Compiler.objects.order_by("name"), empty_label="All compilers"
-    )
+    compiler = ModelChoiceFilter(queryset=Compiler.objects.order_by("name"), empty_label="All compilers")
 
 
 class ContactFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
     company = CharFilter(lookup_expr="icontains")
     address = CharFilter(lookup_expr="icontains")
-    per_page = ChoiceFilter(
-        field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
-    )
+    per_page = ChoiceFilter(field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES)
 
 
 # noinspection PyUnusedLocal
@@ -113,6 +110,10 @@ class EnquiryFilter(FilterSet):
         method="state_filter",
         label="State",
     )
+    subject = CharFilter(lookup_expr="icontains")
+    subject2 = CharFilter(field_name="subject", lookup_expr="icontains", exclude=True)
+    message = CharFilter(lookup_expr="icontains")
+    message2 = CharFilter(field_name="message", lookup_expr="icontains", exclude=True)
 
     @staticmethod
     def state_filter(queryset, name, value):
@@ -140,6 +141,4 @@ class PurchaseFilter(FilterSet):
         lookup_expr="lte",
         widget=DatePicker(options={"format": "DD/MM/YYYY"}),
     )
-    per_page = ChoiceFilter(
-        field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES
-    )
+    per_page = ChoiceFilter(field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES)

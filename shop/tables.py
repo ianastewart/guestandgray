@@ -1,8 +1,6 @@
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_tables2.utils import A
-from django_tables2_column_shifter.tables import ColumnShiftTable
-
 from shop.models import (
     Book,
     Category,
@@ -21,31 +19,33 @@ class CategoryTable(tables.Table):
     class Meta:
         model = Category
         fields = ("name", "parent", "description", "image", "count")
-        attrs = {"class": "table table-sm table-hover hover-link"}
+        attrs = {"class": "table table-sm table-responsive table-hover hover-link"}
         row_attrs = {
-            "data-url": lambda record: reverse(
-                "category_detail", kwargs={"pk": record.pk}
-            ),
+            "data-url": lambda record: reverse("category_detail", kwargs={"pk": record.pk}),
             "class": "table-row pl-4",
         }
 
     parent = tables.Column(empty_values=())
 
-    def render_description(self, value):
+    @staticmethod
+    def render_description(value):
         if len(value) > 80:
             return value[:80] + "..."
 
-    def render_parent(self, record):
+    @staticmethod
+    def render_parent(record):
         return record.get_parent().name
 
 
 class ImageColumn(tables.Column):
-    def render(self, value):
+
+    @staticmethod
+    def render(value):
         image = value.get_rendition("max-100x100")
         return mark_safe(f'<img src="{image.file.url}">')
 
 
-class ItemTable(ColumnShiftTable):
+class ItemTable(Table):
     class Meta:
         model = Item
         fields = (
@@ -63,6 +63,7 @@ class ItemTable(ColumnShiftTable):
             "visible",
             "done",
         )
+        default_columns = ("selection", "name", "ref", "category", "state")
         attrs = {"class": "table table-sm table-hover hover-link"}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
@@ -71,30 +72,23 @@ class ItemTable(ColumnShiftTable):
         }
 
     category = tables.Column(accessor="category__name", verbose_name="Category")
-    purchased = tables.Column(accessor="lot__purchase__date")
-    image = ImageColumn(accessor="image")
+    purchased = tables.Column(accessor="lot__purchase__date", verbose_name="Purchased")
+    cost_price = CurrencyColumn(integer=True)
+    sale_price = CurrencyColumn(integer=False)
+    image = ImageColumn(accessor="image", verbose_name="Image")
     images = tables.Column(accessor="id", verbose_name="Photos")
-    selection = tables.TemplateColumn(
-        accessor="pk",
-        template_name="table_manager/custom_checkbox.html",
-        verbose_name="",
-    )
+    selection = SelectionColumn()
 
-    def render_images(self, record):
+    @staticmethod
+    def render_images(record):
         return CustomImage.objects.filter(item=record).count()
 
-    def get_column_default_show(self):
-        self.column_default_show = ["selection", "name", "ref"]
-        return super().get_column_default_show()
 
-    def render_sale_price(self, value):
-        return int(value)
-
-
-class ContactTable(tables.Table):
+class ContactTable(Table):
     class Meta:
         model = Contact
         fields = (
+            "selection",
             "first_name",
             "company",
             "main_address__address",
@@ -106,14 +100,18 @@ class ContactTable(tables.Table):
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
-    def render_mail_consent(self, value):
+    selection = SelectionColumn()
+
+    @staticmethod
+    def render_mail_consent(value):
         return "Yes" if value else ""
 
-    def render_notes(self, value):
+    @staticmethod
+    def render_notes(value):
         return "Yes" if value else ""
 
 
-class ContactTableTwo(tables.Table):
+class ContactTableTwo(Table):
     class Meta:
         model = Contact
         fields = ("first_name", "company", "address__address")
@@ -121,7 +119,7 @@ class ContactTableTwo(tables.Table):
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
 
-class BuyersTable(tables.Table):
+class BuyersTable(Table):
     class Meta:
         model = Contact
         fields = ("first_name", "company", "address__address")
@@ -131,7 +129,17 @@ class BuyersTable(tables.Table):
     invoices = tables.Column(linkify=("buyer_invoices", A("pk")))
 
 
-class InvoiceTable(ColumnShiftTable):
+class MailListTable(Table):
+    class Meta:
+        model = Contact
+        fields = ("selection", "first_name", "last_name", "main_address__email", "mail_consent", "consent_date")
+        attrs = {"class": "table table-sm table-hover hover-link"}
+        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+
+    selection = SelectionColumn()
+
+
+class InvoiceTable(Table):
     class Meta:
         model = Invoice
         fields = ("date", "buyer", "number", "total", "paid")
@@ -141,13 +149,14 @@ class InvoiceTable(ColumnShiftTable):
     total = CurrencyColumn()
     paid = CenteredTrueFalseColumn()
 
-    def render_number(self, value, record):
+    @staticmethod
+    def render_number(value, record):
         if record.proforma:
             return "Proforma"
         return value
 
 
-class PurchaseTable(ColumnShiftTable):
+class PurchaseTable(Table):
     class Meta:
         model = Purchase
         fields = (
@@ -170,7 +179,8 @@ class PurchaseTable(ColumnShiftTable):
 
     # items = RightAlignedColumn(accessor="item_set")
 
-    def render_lots(self, value):
+    @staticmethod
+    def render_lots(value):
         return len(value.all())
 
     # def render_items(self, value, record):
@@ -178,45 +188,50 @@ class PurchaseTable(ColumnShiftTable):
     #     if l == 1:
     #         return value.all()[0].ref
     #     return f"{l} items"
-
-    def render_vendor(self, value):
+    @staticmethod
+    def render_vendor(value):
         if value.first_name:
             return f"{value.first_name} {value.company}"
         return value.company
 
-    def render_vat(self, value, record):
+    @staticmethod
+    def render_vat(value, record):
         if record.margin_scheme:
             return "Margin scheme"
         else:
             return "£" + str(intcomma(value))
-
-    def value_date(self, value):
+    
+    @staticmethod
+    def value_date(value):
         return value
 
-    def value_invoice_number(self, value):
+    @staticmethod
+    def value_invoice_number(value):
         if value == "0":
             return "-"
         else:
             return value
-
-    def value_items(self, value):
+    
+    @staticmethod
+    def value_items(value):
         result = ""
         for i in value.all():
             result += i.ref + " "
         return result[:-1]
 
-    def value_invoice_total(self, value):
+    @staticmethod
+    def value_invoice_total(value):
         return value
 
-    def value_buyers_premium(self, value):
+    @staticmethod
+    def value_buyers_premium(value):
         return value
 
 
-class EnquiryTable(tables.Table):
+class EnquiryTable(Table):
     class Meta:
         model = Enquiry
-        fields = ("date", "subject", "message")
-        sequence = ("selection", "date", "...")
+        fields = ("sequence", "date", "subject", "message")
         attrs = {"class": "table table-sm table-hover hover-link table-responsive"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
@@ -237,20 +252,24 @@ class EnquiryTable(tables.Table):
     # email = tables.Column(accessor="contact__main_address__email")
     mail_consent = tables.Column(accessor="contact.mail_consent")
     state = tables.Column(accessor="closed")
-    selection = tables.TemplateColumn(
-        accessor="pk",
-        template_name="table_manager/custom_checkbox.html",
-        verbose_name="",
-    )
+    selection = SelectionColumn()
 
-    def render_mail_consent(self, value):
+    @staticmethod
+    def render_mail_consent(value):
         return "Yes" if value else ""
-
-    def render_state(self, value):
+    
+    @staticmethod
+    def render_state(value):
         return "Closed" if value else "Open"
+    
+    @staticmethod
+    def render_message(value):
+        if len(value) > 200:
+            return f"{value[:200]} ..."
+        return value
 
 
-class BookTable(tables.Table):
+class BookTable(Table):
     class Meta:
         model = Book
         fields = ("title", "author", "description", "compiler.name")
@@ -262,7 +281,7 @@ class BookTable(tables.Table):
     description = tables.Column(orderable=False)
 
 
-class CompilerTable(tables.Table):
+class CompilerTable(Table):
     class Meta:
         model = Compiler
         fields = ("name", "description")

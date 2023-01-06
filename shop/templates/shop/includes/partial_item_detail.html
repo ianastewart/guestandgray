@@ -1,128 +1,129 @@
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize markdownify %}
 
-  {% if not public %}<p>Category: {{ item.category.name }}</p>{% endif %}
-  <h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
+{% if not public %}<p>Category: {{ item.category.name }}</p>{% endif %}
+<h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
 
-  <div class="row">
-    <div class="col col-lg-6">
-      <div class="card p-0 mb-2 border-0 bg-transparent">
-        {% if images %}
-          <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
-            {% image images.0 original as full_image %}
-            <a href="{{ full_image.url }}"
-               itemprop="contentUrl">{% image images.0 max-1000x1000 class="img-fluid" id="main_image" %}</a>
-          </figure>
-          {% if not image and not public %}<p class="text-danger text-center">Warning: Primary image has not been defined.</p>
-          {% endif %}
-        {% elif public %}
-          <i>Sorry, there is currently no image for this item.</i>
-        {% elif not public %}
-          <p class="text-danger text-center strong">There are no visible images for this item.</p>
+<div class="row">
+  <div class="col col-lg-6">
+    <div class="card p-0 mb-2 border-0 bg-transparent">
+      {% if images %}
+        <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" data-index="0">
+          {% image images.0 original as full_image %}
+          <a href="{{ full_image.url }}"
+             itemprop="contentUrl">{% image images.0 max-1000x1000 class="img-fluid" id="main_image" %}</a>
+        </figure>
+        {% if not image and not public %}
+          <p class="text-danger text-center">Warning: Primary image has not been defined.</p>
         {% endif %}
-        {% if not public %}
-          {% if bad_images %}
-            <div class="text-danger text-center">
-              <p>{% if bad_images|length == 1 %}There is 1 missing image.
-              {% else %}There are {{ bad_images|length }} missing images.
-              {% endif %}
-              </p>
-            </div>
-          {% endif %}
+      {% elif public %}
+        <i>Sorry, there is currently no image for this item.</i>
+      {% elif not public %}
+        <p class="text-danger text-center strong">There are no visible images for this item.</p>
+      {% endif %}
+      {% if not public %}
+        {% if bad_images %}
+          <div class="text-danger text-center">
+            <p>{% if bad_images|length == 1 %}There is 1 missing image.
+            {% else %}There are {{ bad_images|length }} missing images.
+            {% endif %}
+            </p>
+          </div>
         {% endif %}
-      </div>
-      {% if images|length > 1 %}
-        <div class="d-flex flex-wrap">
-          {% for image in images %}
-            <div class="d-flex flex-column pr-2 pb-2">
-              {% image image original as full_image %}
-              {% image image max-100x100 class="thumb" full=full_image.url index=forloop.counter %}
-              {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
-            </div>
-          {% endfor %}
-        </div>
       {% endif %}
     </div>
-    <div class="col-lg-6 mb-2 px-4 ">
-      <div class="d-flex justify-content-between flex-wrap">
-        <div><h5>Ref: {{ item.ref }}</h5>
-          {% if item.show_price and item.sale_price and not item.archive %}
-            <h5> £ {{ item.sale_price|integer|intcomma }}</h5>
-          {% elif item.archive %}
-            <h5> Archive item - not for sale</h5>
-          {% endif %}
-        </div>
-
-          {% if public and request.user.is_authenticated %}
-            <div>
-            <a class="btn btn-secondary mx-1" href="{% url "item_detail" pk=item.pk %}">Admin view</a>
-            </div>
-          {% endif %}
-          {% if not public %}
-
-            <div>
-              {% if item.visible %}
-            <a class="btn btn-secondary mx-1" href="{% url 'public_item_ref' ref=item.ref %}">Public view</a>
-                {% else %}
-                <h5 class="btn btn-secondary mx-1 disabled">Not public</h5>
-                {% endif %}
-            </div>
-          {% endif %}
-                {% if public and not item.archive %}
-            <div>
-            <button class="btn btn-guest float-right" data-toggle="modal" data-target="#modal-form">Enquire about this
-              item
-            </button>
-            </div>
-          {% endif %}
+    {% if images|length > 1 %}
+      <div class="d-flex flex-wrap">
+        {% for image in images %}
+          <div class="d-flex flex-column pr-2 pb-2">
+            {% image image original as full_image %}
+            {% image image max-100x100 class="thumb" full=full_image.url index=forloop.counter %}
+            {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
+          </div>
+        {% endfor %}
       </div>
-      <p class="para">{{ item.description|markdownify }}</p>
-      {% if item.dimensions %}
-        <hr>
-        <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
-          <p class="col-12 col-lg-9 mb-1">{{ item.dimensions|capfirst }}</p>
-        </div>
-      {% endif %}
-      {% if item.condition %}
-        <hr>
-        <div class="row">
-          <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
-          <p class="col-12 col-lg-9 mb-1">{{ item.condition }}</p>
-        </div>
-      {% endif %}
+    {% endif %}
+  </div>
+  <div class="col-lg-6 mb-2 px-4 ">
+    <div class="d-flex justify-content-between flex-wrap">
+      <div><h5>Ref: {{ item.ref }}</h5>
+        {% if item.show_price and item.sale_price and not item.archive %}
+          <h5> £ {{ item.sale_price|integer|intcomma }}</h5>
+        {% elif item.archive %}
+          <h5> Archive item - not for sale</h5>
+        {% endif %}
+      </div>
 
-      {% if item.notes %}
-        <hr>
-        <div class="row">
-          <div class="col">
-            <p class="text-muted mb-1">Notes:<br>
-              {{ item.notes|markdownify }}</p>
-          </div>
-        </div>
-      {% endif %}
-      {% if item.book %}
-        <hr>
-        <div class="row">
-          <div class="col">
-            <p class="text-muted mb-1">Recommended book:</p>
-            <p class="mb-1">{{ item.book.title }}</p>
-          </div>
-        </div>
-      {% endif %}
-      {% if item.provenance %}
-        <hr>
-        <div class="row">
-          <div class="col">
-            <p class="text-muted mb-1">Provenance:
-              {{ item.provenance|markdownify }}</p>
-          </div>
+      {% if public and request.user.is_authenticated %}
+        <div>
+          <a class="btn btn-secondary mx-1" href="{% url "item_detail" pk=item.pk %}">Admin view</a>
         </div>
       {% endif %}
       {% if not public %}
-        <p class="text-muted mt-3 mb-0 border-bottom">
-          SEO title: {{ item.name|length }} characters <span class="float-right">SEO description: {{ seo|length }} characters</span>
-        </p>
-        {{ seo }}
+
+        <div>
+          {% if item.visible %}
+            <a class="btn btn-secondary mx-1" href="{% url 'public_item_ref' ref=item.ref %}">Public view</a>
+          {% else %}
+            <h5 class="btn btn-secondary mx-1 disabled">Not public</h5>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% if public and not item.archive %}
+        <div>
+          <button class="btn btn-guest float-right" hx-get="{% url "item_enquiry" ref=item.ref %}"
+                  hx-target="#modals-here">Enquire about this item
+          </button>
+        </div>
       {% endif %}
     </div>
+    <p class="para">{{ item.description|markdownify }}</p>
+    {% if item.dimensions %}
+      <hr>
+      <div class="row">
+        <p class="col-12 col-lg-3 text-muted mb-1">Dimensions:</p>
+        <p class="col-12 col-lg-9 mb-1">{{ item.dimensions|capfirst }}</p>
+      </div>
+    {% endif %}
+    {% if item.condition %}
+      <hr>
+      <div class="row">
+        <p class="col-12 col-lg-3 text-muted mb-1">Condition:</p>
+        <p class="col-12 col-lg-9 mb-1">{{ item.condition }}</p>
+      </div>
+    {% endif %}
+
+    {% if item.notes %}
+      <hr>
+      <div class="row">
+        <div class="col">
+          <p class="text-muted mb-1">Notes:<br>
+            {{ item.notes|markdownify }}</p>
+        </div>
+      </div>
+    {% endif %}
+    {% if item.book %}
+      <hr>
+      <div class="row">
+        <div class="col">
+          <p class="text-muted mb-1">Recommended book:</p>
+          <p class="mb-1">{{ item.book.title }}</p>
+        </div>
+      </div>
+    {% endif %}
+    {% if item.provenance %}
+      <hr>
+      <div class="row">
+        <div class="col">
+          <p class="text-muted mb-1">Provenance:
+            {{ item.provenance|markdownify }}</p>
+        </div>
+      </div>
+    {% endif %}
+    {% if not public %}
+      <p class="text-muted mt-3 mb-0 border-bottom">
+        SEO title: {{ item.name|length }} characters <span class="float-right">SEO description: {{ seo|length }} characters</span>
+      </p>
+      {{ seo }}
+    {% endif %}
   </div>
+</div>

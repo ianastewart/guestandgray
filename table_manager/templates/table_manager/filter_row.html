@@ -1,0 +1,22 @@
+{% load bootstrap4 %}
+<form action="." method="get" id="id_filter_form">
+  {{ filter.form.media }}
+  <div class="d-flex">
+    {% for field in filter.form.visible_fields %}
+      {% if field.name == 'per_page' %}
+        <input type="hidden" name="per_page" id="hidden_per_page">
+      {% else %}
+        {% if filter_button %}
+          {% bootstrap_field field form_group_class="form-group pl-2 pt-2" label_class="small mb-0" placeholder="" %}
+        {% else %}
+          {% bootstrap_field field form_group_class="form-group pl-2 pt-2 auto-submit" label_class="small mb-0" placeholder="" %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if filter_button %}
+      <button class="form-control btn-primary " id="id_search" type="submit">
+        <i class="fas fa-filter"></i>&nbsp&nbsp {{ filter_button }}
+      </button>
+    {% endif %}
+  </div>
+</form>

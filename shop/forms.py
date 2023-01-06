@@ -246,17 +246,17 @@ class MailListForm(Form):
     first_name = forms.CharField(max_length=30, required=True)
     last_name = forms.CharField(max_length=30, required=True)
     email = forms.EmailField(max_length=100, required=True)
+
+
+class EnquiryForm(MailListForm):
+    phone = forms.CharField(max_length=20, required=False, label="Phone (optional)")
     mail_consent = forms.BooleanField(
         required=False, label="Please add me to your mailing list"
     )
     ref = forms.CharField(max_length=10, required=False)
-
-
-class EnquiryForm(MailListForm):
-    phone = forms.CharField(max_length=20, required=False)
-    subject = forms.CharField(max_length=78, required=False)
+    subject = forms.CharField(max_length=78, required=True)
     message = forms.CharField(
-        max_length=2000, required=False, widget=forms.Textarea(attrs={"rows": 3})
+        max_length=2000, required=True, widget=forms.Textarea(attrs={"rows": 3})
     )
 
 

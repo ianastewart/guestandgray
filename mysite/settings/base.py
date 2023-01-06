@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "robots",
     "markdownify.apps.MarkdownifyConfig",
     "django_htmx",
+    "honeypot",
     # CodeRed CMS
     "coderedcms_bootstrap4",
     "coderedcms",
@@ -222,7 +223,14 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = DJANGO_EMAIL  # "sitemail@chinese-porcelain-art.com"
 EMAIL_HOST_PASSWORD = env.str("SITEMAIL")
+
 GOOGLE_RECAPTCHA_SECRET_KEY = env.str("CAPTCHA_SECRET")
 GOOGLE_RECAPTCHA_SITE_KEY = env.str("CAPTCHA_SITE")
-
+HCAPTCHA_SECRET_KEY = env.str("HCAPTCHA_SECRET")
+HCAPTCHA_SITE_KEY = env.str("HCAPTCHA_SITE")
+# At most 1 of these should be True
+USE_HCAPTCHA = False
+USE_RECAPTCHA = False
+#
+HONEYPOT_FIELD_NAME = "website"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

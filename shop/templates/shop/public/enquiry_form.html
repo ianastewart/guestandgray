@@ -1,0 +1,47 @@
+{% load static bootstrap4 honeypot %}
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-guest-dark text-white">
+        <h5 class="modal-title">{% if item %}Enquiry Re: Item {{ item.ref }}{% else %}Send a message{% endif %}</h5>
+      </div>
+      <div class="modal-body bg-guest-light">
+        <form hx-post="{% if item %}{% url "item_enquiry" ref=item.ref %} else {% url "general_enquiry" %}"{% endif %}
+              hx-target="#modals-here"
+              {% if not hcaptcha %}novalidate{% endif %}>
+          {% csrf_token %}
+          {% if not item %}
+            {% bootstrap_field form.subject show_label=False  %}
+          {% endif %}
+          {% bootstrap_field form.message show_label=False %}
+          <div class="row">
+            <div class="col my-1 pr-1">
+              {% bootstrap_field form.first_name show_label=False %}
+            </div>
+            <div class="col my-1 pl-1">
+              {% bootstrap_field form.last_name show_label=False %}
+            </div>
+          </div>
+          <div class="mb-3">
+            {% bootstrap_field form.email show_label=False %}
+          </div>
+          <div class="row">
+            <div class="col">
+              {% bootstrap_field form.phone show_label=False %}
+            </div>
+          </div>
+          {% bootstrap_field form.mail_consent %}
+          <p class="small"> Your details will never be sold or passed on to any third parties.</p>
+          {% render_honeypot_field %}
+          {% include "shop/includes/captcha.html" %}
+          <button type="submit" class="btn bg-guest-dark text-white mt-3">Send</button>
+          <button type="button" class="btn bt-outline bg-guest-dark text-white mt-3" onclick="closeModal()">Cancel
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'shop/js/htmx_helper.js' %}"></script>

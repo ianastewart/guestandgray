@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponseNotFound
 from shop.models import Contact, Enquiry, Address
 from shop.forms import ContactForm, EnquiryForm
-from shop.tables import ContactTable, ContactTableTwo, EnquiryTable
+from shop.tables import ContactTable, ContactTableTwo, EnquiryTable, MailListTable
 from table_manager.views import FilteredTableView, AjaxCrudView
 from shop.filters import ContactFilter, EnquiryFilter
 
@@ -18,9 +18,7 @@ class ContactListView(LoginRequiredMixin, FilteredTableView):
     allow_update = True
 
     def get_queryset(self):
-        return (
-            Contact.objects.all().prefetch_related("main_address").order_by("company")
-        )
+        return Contact.objects.all().prefetch_related("main_address").order_by("company")
 
 
 class VendorListView(ContactListView):
@@ -66,7 +64,7 @@ class ContactUpdateView(LoginRequiredMixin, AjaxCrudView):
     allow_delete = True
 
     def get_form_kwargs(self):
-        """ add data from latest linked address object """
+        """add data from latest linked address object"""
         kwargs = super().get_form_kwargs()
         adr = self.object.main_address
         kwargs["initial"]["email"] = adr.email
@@ -152,7 +150,7 @@ class EnquiryDetailAjax(LoginRequiredMixin, AjaxCrudView):
 
 
 class ContactCreateAjax(LoginRequiredMixin, AjaxCrudView):
-    """ Create a new vendor in modal within the PurchaseCreateView """
+    """Create a new vendor in modal within the PurchaseCreateView"""
 
     model = Contact
     form_class = ContactForm
@@ -165,7 +163,7 @@ class ContactCreateAjax(LoginRequiredMixin, AjaxCrudView):
 
 
 def contact_lookup(request, pk=None):
-    """ Lookup for typeahead function """
+    """Lookup for typeahead function"""
     if request.user.is_authenticated and request.is_ajax():
         results = []
         q = request.GET.get("term", "").lower()
@@ -190,3 +188,26 @@ def contact_lookup(request, pk=None):
             results.append(dict)
         return JsonResponse(results, safe=False)
     return HttpResponseNotFound
+
+
+class MailListView(LoginRequiredMixin, FilteredTableView):
+    model = Contact
+    table_class = MailListTable
+    table_pagination = {"per_page": 10}
+    allow_detail = True
+    template_name = "table_manager/htmx_table.html"
+    # templaate_name = "shop/filtered_table.html"
+    # template_name = "table_manager/generic_table.html"
+
+    def get_queryset(self):
+        return Contact.objects.filter(mail_consent=True)
+
+    def get_actions(self):
+        return [
+            ("remove_consent", "Remove mail consent"),
+            ("export", "Export to Excel"),
+        ]
+
+    def handle_action(self, request):
+        if "remove_consent" in request.POST:
+            self.selected_objects.update(mail_consent=False)

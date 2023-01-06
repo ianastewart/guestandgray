@@ -12,9 +12,7 @@ from coderedcms.models.page_models import CoderedPage
 class ModelEnum(IntEnum):
     @classmethod
     def choices(cls):
-        return list(
-            (x.value, x.name.lower().capitalize().replace("_", " ")) for x in cls
-        )
+        return list((x.value, x.name.lower().capitalize().replace("_", " ")) for x in cls)
 
 
 class HostPage(CoderedPage):
@@ -31,7 +29,7 @@ class HostPage(CoderedPage):
 
 class CategoryManager(MP_NodeManager):
     def empty_nodes(self, instance=None):
-        """ returns node above current node that have no item """
+        """returns node above current node that have no item"""
         cats = Category.objects.all().exclude(name="Catalogue").order_by("name")
         if instance:
             cats.exclude(pk=instance.pk)
@@ -44,9 +42,7 @@ class CategoryManager(MP_NodeManager):
         return [cat for cat in self.all().order_by("name") if cat.is_leaf()]
 
     def leaf_choices(self):
-        return [
-            (cat.id, cat.name) for cat in self.all().order_by("name") if cat.is_leaf()
-        ]
+        return [(cat.id, cat.name) for cat in self.all().order_by("name") if cat.is_leaf()]
 
 
 class Category(MP_Node):
@@ -89,7 +85,7 @@ class Category(MP_Node):
     search_fields = [index.SearchField("name", boost=1)]
 
     def post_save(self):
-        """ Called after create or update to ensure tree slugs are updated """
+        """Called after create or update to ensure tree slugs are updated"""
         self = Category.objects.get(id=self.id)
         if not self.short_name:
             self.short_name = self.name[:50]
@@ -113,7 +109,7 @@ class Category(MP_Node):
         return breadcrumb
 
     def seo_prefix(self):
-        """ Returns the prefix used for item title """
+        """Returns the prefix used for item title"""
         breadcrumb = self.breadcrumb_nodes()
         result = ""
         for node in breadcrumb:
@@ -180,36 +176,22 @@ class Item(index.Indexed, models.Model):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(null=True, blank=True, max_length=200)
-    ref = models.CharField(
-        null=False, blank=True, max_length=10, default="", db_index=True
-    )
+    ref = models.CharField(null=False, blank=True, max_length=10, default="", db_index=True)
     description = models.TextField(null=True, blank=True)
     seo_description = models.CharField(max_length=200, null=True, blank=True)
-    category = models.ForeignKey(
-        Category, null=True, blank=True, on_delete=models.SET_NULL
-    )
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
     condition = models.CharField(max_length=200, null=True, blank=True)
     dimensions = models.CharField(max_length=200, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     provenance = models.TextField(null=True, blank=True)
     state = models.SmallIntegerField(choices=State.choices(), default=0)
     archive = models.BooleanField(default=False)
-    cost_price = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    restoration_cost = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    restoration_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
-    sale_price = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    minimum_price = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    location = models.SmallIntegerField(
-        choices=Location.choices(), default=0, null=True, blank=True
-    )
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    minimum_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    location = models.SmallIntegerField(choices=Location.choices(), default=0, null=True, blank=True)
     show_price = models.BooleanField(default=True)
     visible = models.BooleanField(default=True)
     featured = models.BooleanField(default=False)
@@ -222,9 +204,7 @@ class Item(index.Indexed, models.Model):
         on_delete=models.SET_NULL,
         related_name="parent_object",
     )
-    invoice = models.ForeignKey(
-        "Invoice", null=True, blank=True, on_delete=models.SET_NULL
-    )
+    invoice = models.ForeignKey("Invoice", null=True, blank=True, on_delete=models.SET_NULL)
     lot = models.ForeignKey("Lot", null=True, blank=True, on_delete=models.SET_NULL)
     search_fields = [
         index.SearchField("name", boost=3),
@@ -251,7 +231,7 @@ class Item(index.Indexed, models.Model):
         super().save(*args, **kwargs)
 
     def visible_images(self):
-        """ return images with primary in first position"""
+        """return images with primary in first position"""
         image_list = self.images.filter(show=True).order_by("position", "title")
         if self.image:
             image_list = list(image_list.exclude(id=self.image_id))
@@ -285,15 +265,11 @@ class Item(index.Indexed, models.Model):
 
 
 class Purchase(models.Model):
-    """ Purchase can be a lot with multiple items linked """
+    """Purchase can be a lot with multiple items linked"""
 
     date = models.DateField(null=True, blank=True, verbose_name="Purchase date")
-    invoice_number = models.CharField(
-        max_length=10, null=True, blank=True, verbose_name="Vendor's invoice no."
-    )
-    invoice_total = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
+    invoice_number = models.CharField(max_length=10, null=True, blank=True, verbose_name="Vendor's invoice no.")
+    invoice_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     buyers_premium = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -302,15 +278,9 @@ class Purchase(models.Model):
         verbose_name="Buyer's premium",
     )
     margin_scheme = models.BooleanField(default=True)
-    vat = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="VAT"
-    )
-    vendor = models.ForeignKey(
-        "Contact", null=True, blank=True, on_delete=models.SET_NULL
-    )
-    address = models.ForeignKey(
-        "Address", null=True, blank=True, on_delete=models.SET_NULL
-    )
+    vat = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="VAT")
+    vendor = models.ForeignKey("Contact", null=True, blank=True, on_delete=models.SET_NULL)
+    address = models.ForeignKey("Address", null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         vendor = "Unknown vendor"
@@ -320,9 +290,7 @@ class Purchase(models.Model):
 
 
 class Lot(models.Model):
-    number = models.CharField(
-        max_length=10, null=True, blank=True, verbose_name="Lot number"
-    )
+    number = models.CharField(max_length=10, null=True, blank=True, verbose_name="Lot number")
     cost = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -330,9 +298,7 @@ class Lot(models.Model):
         blank=True,
         verbose_name="Cost of lot",
     )
-    purchase = models.ForeignKey(
-        Purchase, null=True, blank=False, on_delete=models.SET_NULL
-    )
+    purchase = models.ForeignKey(Purchase, null=True, blank=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         if self:
@@ -344,16 +310,14 @@ class PurchaseExpense(models.Model):
     description = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     eligible = models.BooleanField(default=False)
-    purchase = models.ForeignKey(
-        Purchase, null=True, blank=True, on_delete=models.SET_NULL
-    )
+    purchase = models.ForeignKey(Purchase, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.id} {self.amount}"
 
 
 class ItemRef(models.Model):
-    """ Generates unique alphanumeric reference numbers for items """
+    """Generates unique alphanumeric reference numbers for items"""
 
     number = models.IntegerField(null=False, blank=False)
     prefix = models.CharField(max_length=2, null=False, blank=False)
@@ -415,12 +379,8 @@ class Invoice(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     proforma = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
-    buyer = models.ForeignKey(
-        "Contact", null=True, blank=True, on_delete=models.SET_NULL
-    )
-    address = models.ForeignKey(
-        "Address", null=True, blank=True, on_delete=models.SET_NULL
-    )
+    buyer = models.ForeignKey("Contact", null=True, blank=True, on_delete=models.SET_NULL)
+    address = models.ForeignKey("Address", null=True, blank=True, on_delete=models.SET_NULL)
 
     @classmethod
     def next_number(cls):
@@ -436,21 +396,17 @@ class InvoiceCharge(models.Model):
         INSURANCE = 1
         OTHER = 2
 
-    charge_type = models.SmallIntegerField(
-        choices=ChargeType.choices(), default=0, null=False, blank=False
-    )
+    charge_type = models.SmallIntegerField(choices=ChargeType.choices(), default=0, null=False, blank=False)
     description = models.CharField(max_length=50, null=False, blank=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    invoice = models.ForeignKey(
-        "Invoice", null=True, blank=True, on_delete=models.CASCADE
-    )
+    invoice = models.ForeignKey("Invoice", null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.description} £{self.amount}"
 
 
 class Contact(models.Model):
-    """ Covers all business contacts  - buyers, vendors etc """
+    """Covers all business contacts  - buyers, vendors etc"""
 
     title = models.CharField(max_length=20, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
@@ -492,7 +448,7 @@ class Contact(models.Model):
 
 
 class Address(models.Model):
-    """ A Contact can have multiple addresses stored in address history"""
+    """A Contact can have multiple addresses stored in address history"""
 
     shipping = models.BooleanField(default=True)
     billing = models.BooleanField(default=True)
@@ -500,9 +456,7 @@ class Address(models.Model):
     work_phone = models.CharField(max_length=20, blank=True, null=True)
     mobile_phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=80, blank=True, null=True)
-    contact = models.ForeignKey(
-        Contact, null=False, blank=False, on_delete=models.CASCADE
-    )
+    contact = models.ForeignKey(Contact, null=False, blank=False, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
 
 
@@ -513,9 +467,7 @@ class Enquiry(models.Model):
     item = models.ForeignKey(Item, blank=True, null=True, on_delete=models.SET_NULL)
     closed = models.BooleanField(default=False)
     notes = models.CharField(max_length=2000, blank=True, null=True)
-    contact = models.ForeignKey(
-        Contact, null=True, blank=True, on_delete=models.CASCADE
-    )
+    contact = models.ForeignKey(Contact, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.date} {self.subject}"
@@ -544,18 +496,14 @@ class Book(models.Model):
 
 
 class CustomImage(AbstractImage):
-    item = models.ForeignKey(
-        Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images"
-    )
+    item = models.ForeignKey(Item, null=True, blank=True, on_delete=models.CASCADE, related_name="images")
     show = models.BooleanField(default=True)
     position = models.PositiveSmallIntegerField(default=0)
     admin_form_fields = Image.admin_form_fields + ("item",)
 
 
 class CustomRendition(AbstractRendition):
-    image = models.ForeignKey(
-        CustomImage, on_delete=models.CASCADE, related_name="renditions"
-    )
+    image = models.ForeignKey(CustomImage, on_delete=models.CASCADE, related_name="renditions")
 
     class Meta:
         unique_together = (("image", "filter_spec", "focal_point_key"),)

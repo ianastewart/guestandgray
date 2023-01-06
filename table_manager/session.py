@@ -49,3 +49,21 @@ def debug_stack(request):
         print("Stack:")
         for entry in stack:
             print(entry)
+
+
+def save_columns(request, column_list):
+    key = f"columns:{request.user.username}:{request.resolver_match.view_name}"
+    request.session[key] = list(column_list)
+
+
+def load_columns(request):
+    key = f"columns:{request.user.username}:{request.resolver_match.view_name}"
+    if key in request.session:
+        return request.session[key]
+    return []
+
+
+def toggle_column(request, column_name):
+    columns = load_columns(request)
+    columns.remove(column_name) if column_name in columns else columns.append(column_name)
+    save_columns(request, columns)

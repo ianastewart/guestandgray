@@ -1,6 +1,6 @@
 import json
 import logging
-import urllib
+import requests
 from datetime import datetime
 from itertools import chain
 
@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.mail import EmailMessage, get_connection, send_mail
 from django.core.paginator import EmptyPage, InvalidPage, PageNotAnInteger, Paginator
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView
@@ -19,7 +19,8 @@ from wagtail.search.backends import get_search_backend
 from wagtail.search.models import Query
 from wagtail.images.models import SourceImageIOError
 from wagtailseo.utils import StructDataEncoder, get_struct_data_images
-
+from django.utils.decorators import method_decorator
+from honeypot.decorators import check_honeypot
 from shop.cat_tree import Counter
 from shop.filters import CompilerFilter
 from shop.forms import EnquiryForm, MailListForm
@@ -175,6 +176,18 @@ def add_page_context(request, context, path, title="", description=""):
     return context
 
 
+def contact_view(request):
+    template_name = "shop/public/contact_page.html"
+    context = add_page_context(
+        request,
+        context={},
+        path=request.path,
+        title="Contact Guest and Gray",
+        description="Contact Guest and Gray",
+    )
+    return render(request, template_name, context)
+
+
 def search_view(request, public):
     """
     Searches pages across the entire site.
@@ -251,153 +264,194 @@ def search_view(request, public):
     )
 
 
-def mail_list_view(request):
-    if request.htmx:
-        return render(request, "shop/public/mail_list_modal.html")
+class CaptchaHoneyPotMixin:
+    """ Support captchas and honeypot in modal forms """
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.htmx:
+            return HttpResponseBadRequest("AJAX expected")
+        return super().dispatch(request, *args, **kwargs)
 
-class MailListModalView(FormView):
-    # GET and POST are htmx calls
-    form_class = MailListForm
-    template_name = "shop/public/mail_list_modal.html"
+    def post(self, request, *args, **kwargs):
+        # Explicit handling of honeypot instead of @method_decorator(check_honeypot, name="post")
+        field = settings.HONEYPOT_FIELD_NAME
+        if field not in request.POST or request.POST[field] != "":
+            return HttpResponse("Thanks for nothing")
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["captcha_site"] = settings.GOOGLE_RECAPTCHA_SITE_KEY
+        context["recaptcha_site"] = settings.GOOGLE_RECAPTCHA_SITE_KEY
+        context["hcaptcha_site"] = settings.HCAPTCHA_SITE_KEY
+        context["hcaptcha"] = settings.USE_HCAPTCHA
+        context["recaptcha"] = settings.USE_RECAPTCHA
         return context
 
-    def form_valid(self, form):
-        if recaptcha_is_valid(self.request):
-            return render(self.request, "shop/public/mail_list_added_modal.html")
+    def is_captcha_valid(self):
+        if settings.USE_HCAPTCHA:
+            values = {
+                "secret": settings.HCAPTCHA_SECRET_KEY,
+                "response": self.request.POST.get("h-captcha-response"),
+            }
+            url = "https://hcaptcha.com/siteverify"
+        elif settings.USE_RECAPTCHA:
+            values = {
+                "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                "response": self.request.POST.get("g-recaptcha-response"),
+            }
+            url = "https://www.google.com/recaptcha/api/siteverify"
+        if settings.USE_HCAPTCHA or settings.USE_RECAPTCHA:
+            return requests.post(url, values).json()["success"]
+        return True
+
+    def captcha_invalid(self, form):
         context = self.get_context_data(form=form)
-        context["recaptcha_error"] = "Please complete the reCAPTCHA"
+        context["captcha_error"] = True
         return self.render_to_response(context)
 
 
-def recaptcha_is_valid(request):
-    url = "https://www.google.com/recaptcha/api/siteverify"
-    values = {
-        "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-        "response": request.POST.get("g-recaptcha-response"),
-    }
-    data = urllib.parse.urlencode(values).encode()
-    req = urllib.request.Request(url, data=data)
-    response = urllib.request.urlopen(req)
-    result = json.loads(response.read().decode())
-    return result["success"]
+class MailListModalView(CaptchaHoneyPotMixin, FormView):
+    # Add to mail list on footer
+    form_class = MailListForm
+    template_name = "shop/public/mail_list_modal.html"
+
+    def form_valid(self, form):
+        if not self.is_captcha_valid():
+            return self.captcha_invalid(form)
+        # add to mail list
+        return render(self.request, "shop/public/mail_list_added_modal.html")
 
 
-class EnquiryView(FormView):
-    """
-    Handles mailing list form in footer, enquiry on an item and general contact page
-    """
-
+class EnquiryModalView(CaptchaHoneyPotMixin, FormView):
+    # Handles both enquiry on item page and general enquiry on contact page
     form_class = EnquiryForm
-    template_name = "shop/public/contact_form.html"
-    success_url = reverse_lazy("public_contact_submitted")
+    template_name = "shop/public/enquiry_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["captcha_site"] = settings.GOOGLE_RECAPTCHA_SITE_KEY
-        return add_page_context(
-            self.request,
-            context,
-            path=self.request.path,
-            title="Enquiry",
-            description="Enquiry form",
-        )
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        ref = self.kwargs.get("ref", None)
+        if ref:
+            context["item"] = Item.objects.filter(ref=ref).first()
+        return context
 
     def form_valid(self, form):
-        recaptcha_response = self.request.POST.get("g-recaptcha-response")
-        url = "https://www.google.com/recaptcha/api/siteverify"
-        values = {
-            "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-            "response": recaptcha_response,
-        }
-        data = urllib.parse.urlencode(values).encode()
-        req = urllib.request.Request(url, data=data)
-        response = urllib.request.urlopen(req)
-        result = json.loads(response.read().decode())
-        if not result["success"]:
-            messages.error(self.request, "Invalid reCAPTCHA. Please try again.")
-            return self.form_invalid(form)
-        # Recaptcha is valid
-        d = form.cleaned_data
-        item = None
-        mail_list = True if d["ref"] == "mail_list" else False
-        if not mail_list and "ref" in self.request.POST:
-            item = Item.objects.filter(ref=self.request.POST["ref"]).first()
-        contact = Contact.objects.filter(
-            main_address__email=form.cleaned_data["email"]
-        ).first()
-        if not "phone" in d.keys():
-            d["phone"] = ""
-        if contact and d["phone"]:
-            if not (
-                contact.main_address.work_phone == d["phone"]
-                or contact.main_address.mobile_phone == d["phone"]
-            ):
-                contact = None
-        if not contact:
-            contact = Contact.objects.create(
-                first_name=d["first_name"],
-                last_name=d["last_name"],
-            )
-            address = Address.objects.create(
-                mobile_phone=d["phone"], email=d["email"], contact=contact
-            )
-            contact.main_address = address
-        if d["mail_consent"]:
-            contact.mail_consent = True
-            contact.consent_date = datetime.now().date()
-        contact.save()
-        enquiry = Enquiry.objects.create(
-            subject=d["subject"], message=d["message"], contact=contact, item=item
-        )
-        # Inform staff
-        send_mail(
-            d["subject"],
-            d["message"],
-            d["email"],
-            [settings.INFORM_EMAIL],
-            fail_silently=False,
-        )
-        connection = get_connection(
-            fail_silently=False,
-        )
-        email = EmailMessage(
-            subject=d["subject"],
-            body=d["message"],
-            from_email=d["email"],
-            to=[settings.INFORM_EMAIL],
-            reply_to=[d["email"]],
-            connection=connection,
-        )
-        email.send(fail_silently=False)
+        if not self.is_captcha_valid():
+            return self.captcha_invalid(form)
+        # add to mail list
+        return render(self.request, "shop/public/mail_list_added_modal.html")
 
-        message = (
-            "You have been added to our mail list."
-            if mail_list
-            else "Thank you for your enquiry. We will respond as soon as possible."
-        )
-        # Confirm to customer
-        send_mail(
-            "Confirmation from chinese-porcelain-art.com",
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [contact.main_address.email],
-            fail_silently=False,
-        )
-        context = {
-            "enquiry": enquiry,
-            "email": (
-                enquiry.contact.address_set.filter(email__isnull=False).first().email
-            ),
-        }
-        return render(self.request, "shop/public/contact_submitted.html", context)
+
+# class ContactPageView(TemplateView):
+#     """
+#     Handles enquiry on an item and general contact page
+#     """
+#
+#     form_class = EnquiryForm
+#     template_name = "shop/public/contact_page.html"
+#     success_url = reverse_lazy("public_contact_submitted")
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context["captcha_site"] = settings.GOOGLE_RECAPTCHA_SITE_KEY
+#         return add_page_context(
+#             self.request,
+#             context,
+#             path=self.request.path,
+#             title="Enquiry",
+#             description="Enquiry form",
+#         )
+#
+#     def post(self, request, *args, **kwargs):
+#         return super().post(request, *args, **kwargs)
+#
+#     def form_valid(self, form):
+#         recaptcha_response = self.request.POST.get("g-recaptcha-response")
+#         url = "https://www.google.com/recaptcha/api/siteverify"
+#         values = {
+#             "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+#             "response": recaptcha_response,
+#         }
+#         data = urllib.parse.urlencode(values).encode()
+#         req = urllib.request.Request(url, data=data)
+#         response = urllib.request.urlopen(req)
+#         result = json.loads(response.read().decode())
+#         if not result["success"]:
+#             messages.error(self.request, "Invalid reCAPTCHA. Please try again.")
+#             return self.form_invalid(form)
+#         # Recaptcha is valid
+#         d = form.cleaned_data
+#         item = None
+#         mail_list = True if d["ref"] == "mail_list" else False
+#         if not mail_list and "ref" in self.request.POST:
+#             item = Item.objects.filter(ref=self.request.POST["ref"]).first()
+#         contact = Contact.objects.filter(
+#             main_address__email=form.cleaned_data["email"]
+#         ).first()
+#         if not "phone" in d.keys():
+#             d["phone"] = ""
+#         if contact and d["phone"]:
+#             if not (
+#                 contact.main_address.work_phone == d["phone"]
+#                 or contact.main_address.mobile_phone == d["phone"]
+#             ):
+#                 contact = None
+#         if not contact:
+#             contact = Contact.objects.create(
+#                 first_name=d["first_name"],
+#                 last_name=d["last_name"],
+#             )
+#             address = Address.objects.create(
+#                 mobile_phone=d["phone"], email=d["email"], contact=contact
+#             )
+#             contact.main_address = address
+#         if d["mail_consent"]:
+#             contact.mail_consent = True
+#             contact.consent_date = datetime.now().date()
+#         contact.save()
+#         enquiry = Enquiry.objects.create(
+#             subject=d["subject"], message=d["message"], contact=contact, item=item
+#         )
+#         # Inform staff
+#         send_mail(
+#             d["subject"],
+#             d["message"],
+#             d["email"],
+#             [settings.INFORM_EMAIL],
+#             fail_silently=False,
+#         )
+#         connection = get_connection(
+#             fail_silently=False,
+#         )
+#         email = EmailMessage(
+#             subject=d["subject"],
+#             body=d["message"],
+#             from_email=d["email"],
+#             to=[settings.INFORM_EMAIL],
+#             reply_to=[d["email"]],
+#             connection=connection,
+#         )
+#         email.send(fail_silently=False)
+#
+#         message = (
+#             "You have been added to our mail list."
+#             if mail_list
+#             else "Thank you for your enquiry. We will respond as soon as possible."
+#         )
+#         # Confirm to customer
+#         send_mail(
+#             "Confirmation from chinese-porcelain-art.com",
+#             message,
+#             settings.DEFAULT_FROM_EMAIL,
+#             [contact.main_address.email],
+#             fail_silently=False,
+#         )
+#         context = {
+#             "enquiry": enquiry,
+#             "email": (
+#                 enquiry.contact.address_set.filter(email__isnull=False).first().email
+#             ),
+#         }
+#         return render(self.request, "shop/public/contact_submitted.html", context)
 
 
 class BibliographyView(ListView):

@@ -1,0 +1,38 @@
+{% extends 'coderedcms/pages/web_page_notitle.html' %}
+{% load bootstrap4 %}
+{% load wagtailimages_tags shop_tags %}
+{% block messages %}{% endblock %}
+{% block content_body %}
+  <div class="container ">
+        <div class="card mt-2 card-body bg-light" style="width:400px;">
+          <h1>Guest & Gray</h1>
+          <address>
+            58 Davies Street <br>
+            London<br>
+            W1K 5LP<br>
+          </address>
+          <table>
+            <tr>
+              <td>Phone:</td>
+              <td>+44 (0) 20 7408 1252</td>
+            </tr>
+            <tr>
+              <td>Mobile:</td>
+              <td>+44 (0) 7968 719 496</td>
+            </tr>
+            <tr>
+              <td>Email:</td>
+              <td>info@chinese-porcelain-art.com</td>
+            </tr>
+
+          </table>
+          <a class="mt-2 h4" href="#" hx-get="/enquiry/-/" hx-target="#modals-here">Send us a message</a>
+        </div>
+       <h4>You are welcome to visit our central London showroom by appointment.</h4>
+    <div class="embed-responsive embed-responsive-16by9 border">
+      <iframe class="embed-responsive-item" width="100%" style="border:1px"
+              src="https://maps.google.com/maps?q=Guest+and+Gray+London&output=embed" allowfullscreen></iframe>
+    </div>
+  </div>
+  <div id="modals-here"></div>
+{% endblock %}

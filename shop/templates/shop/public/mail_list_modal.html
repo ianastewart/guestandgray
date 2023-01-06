@@ -1,4 +1,4 @@
-{% load static bootstrap4 %}
+{% load static bootstrap4 honeypot %}
 <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
 <div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
   <div class="modal-dialog modal-dialog-centered">
@@ -7,13 +7,8 @@
         <h5 class="modal-title">Join our mailing list</h5>
       </div>
       <div class="modal-body bg-guest-light">
-      <p>Sign up below to receive our occasional newsletter higlighting recently acquired objects.</p>
-        <form hx-post="{% url "mail_list" %}" hx-target="#modals-here" id="modalForm" novalidate>{% csrf_token %}
-          <input type="hidden" name="ref" value="mail_list">
-          <input type="hidden" name="phone" value="">
-          <input type="hidden" name="mail_consent" value="true">
-          <input type="hidden" name="subject" value="Add to mail list">
-          <input type="hidden" name="message" value="">
+      <p>Sign up below to receive our occasional newsletter highlighting recently acquired objects.</p>
+        <form hx-post="{% url "mail_add" %}" hx-target="#modals-here" id="modalForm" {% if not hcaptcha %}novalidate{% endif %}>{% csrf_token %}
           <div class="row">
           <div class="col my-1 pr-1">
             {% bootstrap_field form.first_name show_label=False %}
@@ -25,9 +20,8 @@
           <div class="mb-3">
             {% bootstrap_field form.email show_label=False%}
           </div>
-          <script src='https://www.google.com/recaptcha/api.js' async defer></script>
-          <div class="g-recaptcha"  data-sitekey="6Le25qYaAAAAAD1wG31clis_yHlL5bH-bE0Ll27D"></div>
-          {% if recaptcha_error %}<p class="text-danger">{{ recaptcha_error }}</p>{% endif %}
+          {% render_honeypot_field %}
+          {% include "shop/includes/captcha.html" %}
           <p class="small mt-2 mb-0">Your details will never be sold or passed to a third party.</p>
         <button type="submit" class="btn bg-guest-dark text-white mt-3">Subscribe</button>
         <button type="button" class="btn bt-outline bg-guest-dark text-white mt-3" onclick="closeModal()">Cancel</button>

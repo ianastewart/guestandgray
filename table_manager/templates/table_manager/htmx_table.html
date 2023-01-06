@@ -1,0 +1,36 @@
+{% extends "shop/shop_base.html" %}
+{% block head %}
+  {% if view.sticky_header %}
+<style>
+th {
+  background-color: lightblue;
+  position: sticky;
+  top: 0; /* Don't forget this, required for the stickiness */
+}
+</style>
+  {% endif %}
+{% endblock %}
+{% load bootstrap4 static %}
+{% block content %}
+  {% bootstrap_messages %}
+  {% if header %}<h3 class="text-center">{{ header }}</h3>{% endif %}
+  <div class="container-fluid p-0" style="height: calc(100% - 60px);">
+    {% if view.filter_class and view.filter_row %}
+      <div class="bg-light ">
+        {% include "table_manager/filter_row.html" %}
+      </div>
+    {% endif %}
+    {% if actions or buttons or columns or view.filter_class and view.filter_modal %}
+    <div class="bg-light">
+      {% include "table_manager/toolbar_row.html" %}
+    </div>
+    {% endif %}
+    <div id="table_data" class="bg-white">
+      {% include "table_manager/htmx_table_data.html" %}
+    </div>
+  </div>
+  <div id="modals-here"></div>
+{% endblock %}
+{% block custom_scripts %}
+  <script src="{% static "table_manager/js/table_manager.js" %}"></script>
+{% endblock %}
