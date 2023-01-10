@@ -1,12 +1,18 @@
 import itertools
 import django_tables2 as tables
 from django.contrib.humanize.templatetags.humanize import intcomma
-from table_manager.session import load_columns
+from table_manager.session import load_columns, save_columns
 
 
 class Table(tables.Table):
     def before_render(self, request):
-        columns = load_columns(request)
+        columns = load_columns(request, self)
+        if not columns:
+            if hasattr(self.Meta, "default_columns"):
+                columns = self.Meta.default_columns
+            else:
+                columns = self.base_columns
+            save_columns(request, columns)
         for k, v in self.base_columns.items():
             if v.verbose_name:
                 self.columns.show(k) if k in columns else self.columns.hide(k)

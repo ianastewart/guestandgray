@@ -55,7 +55,7 @@ class ItemFilter(FilterSet):
         method="image_filter",
     )
     search = CharFilter(method="search_filter", label="Search")
-    per_page = PaginationFilter()
+    # per_page = PaginationFilter()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

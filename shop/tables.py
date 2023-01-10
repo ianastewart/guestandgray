@@ -64,10 +64,12 @@ class ItemTable(Table):
             "done",
         )
         default_columns = ("selection", "name", "ref", "category", "state")
-        attrs = {"class": "table table-sm table-hover hover-link"}
+        attrs = {"class": "table table-sm table-hover"}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
-            "data-url": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            "data-selected": "table-danger",
+            "id": lambda record: f"tr_{record.pk}",
             "class": "table-row pl-4",
         }
 

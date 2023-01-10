@@ -1,16 +1,21 @@
 {% extends "shop/shop_base.html" %}
+{% load bootstrap4 static %}
 {% block head %}
+  <style>
+      tr:hover {
+          cursor: hand;
+      }
+  </style>
   {% if view.sticky_header %}
-<style>
-th {
-  background-color: lightblue;
-  position: sticky;
-  top: 0; /* Don't forget this, required for the stickiness */
-}
-</style>
+    <style>
+        th {
+            background-color: lightblue;
+            position: sticky;
+            top: 0; /* Don't forget this, required for the stickiness */
+        }
+    </style>
   {% endif %}
 {% endblock %}
-{% load bootstrap4 static %}
 {% block content %}
   {% bootstrap_messages %}
   {% if header %}<h3 class="text-center">{{ header }}</h3>{% endif %}
@@ -20,17 +25,20 @@ th {
         {% include "table_manager/filter_row.html" %}
       </div>
     {% endif %}
-    {% if actions or buttons or columns or view.filter_class and view.filter_modal %}
-    <div class="bg-light">
-      {% include "table_manager/toolbar_row.html" %}
-    </div>
-    {% endif %}
-    <div id="table_data" class="bg-white">
-      {% include "table_manager/htmx_table_data.html" %}
-    </div>
+    <form hx-post="">
+      {% csrf_token %}
+      {% if actions or buttons or columns or view.filter_class and view.filter_modal %}
+        <div class="bg-light">
+          {% include "table_manager/toolbar_row.html" %}
+        </div>
+      {% endif %}
+      <div id="table_data" class="bg-white">
+        {% include "table_manager/htmx_table_data.html" %}
+      </div>
+    </form>
   </div>
   <div id="modals-here"></div>
 {% endblock %}
 {% block custom_scripts %}
-  <script src="{% static "table_manager/js/table_manager.js" %}"></script>
+  <script src="{% static "table_manager/js/table_functions.js" %}"></script>
 {% endblock %}

@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
-
+from django_htmx.http import HttpResponseClientRefresh, HttpResponseClientRedirect
 from notes.models import Note
 from shop.filters import ItemFilter
 from shop.forms import ItemCategoriseForm, ItemForm
@@ -19,6 +19,7 @@ from table_manager.buttons import BsButton
 from table_manager.mixins import StackMixin
 from table_manager.views import AjaxCrudView, FilteredTableView
 from table_manager.new_views import ExtendedTableView
+from table_manager.buttons import Button
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
     model = Item
     table_class = ItemTable
     filter_class = ItemFilter
+    filterset_class = ItemFilter
     # template_name = "shop/filtered_table.html"
     template_name = "table_manager/htmx_table.html"
     header = "Items"
@@ -50,13 +52,13 @@ class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
         return [
             ("show_price", "Show price"),
             ("hide_price", "Hide price"),
-            ("visible", " Visible on"),
-            ("invisible", "Visible off"),
-            ("feature", "Featured on"),
-            ("unfeature", "Featured off"),
-            ("archive", "Move to archive"),
-            ("unarchive", "Remove from archive"),
-            ("category", "Change category", reverse("item_categorise")),
+            ("visible_on", " Visible on"),
+            ("visible_off", "Visible off"),
+            ("feature_on", "Featured on"),
+            ("feature_off", "Featured off"),
+            ("archive_on", "Move to archive"),
+            ("archive_off", "Remove from archive"),
+            ("change_category", "Change category", reverse("item_categorise")),
             ("delete", "Delete"),
             ("export", "Export to Excel"),
         ]
@@ -66,33 +68,36 @@ class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
             self.selected_objects.update(show_price=True)
         elif "hide_price" in request.POST:
             self.selected_objects.update(show_price=False)
-        elif "visible" in request.POST:
+        elif "visible_on" in request.POST:
             self.selected_objects.update(visible=True)
-        elif "invisible" in request.POST:
+        elif "visible_off" in request.POST:
             self.selected_objects.update(visible=False)
-        elif "feature" in request.POST:
+        elif "feature_on" in request.POST:
             self.selected_objects.update(featured=True)
-        elif "unfeature" in request.POST:
+        elif "feature_off" in request.POST:
             self.selected_objects.update(featured=False)
-        elif "archive" in request.POST:
+        elif "archive_on" in request.POST:
             self.selected_objects.update(archive=True)
-        elif "unarchive" in request.POST:
+        elif "archive_off" in request.POST:
             self.selected_objects.update(archive=False)
-        elif "category" in request.POST:
+        elif "change_category" in request.POST:
             self.selected_objects.update(category_id=request.POST["new_category"])
-
         elif "delete" in request.POST:
             for item in self.selected_objects:
                 if item.image:
                     item.image.delete()
                 item.delete()
 
+    def row_clicked(self, pk, target, url):
+        path = reverse("item_detail", kwargs={"pk": pk})
+        prefix = "&" if "?" in url else "?"
+        return HttpResponseClientRedirect(path+prefix+"return_url="+url)
+
+
     def get_buttons(self):
         return [
-            BsButton("New item", href=reverse("item_create")),
-            #BsButton("New item", hx_get="", hx_target="#modals-here"),
-            BsButton("New item", href=reverse("item_create")),
-            BsButton("New item", href=reverse("item_create")),
+            Button("New item", href=reverse("item_create")),
+            Button("HTMX", hx_get="", hx_target="#modals-here"),
         ]
 
 
