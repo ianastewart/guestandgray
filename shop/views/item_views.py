@@ -18,18 +18,17 @@ from shop.truncater import truncate
 from table_manager.buttons import BsButton
 from table_manager.mixins import StackMixin
 from table_manager.views import AjaxCrudView, FilteredTableView
-from table_manager.new_views import ExtendedTableView
-from table_manager.buttons import Button
+from tables_plus.views import TablesPlusView
+from tables_plus.buttons import Button
 
 logger = logging.getLogger(__name__)
 
 
-class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
+class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     model = Item
     table_class = ItemTable
     filterset_class = ItemFilter
-    # template_name = "shop/filtered_table.html"
-    template_name = "table_manager/htmx_table.html"
+    template_name = "shop/table.html"
     header = "Items"
     infinite_scroll = True
 

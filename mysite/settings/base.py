@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "website",
     "notes",
     "table_manager",
+    "tables_plus",
     "import_export",
     "keyvaluestore",
     "treebeard",

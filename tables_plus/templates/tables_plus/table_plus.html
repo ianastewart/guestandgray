@@ -1,0 +1,34 @@
+{% extends "tables_plus/bootstrap5_base.html" %}
+{% block head %}
+   {% if view.sticky_header %}
+    <style>
+        th {
+            background-color: lightblue;
+            position: sticky;
+            top: 0;
+        }
+    </style>
+  {% endif %}
+{% endblock %}
+{% block content %}
+  {% if header %}<h3 class="text-center">{{ header }}</h3>{% endif %}
+  <div class="container-fluid p-0" style="height: calc(100% - 60px);">
+    {% if view.filterset_class and view.filter_row %}
+      <div class="bg-light ">
+        {% include "tables_plus/filter_row.html" %}
+      </div>
+    {% endif %}
+    <form hx-post="">
+      {% csrf_token %}
+      {% if actions or buttons or columns or view.filter_class and view.filter_modal %}
+        <div class="bg-light">
+          {% include "tables_plus/toolbar_row.html" %}
+        </div>
+      {% endif %}
+      <div id="table_data" class="bg-white">
+        {% include "tables_plus/render_table_data.html" %}
+      </div>
+    </form>
+  </div>
+  <div id="modals-here"></div>
+{% endblock %}

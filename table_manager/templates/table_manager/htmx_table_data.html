@@ -3,3 +3,4 @@
 {% render_table table "table_manager/bootstrap4.html" with infinite_scroll=infinite_scroll %}
 <div id="modals-here" hx-swap-oob="true"></div>
 <script src="{% static "table_manager/js/table_functions.js" %}"></script>
+<script>tableFunctions.init()</script>

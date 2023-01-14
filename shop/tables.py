@@ -12,7 +12,7 @@ from shop.models import (
     Item,
     Purchase,
 )
-from table_manager.tables import *
+from tables_plus.tables import *
 
 
 class CategoryTable(tables.Table):

@@ -1,0 +1,46 @@
+{% load bootstrap4 %}
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+  <div class="modal-dialog modal-dialog-centered {{ modal_size }}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{% block modal_title %}{{ title }}{% endblock %}</h5>
+        <button type="button" class="close" name="close_modal" onclick="closeModal()" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+      </div>
+{#      <form action="" hx-get="" hx-target="#table_data" name="filter_form">#}
+      <form action="" method="get">
+        <div class="modal-body">
+          {{ filter.form.media }}
+          {% bootstrap_form_errors filter.form type="non_fields" %}
+          <div class="d-flex-column">
+            {% for field in filter.form.visible_fields %}
+              {% if field.name == 'per_page' %}
+                <input type="hidden" name="per_page" id="hidden_per_page">
+              {% else %}
+                  {% bootstrap_field field form_group_class="form-group auto-submit" placeholder="" layout="horizontal" %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" name="filter_save">Save</button>
+          <button type="submit" class="btn btn-primary" name="filter_cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+    function closeModal() {
+        let container = document.getElementById("modals-here")
+        let backdrop = document.getElementById("modal-backdrop")
+        let modal = document.getElementById("modal")
+        modal.classList.remove("show")
+        backdrop.classList.remove("show")
+        setTimeout(function () {
+            container.removeChild(backdrop)
+            container.removeChild(modal)
+        }, 200)
+    }
+</script>
