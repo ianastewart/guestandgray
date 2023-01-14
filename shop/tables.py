@@ -38,7 +38,6 @@ class CategoryTable(tables.Table):
 
 
 class ImageColumn(tables.Column):
-
     @staticmethod
     def render(value):
         image = value.get_rendition("max-100x100")
@@ -64,19 +63,20 @@ class ItemTable(Table):
             "done",
         )
         default_columns = ("selection", "name", "ref", "category", "state")
-        attrs = {"class": "table table-sm table-hover"}
+        attrs = {"class": "table table-sm table-hover", "th": {"style": "position: sticky; top: 0", "class": "bg-dark"}}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
-            "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            # "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
             "data-selected": "table-danger",
+            "data-modal": "",
             "id": lambda record: f"tr_{record.pk}",
-            "class": "table-row pl-4",
+            # "class": "table-row pl-4",
         }
 
     category = tables.Column(accessor="category__name", verbose_name="Category")
     purchased = tables.Column(accessor="lot__purchase__date", verbose_name="Purchased")
-    cost_price = CurrencyColumn(integer=True)
-    sale_price = CurrencyColumn(integer=False)
+    cost_price = CurrencyColumn(integer=False, attrs={"th": {"class": "bg-success"}}, verbose_name="Cost")
+    sale_price = CurrencyColumn(integer=False, verbose_name="Sale price")
     image = ImageColumn(accessor="image", verbose_name="Image")
     images = tables.Column(accessor="id", verbose_name="Photos")
     selection = SelectionColumn()
@@ -202,7 +202,7 @@ class PurchaseTable(Table):
             return "Margin scheme"
         else:
             return "£" + str(intcomma(value))
-    
+
     @staticmethod
     def value_date(value):
         return value
@@ -213,7 +213,7 @@ class PurchaseTable(Table):
             return "-"
         else:
             return value
-    
+
     @staticmethod
     def value_items(value):
         result = ""
@@ -259,11 +259,11 @@ class EnquiryTable(Table):
     @staticmethod
     def render_mail_consent(value):
         return "Yes" if value else ""
-    
+
     @staticmethod
     def render_state(value):
         return "Closed" if value else "Open"
-    
+
     @staticmethod
     def render_message(value):
         if len(value) > 200:

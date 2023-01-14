@@ -21,13 +21,14 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
 
     context_filter_name = "filter"
     table_pagination = {"per_page": 25}
+    infinite_scroll = False
     header = ""
     #
     filter_row = False
     filter_button = False
     filter_modal = False
     #
-    sticky_header = True
+    sticky_header = False
     buttons = None
     object_name = ""
 
@@ -61,16 +62,18 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
         context["actions"] = self.get_actions()
         context["columns"] = self.column_states(self.request)
         context["rows"] = self.rows_list()
-        per_page = self.request.GET.get('per_page', self.table_pagination.get("per_page", 25))
+        per_page = self.request.GET.get("per_page", self.table_pagination.get("per_page", 25))
         context["per_page"] = f"{per_page} rows"
         context["header"] = self.header
 
         context["default"] = True
         context["filter_button"] = self.filter_button
+        context["table"].infinite_scroll = self.infinite_scroll
+        context["table"].before_render(self.request)
         return context
 
     def render_table_data(self, request, *args, **kwargs):
-        """ Render only the table data"""
+        """Render only the table data"""
         saved_template_name = self.template_name
         self.template_name = "table_manager/htmx_table_data.html"
         response = super().get(request, *args, **kwargs)
@@ -86,10 +89,10 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
             save_columns(request, column_list)
             return self.render_table_data(request, *args, **kwargs)
         # It's an action performed on a queryset
-        if "select_all" in request.POST:
-            self.selected_objects = self.filtered_query_set(request)
+        if "select_all" in request.POST and "?" in request.htmx.current_url:
+            self.selected_objects = self.filtered_query_set(request, request.htmx.current_url)
         else:
-            self.selected_objects = self.model.objects.filter(pk__in=request.POST.getlist("selection"))
+            self.selected_objects = self.get_queryset().filter(pk__in=request.POST.getlist("select-checkbox"))
 
         path = request.path + request.POST["query"]
         if "export" in request.POST:
@@ -99,15 +102,19 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
         response = self.handle_action(request)
         return response if response else HttpResponseClientRefresh()
 
-    def filtered_query_set(self, request):
-        """ Recreate the queryset used in GET for use in POST """
+    def filtered_query_set(self, request, url, next=False):
+        """Recreate the queryset used in GET for use in POST"""
         query_set = self.get_queryset()
-        if self.filterset_class:
-            parts = request.htmx.current_url.split("?")
-            if len(parts) == 2:
-                filter_data = QueryDict(parts[1])
-                f = self.filterset_class(filter_data, queryset=query_set, request=self.request)
-                return f.qs
+        parts = url.split("?")
+        if len(parts) == 2 and self.filterset_class:
+            qd = QueryDict(parts[1]).copy()
+            if next:
+                if "page" not in qd:
+                    qd["page"] = "2"
+                else:
+                    qd["page"] = str(int(qd["page"]) + 1)
+                print(qd["page"])
+            return self.filterset_class(qd, queryset=query_set, request=request).qs
         return query_set
 
     def handle_action(self, request):
@@ -121,7 +128,7 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
         return None
 
     def row_clicked(self, pk, target, url):
-        """ User clicked on a row """
+        """User clicked on a row"""
         return HttpResponseClientRefresh()
 
     def column_states(self, request):
@@ -145,7 +152,7 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
             return render(request, self.columns_template_name, context)
 
         elif "id_col" in request.htmx.trigger:
-            """ Click on column checkbox in dropdown re-renders the table """
+            """Click on column checkbox in dropdown re-renders the table"""
             toggle_column(request, request.htmx.trigger_name[4:], self.table_class)
             return self.render_table_data(request, *args, **kwargs)
 
@@ -156,7 +163,7 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
             return HttpResponseClientRedirect(url)
 
         elif "default" in request.htmx.trigger:
-            """ Restore defaults if defined in Meta else all columns"""
+            """Restore defaults if defined in Meta else all columns"""
             try:
                 column_list = list(self.table_class.Meta.default_columns)
             except AttributeError:
@@ -169,38 +176,21 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
             return HttpResponseClientRefresh()
 
         elif "tr_" in request.htmx.trigger:
+            if "_scroll" in request.GET:
+                saved = self.template_name
+                self.template_name = "table_manager/render_rows.html"
+                response = super().get(request, *args, **kwargs)
+                self.template_name = saved
+                return response
+                qd = QueryDict(request.htmx.current_url).copy()
+                qd["page"] = request.GET.get("page", 1)
+                try:
+                    self.object_list = self.filterset_class(qd, queryset=self.get_queryset(), request=request).qs
+                except Exception as e:
+                    pass
+                context = self.get_context_data()
+                context["next_page"] = int(request.GET.get("page"), 0) + 1
+                print(context["next_page"])
+                context["table"].before_render(request)  # sets column visibilty
+                return render(request, template_name, context)
             return self.row_clicked(request.htmx.trigger.split("_")[1], request.htmx.target, request.htmx.current_url)
-
-    # def _base_key(self):
-    #     return self.request.resolver_match.view_name
-    #
-    # def _save_columns(self, column_list):
-    #     key = f"{self._base_key()}:columns"
-    #     self.request.session[key] = list(column_list)
-    #
-    # def _load_columns(self):
-    #     key = f"{self._base_key()}:columns"
-    #     if key in self.request.session:
-    #         return self.request.session[key]
-    #     if hasattr(self.table_class.Meta, "default_columns"):
-    #         columns = self.table_class.Meta.default_columns
-    #     else:
-    #         columns = self.table_class.Meta.base_columns
-    #     self._save_columns(columns)
-    #     return columns
-    #
-    # def _toggle_column(self, column_name):
-    #     columns = load_columns(self.request)
-    #     columns.remove(column_name) if column_name in columns else columns.append(column_name)
-    #     save_columns(self.request, columns)
-    #
-    # def _save_per_page(self, value):
-    #     key = f"{self._base_key()}:per_page"
-    #     self.request.session[key] = value
-    #
-    #
-    # def _load_per_page(self):
-    #     key = f"per_page:{self._base_key()}"
-    #     if key in self.request.session:
-    #         return self.request.session[key]
-    #     return 0

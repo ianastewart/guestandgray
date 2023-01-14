@@ -21,13 +21,22 @@ class Table(tables.Table):
 class RightAlignedColumn(tables.Column):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.attrs = {"th": {"style": "text-align: right;"}, "td": {"align": "right"}}
-
+        if not "th" in self.attrs:
+            self.attrs["th"]={}
+        if not "td" in self.attrs:
+            self.attrs["td"] = {}
+        self.attrs["th"]["style"] = "text-align: right;"
+        self.attrs["td"]["style"] = {"align": "right"}
 
 class CenteredColumn(tables.Column):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.attrs = {"th": {"style": "text-align: center;"}, "td": {"align": "center"}}
+        if not "th" in self.attrs:
+            self.attrs["th"]={}
+        if not "td" in self.attrs:
+            self.attrs["td"] = {}
+        self.attrs["th"]["style"] = "text-align: center;"
+        self.attrs["td"]["style"] = {"align": "center"}
 
 
 class CenteredTrueColumn(CenteredColumn):
@@ -45,16 +54,16 @@ class CenteredTrueFalseColumn(CenteredColumn):
 
 
 class CurrencyColumn(RightAlignedColumn):
-    integer = False
-
     def __init__(self, **kwargs):
         self.integer = kwargs.pop("integer", None)
+        self.prefix = kwargs.pop("prefix", "")
+        self.suffix = kwargs.pop("suffix", "")
         super().__init__(**kwargs)
 
     def render(self, value):
         if self.integer:
             value=int(value)
-        return "£ " + intcomma(value)
+        return f"{self.prefix} {intcomma(value)} {self.suffix}"
 
 
 class CheckBoxColumn(tables.TemplateColumn):
@@ -63,8 +72,9 @@ class CheckBoxColumn(tables.TemplateColumn):
         super().__init__(**kwargs)
 
 
-class SelectionColumn(CheckBoxColumn):
+class SelectionColumn(tables.TemplateColumn):
     def __init__(self, **kwargs):
+        kwargs["template_name"] = "table_manager/select_checkbox.html"
         kwargs["verbose_name"] = ""
         kwargs["accessor"] = "id"
         super().__init__(**kwargs)

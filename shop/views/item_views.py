@@ -27,14 +27,12 @@ logger = logging.getLogger(__name__)
 class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
     model = Item
     table_class = ItemTable
-    filter_class = ItemFilter
     filterset_class = ItemFilter
     # template_name = "shop/filtered_table.html"
     template_name = "table_manager/htmx_table.html"
     header = "Items"
-    allow_create = False
-    allow_url = True
-    auto_filter = True
+    infinite_scroll = True
+
 
     def get(self, request, *args, **kwargs):
         self.clear_stack(request)
@@ -46,7 +44,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, ExtendedTableView):
         return initial
 
     def get_queryset(self):
-        return Item.objects.all()
+        return Item.objects.all().order_by("ref")
 
     def get_actions(self):
         return [

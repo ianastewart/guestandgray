@@ -2,18 +2,18 @@
 {% load bootstrap4 static %}
 {% block head %}
   <style>
-      tr:hover {
+      td:hover {
           cursor: hand;
       }
   </style>
   {% if view.sticky_header %}
-    <style>
-        th {
-            background-color: lightblue;
-            position: sticky;
-            top: 0; /* Don't forget this, required for the stickiness */
-        }
-    </style>
+{#    <style>#}
+{#        th {#}
+{#            background-color: lightblue;#}
+{#            position: sticky;#}
+{#            top: 0;#}
+{#        }#}
+{#    </style>#}
   {% endif %}
 {% endblock %}
 {% block content %}
@@ -40,5 +40,5 @@
   <div id="modals-here"></div>
 {% endblock %}
 {% block custom_scripts %}
-  <script src="{% static "table_manager/js/table_functions.js" %}"></script>
+
 {% endblock %}
