@@ -17,22 +17,30 @@ class Table(tables.Table):
             if v.verbose_name:
                 self.columns.show(k) if k in columns else self.columns.hide(k)
 
+    def get_excluded_columns(self):
+        excluded = []
+        for k, v in self.columns.columns.items():
+            if not v.visible:
+                excluded.append(k)
+        return excluded
+
 
 class RightAlignedColumn(tables.Column):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if not "th" in self.attrs:
-            self.attrs["th"]={}
+            self.attrs["th"] = {}
         if not "td" in self.attrs:
             self.attrs["td"] = {}
         self.attrs["th"]["style"] = "text-align: right;"
         self.attrs["td"]["style"] = {"align": "right"}
 
+
 class CenteredColumn(tables.Column):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if not "th" in self.attrs:
-            self.attrs["th"]={}
+            self.attrs["th"] = {}
         if not "td" in self.attrs:
             self.attrs["td"] = {}
         self.attrs["th"]["style"] = "text-align: center;"
@@ -62,21 +70,22 @@ class CurrencyColumn(RightAlignedColumn):
 
     def render(self, value):
         if self.integer:
-            value=int(value)
+            value = int(value)
         return f"{self.prefix} {intcomma(value)} {self.suffix}"
 
 
 class CheckBoxColumn(tables.TemplateColumn):
     def __init__(self, **kwargs):
-        kwargs["template_name"] = "table_manager/custom_checkbox.html"
+        kwargs["template_name"] = "tables_plus/custom_checkbox.html"
         super().__init__(**kwargs)
 
 
 class SelectionColumn(tables.TemplateColumn):
     def __init__(self, **kwargs):
-        kwargs["template_name"] = "table_manager/select_checkbox.html"
+        kwargs["template_name"] = "tables_plus/select_checkbox.html"
         kwargs["verbose_name"] = ""
         kwargs["accessor"] = "id"
+        kwargs["orderable"] = False
         super().__init__(**kwargs)
 
 

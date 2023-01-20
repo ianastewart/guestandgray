@@ -63,11 +63,11 @@ class ItemTable(Table):
             "done",
         )
         default_columns = ("selection", "name", "ref", "category", "state")
-        attrs = {"class": "table table-sm table-hover", "th": {"style": "position: sticky; top: 0", "class": "bg-dark"}}
+        attrs = {"class": "table table-sm table-hover", "thead": {"class": "bg-light"}}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
             # "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
-            "data-selected": "table-danger",
+            # "data-selected": "table-danger",
             "data-modal": "",
             "id": lambda record: f"tr_{record.pk}",
             # "class": "table-row pl-4",
@@ -75,7 +75,7 @@ class ItemTable(Table):
 
     category = tables.Column(accessor="category__name", verbose_name="Category")
     purchased = tables.Column(accessor="lot__purchase__date", verbose_name="Purchased")
-    cost_price = CurrencyColumn(integer=False, attrs={"th": {"class": "bg-success"}}, verbose_name="Cost")
+    cost_price = CurrencyColumn(integer=False, verbose_name="Cost")
     sale_price = CurrencyColumn(integer=False, verbose_name="Sale price")
     image = ImageColumn(accessor="image", verbose_name="Image")
     images = tables.Column(accessor="id", verbose_name="Photos")

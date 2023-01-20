@@ -1,7 +1,7 @@
 <div class="dropdown">
   <button class="btn btn-outline-secondary dropdown-toggle mr-1" type="button" id="dropdownRowsButton"
           data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    {{ per_page }}
+    {{ per_page }} rows
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownRowsButton"  hx-target="#table_data">
     {% for row in rows %}

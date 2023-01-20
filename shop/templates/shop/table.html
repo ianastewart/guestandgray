@@ -1,28 +1,81 @@
 {% extends "shop/shop_base.html" %}
 {% block head %}
-   {% if view.sticky_header %}
-    <style>
-        th {
-            background-color: lightblue;
+
+  <style>
+      .table-container thead.sticky{
             position: sticky;
             top: 0;
         }
-    </style>
-  {% endif %}
+/*
+    .table-container th.orderable:before{
+        content: '\21c5';
+        float: right;
+    }
+*/
+    .table-container th.asc:before {
+        content: '\25b2';
+        float: right;
+    }
+
+    .table-container th.desc:before {
+        content: '\25bc';
+        float: right;
+    }
+
+    td {
+    overflow: hidden;
+}
+
+.table-container th > a {
+    display: block;
+}
+
+{#    button {#}
+{#  background: #5c8a8a;#}
+{#}#}
+{##}
+{#@media (hover: hover) {#}
+{#  .btn:hover,#}
+{#  .btn:active {#}
+{#    background: #ffff4d;#}
+{#  }#}
+{#}#}
+{##}
+{#@media (hover: none) {#}
+{#  button:active {#}
+{#    background: #ffff4d;#}
+{#  }#}
+{#}#}
+/*
+   td:nth-child(1) {
+    width: 25px;
+}
+ td:nth-child(2) {
+    width: 1500px;
+}
+
+ td:nth-child(3) {
+    width: 5%;
+}
+    td:nth-child(4) {
+    width: 20%;
+}
+
+ */
+  </style>
+
 {% endblock %}
 {% block content %}
-  {% if header %}<h3 class="text-center">{{ header }}</h3>{% endif %}
-  <div class="container-fluid p-0" style="height: calc(100% - 60px);">
-    {% if view.filterset_class and view.filter_row %}
-      <div class="bg-light ">
-        {% include "tables_plus/filter_row.html" %}
-      </div>
-    {% endif %}
-    <form hx-post="">
+  <div class="container-fluid" style="height: calc(100% - 60px);">
+    {% if title %}<h3>{{ title }}</h3>{% endif %}
+    <div class="bg-light border-top border-bottom">
+      {% include "tables_plus/filter_toolbar.html" %}
+    </div>
+    <form hx-post="" id="id_table_form">
       {% csrf_token %}
       {% if actions or buttons or columns or view.filter_class and view.filter_modal %}
         <div class="bg-light">
-          {% include "tables_plus/toolbar_row.html" %}
+          {% include "tables_plus/action_toolbar.html" %}
         </div>
       {% endif %}
       <div id="table_data" class="bg-white">

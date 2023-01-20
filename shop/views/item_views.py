@@ -28,10 +28,12 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     model = Item
     table_class = ItemTable
     filterset_class = ItemFilter
-    template_name = "shop/table.html"
-    header = "Items"
-    infinite_scroll = True
+    filter_style = TablesPlusView.FilterStyle.HEADER
+    filter_button = False
 
+    template_name = "shop/table.html"
+    title = "Items"
+    infinite_scroll = True
 
     def get(self, request, *args, **kwargs):
         self.clear_stack(request)
@@ -88,13 +90,11 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     def row_clicked(self, pk, target, url):
         path = reverse("item_detail", kwargs={"pk": pk})
         prefix = "&" if "?" in url else "?"
-        return HttpResponseClientRedirect(path+prefix+"return_url="+url)
-
+        return HttpResponseClientRedirect(path + prefix + "return_url=" + url)
 
     def get_buttons(self):
         return [
             Button("New item", href=reverse("item_create")),
-            Button("HTMX", hx_get="", hx_target="#modals-here"),
         ]
 
 

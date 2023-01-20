@@ -7,17 +7,7 @@ from django_filters import (
 )
 from tempus_dominus.widgets import DatePicker
 from django.contrib.postgres.search import SearchVector
-from shop.models import Category, Compiler, Item
-from table_manager.filters import PaginationFilter
-
-PER_PAGE_CHOICES = (
-    (10, "10 rows"),
-    (15, "15 rows"),
-    (20, "20 rows"),
-    (50, "50 rows"),
-    (100, "100 rows"),
-)
-
+from shop.models import Category, Compiler, Item, Contact
 
 # noinspection PyUnusedLocal
 class ItemFilter(FilterSet):
@@ -25,6 +15,7 @@ class ItemFilter(FilterSet):
         model = Item
         fields = ["category"]
 
+    name = CharFilter(field_name="name", lookup_expr="icontains")
     category = ChoiceFilter(
         field_name="category",
         label="Category",
@@ -38,24 +29,24 @@ class ItemFilter(FilterSet):
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
     )
     state = ChoiceFilter(field_name="state", empty_label="-- All --", choices=Item.State.choices())
-    purchased_after = DateFilter(
-        field_name="lot__purchase__date",
-        label="Purchased after",
-        lookup_expr="gt",
-        widget=DatePicker(options={"format": "DD/MM/YYYY"}),
-    )
-    image = ChoiceFilter(
-        field_name="image",
-        empty_label=None,
-        choices=(
-            (0, "No filter"),
-            (1, "With an image"),
-            (2, "Without an image"),
-        ),
-        method="image_filter",
-    )
-    search = CharFilter(method="search_filter", label="Search")
-    # per_page = PaginationFilter()
+    # purchased_after = DateFilter(
+    #     field_name="lot__purchase__date",
+    #     label="Purchased after",
+    #     lookup_expr="gt",
+    #     widget=DatePicker(options={"format": "DD/MM/YYYY"}),
+    # )
+    # image = ChoiceFilter(
+    #     field_name="image",
+    #     empty_label=None,
+    #     choices=(
+    #         (0, "No filter"),
+    #         (1, "With an image"),
+    #         (2, "Without an image"),
+    #     ),
+    #     method="image_filter",
+    # )
+    # search = CharFilter(method="search_filter", label="Search")
+    # # per_page = PaginationFilter()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -95,10 +86,13 @@ class CompilerFilter(FilterSet):
 
 
 class ContactFilter(FilterSet):
+    class Meta:
+        model = Contact
+        fields = ["first_name"]
+
     first_name = CharFilter(lookup_expr="icontains")
     company = CharFilter(lookup_expr="icontains")
     address = CharFilter(lookup_expr="icontains")
-    per_page = ChoiceFilter(field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES)
 
 
 # noinspection PyUnusedLocal
@@ -141,4 +135,3 @@ class PurchaseFilter(FilterSet):
         lookup_expr="lte",
         widget=DatePicker(options={"format": "DD/MM/YYYY"}),
     )
-    per_page = ChoiceFilter(field_name="id", label="Show", empty_label=None, choices=PER_PAGE_CHOICES)

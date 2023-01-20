@@ -13,7 +13,7 @@
     {% for column in columns %}
       <div class="form-check ml-2 ms-2">
         <input type="checkbox" class="form-check-input" name="col_{{ column.0 }}" id="id_col_{{ column.0 }}"
-               hx-get="" {% if column.2 %} checked {% endif %}>
+               hx-get="" name="xxx" {% if column.2 %} checked {% endif %}>
         <label class="form-check-label" for="id_col_{{ column.0 }}">
           {{ column.1 }}
         </label>

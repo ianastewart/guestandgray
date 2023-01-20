@@ -5,17 +5,16 @@ from shop.models import Contact, Enquiry, Address
 from shop.forms import ContactForm, EnquiryForm
 from shop.tables import ContactTable, ContactTableTwo, EnquiryTable, MailListTable
 from table_manager.views import FilteredTableView, AjaxCrudView
+from tables_plus.views import TablesPlusView
 from shop.filters import ContactFilter, EnquiryFilter
 
 
-class ContactListView(LoginRequiredMixin, FilteredTableView):
-    model = Contact
+class ContactListView(LoginRequiredMixin, TablesPlusView):
+    title = "Contacts"
+    template_name = "shop/table.html"
     table_class = ContactTable
-    filter_class = ContactFilter
-    heading = "Contacts"
-    table_pagination = {"per_page": 100}
-    allow_create = True
-    allow_update = True
+    filterset_class = ContactFilter
+    filter_toolbar = True
 
     def get_queryset(self):
         return Contact.objects.all().prefetch_related("main_address").order_by("company")

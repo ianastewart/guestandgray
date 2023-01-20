@@ -8,12 +8,24 @@ var tableFunctions = (function () {
     document.getElementById('select_all_page').addEventListener("click", selectAllPage);
     document.getElementById('select_all').addEventListener("click", selectAll);
     Array.from(document.getElementsByTagName("table")).forEach(e => e.addEventListener("click", tableClick));
+    Array.from(document.querySelectorAll(".auto-submit")).forEach(e => e.addEventListener("change", function(){
+      document.getElementById("id_table_form").submit()
+    }));
+    Array.from(document.querySelectorAll(".form-group.hx-get")).forEach(e => e.addEventListener("change", filterChanged));
   }
+  function filterChanged() {
+      htmx.ajax('GET', '', {source: '#' + this.lastChild.id, target: '#table_data'});
+    }
+
 
   function selectAllPage() {
     // Click on 'Select all on page' highlights all rows
-    document.getElementById('select_all').checked = false;
     let checked = this.checked;
+     if (checked) {
+       document.getElementById('select_all').parentElement.classList.remove('d-none');
+     } else {
+       document.getElementById('select_all').parentElement.classList.add('d-none');
+    }
     Array.from(document.getElementsByClassName("select-checkbox")).forEach(function (box) {
       box.checked = checked;
       box.disabled = false;
@@ -25,17 +37,18 @@ var tableFunctions = (function () {
 
   function selectAll() {
     // Click on Select all highlights all rows and disables checkboxes
-    document.getElementById('select_all_page').checked = false;
     let checked = this.checked;
-    Array.from(document.getElementsByClassName("select-checkbox")).forEach(function (box) {
-      box.checked = checked;
-      box.disabled = checked;
-      highlightRow(box);
-    })
     if (checked) {
       document.getElementById('count').innerText = 'All';
     } else {
-      document.getElementById('count').innerText = '0';
+      document.getElementById('select_all_page').disabled = false;
+      //this.parentElement.classList.add("d-none")
+      Array.from(document.getElementsByClassName("select-checkbox")).forEach(function (box) {
+        box.checked = true;
+        box.disabled = false;
+        highlightRow(box);
+        countChecked();
+      })
     }
     document.getElementById('selectActionMenu').disabled = !checked;
     lastChecked = null;
@@ -44,6 +57,8 @@ var tableFunctions = (function () {
   function tableClick(e) {
     if (e.target.name === 'select-checkbox') {
       // Click on row's select checkbox - handle using shift to select multiple rows
+      document.getElementById('select_all_page').checked = false;
+      document.getElementById('select_all').parentElement.classList.add("d-none");
       let chkBox = e.target;
       highlightRow(chkBox);
       if (!lastChecked) {

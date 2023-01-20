@@ -1,18 +1,45 @@
 import logging
-
+from enum import IntEnum
 from django.http import QueryDict
 from django.shortcuts import redirect, render
 from django_filters.views import FilterView
 from django_htmx.http import HttpResponseClientRefresh, HttpResponseClientRedirect
 from django_tables2 import SingleTableMixin
 from django_tables2.export.views import ExportMixin
+from django_tables2.export.export import TableExport
 
-from tables_plus.utils import save_columns, load_columns, toggle_column, save_per_page, update_url
+from tables_plus.utils import (
+    save_columns,
+    load_columns,
+    set_column,
+    save_per_page,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
+class ExportMixinPlus(ExportMixin):
+    def create_export(self, export_format):
+        table = self.get_table(**self.get_table_kwargs())
+        table.before_render(self.request)
+        exclude_columns = [k for k, v in table.columns.columns.items() if not v.visible]
+        exporter = self.export_class(
+            export_format=export_format,
+            table=table,
+            exclude_columns=exclude_columns,
+            dataset_kwargs=self.get_dataset_kwargs(),
+        )
+        return exporter.response(filename=self.get_export_filename(export_format))
+
+
+class TablesPlusView(ExportMixinPlus, SingleTableMixin, FilterView):
+    class FilterStyle(IntEnum):
+        NONE = 0
+        TOOLBAR = 1
+        MODAL = 2
+        HEADER = 3
+
+    title = ""
     template_name = "tables_plus/table_plus.html"
     filter_template_name = "tables_plus/filter_modal.html"
     columns_template_name = "tables_plus/manage_columns.html"
@@ -22,15 +49,14 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
     context_filter_name = "filter"
     table_pagination = {"per_page": 25}
     infinite_scroll = False
-    header = ""
     #
-    filter_row = False
-    filter_button = False
-    filter_modal = False
+    filter_style = FilterStyle.TOOLBAR
+    filter_button = False  # only relevant for TOOLBAR style
     #
     sticky_header = False
     buttons = None
     object_name = ""
+    #
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -51,20 +77,32 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
         return []
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        # load_columns(self.request, context["table"])
-        context["buttons"] = self.get_buttons()
-        context["actions"] = self.get_actions()
-        context["columns"] = self.column_states(self.request)
-        context["rows"] = self.rows_list()
-        per_page = self.request.GET.get("per_page", self.table_pagination.get("per_page", 25))
-        context["per_page"] = f"{per_page} rows"
-        context["header"] = self.header
-
-        context["default"] = True
-        context["filter_button"] = self.filter_button
-        context["table"].infinite_scroll = self.infinite_scroll
-        context["table"].before_render(self.request)
+        context = super().get_context_data(**kwargs)
+        table = context["table"]
+        table.filter = context["filter"]
+        table.infinite_scroll = self.infinite_scroll
+        table.before_render(self.request)
+        if table.filter:
+            table.filter.style = self.filter_style
+            if self.filter_style == self.FilterStyle.HEADER:
+                # build list of filters in same sequence as columns
+                table.header_fields = []
+                for key in table.columns.columns.keys():
+                    if table.columns.columns[key].visible:
+                        if key in table.filter.base_filters.keys():
+                            table.header_fields.append(table.filter.form[key])
+                        else:
+                            table.header_fields.append(None)
+        context.update(
+            title=self.title,
+            filter_button=self.filter_button,
+            buttons=self.get_buttons(),
+            actions=self.get_actions(),
+            columns=self.column_states(self.request),
+            rows=self.rows_list(),
+            per_page=self.request.GET.get("per_page", self.table_pagination.get("per_page", 25)),
+            default=True,
+        )
         return context
 
     def render_table_data(self, request, *args, **kwargs):
@@ -89,11 +127,13 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
         else:
             self.selected_objects = self.get_queryset().filter(pk__in=request.POST.getlist("select-checkbox"))
 
-        path = request.path + request.POST["query"]
         if "export" in request.POST:
-            if self.heading:
-                self.export_name = self.heading
-            return redirect(path + "&_export=xlsx" "")
+            path = request.path + request.POST["query"]
+            if len(request.POST["query"]) > 1:
+                path += "&"
+            self.export_name = self.title if self.title else "Export"
+            return HttpResponseClientRedirect(path + "_export=xlsx")
+
         response = self.handle_action(request)
         return response if response else HttpResponseClientRefresh()
 
@@ -108,7 +148,6 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
                     qd["page"] = "2"
                 else:
                     qd["page"] = str(int(qd["page"]) + 1)
-                print(qd["page"])
             return self.filterset_class(qd, queryset=query_set, request=request).qs
         return query_set
 
@@ -136,29 +175,35 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
 
     def get_htmx(self, request, *args, **kwargs):
         if request.htmx.trigger_name == "filter" and self.filterset_class:
+            # show filter modal
             context = {"filter": self.filterset_class(request.GET)}
             return render(request, self.filter_template_name, context)
 
         elif request.htmx.trigger_name == "filter_form":
+            # a filter value was changed
             return self.render_table_data(request, *args, **kwargs)
 
         elif request.htmx.trigger_name == "columns":
+            # show column dropdown
             context = {"columns": self.column_states(request)}
             return render(request, self.columns_template_name, context)
 
         elif "id_col" in request.htmx.trigger:
-            """Click on column checkbox in dropdown re-renders the table"""
-            toggle_column(request, request.htmx.trigger_name[4:], self.table_class)
+            # click on column checkbox in dropdown re-renders the table
+            col_name = request.htmx.trigger_name[4:]
+            checked = request.htmx.trigger_name in request.GET
+            set_column(request, self.table_class, col_name, checked)
             return self.render_table_data(request, *args, **kwargs)
 
         elif "id_row" in request.htmx.trigger:
+            # change number of rows to display
             rows = request.htmx.trigger_name
             save_per_page(request, rows)
-            url = update_url(request.htmx.current_url, rows)
+            url = self._update_parameter(request, "per_page", rows)
             return HttpResponseClientRedirect(url)
 
         elif "default" in request.htmx.trigger:
-            """Restore defaults if defined in Meta else all columns"""
+            # restore default number of rows if defined in Meta else all columns"""
             try:
                 column_list = list(self.table_class.Meta.default_columns)
             except AttributeError:
@@ -166,9 +211,9 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
             save_columns(request, column_list)
             return HttpResponseClientRefresh()
 
-        elif request.htmx.trigger_name == "per_page":
-            self.table_pagination = {"per_page": request.GET["per_page"]}
-            return HttpResponseClientRefresh()
+        # elif request.htmx.trigger_name == "per_page":
+        #     self.table_pagination = {"per_page": request.GET["per_page"]}
+        #     return HttpResponseClientRefresh()
 
         elif "tr_" in request.htmx.trigger:
             if "_scroll" in request.GET:
@@ -178,15 +223,17 @@ class TablesPlusView(ExportMixin, SingleTableMixin, FilterView):
                 self.template_name = saved
                 return response
 
-                qd = QueryDict(request.htmx.current_url).copy()
-                qd["page"] = request.GET.get("page", 1)
-                try:
-                    self.object_list = self.filterset_class(qd, queryset=self.get_queryset(), request=request).qs
-                except Exception as e:
-                    pass
-                context = self.get_context_data()
-                context["next_page"] = int(request.GET.get("page"), 0) + 1
-                print(context["next_page"])
-                context["table"].before_render(request)  # sets column visibilty
-                return render(request, template_name, context)
             return self.row_clicked(request.htmx.trigger.split("_")[1], request.htmx.target, request.htmx.current_url)
+
+        elif "id_" in request.htmx.trigger:
+            url = self._update_parameter(
+                request, request.htmx.trigger_name, request.GET.get(request.htmx.trigger_name, "")
+            )
+            return HttpResponseClientRedirect(url)
+        raise ValueError()
+
+    @staticmethod
+    def _update_parameter(request, key, value):
+        query_dict = request.GET.copy()
+        query_dict[key] = value
+        return f"{request.path}?{query_dict.urlencode()}"

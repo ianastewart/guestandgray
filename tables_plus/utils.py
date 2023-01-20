@@ -1,7 +1,9 @@
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
+
 
 def _base_key(request):
     return request.resolver_match.view_name
+
 
 def save_columns(request, column_list):
     key = f"columns:{_base_key(request)}"
@@ -20,10 +22,13 @@ def load_columns(request, table_class):
     return columns
 
 
-def toggle_column(request, column_name, table_class):
+def set_column(request, table_class, column_name, checked):
     columns = load_columns(request, table_class)
-    columns.remove(column_name) if column_name in columns else columns.append(column_name)
-    save_columns(request, columns)
+    if checked:
+        if column_name not in columns:
+            columns.append(column_name)
+    elif column_name in columns:
+        columns.remove(column_name)
 
 
 def save_per_page(request, value):
@@ -38,30 +43,22 @@ def load_per_page(request):
     return 0
 
 
-def update_url(url, value):
-    parsed = urlparse(url)
-    queries = parse_qs(parsed.query)
-    existing = ""
-    new_per_page = f"per_page={int(value)}"
-    if "per_page" in queries:
-        value = queries["per_page"]
-        value = int(value[0]) if value else ""
-        existing = f"per_page={value}"
-    elif "per_page=" in url:
-        # case where there is no value is not included in queries
-        existing = "per_page="
-    if existing:
-        url = url.replace(existing, new_per_page)
-    elif queries:
-        url = f"{url}&{new_per_page}"
-    else:
-        url = f"{url}?{new_per_page}"
-    return url
-
-
-def per_page_value(path):
-    parsed = urlparse(path)
-    queries = parse_qs(parsed.query)
-    if "per_page" in queries:
-        return int(queries["per_page"][0])
-    return 0
+# def update_url(url, key, value):
+#     """Add or replace 'key=value' in url"""
+#     # todo handle multi value filter
+#     query = urlparse(url).query
+#     existing = ""
+#     # if isinstance(value, str):
+#     #     value = quote(value)
+#     new_param = f"{key}={value}"
+#     s = query.find(f"{key}=")
+#     if s > -1:
+#         e = query.index("&", s) if "&" in query[s:] else len(query)
+#         existing = query[s:e]
+#     if existing:
+#         url = url.replace(existing, new_param)
+#     elif "?" in url:
+#         url = f"{url}&{new_param}"
+#     else:
+#         url = f"{url}?{new_param}"
+#     return url

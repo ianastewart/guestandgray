@@ -15,16 +15,12 @@
           {% bootstrap_form_errors filter.form type="non_fields" %}
           <div class="d-flex-column">
             {% for field in filter.form.visible_fields %}
-              {% if field.name == 'per_page' %}
-                <input type="hidden" name="per_page" id="hidden_per_page">
-              {% else %}
-                  {% bootstrap_field field form_group_class="form-group auto-submit" placeholder="" layout="horizontal" %}
-              {% endif %}
+              {% bootstrap_field field form_group_class="form-group auto-submit" placeholder="" layout="horizontal" %}
             {% endfor %}
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" name="filter_save">Save</button>
+          <button type="submit" class="btn btn-primary" name="filter_save">Filter</button>
           <button type="submit" class="btn btn-primary" name="filter_cancel">Cancel</button>
         </div>
       </form>
