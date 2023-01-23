@@ -29,6 +29,7 @@ def set_column(request, table_class, column_name, checked):
             columns.append(column_name)
     elif column_name in columns:
         columns.remove(column_name)
+    save_columns(request, columns)
 
 
 def save_per_page(request, value):

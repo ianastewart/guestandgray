@@ -66,10 +66,10 @@ class ItemTable(Table):
         attrs = {"class": "table table-sm table-hover", "thead": {"class": "bg-light"}}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
-            # "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
             # "data-selected": "table-danger",
-            "data-modal": "",
-            "id": lambda record: f"tr_{record.pk}",
+            # "data-modal": "",
+            # "id": lambda record: f"tr_{record.pk}",
             # "class": "table-row pl-4",
         }
 

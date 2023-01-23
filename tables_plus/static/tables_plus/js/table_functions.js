@@ -12,11 +12,15 @@ var tableFunctions = (function () {
       document.getElementById("id_table_form").submit()
     }));
     Array.from(document.querySelectorAll(".form-group.hx-get")).forEach(e => e.addEventListener("change", filterChanged));
+    countChecked()
+    console.log("INIT");
   }
   function filterChanged() {
       htmx.ajax('GET', '', {source: '#' + this.lastChild.id, target: '#table_data'});
     }
-
+  function checkBoxes() {
+    return Array.from(document.getElementsByClassName("select-checkbox"))
+  }
 
   function selectAllPage() {
     // Click on 'Select all on page' highlights all rows
@@ -64,11 +68,12 @@ var tableFunctions = (function () {
       if (!lastChecked) {
         lastChecked = chkBox;
       } else if (e.shiftKey) {
+        let chkBoxes = checkBoxes();
         let start = chkBoxes.indexOf(chkBox);
         let end = chkBoxes.indexOf(lastChecked);
-        Array.from(document.getElementsByClassName("select-checkbox")).slice(Math.min(start, end), Math.max(start, end) + 1).forEach(function (box) {
+        chkBoxes.slice(Math.min(start, end), Math.max(start, end) + 1).forEach(function (box) {
           box.checked = chkBox.checked;
-          highlightRow(box)
+         // highlightRow(box)
         });
         lastChecked = chkBox;
       } else {
@@ -103,9 +108,14 @@ var tableFunctions = (function () {
     }
   }
 
-// Count the number of checked rows
+// Count the number of checked rows abd nake sure they are highlighted
   function countChecked() {
-    let count = document.querySelectorAll('.select-checkbox:checked').length;
+    let checked = Array.from(document.querySelectorAll(".select-checkbox:checked"));
+    checked.forEach(function(e){
+      let row = e.parentElement.parentElement
+      row.classList.add((("selected" in row.dataset) ? row.dataset.selected : "table-active"))
+    });
+    let count = checked.length;
     document.getElementById('count').innerText = count.toString();
     document.getElementById('selectActionMenu').disabled = (count === 0)
   }

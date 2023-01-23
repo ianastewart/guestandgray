@@ -36,7 +36,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     infinite_scroll = True
 
     def get(self, request, *args, **kwargs):
-        self.clear_stack(request)
+        self.request.session.pop("referrer", None)
         return super().get(request, *args, **kwargs)
 
     def get_initial_data(self):
@@ -86,6 +86,8 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
                 if item.image:
                     item.image.delete()
                 item.delete()
+        elif "export-all-columns" in request.POST:
+            return self.export(request, query_set=self.get_queryset(), all_columns=True)
 
     def row_clicked(self, pk, target, url):
         path = reverse("item_detail", kwargs={"pk": pk})
@@ -95,7 +97,9 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     def get_buttons(self):
         return [
             Button("New item", href=reverse("item_create")),
+            Button("Export all columns", typ="submit")
         ]
+
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
@@ -151,7 +155,8 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     def get_success_url(self):
         if "preview" in self.request.POST:
             return reverse("item_detail", kwargs={"pk": self.object.pk})
-        return super().get_success_url()
+        referrer = self.request.session.pop("referrer", None)
+        return referrer if referrer else reverse("staff_home")
 
 
 class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
@@ -160,6 +165,8 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if reverse("item_list") in self.request.META["HTTP_REFERER"]:
+            self.request.session["referrer"] = self.request.META["HTTP_REFERER"]
         context["images"], context["bad_images"] = self.object.visible_images()
         context["image"] = self.object.image if self.object.image in context["images"] else None
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
@@ -177,7 +184,8 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
                 messages.INFO,
                 f"Item ref: {item.ref} has been added to the cart",
             )
-        return redirect(self.get_success_url())
+        referrer = self.request.session.pop("referrer", None)
+        return redirect(referrer if referrer else "staff_home")
 
 
 class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):

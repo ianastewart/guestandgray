@@ -31,6 +31,13 @@ class ExportMixinPlus(ExportMixin):
         )
         return exporter.response(filename=self.get_export_filename(export_format))
 
+    def render_to_response(self, context, **kwargs):
+        export_format = self.request.GET.get(self.export_trigger_param, None)
+        if self.export_class.is_valid_format(export_format):
+            return self.create_export(export_format)
+
+        return super().render_to_response(context, **kwargs)
+
 
 class TablesPlusView(ExportMixinPlus, SingleTableMixin, FilterView):
     class FilterStyle(IntEnum):
@@ -65,6 +72,18 @@ class TablesPlusView(ExportMixinPlus, SingleTableMixin, FilterView):
     def get(self, request, *args, **kwargs):
         if request.htmx:
             return self.get_htmx(request, *args, **kwargs)
+        if "_export" in request.GET:
+            export_format = request.GET.get("_export", "csv")
+            qs = self.get_queryset()
+            subset = request.GET.get("_records", None)
+            if subset == "selected":
+                qs = qs.filter(id__in=request.session.get("selected_ids", []))
+            elif subset == "filter":
+                filterset_class = self.get_filterset_class()
+                self.filterset = self.get_filterset(filterset_class)
+                if not self.filterset.is_bound or self.filterset.is_valid() or not self.get_strict():
+                    qs = self.filterset.qs
+            return self.export(request, query_set=qs)
         return super().get(request, *args, **kwargs)
 
     def rows_list(self):
@@ -124,18 +143,37 @@ class TablesPlusView(ExportMixinPlus, SingleTableMixin, FilterView):
         # It's an action performed on a queryset
         if "select_all" in request.POST and "?" in request.htmx.current_url:
             self.selected_objects = self.filtered_query_set(request, request.htmx.current_url)
+            records = "all"
         else:
+            records = "selected"
+            request.session["selected_ids"] = request.POST.getlist("select-checkbox")
             self.selected_objects = self.get_queryset().filter(pk__in=request.POST.getlist("select-checkbox"))
 
         if "export" in request.POST:
             path = request.path + request.POST["query"]
             if len(request.POST["query"]) > 1:
                 path += "&"
-            self.export_name = self.title if self.title else "Export"
-            return HttpResponseClientRedirect(path + "_export=xlsx")
+            return HttpResponseClientRedirect(f"{path}_export=xlsx&_records={records}")
 
         response = self.handle_action(request)
         return response if response else HttpResponseClientRefresh()
+
+    def export(self, request, filename="Export", export_format="csv", query_set=None, all_columns=False):
+        """Use tablib to export in desired format"""
+        self.object_list = query_set
+        table = self.get_table()
+        exclude_columns = []
+        if not all_columns:
+            table.before_render(request)
+            exclude_columns = [k for k, v in table.columns.columns.items() if not v.visible]
+        exclude_columns.append("selection")
+        exporter = self.export_class(
+            export_format=export_format,
+            table=table,
+            exclude_columns=exclude_columns,
+            dataset_kwargs=self.get_dataset_kwargs(),
+        )
+        return exporter.response(filename=f"{filename}.{export_format}")
 
     def filtered_query_set(self, request, url, next=False):
         """Recreate the queryset used in GET for use in POST"""
