@@ -1,0 +1,44 @@
+{% extends "tables_plus/modal_base.html" %}
+{% load bootstrap4 shop_tags %}
+{% block title %}Add Contact{% endblock %}
+{% block modal_content %}
+  <form>
+  {% csrf_token %}
+  {{ block.super }}
+  {% endblock %}
+{% block modal_body %}
+  <div class="modal-body bg-light">
+    {% if not hide_controls %}
+      <div class="row">
+        <div class="col col-md-3">{% checkbox form.vendor %}</div>
+        <div class="col col-md-3">{% checkbox form.buyer %}</div>
+        <div class="col col-md-3">{% checkbox form.restorer %}</div>
+      </div>
+      <hr>
+    {% endif %}
+    <div class="row">
+      <div class="col col-md-4 pr-1">{% bootstrap_field form.first_name set_placeholder=False %}</div>
+      <div class="col col-md-8 pl-1">{% bootstrap_field form.company set_placeholder=False %}</div>
+    </div>
+    {% bootstrap_field form.address set_placeholder=False %}
+    {% if addresses|length > 1 %}
+      <button type="button" class="btn btn-sm btn-secondary mb-2" data-toggle="modal"
+              data-target="#modal-addresses">
+        Show other addresses
+      </button>{% endif %}
+    <div class="row">
+      <div class="col col-md-6 pr-1">{% bootstrap_field form.mobile_phone set_placeholder=False %}</div>
+      <div class="col col-md-6 pl-1">{% bootstrap_field form.work_phone set_placeholder=False %}</div>
+    </div>
+    {% bootstrap_field form.email set_placeholder=False %}
+    {% bootstrap_field form.notes set_placeholder=False %}
+  </div>
+  <div class="modal-footer">
+    {% if allow_delete %}
+      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-confirm">Delete</button>
+    {% endif %}
+    <button type="submit" hx-post="{{ modal_url }}" hx-target="#modals-here" class="btn btn-primary" name="save">Save</button>
+  </div>
+  </form>
+{% endblock %}
+

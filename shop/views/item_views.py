@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
 from django_htmx.http import HttpResponseClientRefresh, HttpResponseClientRedirect
 from notes.models import Note
@@ -18,7 +18,7 @@ from shop.truncater import truncate
 from table_manager.buttons import BsButton
 from table_manager.mixins import StackMixin
 from table_manager.views import AjaxCrudView, FilteredTableView
-from tables_plus.views import TablesPlusView
+from tables_plus.views import TablesPlusView, ModalMixin
 from tables_plus.buttons import Button
 
 logger = logging.getLogger(__name__)
@@ -28,8 +28,10 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     model = Item
     table_class = ItemTable
     filterset_class = ItemFilter
-    filter_style = TablesPlusView.FilterStyle.HEADER
+    filter_style = TablesPlusView.FilterStyle.MODAL
     filter_button = False
+    click_url_name = "item_detail_htmx"
+    click_method = "hxget"
 
     template_name = "shop/table.html"
     title = "Items"
@@ -62,6 +64,9 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
             ("export", "Export to Excel"),
         ]
 
+    def get_buttons(self):
+        return [Button("New item", href=reverse("item_create")), Button("Export all columns", typ="submit")]
+
     def handle_action(self, request):
         if "show_price" in request.POST:
             self.selected_objects.update(show_price=True)
@@ -89,17 +94,10 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
         elif "export-all-columns" in request.POST:
             return self.export(request, query_set=self.get_queryset(), all_columns=True)
 
-    def row_clicked(self, pk, target, url):
-        path = reverse("item_detail", kwargs={"pk": pk})
-        prefix = "&" if "?" in url else "?"
-        return HttpResponseClientRedirect(path + prefix + "return_url=" + url)
-
-    def get_buttons(self):
-        return [
-            Button("New item", href=reverse("item_create")),
-            Button("Export all columns", typ="submit")
-        ]
-
+    # def row_clicked(self, pk, target, url):
+    #     path = reverse("item_detail", kwargs={"pk": pk})
+    #     prefix = "&" if "?" in url else "?"
+    #     return HttpResponseClientRedirect(path + prefix + "return_url=" + url)
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
@@ -159,8 +157,10 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
         return referrer if referrer else reverse("staff_home")
 
 
-class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
+class ItemDetailView(LoginRequiredMixin, ModalMixin, StackMixin, DetailView):
     model = Item
+    modal_size = "modal-lg"
+    modal_template_name = "shop/item_detail_modal.html"
     template_name = "shop/item_detail.html"
 
     def get_context_data(self, **kwargs):

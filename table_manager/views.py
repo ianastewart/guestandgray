@@ -53,13 +53,13 @@ class FilteredTableView(ExportMixin, SingleTableView):
         self.first_run = False
 
     def get_initial_data(self):
-        """ Initial values for filter """
+        """Initial values for filter"""
         if self.table_pagination:
             return self.table_pagination.copy()
         return {}
 
     def get_table_data(self):
-        """ Returns a filtered queryset"""
+        """Returns a filtered queryset"""
         filter_data = self.request.GET.copy()
         lines = 0
         self.first_run = len(filter_data) == 0
@@ -84,9 +84,7 @@ class FilteredTableView(ExportMixin, SingleTableView):
                     lines = value
                 elif key in self.filter_class.base_filters and key not in filter_data:
                     filter_data[key] = value
-            self.filter = self.filter_class(
-                filter_data, queryset=query_set, request=self.request
-            )
+            self.filter = self.filter_class(filter_data, queryset=query_set, request=self.request)
             query_set = self.filter.qs
             if lines:
                 self.filter.data["per_page"] = lines
@@ -130,13 +128,11 @@ class FilteredTableView(ExportMixin, SingleTableView):
         return context
 
     def post(self, request, *args, **kwargs):
-        """ post requests are actions performed on a queryset """
+        """post requests are actions performed on a queryset"""
 
         self.selected_objects = self.post_query_set(request)
         if not self.selected_objects:
-            self.selected_objects = self.model.objects.filter(
-                pk__in=request.POST.getlist("selection")
-            )
+            self.selected_objects = self.model.objects.filter(pk__in=request.POST.getlist("selection"))
 
         path = request.path + request.POST["query"]
         if "export" in request.POST:
@@ -169,9 +165,7 @@ class FilteredTableView(ExportMixin, SingleTableView):
                 filter_data = QueryDict(query)
                 query_set = self.get_queryset()
                 if self.filter_class:
-                    f = self.filter_class(
-                        filter_data, queryset=query_set, request=self.request
-                    )
+                    f = self.filter_class(filter_data, queryset=query_set, request=self.request)
                     query_set = f.qs
                 return self.process_table_data(query_set)
         return None
@@ -189,7 +183,7 @@ class FilteredTableView(ExportMixin, SingleTableView):
 
 
 class AjaxCrudView(ModelFormMixin, View):
-    """ Generic view that handles creation, update and delete in a modal triggered by a FilteredListView """
+    """Generic view that handles creation, update and delete in a modal triggered by a FilteredListView"""
 
     object = None
     object_name = None
@@ -212,7 +206,7 @@ class AjaxCrudView(ModelFormMixin, View):
         return None
 
     def get(self, request, **kwargs):
-        if request.is_ajax():
+        if request.htmx:
             return_url = request.GET["return_url"]
             no_push = request.GET["no_push"] == "true"
             if return_url == "":
@@ -228,7 +222,7 @@ class AjaxCrudView(ModelFormMixin, View):
         return HttpResponse("JsonCrudView received a non-ajax get request")
 
     def render(self, request, **kwargs):
-        """ get context and return html """
+        """get context and return html"""
         try:
             self.get_object(**kwargs)
             # detail view will not have a form_class
@@ -236,8 +230,6 @@ class AjaxCrudView(ModelFormMixin, View):
                 self.form = self.get_form()
             self.context = self.get_context_data()
             self.context["buttons"] = self.get_buttons()
-            self.context["x_target_id"] = self.target_id
-            self.context["x_path"] = self.path
             html = render_to_string(self.template_name, self.context, request)
         except TemplateDoesNotExist as e:
             html = self._format_exception("Template does not exist", e)
@@ -247,17 +239,8 @@ class AjaxCrudView(ModelFormMixin, View):
         return html
 
     def post(self, request, *args, **kwargs):
-        debug_stack(request)
-        if not request.is_ajax():
-            return HttpResponse("JsonCrudView received a non-ajax post request")
-        target_id = request.POST.get("x_target_id")
-        if not target_id:
-            target_id = self.target_id
         validate = request.POST.get("x_validate") == "true" and not self.no_validate
         action_response = None
-        next_is_ajax = True
-        # default return values assuming simple crud operation was successful
-        data = {"target_id": target_id, "html": ""}
         try:
             self.instance = self.get_object(**kwargs)
             if "cancel" in request.POST:
@@ -285,9 +268,7 @@ class AjaxCrudView(ModelFormMixin, View):
                             # default save action only works for a model form
                             if hasattr(self.form, "save"):
                                 self.save_object(data, **kwargs)
-                                action_response = self.handle_action(
-                                    "save", pk=self.object.pk
-                                )
+                                action_response = self.handle_action("save", pk=self.object.pk)
 
             if action_response is None:
                 for key in request.POST.keys():
@@ -309,9 +290,7 @@ class AjaxCrudView(ModelFormMixin, View):
             else:
                 next_url = ""
                 next_is_ajax = False
-            return JsonResponse(
-                self._set_next_url(data, next_url=next_url, next_is_ajax=next_is_ajax)
-            )
+            return JsonResponse(self._set_next_url(data, next_url=next_url, next_is_ajax=next_is_ajax))
 
         except Exception as e:
             message = "Exception in POST"
@@ -336,16 +315,14 @@ class AjaxCrudView(ModelFormMixin, View):
 
     def delete(self, data):
         self.instance.delete()
-        messages.add_message(
-            self.request, messages.INFO, f"{str(self.instance)} was deleted"
-        )
+        messages.add_message(self.request, messages.INFO, f"{str(self.instance)} was deleted")
 
     def next_url(self, pk=None):
-        """ called after save so a new form can be shown in a modal """
+        """called after save so a new form can be shown in a modal"""
         return ""
 
     def handle_action(self, action, **kwargs):
-        """ return a url. "" or a tuple (url, is_ajax) """
+        """return a url. "" or a tuple (url, is_ajax)"""
         return ""
 
     def get_context_data(self, **kwargs):
@@ -372,7 +349,7 @@ class AjaxCrudView(ModelFormMixin, View):
         return context
 
     def get_buttons(self):
-        """ This is called after self.context has been defined """
+        """This is called after self.context has been defined"""
         self.buttons = [AjaxButton("Save")]
         if self.allow_delete:
             self.buttons.insert(0, AjaxButton("Delete", button_class="btn-danger"))
@@ -398,6 +375,4 @@ class AjaxCrudView(ModelFormMixin, View):
         if hasattr(e, "template_debug"):
             context["template_name"] = e.template_debug["name"]
             context["during"] = e.template_debug["during"]
-        return render_to_string(
-            "table_manager/modal_error_template.html", context, request=None
-        )
+        return render_to_string("table_manager/modal_error_template.html", context, request=None)

@@ -1,4 +1,4 @@
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.safestring import mark_safe
 from django_tables2.utils import A
 from shop.models import (
@@ -66,7 +66,7 @@ class ItemTable(Table):
         attrs = {"class": "table table-sm table-hover", "thead": {"class": "bg-light"}}
         # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
         row_attrs = {
-            "data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
+            #"data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
             # "data-selected": "table-danger",
             # "data-modal": "",
             # "id": lambda record: f"tr_{record.pk}",
@@ -99,8 +99,11 @@ class ContactTable(Table):
             "mail_consent",
             "notes",
         )
+        click = reverse_lazy("contact_update", kwargs={"pk": 0})
         attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+        row_attrs = {"data-pk": lambda record: record.pk,
+                     "class": "table-row pl-4",
+                     }
 
     selection = SelectionColumn()
 
@@ -233,7 +236,7 @@ class PurchaseTable(Table):
 class EnquiryTable(Table):
     class Meta:
         model = Enquiry
-        fields = ("sequence", "date", "subject", "message")
+        fields = ("selection", "date", "subject", "message")
         attrs = {"class": "table table-sm table-hover hover-link table-responsive"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 

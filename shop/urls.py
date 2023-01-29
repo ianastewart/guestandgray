@@ -78,6 +78,7 @@ staff_urls = [
     path("item/list/", ItemTableView.as_view(), name="item_list"),
     path("item/create/", ItemCreateView.as_view(), name="item_create"),
     path("item/detail/<int:pk>/", ItemDetailView.as_view(), name="item_detail"),
+    path("item/detail/", ItemDetailView.as_view(), name="item_detail_htmx"),
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("image/assign/<int:image_pk>/", image_assign_view, name="image_assign"),
@@ -91,8 +92,9 @@ staff_urls = [
     path("category/detail/<int:pk>/", CategoryDetailView.as_view(), name="category_detail"),
     # Contacts including vendors and buyers
     path("contact/list/", ContactListView.as_view(), name="contact_list"),
-    path("contact/list/create/", ContactCreateView.as_view(), name="contact_create"),
-    path("contact/list/update/<int:pk>/", ContactUpdateView.as_view(), name="contact_update"),
+    path("contact/create/", ContactCreateView.as_view(), name="contact_create"),
+    path("contact/update/<int:pk>/", ContactUpdateView.as_view(), name="contact_update"),
+    path("contact/update/", ContactUpdateView.as_view(), name="contact_update_htmx"),
     path("contact/lookup/", contact_lookup, name="contact_lookup"),
     # Mail list
     path("contact/mail_list/", MailListView.as_view(), name="mail_list"),

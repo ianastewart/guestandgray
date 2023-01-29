@@ -1,11 +1,15 @@
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
+from django.views.generic import CreateView, UpdateView
+from django_htmx.http import HttpResponseClientRefresh, trigger_client_event
 from shop.models import Contact, Enquiry, Address
 from shop.forms import ContactForm, EnquiryForm
 from shop.tables import ContactTable, ContactTableTwo, EnquiryTable, MailListTable
 from table_manager.views import FilteredTableView, AjaxCrudView
-from tables_plus.views import TablesPlusView
+from tables_plus.views import TablesPlusView, ModalMixin
+from tables_plus.buttons import Button
 from shop.filters import ContactFilter, EnquiryFilter
 
 
@@ -14,11 +18,18 @@ class ContactListView(LoginRequiredMixin, TablesPlusView):
     template_name = "shop/table.html"
     table_class = ContactTable
     filterset_class = ContactFilter
-    filter_toolbar = True
+    filter_style = TablesPlusView.FilterStyle.HEADER
+    click_url_name = "contact_update"
+    click_method = "hxget"
 
     def get_queryset(self):
         return Contact.objects.all().prefetch_related("main_address").order_by("company")
 
+    def get_buttons(self):
+        return [Button("New contact", hx_get=reverse("contact_create"), hx_target="#modals-here")]
+
+    def row_clicked(self, pk, target, url):
+        return
 
 class VendorListView(ContactListView):
     table_class = ContactTableTwo
@@ -36,30 +47,32 @@ class BuyerListView(ContactListView):
         return Contact.objects.filter(buyer=True).order_by("company")
 
 
-class ContactCreateView(LoginRequiredMixin, AjaxCrudView):
+class ContactCreateView(LoginRequiredMixin, ModalMixin, CreateView):
     model = Contact
     form_class = ContactForm
-    template_name = "shop/includes/partial_contact_form.html"
+    modal_template_name = "shop/includes/modal_contact_form.html"
+    title = "Create contact"
 
-    def save_object(self, **kwargs):
-        super().save_object(**kwargs)
-        data = self.form.cleaned_data
+    def form_valid(self, form):
+        contact = form.save()
+        data = form.cleaned_data
         adr = Address.objects.create(
             address=data["address"],
             work_phone=data["work_phone"],
             mobile_phone=data["mobile_phone"],
             email=data["email"],
-            contact=self.object,
+            contact=contact,
         )
-        self.object.main_address = adr
-        self.object.save()
+        contact.main_address = adr
+        contact.save()
+        return HttpResponseClientRefresh()
 
 
-class ContactUpdateView(LoginRequiredMixin, AjaxCrudView):
+class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
     model = Contact
     form_class = ContactForm
-    template_name = "shop/includes/partial_contact_form.html"
-    update = True
+    modal_template_name = "shop/includes/modal_contact_form.html"
+    title = "Update contact"
     allow_delete = True
 
     def get_form_kwargs(self):
@@ -77,10 +90,13 @@ class ContactUpdateView(LoginRequiredMixin, AjaxCrudView):
         context["addresses"] = self.object.addresses()
         return context
 
-    def save_object(self, **kwargs):
-        super().save_object(**kwargs)
-        adr = self.object.main_address
-        data = self.form.cleaned_data
+    def form_invalid(self, form):
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        contact = form.save()
+        adr = contact.main_address
+        data = form.cleaned_data
         # ignore a reformatting of existing address
         if self.unformat(data["address"]) == self.unformat(adr.address):
             adr.address = data["address"]
@@ -96,24 +112,25 @@ class ContactUpdateView(LoginRequiredMixin, AjaxCrudView):
                 work_phone=data["work_phone"],
                 mobile_phone=data["mobile_phone"],
                 email=data["email"],
-                contact=self.object,
+                contact=contact,
             )
-            self.object.main_address = adr
-            self.object.save()
+            contact.main_address = adr
+            contact.save()
             messages.info(self.request, f"New address for {self.object.name} created")
+        response = HttpResponse("")
+        return trigger_client_event(response, "trigger", {"url": self.request.htmx.current_url_abs_path})
 
     @staticmethod
     def unformat(address):
         return address.replace(" ", "").replace("\r", "").replace("\n", "")
 
 
-class EnquiryListView(LoginRequiredMixin, FilteredTableView):
+class EnquiryListView(LoginRequiredMixin, TablesPlusView):
     model = Enquiry
     table_class = EnquiryTable
-    filter_class = EnquiryFilter
-    table_pagination = {"per_page": 10}
+    filterset_class = EnquiryFilter
     allow_detail = True
-    template_name = "shop/filtered_table.html"
+    template_name = "shop/table.html"
 
     def get_queryset(self):
         return Enquiry.objects.all().order_by("-id")
