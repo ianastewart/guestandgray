@@ -32,8 +32,9 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     filter_button = False
     click_url_name = "item_detail_htmx"
     click_method = "hxget"
+    column_settings = True
 
-    template_name = "shop/table.html"
+    template_name = "shop/table_wide.html"
     title = "Items"
     infinite_scroll = True
 

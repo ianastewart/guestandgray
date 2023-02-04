@@ -33,7 +33,7 @@ class RightAlignedColumn(tables.Column):
         if not "td" in self.attrs:
             self.attrs["td"] = {}
         self.attrs["th"]["style"] = "text-align: right;"
-        self.attrs["td"]["style"] = {"align": "right"}
+        self.attrs["td"]["style"] = "text-align: right;"
 
 
 class CenteredColumn(tables.Column):
@@ -44,7 +44,7 @@ class CenteredColumn(tables.Column):
         if not "td" in self.attrs:
             self.attrs["td"] = {}
         self.attrs["th"]["style"] = "text-align: center;"
-        self.attrs["td"]["style"] = {"align": "center"}
+        self.attrs["td"]["style"] = "text-align: center;"
 
 
 class CenteredTrueColumn(CenteredColumn):

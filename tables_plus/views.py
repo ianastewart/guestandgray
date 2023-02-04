@@ -30,16 +30,19 @@ class TablesPlusView(SingleTableMixin, FilterView):
     title = ""
     template_name = "tables_plus/table_plus.html"
     filter_template_name = "tables_plus/modal_filter.html"
-    columns_template_name = "tables_plus/manage_columns.html"
     table_data_template_name = "tables_plus/render_table_data.html"
     rows_template_name = "tables_plus/render_rows.html"
 
     context_filter_name = "filter"
     table_pagination = {"per_page": 25}
     infinite_scroll = False
+    infinite_load = False
     #
     filter_style = FilterStyle.TOOLBAR
     filter_button = False  # only relevant for TOOLBAR style
+    #
+    column_settings = False
+    row_settings = True
     #
     click_method = "get"
     click_url_name = ""
@@ -216,10 +219,12 @@ class TablesPlusView(SingleTableMixin, FilterView):
             # a filter value was changed
             return self.render_table_data(request, *args, **kwargs)
 
-        elif request.htmx.trigger_name == "columns":
-            # show columns dropdown
-            context = {"columns": self.column_states(request)}
-            return render(request, self.columns_template_name, context)
+        elif request.htmx.trigger_name == "load_more":
+            saved = self.template_name
+            self.template_name = self.rows_template_name
+            response = super().get(request, *args, **kwargs)
+            self.template_name = saved
+            return response
 
         elif "id_col" in request.htmx.trigger:
             # click on column checkbox in dropdown re-renders the table
@@ -259,12 +264,14 @@ class TablesPlusView(SingleTableMixin, FilterView):
                 request, request.htmx.trigger_name, request.GET.get(request.htmx.trigger_name, "")
             )
             return HttpResponseClientRedirect(url)
+
         raise ValueError("Bad htmx get request")
 
     def preprocess_table(self, table, _filter):
         """Add extra attributes to table that we need when rendering"""
         table.filter = _filter
         table.infinite_scroll = self.infinite_scroll
+        table.infinite_load = self.infinite_load
         table.before_render(self.request)
         table.method = self.click_method
         table.url = ""
@@ -314,17 +321,21 @@ class TablesPlusView(SingleTableMixin, FilterView):
 class ModalMixin:
     """Mixin to convert generic views to operate as modal views when called by hx-get"""
 
+    title = ""
+
     def get_template_names(self):
+        # handle case where same view can have different templates
         if self.request.htmx:
-            if self.modal_template_name:
+            if hasattr(self, "modal_template_name"):
                 return [self.modal_template_name]
-        elif self.template_name:
+        if hasattr(self, "template_name"):
             return [self.template_name]
+        raise ValueError("Template name missing")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         url = self.request.resolver_match.route
-        if "<int:pk>" in url:
+        if "<int:pk>" in url and self.object:
             url = url.replace("<int:pk>", str(self.object.pk))
         context["modal_url"] = "/" + url
         return context

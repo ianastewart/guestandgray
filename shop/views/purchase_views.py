@@ -4,7 +4,7 @@ from datetime import date
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View, TemplateView, CreateView, FormView
+from django.views.generic import View, TemplateView, CreateView, FormView, DetailView
 from django.urls import reverse
 from django.shortcuts import redirect
 from shop.forms import (
@@ -18,13 +18,14 @@ from shop.models import Contact, Purchase, Item, ItemRef, Lot
 from shop.tables import PurchaseTable
 from shop.filters import PurchaseFilter
 from table_manager.views import FilteredTableView, AjaxCrudView
+from tables_plus.views import TablesPlusView, ModalMixin
 import shop.session as session
 
 logger = logging.getLogger(__name__)
 
 
 class DispatchMixin:
-    """ Mixin to add session variables to class """
+    """Mixin to add session variables to class"""
 
     def dispatch(self, request, *args, **kwargs):
         self.index = int(kwargs["index"])
@@ -34,7 +35,7 @@ class DispatchMixin:
 
 
 class PurchaseStartView(View):
-    """ Starts a new purchase wizard """
+    """Starts a new purchase wizard"""
 
     def get(self, request):
         session.clear_data(request)
@@ -43,7 +44,7 @@ class PurchaseStartView(View):
 
 
 class PurchaseVendorView(LoginRequiredMixin, DispatchMixin, FormView):
-    """ Capture details of the vendor"""
+    """Capture details of the vendor"""
 
     form_class = PurchaseVendorForm
     template_name = "shop/purchase_create.html"
@@ -74,7 +75,7 @@ class PurchaseVendorView(LoginRequiredMixin, DispatchMixin, FormView):
 
 
 class PurchaseVendorCreateView(LoginRequiredMixin, AjaxCrudView):
-    """ Create a new vendor in modal within the PurchaseCreateView """
+    """Create a new vendor in modal within the PurchaseCreateView"""
 
     model = Contact
     form_class = NewVendorForm
@@ -87,7 +88,7 @@ class PurchaseVendorCreateView(LoginRequiredMixin, AjaxCrudView):
 
 
 class PurchaseDataCreateView(LoginRequiredMixin, DispatchMixin, FormView):
-    """ Capture purchase date, invoice etc """
+    """Capture purchase date, invoice etc"""
 
     form_class = PurchaseDataForm
     template_name = "shop/purchase_data.html"
@@ -104,7 +105,7 @@ class PurchaseDataCreateView(LoginRequiredMixin, DispatchMixin, FormView):
 
 
 class PurchaseLotCreateView(LoginRequiredMixin, DispatchMixin, FormView):
-    """ Capture lot and its items on a dynamically generated form """
+    """Capture lot and its items on a dynamically generated form"""
 
     form_class = PurchaseLotForm
     template_name = "shop/purchase_lot.html"
@@ -143,9 +144,7 @@ class PurchaseLotCreateView(LoginRequiredMixin, DispatchMixin, FormView):
     def form_valid(self, form):
         # allocate cost and ref to items in the lot
         cost = form.cleaned_data["cost"]
-        unit_cost = (cost / len(self.items)).quantize(
-            Decimal("0.01"), rounding=ROUND_FLOOR
-        )
+        unit_cost = (cost / len(self.items)).quantize(Decimal("0.01"), rounding=ROUND_FLOOR)
         diff = cost - (unit_cost * len(self.items))
         for item in self.items:
             item.cost_price = unit_cost
@@ -159,7 +158,7 @@ class PurchaseLotCreateView(LoginRequiredMixin, DispatchMixin, FormView):
 
 
 class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView):
-    """ Final stage of wizard. Allows costs to be updated"""
+    """Final stage of wizard. Allows costs to be updated"""
 
     template_name = "shop/purchase_summary.html"
 
@@ -223,9 +222,7 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
                 i = 2
                 while i <= session.last_index(request):
                     data = session.get_data(i, request)
-                    lot = Lot.objects.create(
-                        number=data["number"], cost=data["cost"], purchase=purchase
-                    )
+                    lot = Lot.objects.create(number=data["number"], cost=data["cost"], purchase=purchase)
                     for item in data["items"]:
                         item.lot = lot
                         item.save()
@@ -245,24 +242,18 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
             data = session.get_data(i, request)
             for item in data["items"]:
                 item.ref = ref
-                ref = (
-                    ItemRef.get_next(increment=True)
-                    if permanent
-                    else ItemRef.increment(ref)
-                )
+                ref = ItemRef.get_next(increment=True) if permanent else ItemRef.increment(ref)
             i += 1
 
     @classmethod
     def set_message(cls, request, remaining):
-        """ defines message to put at top of screen, used also outside creation """
+        """defines message to put at top of screen, used also outside creation"""
         if remaining > 0:
             level = messages.WARNING
             message = f"There is still £{remaining} unallocated"
         elif remaining < 0:
             level = messages.ERROR
-            message = (
-                f"The allocated lot costs exceed the invoice total by £{-remaining}."
-            )
+            message = f"The allocated lot costs exceed the invoice total by £{-remaining}."
         else:
             level = messages.SUCCESS
             message = "Invoice total matches allocated item costs"
@@ -284,7 +275,7 @@ class PurchaseSummaryAjaxView(LoginRequiredMixin, AjaxCrudView):
         return self.object
 
     def get_item(self, **kwargs):
-        """ fetch object data from session"""
+        """fetch object data from session"""
         ref = kwargs.get("ref", None)
         if ref:
             i = 2
@@ -322,14 +313,15 @@ class PurchaseSummaryAjaxView(LoginRequiredMixin, AjaxCrudView):
         return context
 
 
-class PurchaseListView(LoginRequiredMixin, FilteredTableView):
-    """ Show purchases in a generic table """
+class PurchaseListView(LoginRequiredMixin, TablesPlusView):
+    """Show purchases in a generic table"""
 
     model = Purchase
     table_class = PurchaseTable
-    filter_class = PurchaseFilter
-    filter_left = True
-    allow_detail = True
+    filterset_class = PurchaseFilter
+    template_name = "shop/table.html"
+    title = "Purchases"
+    click_url_name = "purchase_detail_modal"
 
     def get_queryset(self):
         return Purchase.objects.all().order_by("-id")
@@ -340,12 +332,46 @@ class PurchaseListView(LoginRequiredMixin, FilteredTableView):
         initial["to_date"] = date(2020, 1, 1)
         return initial
 
-    def get_buttons(self):
-        return [("Export to Excel", "export")]
+    # def get_buttons(self):
+    #     return [("Export to Excel", "export")]
+
+
+class PurchaseDetailModal(LoginRequiredMixin, ModalMixin, DetailView):
+    """Show Purchase summary in a modal over the PurchaseListView"""
+
+    model = Purchase
+    template_name = "shop/purchase_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            vendor = Contact.objects.get(id=self.object.vendor_id)
+        except:
+            Contact.DoesNotExist
+            vendor = None
+        context["vendor"] = vendor
+        context["purchase"] = self.object
+        lots = self.object.lot_set.all().order_by("pk")
+        error = False
+        for lot in lots:
+            lot.items = []
+            lot.total = Decimal(0)
+            for item in lot.item_set.all().order_by("pk"):
+                lot.items.append(item)
+                lot.total += item.cost_price
+            lot.error = lot.total - lot.cost
+            if lot.error != 0:
+                error = True
+            lot.can_update = len(lot.items) > 1
+        context["lots"] = lots
+        context["error"] = error
+        context["change_path"] = reverse("purchase_item_ajax", kwargs={"pk": 0})
+        context["creating"] = False
+        return context
 
 
 class PurchaseDetailAjax(LoginRequiredMixin, AjaxCrudView):
-    """ Show Purchase summary in a modal over the PurchaseListView"""
+    """Show Purchase summary in a modal over the PurchaseListView"""
 
     model = Purchase
     template_name = "shop/includes/partial_purchase_summary.html"
@@ -380,7 +406,7 @@ class PurchaseDetailAjax(LoginRequiredMixin, AjaxCrudView):
 
 
 class PurchaseItemAjax(LoginRequiredMixin, AjaxCrudView):
-    """ Show second modal over PurchaseDetailAjax modal to change item cost """
+    """Show second modal over PurchaseDetailAjax modal to change item cost"""
 
     model = Item
     form_class = UpdateItemForm

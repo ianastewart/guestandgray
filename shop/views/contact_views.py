@@ -19,6 +19,7 @@ class ContactListView(LoginRequiredMixin, TablesPlusView):
     table_class = ContactTable
     filterset_class = ContactFilter
     filter_style = TablesPlusView.FilterStyle.HEADER
+    infinite_load = True
     click_url_name = "contact_update"
     click_method = "hxget"
 
@@ -30,6 +31,7 @@ class ContactListView(LoginRequiredMixin, TablesPlusView):
 
     def row_clicked(self, pk, target, url):
         return
+
 
 class VendorListView(ContactListView):
     table_class = ContactTableTwo
@@ -116,9 +118,7 @@ class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
             )
             contact.main_address = adr
             contact.save()
-            messages.info(self.request, f"New address for {self.object.name} created")
-        response = HttpResponse("")
-        return trigger_client_event(response, "trigger", {"url": self.request.htmx.current_url_abs_path})
+        return self.reload_table()
 
     @staticmethod
     def unformat(address):

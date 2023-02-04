@@ -1,0 +1,9 @@
+{% extends "tables_plus/modal_base.html" %}
+{% block modal_content %}
+  {{ block.super }}
+{% endblock %}
+{% block modal_body %}
+  <div class="modal-body">
+    {% include 'shop/includes/partial_invoice_detail.html' %}
+  </div>
+{% endblock %}

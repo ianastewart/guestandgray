@@ -45,6 +45,7 @@ from shop.views.purchase_views import (
     PurchaseSummaryAjaxView,
     PurchaseListView,
     PurchaseDetailAjax,
+    PurchaseDetailModal,
     PurchaseItemAjax,
 )
 from shop.views.cart_views import (
@@ -109,6 +110,7 @@ staff_urls = [
     # Purchases
     path("purchase/list/", PurchaseListView.as_view(), name="purchase_list"),
     path("purchase/list/detail/<int:pk>/", PurchaseDetailAjax.as_view(), name="purchase_detail"),
+    path("purchase/detail/<int:pk>/", PurchaseDetailModal.as_view(), name="purchase_detail_modal"),
     path("purchase/start/", PurchaseStartView.as_view(), name="purchase_start"),
     path("purchase/create/<int:index>/", PurchaseVendorView.as_view(), name="purchase_vendor"),
     path("purchase/create/<int:index>/vendor/", PurchaseVendorCreateView.as_view(), name="purchase_create_vendor"),

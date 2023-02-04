@@ -2,38 +2,39 @@
 {% block head %}
 
   <style>
-      .table-container thead.sticky{
-            position: sticky;
-            top: 0;
-        }
-/*
-    .table-container th.orderable:before{
-        content: '\21c5';
-        float: right;
-    }
-*/
-    .table-container th.asc:before {
-        content: '\25b2';
-        float: right;
-    }
+      .table-container thead.sticky {
+          position: sticky;
+          top: 0;
+      }
 
-    .table-container th.desc:before {
-        content: '\25bc';
-        float: right;
-    }
+      /*
+          .table-container th.orderable:before{
+              content: '\21c5';
+              float: right;
+          }
+      */
+      .table-container th.asc:before {
+          content: '\25b2';
+          float: right;
+      }
 
-    td {
-    overflow: hidden;
-}
+      .table-container th.desc:before {
+          content: '\25bc';
+          float: right;
+      }
 
-.table-container th > a {
-    display: block;
-}
+      td {
+          overflow: hidden;
+      }
+
+      .table-container th > a {
+          display: block;
+      }
   </style>
 
 {% endblock %}
 {% block content %}
-  <div class="container-fluid" style="height: calc(100% - 60px);">
+  <div class="container{% block size %}{% endblock %}" style="height: calc(100% - 60px);">
     {% if title %}<h3>{{ title }}</h3>{% endif %}
     <div class="bg-light border-top border-bottom">
       {% include "tables_plus/filter_toolbar.html" %}

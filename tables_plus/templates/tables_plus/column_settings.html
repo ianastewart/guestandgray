@@ -1,4 +1,5 @@
 {# Code for toggle and margin is compatible with bootstrap4 and bootstrap5 #}
+{% if view.column_settings %}
 <div class="dropdown">
   <button class="btn btn-outline-secondary dropdown-toggle mr-1" type="button" id="dropdownColumnButton"
           data-toggle="dropdown" data-bs-toggle="dropdown"
@@ -21,3 +22,4 @@
     {% endfor %}
   </div>
 </div>
+{% endif %}
