@@ -19,7 +19,7 @@ class ContactListView(LoginRequiredMixin, TablesPlusView):
     table_class = ContactTable
     filterset_class = ContactFilter
     filter_style = TablesPlusView.FilterStyle.HEADER
-    infinite_load = True
+    infinite_scroll = False
     click_url_name = "contact_update"
     click_method = "hxget"
 

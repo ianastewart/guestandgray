@@ -17,7 +17,7 @@ def load_columns(request, table_class):
     if hasattr(table_class, "Meta") and hasattr(table_class.Meta, "default_columns"):
         columns = table_class.Meta.default_columns
     else:
-        columns = table_class.base_columns
+        columns = table_class.sequence
     save_columns(request, columns)
     return columns
 
@@ -30,6 +30,12 @@ def set_column(request, table_class, column_name, checked):
     elif column_name in columns:
         columns.remove(column_name)
     save_columns(request, columns)
+
+def visible_columns(request, table_class):
+    """ return list of visible columns in correct sequence """
+    sequence = table_class(data=[]).sequence
+    columns = load_columns(request, table_class)
+    return [col for col in sequence if col in columns]
 
 
 def save_per_page(request, value):

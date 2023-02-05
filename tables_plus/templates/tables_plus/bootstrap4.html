@@ -4,9 +4,9 @@
   <div class="table-container">
     {% block table %}
       <table {% render_attrs table.attrs class="table" %}
-          {# add table dat#}
+          {# add table data#}
           data-method="{{ table.method }}" data-url="{{ table.url }}"
-          data-pk={{ table.pk }} data-target="{{ table.target }}">
+          data-pk={{ table.pk }} data-target="{{ table.target }}" data-editable="{{ table.editable }}">
         {% block table.thead %}
           {% if table.show_header %}
             {#  sort attributes and filter row #}
@@ -61,7 +61,6 @@
         {% endblock table.tfoot %}
       </table>
     {% endblock table %}
-
     {% block pagination %}
       {% include "tables_plus/paginator.html" %}
     {% endblock pagination %}

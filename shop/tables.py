@@ -61,17 +61,12 @@ class ItemTable(Table):
             "rank",
             "visible",
             "done",
+            "selection",
         )
+        sequence = ("selection", "ref", "name")
         default_columns = ("selection", "name", "ref", "category", "state")
+        editable_columns = ("state", "name")
         attrs = {"class": "table table-sm table-hover", "thead": {"class": "bg-light"}}
-        # row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row "}
-        row_attrs = {
-            #"data-href": lambda record: reverse("item_detail", kwargs={"pk": record.pk}),
-            # "data-selected": "table-danger",
-            # "data-modal": "",
-            # "id": lambda record: f"tr_{record.pk}",
-            # "class": "table-row pl-4",
-        }
 
     category = tables.Column(accessor="category__name", verbose_name="Category")
     purchased = tables.Column(accessor="lot__purchase__date", verbose_name="Purchased")
@@ -101,9 +96,10 @@ class ContactTable(Table):
         )
         click = reverse_lazy("contact_update", kwargs={"pk": 0})
         attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk,
-                     "class": "table-row pl-4",
-                     }
+        row_attrs = {
+            "data-pk": lambda record: record.pk,
+            "class": "table-row pl-4",
+        }
 
     selection = SelectionColumn()
 

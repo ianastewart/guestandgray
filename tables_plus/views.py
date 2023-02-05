@@ -5,8 +5,7 @@ from django.http import QueryDict, HttpResponse
 from django.shortcuts import render, reverse
 from django.urls.resolvers import NoReverseMatch
 from django_filters.views import FilterView
-from django_htmx.http import HttpResponseClientRefresh, HttpResponseClientRedirect
-from django_htmx.http import trigger_client_event
+from django_htmx.http import HttpResponseClientRefresh, HttpResponseClientRedirect, trigger_client_event
 from django_tables2 import SingleTableMixin
 from django_tables2.export.export import TableExport
 
@@ -14,6 +13,7 @@ from tables_plus.utils import (
     save_columns,
     load_columns,
     set_column,
+    visible_columns,
     save_per_page,
 )
 
@@ -115,8 +115,8 @@ class TablesPlusView(SingleTableMixin, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        table = context["table"]
-        self.preprocess_table(table, context["filter"])
+        self.table = context["table"]
+        self.preprocess_table(self.table, context["filter"])
         context.update(
             title=self.title,
             filter_button=self.filter_button,
@@ -129,22 +129,24 @@ class TablesPlusView(SingleTableMixin, FilterView):
         )
         return context
 
-    def render_table_data(self, request, *args, **kwargs):
-        """Render only the table data"""
-        saved_template_name = self.template_name
-        self.template_name = self.table_data_template_name
-        response = super().get(request, *args, **kwargs)
-        self.template_name = saved_template_name
-        return response
-
     def post(self, request, *args, **kwargs):
+        if request.htmx:
+            if "td_" in request.htmx.target:
+                bits = request.htmx.target.split("_")
+                return self.cell_changed(
+                    record_pk=bits[1],
+                    column_name=visible_columns(request, self.table_class)[int(bits[2])],
+                    target=request.htmx.target,
+                )
+
         if "columns_save" in request.POST:
             column_list = []
             for key in request.POST.items():
                 if key[1] == "on":
                     column_list.append(key[0])
             save_columns(request, column_list)
-            return self.render_table_data(request, *args, **kwargs)
+            return self.render_template(self.table_data_template_name, *args, **kwargs)
+
         # It's an action performed on a queryset
         if "select_all" in request.POST:
             subset = "all"
@@ -196,19 +198,28 @@ class TablesPlusView(SingleTableMixin, FilterView):
         """User clicked on a row"""
         return HttpResponseClientRefresh()
 
+    def cell_clicked(self, record_pk, column_name, trigger):
+        """User clicked on a cell"""
+        return HttpResponseClientRefresh()
+
+    def cell_changed(self, record_pk, column_name, target):
+        """Cell value changed"""
+        return HttpResponseClientRefresh()
+
     def column_states(self, request):
         saved_columns = load_columns(request, self.table_class)
         column_states = []
-        for k, v in self.table_class.base_columns.items():
-            if v.verbose_name:
-                column_states.append((k, v.verbose_name, k in saved_columns))
+        for key in self.table.sequence:
+            verbose = self.table_class.base_columns[key].verbose_name
+            if verbose:
+                column_states.append((key, verbose, key in saved_columns))
         return column_states
 
     def get_htmx(self, request, *args, **kwargs):
 
         if request.htmx.trigger == "table_data":
             # triggered refresh of table data after create or update
-            return self.render_table_data(request, *args, **kwargs)
+            return self.render_template(self.table_data_template_name, *args, **kwargs)
 
         elif request.htmx.trigger_name == "filter" and self.filterset_class:
             # show filter modal
@@ -217,21 +228,17 @@ class TablesPlusView(SingleTableMixin, FilterView):
 
         elif request.htmx.trigger_name == "filter_form":
             # a filter value was changed
-            return self.render_table_data(request, *args, **kwargs)
+            return self.render_template(self.table_data_template_name, *args, **kwargs)
 
         elif request.htmx.trigger_name == "load_more":
-            saved = self.template_name
-            self.template_name = self.rows_template_name
-            response = super().get(request, *args, **kwargs)
-            self.template_name = saved
-            return response
+            return self.render_template(self.rows_template_name, *args, **kwargs)
 
         elif "id_col" in request.htmx.trigger:
             # click on column checkbox in dropdown re-renders the table
             col_name = request.htmx.trigger_name[4:]
             checked = request.htmx.trigger_name in request.GET
             set_column(request, self.table_class, col_name, checked)
-            return self.render_table_data(request, *args, **kwargs)
+            return self.render_template(self.table_data_template_name, *args, **kwargs)
 
         elif "id_row" in request.htmx.trigger:
             # change number of rows to display
@@ -251,15 +258,21 @@ class TablesPlusView(SingleTableMixin, FilterView):
 
         elif "tr_" in request.htmx.trigger:
             if "_scroll" in request.GET:
-                saved = self.template_name
-                self.template_name = self.rows_template_name
-                response = super().get(request, *args, **kwargs)
-                self.template_name = saved
-                return response
+                return self.render_template(self.rows_template_name, *args, **kwargs)
 
             return self.row_clicked(request.htmx.trigger.split("_")[1], request.htmx.target, request.htmx.current_url)
 
+        elif "td_" in request.htmx.trigger:
+            # cell clicked
+            bits = request.htmx.trigger.split("_")
+            return self.cell_clicked(
+                record_pk=bits[1],
+                column_name=visible_columns(request, self.table_class)[int(bits[2])],
+                trigger=request.htmx.trigger,
+            )
+
         elif "id_" in request.htmx.trigger:
+            # filter value changed
             url = self._update_parameter(
                 request, request.htmx.trigger_name, request.GET.get(request.htmx.trigger_name, "")
             )
@@ -268,11 +281,10 @@ class TablesPlusView(SingleTableMixin, FilterView):
         raise ValueError("Bad htmx get request")
 
     def preprocess_table(self, table, _filter):
-        """Add extra attributes to table that we need when rendering"""
+        """Add extra attributes needed for rendering to the table"""
         table.filter = _filter
         table.infinite_scroll = self.infinite_scroll
         table.infinite_load = self.infinite_load
-        table.before_render(self.request)
         table.method = self.click_method
         table.url = ""
         table.pk = False
@@ -288,6 +300,7 @@ class TablesPlusView(SingleTableMixin, FilterView):
                 except NoReverseMatch:
                     pass
         table.target = self.click_target
+        editable = table.Meta.editable_columns if hasattr(table.Meta, "editable_columns") else []
         # set columns visbility
         columns = load_columns(self.request, table)
         if not columns:
@@ -299,17 +312,32 @@ class TablesPlusView(SingleTableMixin, FilterView):
         for k, v in table.base_columns.items():
             if v.verbose_name:
                 table.columns.show(k) if k in columns else table.columns.hide(k)
+        # build a string containing the numbers of visible editable columns
+        visible = [col for col in table.sequence if col in columns]
+        editable = table.Meta.editable_columns if hasattr(table.Meta, "editable_columns") else []
+        table.editable_columns = editable
+        table.editable = ""
+        for e in editable:
+            table.editable += f"_{visible.index(e)}_"
+
         if table.filter:
             table.filter.style = self.filter_style
             if self.filter_style == self.FilterStyle.HEADER:
                 # build list of filters in same sequence as columns
                 table.header_fields = []
-                for key in table.columns.columns.keys():
+                for key in table.sequence:
                     if table.columns.columns[key].visible:
                         if key in table.filter.base_filters.keys():
                             table.header_fields.append(table.filter.form[key])
                         else:
                             table.header_fields.append(None)
+
+    def render_template(self, template_name, *args, **kwargs):
+        saved = self.template_name
+        self.template_name = template_name
+        response = super().get(self.request, *args, **kwargs)
+        self.template_name = saved
+        return response
 
     @staticmethod
     def _update_parameter(request, key, value):

@@ -28,15 +28,14 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
     model = Item
     table_class = ItemTable
     filterset_class = ItemFilter
-    filter_style = TablesPlusView.FilterStyle.MODAL
+    filter_style = TablesPlusView.FilterStyle.HEADER
     filter_button = False
-    click_url_name = "item_detail_htmx"
-    click_method = "hxget"
+    # click_url_name = "item_detail_htmx"
+    # click_method = "hxget"
     column_settings = True
 
     template_name = "shop/table_wide.html"
     title = "Items"
-    infinite_scroll = True
 
     def get(self, request, *args, **kwargs):
         self.request.session.pop("referrer", None)
@@ -95,10 +94,17 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
         elif "export-all-columns" in request.POST:
             return self.export(request, query_set=self.get_queryset(), all_columns=True)
 
-    # def row_clicked(self, pk, target, url):
-    #     path = reverse("item_detail", kwargs={"pk": pk})
-    #     prefix = "&" if "?" in url else "?"
-    #     return HttpResponseClientRedirect(path + prefix + "return_url=" + url)
+    def cell_clicked(self, record_pk, column_name, trigger):
+        record = Item.objects.get(pk=record_pk)
+        form = ItemForm(initial={column_name: getattr(record, column_name)})
+        field = form.__getitem__(column_name)
+        return render(self.request, "shop/item_form_state.html", {"field": field, "trigger": trigger})
+
+    def cell_changed(self, record_pk, column_name, target):
+        record = Item.objects.get(pk=record_pk)
+        setattr(record, column_name, self.request.POST[column_name])
+        record.save()
+        return HttpResponseClientRefresh()
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):

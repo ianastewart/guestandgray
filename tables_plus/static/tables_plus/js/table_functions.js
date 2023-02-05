@@ -20,7 +20,7 @@ var tableFunctions = (function () {
       Array.from(document.querySelectorAll(".form-group.hx-get")).forEach(e => e.addEventListener("change", filterChanged));
       countChecked()
       document.body.addEventListener("trigger", function (evt) {
-         htmx.ajax('GET', evt.detail.url, {source: '#table_data', 'target': '#table_data'});
+        htmx.ajax('GET', evt.detail.url, {source: '#table_data', 'target': '#table_data'});
       })
     }
 
@@ -92,18 +92,34 @@ var tableFunctions = (function () {
         countChecked();
 
       } else if (e.target.tagName === 'TD') {
-        let row = e.target.parentNode;
-        let table = row.parentNode.parentNode;
-        let id = row.id.slice(3);
-        if (table.dataset.url) {
-          let url = table.dataset.url;
-          if (table.dataset.pk) {
-            url += id;
+        let editing = document.getElementById("editing");
+        if (editing) {
+          htmx.ajax('POST', "", {source: '#' + editing.id, target: '#' + editing.id})
+        } else {
+          let row = e.target.parentNode;
+          let table = row.parentNode.parentNode;
+          let col = 0;
+          let previous = e.target.previousElementSibling;
+          while (previous) {
+            previous = previous.previousElementSibling;
+            col += 1;
           }
-          if (table.dataset.method === "get") {
-            window.document.location = url
-          } else if (table.dataset.method === "hxget") {
-            htmx.ajax('GET', url, {source: '#' + row.id, target: table.dataset.target})
+          let id = row.id.slice(3);
+          if (table.dataset.url) {
+            let url = table.dataset.url;
+            if (table.dataset.pk) {
+              url += id;
+            }
+            if (table.dataset.method === "get") {
+              window.document.location = url;
+            } else if (table.dataset.method === "hxget") {
+              htmx.ajax('GET', url, {source: '#' + row.id, target: table.dataset.target});
+            }
+            // } else if ( table.dataset.editable.match("_" + col + "_")){
+          } else if (e.target.classList.contains("td_edit")) {
+            let tdId = ("td" + "_" + id + "_" + col);
+            e.target.setAttribute("id", tdId);
+            htmx.ajax('GET', "", {source: '#' + tdId, target: '#' + tdId});
           }
         }
       }
@@ -136,8 +152,10 @@ var tableFunctions = (function () {
         actionMenu.disabled = (count === 0);
       }
     }
+
     return tb
   }
+
 )
 ();
 
