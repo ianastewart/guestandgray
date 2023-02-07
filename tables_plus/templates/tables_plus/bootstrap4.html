@@ -6,7 +6,7 @@
       <table {% render_attrs table.attrs class="table" %}
           {# add table data#}
           data-method="{{ table.method }}" data-url="{{ table.url }}"
-          data-pk={{ table.pk }} data-target="{{ table.target }}" data-editable="{{ table.editable }}">
+          data-pk={{ table.pk }} data-target="{{ table.target }}">
         {% block table.thead %}
           {% if table.show_header %}
             {#  sort attributes and filter row #}

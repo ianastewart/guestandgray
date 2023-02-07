@@ -30,6 +30,35 @@
       .table-container th > a {
           display: block;
       }
+
+      tbody tr:hover {
+          background-color: #f0f0f0;
+      }
+      .table-container td.td_edit:hover {
+          background-color: #e0e0e0;
+          cursor: pointer;
+      }
+
+      {#https://medium.com/allenhwkim/mobile-friendly-table-b0cb066dbc0e#}
+  @media screen and (max-width: 768px) {
+  table thead {
+    display: none;
+  }
+  table td {
+    display: flex;
+  }
+  table tr::after {
+      content: " ";
+  }
+
+  table td::before {
+    content: attr(label);
+    font-weight: bold;
+    width: 120px;
+    min-width: 120px;
+    text-align: left;
+  }
+}
   </style>
 
 {% endblock %}

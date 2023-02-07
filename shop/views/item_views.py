@@ -94,16 +94,25 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
         elif "export-all-columns" in request.POST:
             return self.export(request, query_set=self.get_queryset(), all_columns=True)
 
-    def cell_clicked(self, record_pk, column_name, trigger):
+    def cell_clicked(self, record_pk, column_name, target, error=""):
         record = Item.objects.get(pk=record_pk)
-        form = ItemForm(initial={column_name: getattr(record, column_name)})
-        field = form.__getitem__(column_name)
-        return render(self.request, "shop/item_form_state.html", {"field": field, "trigger": trigger})
+        if error:
+            form = ItemForm(initial={column_name: error})
+        else:
+            form = ItemForm(initial={column_name: getattr(record, column_name)})
+        context = {"field": form.__getitem__(column_name),
+                   "target": target,
+                   "error": error}
+        return render(self.request, "tables_plus/cell_form.html", context)
 
     def cell_changed(self, record_pk, column_name, target):
+        if column_name == "name":
+            if len(self.request.POST[column_name]) < 5:
+                return render(self.request, "tables_plus/cell_error.html", {"error": "too short"})
         record = Item.objects.get(pk=record_pk)
         setattr(record, column_name, self.request.POST[column_name])
         record.save()
+        return render(self.request, "tables_plus/cell_error.html", {"error": "OK"})
         return HttpResponseClientRefresh()
 
 

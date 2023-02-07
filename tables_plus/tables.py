@@ -33,7 +33,7 @@ class RightAlignedColumn(tables.Column):
             self.attrs["th"] = {}
         if not "td" in self.attrs:
             self.attrs["td"] = {}
-        self.attrs["th"]["style"] = "text-align: right;"
+        self.attrs["th"]["style"] = "text-align: center;"
         self.attrs["td"]["style"] = "text-align: right;"
 
 

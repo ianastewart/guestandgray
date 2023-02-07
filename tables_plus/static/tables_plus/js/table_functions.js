@@ -22,6 +22,9 @@ var tableFunctions = (function () {
       document.body.addEventListener("trigger", function (evt) {
         htmx.ajax('GET', evt.detail.url, {source: '#table_data', 'target': '#table_data'});
       })
+      if (window.matchMedia("(max-width: 768px)").matches){
+        setMobileTable("table")
+      }
     }
 
     function filterChanged() {
@@ -115,7 +118,6 @@ var tableFunctions = (function () {
             } else if (table.dataset.method === "hxget") {
               htmx.ajax('GET', url, {source: '#' + row.id, target: table.dataset.target});
             }
-            // } else if ( table.dataset.editable.match("_" + col + "_")){
           } else if (e.target.classList.contains("td_edit")) {
             let tdId = ("td" + "_" + id + "_" + col);
             e.target.setAttribute("id", tdId);
@@ -151,6 +153,17 @@ var tableFunctions = (function () {
       if (actionMenu) {
         actionMenu.disabled = (count === 0);
       }
+    }
+    function setMobileTable(selector) {
+      // if (window.innerWidth > 600) return false;
+      const tableEl = document.querySelector(selector);
+      const thEls = tableEl.querySelectorAll('thead th');
+      const tdLabels = Array.from(thEls).map(el => el.innerText);
+      tableEl.querySelectorAll('tbody tr').forEach(tr => {
+        Array.from(tr.children).forEach(
+          (td, ndx) => td.setAttribute('label', tdLabels[ndx])
+        );
+      });
     }
 
     return tb

@@ -198,7 +198,7 @@ class TablesPlusView(SingleTableMixin, FilterView):
         """User clicked on a row"""
         return HttpResponseClientRefresh()
 
-    def cell_clicked(self, record_pk, column_name, trigger):
+    def cell_clicked(self, record_pk, column_name, target):
         """User clicked on a cell"""
         return HttpResponseClientRefresh()
 
@@ -268,7 +268,7 @@ class TablesPlusView(SingleTableMixin, FilterView):
             return self.cell_clicked(
                 record_pk=bits[1],
                 column_name=visible_columns(request, self.table_class)[int(bits[2])],
-                trigger=request.htmx.trigger,
+                target=request.htmx.target,
             )
 
         elif "id_" in request.htmx.trigger:
@@ -316,10 +316,6 @@ class TablesPlusView(SingleTableMixin, FilterView):
         visible = [col for col in table.sequence if col in columns]
         editable = table.Meta.editable_columns if hasattr(table.Meta, "editable_columns") else []
         table.editable_columns = editable
-        table.editable = ""
-        for e in editable:
-            table.editable += f"_{visible.index(e)}_"
-
         if table.filter:
             table.filter.style = self.filter_style
             if self.filter_style == self.FilterStyle.HEADER:

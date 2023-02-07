@@ -66,8 +66,9 @@ class ItemTable(Table):
         sequence = ("selection", "ref", "name")
         default_columns = ("selection", "name", "ref", "category", "state")
         editable_columns = ("state", "name")
-        attrs = {"class": "table table-sm table-hover", "thead": {"class": "bg-light"}}
+        attrs = {"class": "table table-sm ", "thead": {"class": "bg-light"}}
 
+    name = tables.Column(accessor="name", verbose_name="Name", attrs={"th": {"width": "400px"}})
     category = tables.Column(accessor="category__name", verbose_name="Category")
     purchased = tables.Column(accessor="lot__purchase__date", verbose_name="Purchased")
     cost_price = CurrencyColumn(integer=False, verbose_name="Cost")
