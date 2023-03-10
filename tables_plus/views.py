@@ -147,7 +147,7 @@ class TablesPlusView(SingleTableMixin, FilterView):
             save_columns(request, column_list)
             return self.render_template(self.table_data_template_name, *args, **kwargs)
 
-        # It's an action performed on a queryset
+        # It's an action performed on a queryset`
         if "select_all" in request.POST:
             subset = "all"
             self.selected_objects = self.filtered_query_set(request, request.htmx.current_url)

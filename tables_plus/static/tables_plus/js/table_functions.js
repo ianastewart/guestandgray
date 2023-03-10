@@ -22,7 +22,7 @@ var tableFunctions = (function () {
       document.body.addEventListener("trigger", function (evt) {
         htmx.ajax('GET', evt.detail.url, {source: '#table_data', 'target': '#table_data'});
       })
-      if (window.matchMedia("(max-width: 768px)").matches){
+      if (window.matchMedia("(max-width: 768px)").matches) {
         setMobileTable("table")
       }
     }
@@ -39,9 +39,9 @@ var tableFunctions = (function () {
       // Click on 'Select all on page' highlights all rows
       let checked = this.checked;
       if (checked) {
-        document.getElementById('select_all').parentElement.classList.remove('d-none');
+        document.getElementById('select_all').parentElement.style.display='block';
       } else {
-        document.getElementById('select_all').parentElement.classList.add('d-none');
+        document.getElementById('select_all').parentElement.style.display='none';
       }
       Array.from(document.getElementsByClassName("select-checkbox")).forEach(function (box) {
         box.checked = checked;
@@ -59,7 +59,6 @@ var tableFunctions = (function () {
         document.getElementById('count').innerText = 'All';
       } else {
         document.getElementById('select_all_page').disabled = false;
-        //this.parentElement.classList.add("d-none")
         Array.from(document.getElementsByClassName("select-checkbox")).forEach(function (box) {
           box.checked = true;
           box.disabled = false;
@@ -67,7 +66,6 @@ var tableFunctions = (function () {
           countChecked();
         })
       }
-      document.getElementById('selectActionMenu').disabled = !checked;
       lastChecked = null;
     }
 
@@ -75,7 +73,7 @@ var tableFunctions = (function () {
       if (e.target.name === 'select-checkbox') {
         // Click on row's select checkbox - handle using shift to select multiple rows
         document.getElementById('select_all_page').checked = false;
-        document.getElementById('select_all').parentElement.classList.add("d-none");
+        document.getElementById('select_all').parentElement.style.display='none';
         let chkBox = e.target;
         highlightRow(chkBox);
         if (!lastChecked) {
@@ -146,14 +144,13 @@ var tableFunctions = (function () {
       });
       let count = checked.length;
       let countField = document.getElementById('count');
-      if (count) {
-        countField.innerText = count.toString();
-      }
+      countField.innerText = count.toString();
       let actionMenu = document.getElementById('selectActionMenu');
       if (actionMenu) {
         actionMenu.disabled = (count === 0);
       }
     }
+
     function setMobileTable(selector) {
       // if (window.innerWidth > 600) return false;
       const tableEl = document.querySelector(selector);
