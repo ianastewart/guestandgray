@@ -7,35 +7,49 @@ from django_htmx.http import HttpResponseClientRefresh, trigger_client_event
 from shop.models import Contact, Enquiry, Address
 from shop.forms import ContactForm, EnquiryForm
 from shop.tables import ContactTable, ContactTableTwo, EnquiryTable, MailListTable
+from django_tableaux.views import TableauxView, ModalMixin
 from table_manager.views import FilteredTableView, AjaxCrudView
-from tables_plus.views import TablesPlusView, ModalMixin
-from tables_plus.buttons import Button
+from django_tableaux.buttons import Button
 from shop.filters import ContactFilter, EnquiryFilter
 
 
-class ContactListView(LoginRequiredMixin, TablesPlusView):
+class ContactListView(LoginRequiredMixin, TableauxView):
     title = "Contacts"
-    template_name = "shop/table.html"
+    template_name = "shop/table_wide.html"
     table_class = ContactTable
     filterset_class = ContactFilter
-    filter_style = TablesPlusView.FilterStyle.HEADER
-    infinite_scroll = False
+    filter_style = TableauxView.FilterStyle.TOOLBAR
     click_url_name = "contact_update"
-    click_method = "hxget"
+    click_action = TableauxView.ClickAction.HX_GET
+    row_settings = True
+    column_settings = True
+    table_pagination = {"per_page": 20}
 
     def get_queryset(self):
-        return Contact.objects.all().prefetch_related("main_address").order_by("company")
+        return (
+            Contact.objects.all().prefetch_related("main_address").order_by("company")
+        )
 
     def get_buttons(self):
-        return [Button("New contact", hx_get=reverse("contact_create"), hx_target="#modals-here")]
+        return [
+            Button(
+                "New contact",
+                hx_get=reverse("contact_create"),
+                hx_target="#modals-here",
+            )
+        ]
 
-    def row_clicked(self, pk, target, url):
-        return
+    def get_actions(self):
+        return (("delete", "Delete"), ("export", "Export to Excel"))
+
+    def handle_action(self, request, action):
+        if action == "delete":
+            self.selected_objects.delete()
 
 
 class VendorListView(ContactListView):
     table_class = ContactTableTwo
-    heading = "Vendors"
+    title = "Vendors"
 
     def get_queryset(self):
         return Contact.objects.filter(vendor=True).order_by("company")
@@ -43,7 +57,7 @@ class VendorListView(ContactListView):
 
 class BuyerListView(ContactListView):
     table_class = ContactTableTwo
-    heading = "Buyers"
+    title = "Buyers"
 
     def get_queryset(self):
         return Contact.objects.filter(buyer=True).order_by("company")
@@ -125,8 +139,7 @@ class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
         return address.replace(" ", "").replace("\r", "").replace("\n", "")
 
 
-class EnquiryListView(LoginRequiredMixin, TablesPlusView):
-    model = Enquiry
+class EnquiryListView(LoginRequiredMixin, TableauxView):
     table_class = EnquiryTable
     filterset_class = EnquiryFilter
     allow_detail = True
@@ -142,12 +155,12 @@ class EnquiryListView(LoginRequiredMixin, TablesPlusView):
             ("delete", "Delete"),
         ]
 
-    def handle_action(self, request):
-        if "set_open" in request.POST:
+    def handle_action(self, request, action):
+        if action == "set_open":
             self.selected_objects.update(closed=False)
-        elif "set_closed" in request.POST:
+        elif action == "set_closed":
             self.selected_objects.update(closed=True)
-        elif "delete" in request.POST:
+        elif action == "delete":
             self.selected_objects.delete()
 
 
@@ -206,14 +219,11 @@ def contact_lookup(request, pk=None):
     return HttpResponseNotFound
 
 
-class MailListView(LoginRequiredMixin, FilteredTableView):
+class MailListView(LoginRequiredMixin, TableauxView):
     model = Contact
     table_class = MailListTable
-    table_pagination = {"per_page": 10}
-    allow_detail = True
-    template_name = "table_manager/htmx_table.html"
-    # templaate_name = "shop/filtered_table.html"
-    # template_name = "table_manager/generic_table.html"
+    table_pagination = {"per_page": 20}
+    template_name = "shop/table.html"
 
     def get_queryset(self):
         return Contact.objects.filter(mail_consent=True)
@@ -224,6 +234,6 @@ class MailListView(LoginRequiredMixin, FilteredTableView):
             ("export", "Export to Excel"),
         ]
 
-    def handle_action(self, request):
-        if "remove_consent" in request.POST:
+    def handle_action(self, request, action):
+        if action == "remove_consent":
             self.selected_objects.update(mail_consent=False)

@@ -18,7 +18,7 @@ from shop.models import Contact, Purchase, Item, ItemRef, Lot
 from shop.tables import PurchaseTable
 from shop.filters import PurchaseFilter
 from table_manager.views import FilteredTableView, AjaxCrudView
-from tables_plus.views import TablesPlusView, ModalMixin
+from django_tableaux.views import TableauxView, ModalMixin
 import shop.session as session
 
 logger = logging.getLogger(__name__)
@@ -313,7 +313,7 @@ class PurchaseSummaryAjaxView(LoginRequiredMixin, AjaxCrudView):
         return context
 
 
-class PurchaseListView(LoginRequiredMixin, TablesPlusView):
+class PurchaseListView(LoginRequiredMixin, TableauxView):
     """Show purchases in a generic table"""
 
     model = Purchase
@@ -321,6 +321,7 @@ class PurchaseListView(LoginRequiredMixin, TablesPlusView):
     filterset_class = PurchaseFilter
     template_name = "shop/table.html"
     title = "Purchases"
+    click_action = TableauxView.ClickAction.HX_GET
     click_url_name = "purchase_detail_modal"
 
     def get_queryset(self):
@@ -332,15 +333,14 @@ class PurchaseListView(LoginRequiredMixin, TablesPlusView):
         initial["to_date"] = date(2020, 1, 1)
         return initial
 
-    # def get_buttons(self):
-    #     return [("Export to Excel", "export")]
-
 
 class PurchaseDetailModal(LoginRequiredMixin, ModalMixin, DetailView):
     """Show Purchase summary in a modal over the PurchaseListView"""
 
     model = Purchase
     template_name = "shop/purchase_detail.html"
+    modal_template_name = "shop/purchase_detail_modal.html"
+    modal_class = "modal-dialog-scrollable modal-xl"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -358,7 +358,8 @@ class PurchaseDetailModal(LoginRequiredMixin, ModalMixin, DetailView):
             lot.total = Decimal(0)
             for item in lot.item_set.all().order_by("pk"):
                 lot.items.append(item)
-                lot.total += item.cost_price
+                cost_price = item.cost_price if item.cost_price else 0
+                lot.total += cost_price
             lot.error = lot.total - lot.cost
             if lot.error != 0:
                 error = True

@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView, FormView
 from django_htmx.http import HttpResponseClientRefresh, HttpResponseClientRedirect
 from notes.models import Note
 from shop.filters import ItemFilter
@@ -15,24 +15,24 @@ from shop.session import cart_add_item, cart_get_item
 from shop.tables import ItemTable
 from shop.templatetags.shop_tags import unmarkdown
 from shop.truncater import truncate
-from table_manager.buttons import BsButton
 from table_manager.mixins import StackMixin
-from table_manager.views import AjaxCrudView, FilteredTableView
 from tables_plus.views import TablesPlusView, ModalMixin
-from tables_plus.buttons import Button
+from django_tableaux.buttons import Button
+from django_tableaux.views import TableauxView
 
 logger = logging.getLogger(__name__)
 
 
-class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
+class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
     model = Item
     table_class = ItemTable
     filterset_class = ItemFilter
-    filter_style = TablesPlusView.FilterStyle.HEADER
-    filter_button = False
-    # click_url_name = "item_detail_htmx"
-    # click_method = "hxget"
+    filter_style = TableauxView.FilterStyle.TOOLBAR
+    click_url_name = "item_detail"
+    click_action = TableauxView.ClickAction.GET
     column_settings = True
+    infinite_scroll = True
+    sticky_header = True
 
     template_name = "shop/table_wide.html"
     title = "Items"
@@ -65,54 +65,74 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TablesPlusView):
         ]
 
     def get_buttons(self):
-        return [Button("New item", href=reverse("item_create")), Button("Export all columns", typ="submit")]
+        return [
+            Button("New item", href=reverse("item_create")),
+            Button("Export all columns", typ="submit"),
+        ]
 
-    def handle_action(self, request):
-        if "show_price" in request.POST:
+    def handle_action(self, request, action):
+        if "show_price" in action:
             self.selected_objects.update(show_price=True)
-        elif "hide_price" in request.POST:
+        elif "hide_price" in action:
             self.selected_objects.update(show_price=False)
-        elif "visible_on" in request.POST:
+        elif "visible_on" in action:
             self.selected_objects.update(visible=True)
-        elif "visible_off" in request.POST:
+        elif "visible_off" in action:
             self.selected_objects.update(visible=False)
-        elif "feature_on" in request.POST:
+        elif "feature_on" in action:
             self.selected_objects.update(featured=True)
-        elif "feature_off" in request.POST:
+        elif "feature_off" in action:
             self.selected_objects.update(featured=False)
-        elif "archive_on" in request.POST:
+        elif "archive_on" in action:
             self.selected_objects.update(archive=True)
-        elif "archive_off" in request.POST:
+        elif "archive_off" in action:
             self.selected_objects.update(archive=False)
-        elif "change_category" in request.POST:
-            self.selected_objects.update(category_id=request.POST["new_category"])
-        elif "delete" in request.POST:
+        elif "change_category" in action:
+            request.session["selected_objects"] = self.selected_objects
+            # simulate return redirect("item_categorise")
+            request.method = "GET"
+            return ItemCategoriseModalView.as_view()(request)
+        elif "delete" in action:
             for item in self.selected_objects:
                 if item.image:
                     item.image.delete()
                 item.delete()
-        elif "export-all-columns" in request.POST:
-            return self.export(request, query_set=self.get_queryset(), all_columns=True)
+        elif "export-all-columns" in action:
+            return self.export(
+                self.request, query_set=self.get_queryset(), all_columns=True
+            )
 
-    def cell_clicked(self, record_pk, column_name, target, error=""):
-        record = Item.objects.get(pk=record_pk)
-        if error:
-            form = ItemForm(initial={column_name: error})
-        else:
-            form = ItemForm(initial={column_name: getattr(record, column_name)})
-        context = {"field": form.__getitem__(column_name),
-                   "target": target,
-                   "error": error}
-        return render(self.request, "tables_plus/cell_form.html", context)
+    # def cell_clicked(self, record_pk, column_name, target, error=""):
+    #     record = Item.objects.get(pk=record_pk)
+    #     if error:
+    #         form = ItemForm(initial={column_name: error})
+    #     else:
+    #         form = ItemForm(initial={column_name: getattr(record, column_name)})
+    #     context = {"field": form.__getitem__(column_name), "target": target, "error": error}
+    #     return render(self.request, "tables_plus/cell_form.html", context)
+    #
+    # def cell_changed(self, record_pk, column_name, target):
+    #     if column_name == "name":
+    #         if len(self.request.POST[column_name]) < 5:
+    #             return render(self.request, "tables_plus/cell_error.html", {"error": "too short"})
+    #     record = Item.objects.get(pk=record_pk)
+    #     setattr(record, column_name, self.request.POST[column_name])
+    #     record.save()
+    #     return render(self.request, "tables_plus/cell_error.html", {"error": "OK"})
+    #     return HttpResponseClientRefresh()
 
-    def cell_changed(self, record_pk, column_name, target):
-        if column_name == "name":
-            if len(self.request.POST[column_name]) < 5:
-                return render(self.request, "tables_plus/cell_error.html", {"error": "too short"})
-        record = Item.objects.get(pk=record_pk)
-        setattr(record, column_name, self.request.POST[column_name])
-        record.save()
-        return render(self.request, "tables_plus/cell_error.html", {"error": "OK"})
+
+class ItemCategoriseModalView(FormView):
+    """Get the new category for selected items"""
+
+    template_name = "shop/category_modal.html"
+    form_class = ItemCategoriseForm
+    title = "Change category"
+
+    def form_valid(self, form):
+        self.request.session["selected_objects"].update(
+            category=form.cleaned_data["new_category"]
+        )
         return HttpResponseClientRefresh()
 
 
@@ -120,13 +140,6 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
     form_class = ItemForm
     template_name = "shop/item_form.html"
-
-
-class ItemCreateAjax(LoginRequiredMixin, AjaxCrudView):
-    model = Item
-    form_class = ItemForm
-    modal_class = "modal-xl"
-    template_name = "shop/includes/partial_item_form.html"
 
 
 class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
@@ -148,7 +161,9 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["item"] = self.object
         context["images"], context["bad_images"] = self.object.visible_images()
-        context["image"] = self.object.image if self.object.image in context["images"] else None
+        context["image"] = (
+            self.object.image if self.object.image in context["images"] else None
+        )
         # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         context["allow_delete"] = not self.object.lot
         context["note"] = Note.objects.filter(item=self.object).first()
@@ -162,7 +177,9 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
             return HttpResponse("")
         if "delete" in request.POST:
             item.delete()
-            messages.add_message(request, messages.INFO, f"Item ref: {item.ref} has been deleted")
+            messages.add_message(
+                request, messages.INFO, f"Item ref: {item.ref} has been deleted"
+            )
             return redirect("item_list")
         return super().post(request, *args, **kwargs)
 
@@ -184,7 +201,9 @@ class ItemDetailView(LoginRequiredMixin, ModalMixin, StackMixin, DetailView):
         if reverse("item_list") in self.request.META["HTTP_REFERER"]:
             self.request.session["referrer"] = self.request.META["HTTP_REFERER"]
         context["images"], context["bad_images"] = self.object.visible_images()
-        context["image"] = self.object.image if self.object.image in context["images"] else None
+        context["image"] = (
+            self.object.image if self.object.image in context["images"] else None
+        )
         context["in_cart"] = cart_get_item(self.request, self.object.pk)
         clean_description = unmarkdown(self.object.description).replace("\n", " ")
         context["seo"] = truncate(clean_description, 200)
@@ -202,12 +221,3 @@ class ItemDetailView(LoginRequiredMixin, ModalMixin, StackMixin, DetailView):
             )
         referrer = self.request.session.pop("referrer", None)
         return redirect(referrer if referrer else "staff_home")
-
-
-class ItemCategoriseAjax(LoginRequiredMixin, AjaxCrudView):
-    """get the new category for selected items"""
-
-    template_name = "shop/includes/partial_categorise_form.html"
-    form_class = ItemCategoriseForm
-    target_id = "#modal-form"
-    title = "Change category"

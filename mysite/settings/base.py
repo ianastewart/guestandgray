@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "website",
     "notes",
     "table_manager",
+    "django_tableaux",
     "tables_plus",
     "import_export",
     "keyvaluestore",
@@ -114,9 +115,7 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -230,7 +229,7 @@ GOOGLE_RECAPTCHA_SITE_KEY = env.str("CAPTCHA_SITE")
 HCAPTCHA_SECRET_KEY = env.str("HCAPTCHA_SECRET")
 HCAPTCHA_SITE_KEY = env.str("HCAPTCHA_SITE")
 # At most 1 of these should be True
-USE_HCAPTCHA = False
+USE_HCAPTCHA = True
 USE_RECAPTCHA = False
 #
 HONEYPOT_FIELD_NAME = "website"

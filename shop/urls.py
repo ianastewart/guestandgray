@@ -2,11 +2,10 @@ from django.urls import path, re_path
 
 from shop.views.item_views import (
     ItemCreateView,
-    ItemCreateAjax,
     ItemDetailView,
     ItemUpdateView,
     ItemTableView,
-    ItemCategoriseAjax,
+    ItemCategoriseModalView,
 )
 from shop.views.category_views import (
     CategoryCreateView,
@@ -44,7 +43,6 @@ from shop.views.purchase_views import (
     PurchaseSummaryCreateView,
     PurchaseSummaryAjaxView,
     PurchaseListView,
-    PurchaseDetailAjax,
     PurchaseDetailModal,
     PurchaseItemAjax,
 )
@@ -56,7 +54,7 @@ from shop.views.cart_views import (
     CartCheckoutView,
 )
 from shop.views.invoice_views import InvoiceListView, InvoiceDetailView
-from shop.views.staff_views import StaffHomeView
+from shop.views.staff_views import StaffHomeView, GlobalSettingsView
 from shop.views.public_views import (
     home_view,
     item_view,
@@ -74,6 +72,7 @@ from shop.views.image_views import BasicUploadView, ItemImagesView, image_assign
 
 staff_urls = [
     path("", StaffHomeView.as_view(), name="staff_home"),
+    path("settings", GlobalSettingsView.as_view(), name="settings"),
     path("admin_search/", search_view, {"public": False}, name="admin_search"),
     # Items
     path("item/list/", ItemTableView.as_view(), name="item_list"),
@@ -83,7 +82,7 @@ staff_urls = [
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("image/assign/<int:image_pk>/", image_assign_view, name="image_assign"),
-    path("item/list/categorise/", ItemCategoriseAjax.as_view(), name="item_categorise"),
+    path("item/list/categorise/", ItemCategoriseModalView.as_view(), name="item_categorise"),
     # Categories
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
     path("category/update/<int:pk>/", CategoryUpdateView.as_view(), name="category_update"),
@@ -109,7 +108,6 @@ staff_urls = [
     path("buyer/list/update/<int:pk>/", ContactUpdateView.as_view(), name="buyer_update"),
     # Purchases
     path("purchase/list/", PurchaseListView.as_view(), name="purchase_list"),
-    path("purchase/list/detail/<int:pk>/", PurchaseDetailAjax.as_view(), name="purchase_detail"),
     path("purchase/detail/<int:pk>/", PurchaseDetailModal.as_view(), name="purchase_detail_modal"),
     path("purchase/start/", PurchaseStartView.as_view(), name="purchase_start"),
     path("purchase/create/<int:index>/", PurchaseVendorView.as_view(), name="purchase_vendor"),

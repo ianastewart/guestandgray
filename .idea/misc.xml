@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="enabledOnReformat" value="true" />
+    <option name="enabledOnSave" value="true" />
+    <option name="pathToExecutable" value="C:\Users\is\AppData\Local\Programs\Python\Python39\Scripts\black.exe" />
+    <option name="sdkUUID" value="25f1c6ec-ba84-4498-988b-335c91328ac3" />
+  </component>
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>

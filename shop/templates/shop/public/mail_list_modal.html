@@ -6,7 +6,7 @@
       <div class="modal-header bg-guest-dark text-white">
         <h5 class="modal-title">Join our mailing list</h5>
       </div>
-      <div class="modal-body bg-guest-light">
+      <div class="modal-body bg-guest-lighter">
       <p>Sign up below to receive our occasional newsletter highlighting recently acquired objects.</p>
         <form hx-post="{% url "mail_add" %}" hx-target="#modals-here" id="modalForm" {% if not hcaptcha %}novalidate{% endif %}>{% csrf_token %}
           <div class="row">

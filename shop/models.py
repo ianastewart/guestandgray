@@ -513,3 +513,28 @@ class Photo(models.Model):
     title = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to="photos/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+class ShowPrices(ModelEnum):
+    USE_ITEM_SETTINGS = 0
+    SHOW_EVERYWHERE = 1
+    HIDE_EVERYWHERE = 2
+
+
+class ContactOptions(ModelEnum):
+    USE_RECAPTCHA = 0
+    USE_HCAPTCHA = 1
+    NO_CAPTCHA = 2
+    NO_CONTACT_EMAIL = 3
+
+
+class GlobalSettings(models.Model):
+    show_prices = models.PositiveSmallIntegerField(default=0, choices=ShowPrices.choices())
+    contact_options = models.PositiveSmallIntegerField(default=0, choices=ContactOptions.choices())
+
+    @classmethod
+    def record(cls):
+        rec = cls.objects.filter(pk=1).first()
+        if rec:
+            return rec
+        return cls.objects.create(pk=1)

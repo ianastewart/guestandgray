@@ -4,10 +4,12 @@ from django_filters import (
     DateFilter,
     FilterSet,
     ModelChoiceFilter,
+    BooleanFilter,
 )
 from tempus_dominus.widgets import DatePicker
 from django.contrib.postgres.search import SearchVector
 from shop.models import Category, Compiler, Item, Contact
+
 
 # noinspection PyUnusedLocal
 class ItemFilter(FilterSet):
@@ -28,7 +30,9 @@ class ItemFilter(FilterSet):
         empty_label=None,
         choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
     )
-    state = ChoiceFilter(field_name="state", empty_label="-- All --", choices=Item.State.choices())
+    state = ChoiceFilter(
+        field_name="state", empty_label="-- All --", choices=Item.State.choices()
+    )
     # purchased_after = DateFilter(
     #     field_name="lot__purchase__date",
     #     label="Purchased after",
@@ -82,7 +86,9 @@ class ItemFilter(FilterSet):
 
 
 class CompilerFilter(FilterSet):
-    compiler = ModelChoiceFilter(queryset=Compiler.objects.order_by("name"), empty_label="All compilers")
+    compiler = ModelChoiceFilter(
+        queryset=Compiler.objects.order_by("name"), empty_label="All compilers"
+    )
 
 
 class ContactFilter(FilterSet):
@@ -92,7 +98,9 @@ class ContactFilter(FilterSet):
 
     first_name = CharFilter(lookup_expr="icontains")
     company = CharFilter(lookup_expr="icontains")
-    address = CharFilter(lookup_expr="icontains")
+    vendor = BooleanFilter()
+    restorer = BooleanFilter()
+    buyer = BooleanFilter()
 
 
 # noinspection PyUnusedLocal

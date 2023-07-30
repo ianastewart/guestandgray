@@ -1,0 +1,14 @@
+{% extends "django_tableaux/modal_base.html" %}
+{% load bootstrap4 %}
+{% block modal_title%}
+<h2>Categorise objects</h2>
+{% endblock %}
+{% block modal_body %}
+  <div class="modal-body">
+    Update category for {{ selected|length }} objects.
+    <form>{% csrf_token %}
+    {% bootstrap_form form %}
+    <button class="btn btn-secondary" hx-post="{% url "item_categorise" %}" name="categorise" hx-target="#modals-here">Update</button>
+  </form>
+  </div>
+{% endblock %}

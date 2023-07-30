@@ -7,11 +7,13 @@
         <h5 class="modal-title">{% if item %}Enquiry Re: Item {{ item.ref }}{% else %}Send a message{% endif %}</h5>
       </div>
       <div class="modal-body bg-guest-light">
-        <form hx-post="{% if item %}{% url "item_enquiry" ref=item.ref %} else {% url "general_enquiry" %}"{% endif %}
+        <form hx-post="{% if item %}{% url "item_enquiry" ref=item.ref %} {% else %} {% url "general_enquiry" %}{% endif %}"
               hx-target="#modals-here"
               {% if not hcaptcha %}novalidate{% endif %}>
           {% csrf_token %}
-          {% if not item %}
+          {% if subject %}
+            <input type="hidden" name="subject" value="subject">
+          {% else %}
             {% bootstrap_field form.subject show_label=False  %}
           {% endif %}
           {% bootstrap_field form.message show_label=False %}

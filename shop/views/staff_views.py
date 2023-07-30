@@ -1,10 +1,14 @@
-from datetime import datetime
-from django.utils.timezone import now
 import logging
+from datetime import datetime
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
 from django.db.models import Sum
-from shop.models import Invoice
+from django.shortcuts import reverse
+from django.utils.timezone import now
+from django.views.generic import TemplateView, UpdateView
+
+from shop.forms import GlobalSettingsForm
+from shop.models import Invoice, GlobalSettings
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +43,14 @@ class StaffHomeView(LoginRequiredMixin, TemplateView):
         context["count_last"] = sales_last.count()
         context["value_last"] = sales_last.aggregate(Sum("total"))["total__sum"]
         return context
+
+
+class GlobalSettingsView(UpdateView):
+    template_name = "shop/global_settings.html"
+    form_class = GlobalSettingsForm
+
+    def get_object(self):
+        return GlobalSettings.record()
+
+    def get_success_url(self) -> str:
+        return reverse("staff_home")

@@ -1,84 +1,18 @@
 {% extends "shop/shop_base.html" %}
+{% load bootstrap4 static %}
 {% block head %}
-
-  <style>
-      .table-container thead.sticky {
-          position: sticky;
-          top: 0;
-      }
-
-      /*
-          .table-container th.orderable:before{
-              content: '\21c5';
-              float: right;
-          }
-      */
-      .table-container th.asc:before {
-          content: '\25b2';
-          float: right;
-      }
-
-      .table-container th.desc:before {
-          content: '\25bc';
-          float: right;
-      }
-
-      td {
-          overflow: hidden;
-      }
-
-      .table-container th > a {
-          display: block;
-      }
-
-      tbody tr:hover {
-          background-color: #f0f0f0;
-      }
-      .table-container td.td_edit:hover {
-          background-color: #e0e0e0;
-          cursor: pointer;
-      }
-
-      {#https://medium.com/allenhwkim/mobile-friendly-table-b0cb066dbc0e#}
-  @media screen and (max-width: 768px) {
-  table thead {
-    display: none;
-  }
-  table td {
-    display: flex;
-  }
-  table tr::after {
-      content: " ";
-  }
-
-  table td::before {
-    content: attr(label);
-    font-weight: bold;
-    width: 120px;
-    min-width: 120px;
-    text-align: left;
-  }
-}
-  </style>
-
+  {% include "django_tableaux/block_head.html" %}
 {% endblock %}
 {% block content %}
-  <div class="container{% block size %}{% endblock %}" style="height: calc(100% - 60px);">
-    {% if title %}<h3>{{ title }}</h3>{% endif %}
-    <div class="bg-light border-top border-bottom">
-      {% include "tables_plus/filter_toolbar.html" %}
+  <div class="container{% block size %}{% endblock %}">
+  <h3>{{ view.title }}</h3>
+    <div id="messages">
+    {% bootstrap_messages %}
     </div>
-    <form hx-post="" id="id_table_form">
-      {% csrf_token %}
-      {% if actions or buttons or columns or view.filter_class and view.filter_modal %}
-        <div class="bg-light">
-          {% include "tables_plus/action_toolbar.html" %}
-        </div>
-      {% endif %}
-      <div id="table_data" class="bg-white">
-        {% include "tables_plus/render_table_data.html" %}
-      </div>
-    </form>
+    <div class="bg-white">
+    {% include "django_tableaux/block_content.html" %}
+    </div>
   </div>
-  <div id="modals-here"></div>
+  <script src="{% static "htmx1.9.1.min.js" %}"></script>
+  <script src="{% static "django_tableaux/js/django_tableaux.js" %}"></script>
 {% endblock %}

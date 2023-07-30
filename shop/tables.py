@@ -1,6 +1,8 @@
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django_tableaux.columns import *
 from django_tables2.utils import A
+
 from shop.models import (
     Book,
     Category,
@@ -12,7 +14,6 @@ from shop.models import (
     Item,
     Purchase,
 )
-from tables_plus.tables import *
 
 
 class CategoryTable(tables.Table):
@@ -21,7 +22,9 @@ class CategoryTable(tables.Table):
         fields = ("name", "parent", "description", "image", "count")
         attrs = {"class": "table table-sm table-responsive table-hover hover-link"}
         row_attrs = {
-            "data-url": lambda record: reverse("category_detail", kwargs={"pk": record.pk}),
+            "data-url": lambda record: reverse(
+                "category_detail", kwargs={"pk": record.pk}
+            ),
             "class": "table-row pl-4",
         }
 
@@ -44,7 +47,7 @@ class ImageColumn(tables.Column):
         return mark_safe(f'<img src="{image.file.url}">')
 
 
-class ItemTable(Table):
+class ItemTable(tables.Table):
     class Meta:
         model = Item
         fields = (
@@ -66,13 +69,15 @@ class ItemTable(Table):
         sequence = ("selection", "ref", "name")
         default_columns = ("selection", "name", "ref", "category", "state")
         editable_columns = ("state", "name")
-        attrs = {"class": "table table-sm ", "thead": {"class": "bg-light"}}
+        attrs = {"class": "table table-sm bg-light ", "th": {"class": "bg-light"}}
 
-    name = tables.Column(accessor="name", verbose_name="Name", attrs={"th": {"width": "400px"}})
+    name = tables.Column(
+        accessor="name", verbose_name="Name", attrs={"th": {"width": "400px"}}
+    )
     category = tables.Column(accessor="category__name", verbose_name="Category")
     purchased = tables.Column(accessor="lot__purchase__date", verbose_name="Purchased")
-    cost_price = CurrencyColumn(integer=False, verbose_name="Cost")
-    sale_price = CurrencyColumn(integer=False, verbose_name="Sale price")
+    cost_price = CurrencyColumn(integer=True, prefix="£", verbose_name="Cost")
+    sale_price = CurrencyColumn(integer=True, prefix="£", verbose_name="Sale price")
     image = ImageColumn(accessor="image", verbose_name="Image")
     images = tables.Column(accessor="id", verbose_name="Photos")
     selection = SelectionColumn()
@@ -82,7 +87,7 @@ class ItemTable(Table):
         return CustomImage.objects.filter(item=record).count()
 
 
-class ContactTable(Table):
+class ContactTable(tables.Table):
     class Meta:
         model = Contact
         fields = (
@@ -94,8 +99,20 @@ class ContactTable(Table):
             "main_address__email",
             "mail_consent",
             "notes",
+            "vendor",
+            "restorer",
+            "buyer",
         )
-        click = reverse_lazy("contact_update", kwargs={"pk": 0})
+        columns = {
+            "fixed": [
+                "selection",
+                "first_name",
+                "company",
+                "main_address__mobile_phone",
+                "main_address__email",
+                "notes",
+            ]
+        }
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {
             "data-pk": lambda record: record.pk,
@@ -113,15 +130,21 @@ class ContactTable(Table):
         return "Yes" if value else ""
 
 
-class ContactTableTwo(Table):
-    class Meta:
-        model = Contact
-        fields = ("first_name", "company", "address__address")
-        attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+class ContactTableTwo(ContactTable):
+    class Meta(ContactTable.Meta):
+        fields = (
+            "selection",
+            "first_name",
+            "company",
+            "main_address__address",
+            "main_address__mobile_phone",
+            "main_address__email",
+            "mail_consent",
+            "notes",
+        )
 
 
-class BuyersTable(Table):
+class BuyersTable(tables.Table):
     class Meta:
         model = Contact
         fields = ("first_name", "company", "address__address")
@@ -131,17 +154,24 @@ class BuyersTable(Table):
     invoices = tables.Column(linkify=("buyer_invoices", A("pk")))
 
 
-class MailListTable(Table):
+class MailListTable(tables.Table):
     class Meta:
         model = Contact
-        fields = ("selection", "first_name", "last_name", "main_address__email", "mail_consent", "consent_date")
+        fields = (
+            "selection",
+            "first_name",
+            "last_name",
+            "main_address__email",
+            "mail_consent",
+            "consent_date",
+        )
         attrs = {"class": "table table-sm table-hover hover-link"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
     selection = SelectionColumn()
 
 
-class InvoiceTable(Table):
+class InvoiceTable(tables.Table):
     class Meta:
         model = Invoice
         fields = ("date", "buyer", "number", "total", "paid")
@@ -158,7 +188,7 @@ class InvoiceTable(Table):
         return value
 
 
-class PurchaseTable(Table):
+class PurchaseTable(tables.Table):
     class Meta:
         model = Purchase
         fields = (
@@ -230,7 +260,7 @@ class PurchaseTable(Table):
         return value
 
 
-class EnquiryTable(Table):
+class EnquiryTable(tables.Table):
     class Meta:
         model = Enquiry
         fields = ("selection", "date", "subject", "message")
@@ -271,7 +301,7 @@ class EnquiryTable(Table):
         return value
 
 
-class BookTable(Table):
+class BookTable(tables.Table):
     class Meta:
         model = Book
         fields = ("title", "author", "description", "compiler.name")
@@ -283,7 +313,7 @@ class BookTable(Table):
     description = tables.Column(orderable=False)
 
 
-class CompilerTable(Table):
+class CompilerTable(tables.Table):
     class Meta:
         model = Compiler
         fields = ("name", "description")

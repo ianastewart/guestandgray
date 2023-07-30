@@ -5,25 +5,25 @@ from django.urls import reverse
 from shop.models import Invoice
 from shop.tables import InvoiceTable
 from django.views.generic import DetailView
-from tables_plus.views import TablesPlusView, ModalMixin
+from django_tableaux.views import TableauxView
 from shop.filters import InvoiceFilter
 from shop.session import cart_invoice_to_session
 
 
-class InvoiceListView(LoginRequiredMixin, TablesPlusView):
+class InvoiceListView(LoginRequiredMixin, TableauxView):
     model = Invoice
     table_class = InvoiceTable
     filterset_class = InvoiceFilter
     template_name = "shop/table.html"
     title = "Invoices"
-    click_method = "hxget"
+    click_action = TableauxView.ClickAction.HX_GET
     click_url_name = "invoice_detail"
 
     def get_queryset(self):
         return Invoice.objects.all().order_by("-date", "id")
 
 
-class InvoiceDetailView(LoginRequiredMixin, ModalMixin, DetailView):
+class InvoiceDetailView(LoginRequiredMixin, DetailView):
     model = Invoice
     template_name = "shop/invoice_detail_modal.html"
     modal_class = "modal-lg"

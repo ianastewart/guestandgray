@@ -1,0 +1,23 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 %}
+{% block content_body %}
+
+  <div class="container">
+    <div class="row">
+      <div class=".col col-md-8 col-lg-4">
+        <div class="card border-secondary mt-2">
+          <div class="card-header card-title bg-guest-dark text-white">
+            <h4 class="my-1">Global settings</h4>
+          </div>
+          <div class="card-body bg-guest-lighter">
+            <form method="post">{% csrf_token %}
+              {% bootstrap_form form %}
+              <button type="submit" class="btn btn-secondary mt-2">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

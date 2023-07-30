@@ -1,0 +1,20 @@
+{% load static bootstrap4 honeypot %}
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-guest-dark text-white">
+        <h5 class="modal-title">Enquiry about {{ ref }}</h5>
+      </div>
+      <div class="modal-body bg-guest-lighter">
+        <p>Please enquire about this item by calling the number below, quoting reference: {{ ref }}:</p>
+        <p> +44 (0)7968 719496</p>
+        <p>If unavailable to answer you, we will respond as early as possible.</p>
+        <div class="button-group">
+          <button class="btn bg-guest-dark text-white mt-3" onclick="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="{% static 'shop/js/htmx_helper.js' %}"></script>
