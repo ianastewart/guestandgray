@@ -46,7 +46,7 @@
   <div class="col-lg-6 mb-2 px-4 ">
     <div class="d-flex justify-content-between flex-wrap">
       <div><h5>Ref: {{ item.ref }}</h5>
-        {% if item.show_price and item.sale_price and not item.archive %}
+        {% if item.is_price_visible %}
           <h5> £ {{ item.sale_price|integer|intcomma }}</h5>
         {% elif item.archive %}
           <h5> Archive item - not for sale</h5>
