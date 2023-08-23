@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_tableaux.columns import *
 from django_tables2.utils import A
-
+import django_tables2 as tables
 from shop.models import (
     Book,
     Category,
@@ -305,8 +305,8 @@ class BookTable(tables.Table):
     class Meta:
         model = Book
         fields = ("title", "author", "description", "compiler.name")
-        attrs = {"class": "table table-sm table-hover hover-link"}
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+        attrs = {"class": "table table-sm table-hover"}
+        row_attrs = {"class": "table-row pl-4"}
 
     title = tables.Column(attrs={"td": {"width": "20%"}})
     author = tables.Column(attrs={"td": {"width": "20%"}})
@@ -316,5 +316,7 @@ class BookTable(tables.Table):
 class CompilerTable(tables.Table):
     class Meta:
         model = Compiler
-        fields = ("name", "description")
-        row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
+        fields = ("name",)
+
+        attrs = {"class": "table table-sm table-hover"}
+        row_attrs = {"class": "table-row pl-4"}

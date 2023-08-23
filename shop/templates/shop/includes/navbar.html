@@ -65,6 +65,15 @@
           <a class="dropdown-item" href="{% url 'compiler_list' %}">Compiler list</a>
         </div>
       </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
+          Notes
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
+          <a class="dropdown-item" href="{% url 'notes:list' %}">Notes list</a>
+        </div>
+      </li>
     </ul>
     <form class="form-inline ml-auto" action="{% url 'admin_search' %}" method="GET">
 {#        {% load bootstrap4 %}#}

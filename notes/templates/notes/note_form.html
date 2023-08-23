@@ -8,23 +8,32 @@
 <div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content note">
-      <form hx-post="{% url "notes:htmx" %}" hx-target="#modals-here">
+      <form hx-post="{% url "notes:htmx" %}" hx-target="#modals-here">{% csrf_token %}
       <div class="note">
+
         <input type="text" class="note-title" name="title" placeholder="Note title" value="{{ form.initial.title }}">
         <textarea name="content" rows="10" class="note-content" placeholder="Note content">{{ form.initial.content }}</textarea>
-        <input type="hidden" name="item" value="{{ item.id }}">
+        <input type="hidden" name="item_pk" value="{{ item.pk }}">
+        <input type="hidden" name="note_pk" value="{{ note.pk }}">
         <div class="px-3 pb-2">
         <button type="submit" class="btn btn-secondary btn-sm" name="save">Save</button>
           {% if note %}
         <button type="submit" class="btn btn-danger btn-sm" name="delete">Delete</button>
-           <p class="float-right pt-2 pb-0" style="font-size:14px;">Updated by {{ note.user }} on {{ note.updated_at|date }}</p>
+           <p class="float-right pb-0" style="font-size:14px;"><i>
+           Created on {{ note.created_at|date }}
+             {% if note.updated_at.date != note.created_at.date %}
+             <br>
+             Updated by {{ note.user }} on {{ note.updated_at|date }}
+               {% endif %}
+           </i></p>
           {% endif %}
+        {% if item %}
+         <span class="ml-3 text-center" style="font-size:14px;"><i>Item: {{ item.ref }}</i></span>
+        {% endif %}
         </div>
       </div>
       </form>
-    {% if note %}
 
-    {% endif %}
     </div>
   </div>
 </div>

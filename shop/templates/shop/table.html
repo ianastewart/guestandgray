@@ -9,10 +9,9 @@
     <div id="messages">
     {% bootstrap_messages %}
     </div>
-    <div class="bg-white">
+    <div class="bg-white" id="content">
     {% include "django_tableaux/block_content.html" %}
     </div>
   </div>
-  <script src="{% static "htmx1.9.1.min.js" %}"></script>
   <script src="{% static "django_tableaux/js/django_tableaux.js" %}"></script>
 {% endblock %}

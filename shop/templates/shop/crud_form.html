@@ -1,0 +1,22 @@
+{% extends "shop/shop_base.html" %}
+{% load bootstrap4 django_htmx %}
+{% block content %}
+  <div class="container bg-light mt-2">
+  <form hx-post="{{ request.path }}">{% csrf_token %}
+  <h3>{{ view.title }}</h3>
+  {% bootstrap_form form %}
+  {% if request.htmx.target %}
+    <input type="hidden" name="hx_target" value="{{ request.htmx.target }}">
+  {% else %}
+    <input type="hidden" name="success_url" value="{{ success_url }}">
+  {% endif %}
+  <div class="button-group">
+    <button class="btn btn-secondary my-2" type="submit">Save</button>
+    {% if view.allow_delete %}
+    <button class="btn btn-danger my-2" hx-post="{{ request.path }}" name="delete"
+            {% if view.confirm_delete %} hx-confirm="Are you sure you wish to delete this {{ context_object_name }}" {% endif %}>Delete</button>
+    {% endif %}
+  </div>
+  </form>
+  </div>
+{% endblock %}

@@ -15,12 +15,12 @@ INSTALLED_APPS = [
     "notes",
     "table_manager",
     "django_tableaux",
-    "tables_plus",
+    # "tables_plus",
     "import_export",
     "keyvaluestore",
     "treebeard",
     "django_tables2",
-    "django_tables2_column_shifter",
+    # "django_tables2_column_shifter",
     "tempus_dominus",
     "cookielaw",
     "robots",
@@ -115,7 +115,9 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},

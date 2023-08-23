@@ -16,7 +16,8 @@ from shop.tables import ItemTable
 from shop.templatetags.shop_tags import unmarkdown
 from shop.truncater import truncate
 from table_manager.mixins import StackMixin
-from tables_plus.views import TablesPlusView, ModalMixin
+
+# from tables_plus.views import TablesPlusView, ModalMixin
 from django_tableaux.buttons import Button
 from django_tableaux.views import TableauxView
 
@@ -31,7 +32,8 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
     click_url_name = "item_detail"
     click_action = TableauxView.ClickAction.GET
     column_settings = True
-    infinite_scroll = True
+    row_settings = True
+    infinite_scroll = False
     sticky_header = True
 
     template_name = "shop/table_wide.html"
@@ -190,7 +192,7 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
         return referrer if referrer else reverse("staff_home")
 
 
-class ItemDetailView(LoginRequiredMixin, ModalMixin, StackMixin, DetailView):
+class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
     model = Item
     modal_size = "modal-lg"
     modal_template_name = "shop/item_detail_modal.html"
