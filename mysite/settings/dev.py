@@ -17,7 +17,7 @@ else:
 
 DATABASES = {"default": env.db_url("DATABASE_URL")}
 
-SECRET_KEY = "z+wk))(tp(46s)j5)yz*dcxxtx&tjl(7h)7vs%0fqcq*oif&mx"
+SECRET_KEY = env.str("SECRET_KEY")
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = ["127.0.0.1"]

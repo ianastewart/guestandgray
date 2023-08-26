@@ -26,8 +26,6 @@ from deployment.database_helper import (
 # ssh.util.log_to_file("paramiko.log", 10)
 
 REPO_URL = "https://github.com/ianastewart/guestandgray"
-BACKUP_FOLDER = "GuestAndGray/Backup"
-# LOCAL_DEV_FOLDER = "D:/Django/admin/"
 BACKUP_FOLDER = "database_backup"
 BACKUP_FILE = "gray.dump"
 MEDIA_FILE = "media.zip"
@@ -47,7 +45,11 @@ def _local_dev_folder():
     if os.path.exists("D:/Django"):
         return "D:/Django/GuestAndGray"
     else:
-        return "C:/Users/is/PycharmProjects/GuestAndGray"
+        return "C:/Users/is/PycharmProjects/guestandgray"
+
+
+def _local_venv():
+    return "C:/Users/is/PycharmProjects/venvs/gray38"
 
 
 @hosts(HOST)
@@ -68,7 +70,7 @@ def provision():
 
 @hosts(HOST)
 def install_app(app="gray", settings="prod", branch="master"):
-    """ Install application """
+    """Install application"""
     dot_env = _read_env()
     env.user = "django"
     env.password = dot_env["DJANGO"]
@@ -77,7 +79,7 @@ def install_app(app="gray", settings="prod", branch="master"):
 
 @hosts(HOST)
 def download():
-    """ Download database and media from live site"""
+    """Download database and media from live site"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     app = "gray"
@@ -88,7 +90,7 @@ def download():
 
 @hosts(HOST)
 def download_media():
-    """ Download media from live site"""
+    """Download media from live site"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     app = "gray"
@@ -101,7 +103,7 @@ def upload_media_dev():
 
 @hosts(HOST)
 def upload_db():
-    """ Upload database to live site"""
+    """Upload database to live site"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     dbuser, pw, db = _parse_db_settings()
@@ -109,8 +111,8 @@ def upload_db():
 
 
 def upload_dev():
-    """ Replace database on dev system"""
-    _upload_dev_db(_local_dev_folder(), "gray")
+    """Replace database on dev system"""
+    _upload_dev_db(_local_dev_folder(), "gray", _local_venv())
 
 
 def dump_dev():
@@ -120,7 +122,7 @@ def dump_dev():
 
 @hosts(HOST)
 def create_dbuser():
-    """ Create django as dbuser """
+    """Create django as dbuser"""
     dbuser, pw, db = _parse_db_settings()
     dbuser = "django"
     _create_user(dbuser, pw)
@@ -129,7 +131,7 @@ def create_dbuser():
 
 @hosts(HOST)
 def status():
-    """ Status of live site """
+    """Status of live site"""
     with hide("output"):
         env.user = "django"
         env.password = _read_env()["DJANGO"]
@@ -141,7 +143,7 @@ def status():
 
 @hosts(HOST)
 def manage(command):
-    """ Example fab manage:sandbox,migrate """
+    """Example fab manage:sandbox,migrate"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     app = "gray"
@@ -159,7 +161,7 @@ def manage(command):
 # @hosts("gray.iskt.co.uk")
 @hosts(HOST)
 def deploy_live(command=False):
-    """ Deploy application changes to live server """
+    """Deploy application changes to live server"""
     env.user = "django"
     env.password = _read_env()["DJANGO"]
     fast = True if command == "fast" else False
@@ -263,7 +265,7 @@ def _install_app(app="gray", settings="prod", branch="master"):
 
 
 def _deploy_django(venv, app, settings, branch, collect_static=True, fast=False):
-    """ Update django app from repo, update requirements, collect static and migrate """
+    """Update django app from repo, update requirements, collect static and migrate"""
     print(yellow("Start deploy Django"))
     if venv:
         venv += "/"  # compatibility with old deployment
@@ -341,7 +343,6 @@ def _configure_nginx(app, server):
 
 
 def _parse_db_settings():
-
     dot_env = _read_env()
     db_url = "DATABASE_URL"
     parts = dot_env[db_url].split(":")

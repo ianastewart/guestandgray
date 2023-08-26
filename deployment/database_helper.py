@@ -92,14 +92,14 @@ def _upload_database(local_dev_folder, app, dbuser, pw, db):
     print(green(f"End upload database {db}"))
 
 
-def _upload_dev_db(local_dev_folder, db):
-    """ Replace database only dev system"""
+def _upload_dev_db(local_dev_folder, db, venv):
+    """Replace database only dev system"""
     print(f"Replace dev database {db}")
-    # sql = f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity \
-    #     WHERE pg_stat_activity.datname = '{db}' AND pid <> pg_backend_pid()"
-    # cmd = f'psql -U postgres -c "{sql}"'
-    # result = subprocess.check_output(cmd, shell=True)
-    # print(result)
+    sql = f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity \
+        WHERE pg_stat_activity.datname = '{db}' AND pid <> pg_backend_pid()"
+    cmd = f'psql -U postgres -c "{sql}"'
+    result = subprocess.check_output(cmd, shell=True)
+    print(result)
     dbuser = "gray"
     os.system(
         f"psql -U postgres -p 5432 -c \"CREATE USER gray WITH CREATEDB PASSWORD 'guest'\""
@@ -119,9 +119,11 @@ def _upload_dev_db(local_dev_folder, db):
     os.system(
         f"pg_restore -U postgres -p 5432 -d {db} {local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     )
-    venv = f"{local_dev_folder}/venv/Scripts/python.exe"
+    print(
+        f"Database restored from {db} {local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
+    )
     os.system(
-        f"{venv} manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev"
+        f"{venv}/Scripts/python.exe manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev"
     )
 
 

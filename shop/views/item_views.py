@@ -69,7 +69,6 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
     def get_buttons(self):
         return [
             Button("New item", href=reverse("item_create")),
-            Button("Export all columns", typ="submit"),
         ]
 
     def handle_action(self, request, action):
@@ -99,29 +98,6 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
                 if item.image:
                     item.image.delete()
                 item.delete()
-        elif "export-all-columns" in action:
-            return self.export(
-                self.request, query_set=self.get_queryset(), all_columns=True
-            )
-
-    # def cell_clicked(self, record_pk, column_name, target, error=""):
-    #     record = Item.objects.get(pk=record_pk)
-    #     if error:
-    #         form = ItemForm(initial={column_name: error})
-    #     else:
-    #         form = ItemForm(initial={column_name: getattr(record, column_name)})
-    #     context = {"field": form.__getitem__(column_name), "target": target, "error": error}
-    #     return render(self.request, "tables_plus/cell_form.html", context)
-    #
-    # def cell_changed(self, record_pk, column_name, target):
-    #     if column_name == "name":
-    #         if len(self.request.POST[column_name]) < 5:
-    #             return render(self.request, "tables_plus/cell_error.html", {"error": "too short"})
-    #     record = Item.objects.get(pk=record_pk)
-    #     setattr(record, column_name, self.request.POST[column_name])
-    #     record.save()
-    #     return render(self.request, "tables_plus/cell_error.html", {"error": "OK"})
-    #     return HttpResponseClientRefresh()
 
 
 class ItemCategoriseModalView(FormView):
