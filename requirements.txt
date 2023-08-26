@@ -54,8 +54,8 @@ django-tempus-dominus==5.1.2.13
 django-treebeard==4.5.1
 django-waitress==0.1.0
 # -e git+https://github.com/ianastewart/django_tableaux#egg=django_tableaux
- -e C:/Users/is/PycharmProjects/django_tableaux
-# django-tableaux==0.6.2
+# -e C:/Users/is/PycharmProjects/django_tableaux
+django-tableaux==0.6.2
 djangorestframework==3.12.2
 djangorestframework-stubs==1.4.0
 docutils==0.16
