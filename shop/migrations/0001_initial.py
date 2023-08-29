@@ -4,13 +4,12 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import taggit.managers
-import wagtail.core.models
+import wagtail.models
 import wagtail.images.models
 import wagtail.search.index
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -92,7 +91,7 @@ class Migration(migrations.Migration):
                 (
                     "collection",
                     models.ForeignKey(
-                        default=wagtail.core.models.get_root_collection_id,
+                        default=wagtail.models.get_root_collection_id,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="+",
                         to="wagtailcore.Collection",

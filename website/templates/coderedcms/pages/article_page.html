@@ -3,34 +3,33 @@
 {% load wagtailadmin_tags wagtailcore_tags wagtailimages_tags coderedcms_tags %}
 
 {% block content %}
-    <article class="codered-article {%if self.cover_image %}has-img{% endif %}">
-        {% if self.cover_image %}
-        {% image self.cover_image fill-2000x1000 as cover_image %}
-        <img src="{{cover_image.url}}" class="w-100" />
-        {% endif %}
-        <div class="container bg-white shadow px-5">
-            <div class="article-header">
-                <h1 {% if not self.cover_image %}class="mt-5"{% endif %}>{{ self.title }}</h1>
-                {% if self.caption %}
-                <p class="lead">{{self.caption}}</p>
-                {% endif %}
-                <p>
-                    {% if self.author %}
-                    <img class="article-author-img rounded-circle mr-2" src="{% avatar_url self.author %}">
-                    {% elif self.owner %}
-                    <img class="article-author-img rounded-circle mr-2" src="{% avatar_url self.author %}">
-                    {% endif %}
-                    <span class="article-author">{{self.seo_author}}</span>
+  <article class="codered-article {% if self.cover_image %}has-img{% endif %}">
 
-{#                    <span class="mx-2">&bull;</span>#}
-{##}
-{#                    <span class="article-date">{{ self.seo_published_at }}</span>#}
-                </p>
-                <hr>
-            </div>
-            <div class="article-body">
-                {% include_block self.body with settings=settings %}
-            </div>
+    <div class="container bg-white">
+      {% if self.cover_image %}
+        <div class="my-4">
+          {% image self.cover_image fill-1110x278 as cover_image %}
+          <img src="{{ cover_image.url }}" class="w-100"/>
         </div>
-    </article>
+      {% endif %}
+      <div class="article-header">
+        <h1 {% if not self.cover_image %}class="mt-5"{% endif %}>{{ self.title }}</h1>
+        {% if self.caption %}
+          <p class="lead">{{ self.caption }}</p>
+        {% endif %}
+        <p>
+{#          {% if self.author %}#}
+{#            <img class="article-author-img rounded-circle mr-2" src="{% avatar_url self.author %}">#}
+{#          {% elif self.owner %}#}
+{#            <img class="article-author-img rounded-circle mr-2" src="{% avatar_url self.author %}">#}
+{#          {% endif %}#}
+          <span class="article-author">{{ self.seo_author }}</span>
+
+        <hr>
+      </div>
+      <div class="article-body">
+        {% include_block self.body with settings=settings %}
+      </div>
+    </div>
+  </article>
 {% endblock %}

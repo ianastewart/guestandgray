@@ -292,6 +292,11 @@ class Item(index.Indexed, models.Model):
         elif setting == ShowPrices.HIDE_EVERYWHERE:
             return False
 
+    def display_price(self):
+        if self.is_price_visible():
+            return int(self.sale_price)
+        return ""
+
 
 class Purchase(models.Model):
     """Purchase can be a lot with multiple items linked"""

@@ -1,0 +1,1 @@
+python manage.py sass website/static/website/src/custom.scss out website/static/website/css/custom.css

@@ -12,7 +12,7 @@ from django.core.paginator import EmptyPage, InvalidPage, PageNotAnInteger, Pagi
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import FormView, ListView
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 from wagtail.search.backends import get_search_backend
 from wagtail.search.models import Query
 from wagtailseo.utils import StructDataEncoder, get_struct_data_images
@@ -167,7 +167,6 @@ def add_page_context(request, context, path, title="", description=""):
     except HostPage.DoesNotExist:
         raise Http404
     # page.cover_image = None
-    page.path = path
     page.title = title
     page.canonical_url = page.get_full_url().replace("/pages/host-page/", path)
     page.search_description = description
@@ -432,7 +431,7 @@ def is_same_bad_ip(request):
 
 
 def process_contact_response(request, data, mail_list):
-    """Mail list is True if it is justr a request to add to the mail list"""
+    """Mail list is True if it is just a request to add to the mail list"""
     clear_bad_ip(request)
     contact = Contact.objects.filter(main_address__email=data["email"]).first()
     if not "phone" in data.keys():
@@ -477,7 +476,8 @@ def process_contact_response(request, data, mail_list):
     send_mail(
         f"Enquiry:  {data['subject']}: ",
         f"From {data['email']}\n{data['message']}",
-        settings.INFORM_EMAIL[settings.INFORM_EMAIL],
+        settings.DEFAULT_FROM_EMAIL,
+        [settings.INFORM_EMAIL],
         fail_silently=False,
     )
     connection = get_connection(

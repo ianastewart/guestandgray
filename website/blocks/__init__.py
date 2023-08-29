@@ -7,7 +7,7 @@ from coderedcms.blocks import (
     CardGridBlock,
     CardBlock,
 )
-from wagtail.core import blocks
+from wagtail import blocks
 from website.blocks.content_blocks import ItemImageBlock, LinkBlock, KeenSwiperBlock
 from website.blocks.layout_blocks import ItemGridBlock
 

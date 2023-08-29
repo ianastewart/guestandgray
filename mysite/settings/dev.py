@@ -1,8 +1,8 @@
 from .base import *
 
 DEBUG = True
-DEBUG_TOOLBAR = True
-LIVE_EMAIL = True
+DEBUG_TOOLBAR = False
+LIVE_EMAIL = False
 
 if DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar"]

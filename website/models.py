@@ -1,7 +1,6 @@
 """
 Createable pages used in CodeRed CMS.
 """
-from modelcluster.fields import ParentalKey
 from coderedcms.forms import CoderedFormField
 from coderedcms.models import (
     CoderedArticlePage,
@@ -11,28 +10,16 @@ from coderedcms.models import (
     CoderedWebPage,
 )
 from coderedcms.models.page_models import CoderedPage
+from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
+from wagtail.fields import StreamField
+from wagtail.models import Orderable
+
+from shop.models import Item, CustomImage
 from website.blocks import (
     MY_LAYOUT_STREAMBLOCKS,
     MY_CONTENT_STREAMBLOCKS,
 )  # defined in __init__.py
-
-from django.db import models
-from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
-from modelcluster.models import ClusterableModel
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.core.fields import StreamField
-from wagtail.core.models import Orderable
-
-from wagtail.snippets.models import register_snippet
-
-
-from shop.models import Item, CustomImage
 
 
 class ArticlePage(CoderedArticlePage):

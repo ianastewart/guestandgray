@@ -17,7 +17,6 @@ INSTALLED_APPS = [
     "django_tableaux",
     # "tables_plus",
     "import_export",
-    "keyvaluestore",
     "treebeard",
     "django_tables2",
     # "django_tables2_column_shifter",
@@ -35,7 +34,6 @@ INSTALLED_APPS = [
     "taggit",
     "wagtailfontawesome",
     "wagtailcache",
-    "wagtailimportexport",
     "wagtailseo",
     # Wagtail
     "wagtail.contrib.forms",

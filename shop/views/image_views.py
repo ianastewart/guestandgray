@@ -12,7 +12,7 @@ from django.views.generic import DetailView, View
 from django.views.generic.edit import FormMixin
 from django_htmx.http import HttpResponseClientRedirect
 from resizeimage import resizeimage
-from wagtail.core.models import Collection
+from wagtail.models import Collection
 
 from notes.models import Note
 from shop.forms import ImageForm, PhotoForm
@@ -198,7 +198,7 @@ class ItemImagesView(LoginRequiredMixin, FormMixin, DetailView):
 
 
 def image_assign_view(request, **kwargs):
-    """ Modal to reassign an image to another item """
+    """Modal to reassign an image to another item"""
     image = CustomImage.objects.get(pk=kwargs["image_pk"])
     context = {"image": image}
     if request.method == "GET":

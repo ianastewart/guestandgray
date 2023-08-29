@@ -1,15 +1,12 @@
 import logging
-import requests
 import shutil
-import os
-from keyvaluestore.utils import get_value_for_key, set_key_value
-from django.shortcuts import render, redirect
-from django.conf import settings
+
+import requests
 from import_export import resources
 from import_export.fields import Field
-from treebeard.mp_tree import MP_Node
 from tablib import Dataset
-from .models import Item, Category, CustomImage, Photo
+
+from .models import Item, Category, CustomImage
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +33,6 @@ class ObjectResource(resources.ModelResource):
 
 
 def import_objects(excel_file):
-
     delete_all(Item)
     delete_all(Category)
     delete_all(CustomImage)
@@ -65,23 +61,22 @@ def set_status(text, max=0, count=0, empty=0, categories=0, image_count=0, done=
         percent = int(count / max * 100)
     else:
         percent = 0
-    set_key_value(
-        "PROGRESS",
-        {
-            "text": text,
-            "percent": percent,
-            "max": max,
-            "count": count,
-            "empty": empty,
-            "categories": categories,
-            "image_count": image_count,
-            "done": done,
-        },
-    )
+    # set_key_value(
+    #     "PROGRESS",
+    #     {
+    #         "text": text,
+    #         "percent": percent,
+    #         "max": max,
+    #         "count": count,
+    #         "empty": empty,
+    #         "categories": categories,
+    #         "image_count": image_count,
+    #         "done": done,
+    #     },
+    # )
 
 
 def process_images(user):
-
     # delete all using workaround for sqlite limit
     set_status("Clearing images")
     delete_all(CustomImage)  # deletes original_images too!
@@ -174,20 +169,20 @@ def set_image_status(max=0, count=0, not_found=0, done=False):
         percent = int(count / max * 100)
     else:
         percent = 0
-    set_key_value(
-        "IMAGES",
-        {
-            "percent": percent,
-            "max": max,
-            "count": count,
-            "not_found": not_found,
-            "done": done,
-        },
-    )
+    # set_key_value(
+    #     "IMAGES",
+    #     {
+    #         "percent": percent,
+    #         "max": max,
+    #         "count": count,
+    #         "not_found": not_found,
+    #         "done": done,
+    #     },
+    # )
 
 
 def delete_all(cls):
-    """ For sqlite that cannot handle 1000 parameters """
+    """For sqlite that cannot handle 1000 parameters"""
     while cls.objects.count():
         ids = cls.objects.values_list("pk", flat=True)[:500]
         cls.objects.filter(pk__in=ids).delete()

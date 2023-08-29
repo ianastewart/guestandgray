@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-from keyvaluestore.utils import get_value_for_key, set_key_value
+# from keyvaluestore.utils import get_value_for_key, set_key_value
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage, default_storage
@@ -29,7 +29,8 @@ def upload_view(request):
 
 @login_required
 def import_progress_view(request):
-    progress = get_value_for_key("PROGRESS")
+    # progress = get_value_for_key("PROGRESS")
+    progress = 0
     if progress:
         return JsonResponse(progress, safe=False)
     return JsonResponse({"error": "No progress key found"})
@@ -37,7 +38,7 @@ def import_progress_view(request):
 
 @login_required
 def import_images_view(request):
-    """ Attach images to objects """
+    """Attach images to objects"""
     template_name = "shop/import_process.html"
     context = {"title": "Process images"}
     if request.method == "POST":
@@ -56,7 +57,7 @@ def import_images_view(request):
 
 @login_required
 def set_category_images_view(request):
-    """ set default category image to be first associated object that has an image"""
+    """set default category image to be first associated object that has an image"""
     cats = Category.objects.all()
     for cat in cats:
         objects = cat.object_set.filter(image__isnull=False)

@@ -15,7 +15,7 @@ from shop.models import Category, Compiler, Item, Contact
 class ItemFilter(FilterSet):
     class Meta:
         model = Item
-        fields = ["category"]
+        fields = ["ref", "category"]
 
     name = CharFilter(field_name="name", lookup_expr="icontains")
     category = ChoiceFilter(
