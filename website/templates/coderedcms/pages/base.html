@@ -1,5 +1,6 @@
 {% load coderedcms_tags i18n static wagtailcore_tags wagtailimages_tags wagtailsettings_tags wagtailuserbar %}
-{% load cookielaw_tags django_htmx %}{% cookielaw_banner %} <!-- customised -->
+{#{% load cookielaw_tags django_htmx %}{% cookielaw_banner %} <!-- customised -->#}
+{% load django_htmx %}
 {% get_settings %}
 {% get_current_language as LANGUAGE_CODE %}
 {% wagtail_site as site %}
@@ -194,7 +195,7 @@
   {% block frontend_scripts %}
     <script src="{% static 'coderedcms/vendor/jquery/jquery-3.5.1.min.js' %}" ></script> {# Customised #}
   <script src="{% static 'coderedcms/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}?v={% coderedcms_version %}"></script>
-  <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>{# Customised #}
+{#  <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>{# Customised #}
   {% endblock %}
 
   {% block coderedcms_scripts %}
