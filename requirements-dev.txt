@@ -1,2 +1,2 @@
-txt# Tooling for local development
+# Tooling for local development
 django-sass
