@@ -41,14 +41,10 @@
                   class="img img-responsive full-width "/>
             </div>
           </a>
-            {#              <div class="item-icon bg-guest text-white">o</div>   #}
             <div class="caption px-1 text-muted text-center mt-1 mb-3">
               {{ item.name|titler }}
             {% if item.is_price_visible %} <br>£{{ item.display_price|intcomma }}<br>{% endif %}
             </div>
-
-
-
           </div>
         </div>
       {% endfor %}
