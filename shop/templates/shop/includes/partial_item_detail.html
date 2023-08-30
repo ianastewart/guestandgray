@@ -48,7 +48,7 @@
       <div><div class="h5">Ref: {{ item.ref }}</div>
         {% if item.is_price_visible %}
           <h5> £ {{ item.sale_price|integer|intcomma }}</h5>
-          <div class="text-black-50 small">Price is subject to availability</div>
+          <div class="text-black-50 small">Price is subject to availability and market conditions.</div>
         {% elif item.archive %}
           <h5> Archive item - not for sale</h5>
         {% endif %}

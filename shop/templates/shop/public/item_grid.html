@@ -43,7 +43,7 @@
           </a>
             <div class="caption px-1 text-muted text-center mt-1 mb-3">
               {{ item.name|titler }}
-            {% if item.is_price_visible %} <br>£{{ item.display_price|intcomma }}<br>{% endif %}
+            {% if item.is_price_visible %} <br>£{{ item.display_price|intcomma }} *<br>{% endif %}
             </div>
           </div>
         </div>
@@ -54,9 +54,7 @@
         {% include "shop/public/_item_paginator.html" %}
       </div>
     {% endif %}
-  {% if item.is_price_visible %}
-    <div class="text-center text-black-50"> * Any prices shown are subject to availability</div>
-  {% endif %}
+    <div class="text-black-50 text-sm-center"> * Any prices shown are subject to availability and market conditions.</div>
   </div>
 
   <div class="modal" id="catModal" tabindex="-1">
