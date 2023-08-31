@@ -6,7 +6,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap as WagtailSitemap
 from wagtail.documents import urls as wagtaildocs_urls
-
+from django.views.generic import TemplateView
 from shop.sitemap import ItemSitemap
 from shop.urls import public_urls, staff_urls
 
@@ -29,7 +29,13 @@ urlpatterns = [
         sitemap,
         {"sitemaps": {"wagtail": WagtailSitemap, "items": ItemSitemap}},
     ),
-    re_path(r"^robots\.txt", include("robots.urls")),
+    path(
+        "robots.txt",
+        TemplateView.as_view(
+            template_name="shop/robots.txt", content_type="text/plain"
+        ),
+    ),
+    # re_path(r"^robots\.txt", include("robots.urls")),
     # For anything not caught by a more specific rule above, hand over to
     # the page serving mechanism. This should be the last pattern in the list:
     path("pages/", include(codered_urls)),

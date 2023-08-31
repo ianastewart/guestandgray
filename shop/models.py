@@ -178,6 +178,9 @@ class Item(index.Indexed, models.Model):
         NOT_COLLECTED = 2
         AT_RESTORER = 3
 
+    class Price_visibility(ModelEnum):
+        NEVER = 0
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(null=True, blank=True, max_length=200)
     ref = models.CharField(
@@ -200,7 +203,6 @@ class Item(index.Indexed, models.Model):
     restoration_cost = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
-    price = models.IntegerField(null=True, blank=True)
     sale_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
@@ -210,6 +212,7 @@ class Item(index.Indexed, models.Model):
     location = models.SmallIntegerField(
         choices=Location.choices(), default=0, null=True, blank=True
     )
+    # price_visibility = models.PositiveIntegerField(choice=)
     show_price = models.BooleanField(default=True)
     visible = models.BooleanField(default=True)
     featured = models.BooleanField(default=False)

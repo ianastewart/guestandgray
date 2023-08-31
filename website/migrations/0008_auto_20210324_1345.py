@@ -4,8 +4,8 @@ import coderedcms.blocks.base_blocks
 import coderedcms.blocks.html_blocks
 from django.db import migrations
 import wagtail.contrib.table_block.blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.documents.blocks
 import wagtail.embeds.blocks
 import wagtail.images.blocks
@@ -13,7 +13,6 @@ import wagtail.snippets.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("website", "0007_custom_image"),
     ]
@@ -22,19 +21,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="webpage",
             name="body",
-            field=wagtail.core.fields.StreamField(
+            field=wagtail.fields.StreamField(
                 [
                     (
                         "hero",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "settings",
-                                    wagtail.core.blocks.StructBlock(
+                                    wagtail.blocks.StructBlock(
                                         [
                                             (
                                                 "custom_template",
-                                                wagtail.core.blocks.ChoiceBlock(
+                                                wagtail.blocks.ChoiceBlock(
                                                     choices=[("", "Default")],
                                                     label="Template",
                                                     required=False,
@@ -42,7 +41,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "custom_css_class",
-                                                wagtail.core.blocks.CharBlock(
+                                                wagtail.blocks.CharBlock(
                                                     label="Custom CSS Class",
                                                     max_length=255,
                                                     required=False,
@@ -50,7 +49,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "custom_id",
-                                                wagtail.core.blocks.CharBlock(
+                                                wagtail.blocks.CharBlock(
                                                     label="Custom ID",
                                                     max_length=255,
                                                     required=False,
@@ -61,13 +60,13 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "fluid",
-                                    wagtail.core.blocks.BooleanBlock(
+                                    wagtail.blocks.BooleanBlock(
                                         default=True, label="Full width", required=False
                                     ),
                                 ),
                                 (
                                     "is_parallax",
-                                    wagtail.core.blocks.BooleanBlock(
+                                    wagtail.blocks.BooleanBlock(
                                         help_text="Background images scroll slower than foreground images, creating an illusion of depth.",
                                         label="Parallax Effect",
                                         required=False,
@@ -81,7 +80,7 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "tile_image",
-                                    wagtail.core.blocks.BooleanBlock(
+                                    wagtail.blocks.BooleanBlock(
                                         default=False,
                                         label="Tile background image",
                                         required=False,
@@ -89,7 +88,7 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "background_color",
-                                    wagtail.core.blocks.CharBlock(
+                                    wagtail.blocks.CharBlock(
                                         help_text="Hexadecimal, rgba, or CSS color notation (e.g. #ff0011)",
                                         label="Background color",
                                         max_length=255,
@@ -98,7 +97,7 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "foreground_color",
-                                    wagtail.core.blocks.CharBlock(
+                                    wagtail.blocks.CharBlock(
                                         help_text="Hexadecimal, rgba, or CSS color notation (e.g. #ff0011)",
                                         label="Text color",
                                         max_length=255,
@@ -107,19 +106,19 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "content",
-                                    wagtail.core.blocks.StreamBlock(
+                                    wagtail.blocks.StreamBlock(
                                         [
                                             (
                                                 "row",
-                                                wagtail.core.blocks.StructBlock(
+                                                wagtail.blocks.StructBlock(
                                                     [
                                                         (
                                                             "settings",
-                                                            wagtail.core.blocks.StructBlock(
+                                                            wagtail.blocks.StructBlock(
                                                                 [
                                                                     (
                                                                         "custom_template",
-                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                        wagtail.blocks.ChoiceBlock(
                                                                             choices=[
                                                                                 (
                                                                                     "",
@@ -132,7 +131,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_css_class",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom CSS Class",
                                                                             max_length=255,
                                                                             required=False,
@@ -140,7 +139,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_id",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom ID",
                                                                             max_length=255,
                                                                             required=False,
@@ -151,26 +150,26 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "fluid",
-                                                            wagtail.core.blocks.BooleanBlock(
+                                                            wagtail.blocks.BooleanBlock(
                                                                 label="Full width",
                                                                 required=False,
                                                             ),
                                                         ),
                                                         (
                                                             "content",
-                                                            wagtail.core.blocks.StreamBlock(
+                                                            wagtail.blocks.StreamBlock(
                                                                 [
                                                                     (
                                                                         "content",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -183,7 +182,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -191,7 +190,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -199,7 +198,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "column_breakpoint",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -232,7 +231,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "column_size",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "",
@@ -293,7 +292,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "content",
-                                                                                    wagtail.core.blocks.StreamBlock(
+                                                                                    wagtail.blocks.StreamBlock(
                                                                                         [
                                                                                             (
                                                                                                 "text",
@@ -303,15 +302,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "button",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -324,7 +323,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -332,7 +331,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -340,7 +339,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -348,7 +347,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -359,7 +358,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -373,7 +372,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -381,7 +380,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -389,7 +388,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -466,7 +465,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -490,15 +489,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "image",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -511,7 +510,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -519,7 +518,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -539,15 +538,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "image_link",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -560,7 +559,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -568,7 +567,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -576,7 +575,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -584,7 +583,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -595,7 +594,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -609,7 +608,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -623,7 +622,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "alt_text",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Alternate text to show if the image doesn’t load",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -634,7 +633,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "html",
-                                                                                                wagtail.core.blocks.RawHTMLBlock(
+                                                                                                wagtail.blocks.RawHTMLBlock(
                                                                                                     form_classname="monospace",
                                                                                                     icon="code",
                                                                                                     label="HTML",
@@ -642,15 +641,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "download",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -663,7 +662,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -671,7 +670,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -679,7 +678,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -687,7 +686,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -698,7 +697,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -706,7 +705,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -783,7 +782,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -804,7 +803,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "automatic_download",
-                                                                                                            wagtail.core.blocks.BooleanBlock(
+                                                                                                            wagtail.blocks.BooleanBlock(
                                                                                                                 label="Auto download",
                                                                                                                 required=False,
                                                                                                             ),
@@ -821,15 +820,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "embed_video",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -842,7 +841,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -850,7 +849,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -872,15 +871,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "quote",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -893,7 +892,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -901,7 +900,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -912,7 +911,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "text",
-                                                                                                            wagtail.core.blocks.TextBlock(
+                                                                                                            wagtail.blocks.TextBlock(
                                                                                                                 label="Quote Text",
                                                                                                                 required=True,
                                                                                                                 rows=4,
@@ -920,7 +919,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "author",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Author",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -931,15 +930,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "table",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -952,7 +951,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -960,7 +959,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -978,15 +977,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "google_map",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -999,7 +998,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1007,7 +1006,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1018,7 +1017,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "search",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Address or search term used to find your location on the map.",
                                                                                                                 label="Search query",
                                                                                                                 max_length=255,
@@ -1027,7 +1026,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "map_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text='Map title for screen readers, ex: "Map to Goodale Park"',
                                                                                                                 label="Map title",
                                                                                                                 max_length=255,
@@ -1036,7 +1035,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "place_id",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Requires API key to use place ID.",
                                                                                                                 label="Google place ID",
                                                                                                                 max_length=255,
@@ -1045,7 +1044,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "map_zoom_level",
-                                                                                                            wagtail.core.blocks.IntegerBlock(
+                                                                                                            wagtail.blocks.IntegerBlock(
                                                                                                                 default=14,
                                                                                                                 help_text="Requires API key to use zoom. 1: World, 5: Landmass/continent, 10: City, 15: Streets, 20: Buildings",
                                                                                                                 label="Map zoom level",
@@ -1057,15 +1056,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "page_list",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -1102,7 +1101,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1110,7 +1109,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1121,7 +1120,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "indexed_by",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 help_text="Show a preview of pages that are children of the selected page. Uses ordering specified in the page’s LAYOUT tab.",
                                                                                                                 label="Parent page",
                                                                                                                 required=True,
@@ -1137,7 +1136,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "show_preview",
-                                                                                                            wagtail.core.blocks.BooleanBlock(
+                                                                                                            wagtail.blocks.BooleanBlock(
                                                                                                                 default=False,
                                                                                                                 label="Show body preview",
                                                                                                                 required=False,
@@ -1145,7 +1144,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "num_posts",
-                                                                                                            wagtail.core.blocks.IntegerBlock(
+                                                                                                            wagtail.blocks.IntegerBlock(
                                                                                                                 default=3,
                                                                                                                 label="Number of pages to show",
                                                                                                             ),
@@ -1155,15 +1154,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "page_preview",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -1184,7 +1183,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1192,7 +1191,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1203,7 +1202,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 help_text="Show a mini preview of the selected page.",
                                                                                                                 label="Page to preview",
                                                                                                                 required=True,
@@ -1214,15 +1213,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "card",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -1259,7 +1258,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1267,7 +1266,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1286,7 +1285,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Title",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -1294,7 +1293,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "subtitle",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Subtitle",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -1302,7 +1301,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "description",
-                                                                                                            wagtail.core.blocks.RichTextBlock(
+                                                                                                            wagtail.blocks.RichTextBlock(
                                                                                                                 features=[
                                                                                                                     "bold",
                                                                                                                     "italic",
@@ -1317,19 +1316,19 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "links",
-                                                                                                            wagtail.core.blocks.StreamBlock(
+                                                                                                            wagtail.blocks.StreamBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "Links",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -1342,7 +1341,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1350,7 +1349,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1358,7 +1357,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_category",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Category",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1366,7 +1365,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_label",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Label",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1377,7 +1376,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "page_link",
-                                                                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                                                                         label="Page link",
                                                                                                                                         required=False,
                                                                                                                                     ),
@@ -1391,7 +1390,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "other_link",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Other link",
                                                                                                                                         max_length=255,
                                                                                                                                         required=False,
@@ -1399,7 +1398,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_title",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Button Title",
                                                                                                                                         max_length=255,
                                                                                                                                         required=True,
@@ -1407,7 +1406,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_style",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-primary",
@@ -1484,7 +1483,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_size",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-sm",
@@ -1517,15 +1516,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "carousel",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -1538,7 +1537,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1546,7 +1545,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1566,15 +1565,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "image_gallery",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -1587,7 +1586,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1595,7 +1594,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1616,15 +1615,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "modal",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -1637,7 +1636,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1645,7 +1644,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -1656,7 +1655,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -1664,7 +1663,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -1741,7 +1740,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -1762,7 +1761,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "header",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Modal heading",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -1770,7 +1769,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "content",
-                                                                                                            wagtail.core.blocks.StreamBlock(
+                                                                                                            wagtail.blocks.StreamBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "text",
@@ -1780,15 +1779,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "button",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -1801,7 +1800,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1809,7 +1808,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1817,7 +1816,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_category",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Category",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1825,7 +1824,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_label",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Label",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1836,7 +1835,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "page_link",
-                                                                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                                                                         label="Page link",
                                                                                                                                         required=False,
                                                                                                                                     ),
@@ -1850,7 +1849,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "other_link",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Other link",
                                                                                                                                         max_length=255,
                                                                                                                                         required=False,
@@ -1858,7 +1857,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_title",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Button Title",
                                                                                                                                         max_length=255,
                                                                                                                                         required=True,
@@ -1866,7 +1865,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_style",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-primary",
@@ -1943,7 +1942,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_size",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-sm",
@@ -1967,15 +1966,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "image",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -1988,7 +1987,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -1996,7 +1995,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2016,15 +2015,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "image_link",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2037,7 +2036,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2045,7 +2044,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2053,7 +2052,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_category",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Category",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2061,7 +2060,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_label",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Label",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2072,7 +2071,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "page_link",
-                                                                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                                                                         label="Page link",
                                                                                                                                         required=False,
                                                                                                                                     ),
@@ -2086,7 +2085,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "other_link",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Other link",
                                                                                                                                         max_length=255,
                                                                                                                                         required=False,
@@ -2100,7 +2099,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "alt_text",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         help_text="Alternate text to show if the image doesn’t load",
                                                                                                                                         max_length=255,
                                                                                                                                         required=True,
@@ -2111,7 +2110,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "html",
-                                                                                                                        wagtail.core.blocks.RawHTMLBlock(
+                                                                                                                        wagtail.blocks.RawHTMLBlock(
                                                                                                                             form_classname="monospace",
                                                                                                                             icon="code",
                                                                                                                             label="HTML",
@@ -2119,15 +2118,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "download",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2140,7 +2139,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2148,7 +2147,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2156,7 +2155,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_category",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Category",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2164,7 +2163,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_label",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Label",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2175,7 +2174,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_title",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Button Title",
                                                                                                                                         max_length=255,
                                                                                                                                         required=True,
@@ -2183,7 +2182,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_style",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-primary",
@@ -2260,7 +2259,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_size",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-sm",
@@ -2281,7 +2280,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "automatic_download",
-                                                                                                                                    wagtail.core.blocks.BooleanBlock(
+                                                                                                                                    wagtail.blocks.BooleanBlock(
                                                                                                                                         label="Auto download",
                                                                                                                                         required=False,
                                                                                                                                     ),
@@ -2298,15 +2297,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "embed_video",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2319,7 +2318,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2327,7 +2326,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2349,15 +2348,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "quote",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2370,7 +2369,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2378,7 +2377,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2389,7 +2388,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "text",
-                                                                                                                                    wagtail.core.blocks.TextBlock(
+                                                                                                                                    wagtail.blocks.TextBlock(
                                                                                                                                         label="Quote Text",
                                                                                                                                         required=True,
                                                                                                                                         rows=4,
@@ -2397,7 +2396,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "author",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Author",
                                                                                                                                         max_length=255,
                                                                                                                                         required=False,
@@ -2408,15 +2407,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "table",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2429,7 +2428,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2437,7 +2436,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2455,15 +2454,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "google_map",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2476,7 +2475,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2484,7 +2483,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2495,7 +2494,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "search",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         help_text="Address or search term used to find your location on the map.",
                                                                                                                                         label="Search query",
                                                                                                                                         max_length=255,
@@ -2504,7 +2503,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "map_title",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         help_text='Map title for screen readers, ex: "Map to Goodale Park"',
                                                                                                                                         label="Map title",
                                                                                                                                         max_length=255,
@@ -2513,7 +2512,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "place_id",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         help_text="Requires API key to use place ID.",
                                                                                                                                         label="Google place ID",
                                                                                                                                         max_length=255,
@@ -2522,7 +2521,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "map_zoom_level",
-                                                                                                                                    wagtail.core.blocks.IntegerBlock(
+                                                                                                                                    wagtail.blocks.IntegerBlock(
                                                                                                                                         default=14,
                                                                                                                                         help_text="Requires API key to use zoom. 1: World, 5: Landmass/continent, 10: City, 15: Streets, 20: Buildings",
                                                                                                                                         label="Map zoom level",
@@ -2534,15 +2533,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "page_list",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2579,7 +2578,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2587,7 +2586,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2598,7 +2597,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "indexed_by",
-                                                                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                                                                         help_text="Show a preview of pages that are children of the selected page. Uses ordering specified in the page’s LAYOUT tab.",
                                                                                                                                         label="Parent page",
                                                                                                                                         required=True,
@@ -2614,7 +2613,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "show_preview",
-                                                                                                                                    wagtail.core.blocks.BooleanBlock(
+                                                                                                                                    wagtail.blocks.BooleanBlock(
                                                                                                                                         default=False,
                                                                                                                                         label="Show body preview",
                                                                                                                                         required=False,
@@ -2622,7 +2621,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "num_posts",
-                                                                                                                                    wagtail.core.blocks.IntegerBlock(
+                                                                                                                                    wagtail.blocks.IntegerBlock(
                                                                                                                                         default=3,
                                                                                                                                         label="Number of pages to show",
                                                                                                                                     ),
@@ -2632,15 +2631,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "page_preview",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2661,7 +2660,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2669,7 +2668,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2680,7 +2679,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "page",
-                                                                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                                                                         help_text="Show a mini preview of the selected page.",
                                                                                                                                         label="Page to preview",
                                                                                                                                         required=True,
@@ -2695,11 +2694,11 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "footer",
-                                                                                                            wagtail.core.blocks.StreamBlock(
+                                                                                                            wagtail.blocks.StreamBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "text",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             icon="fa-file-text-o",
                                                                                                                             label="Simple Text",
                                                                                                                             max_length=255,
@@ -2707,15 +2706,15 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "button",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2728,7 +2727,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2736,7 +2735,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2744,7 +2743,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_category",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Category",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2752,7 +2751,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "ga_tracking_event_label",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Tracking Event Label",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2763,7 +2762,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "page_link",
-                                                                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                                                                         label="Page link",
                                                                                                                                         required=False,
                                                                                                                                     ),
@@ -2777,7 +2776,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "other_link",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Other link",
                                                                                                                                         max_length=255,
                                                                                                                                         required=False,
@@ -2785,7 +2784,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_title",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Button Title",
                                                                                                                                         max_length=255,
                                                                                                                                         required=True,
@@ -2793,7 +2792,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_style",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-primary",
@@ -2870,7 +2869,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "button_size",
-                                                                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                                                                         choices=[
                                                                                                                                             (
                                                                                                                                                 "btn-sm",
@@ -2902,15 +2901,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "pricelist",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -2923,7 +2922,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -2931,7 +2930,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -2942,7 +2941,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "heading",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Heading",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -2950,19 +2949,19 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "items",
-                                                                                                            wagtail.core.blocks.StreamBlock(
+                                                                                                            wagtail.blocks.StreamBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "item",
-                                                                                                                        wagtail.core.blocks.StructBlock(
+                                                                                                                        wagtail.blocks.StructBlock(
                                                                                                                             [
                                                                                                                                 (
                                                                                                                                     "settings",
-                                                                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                                                                    wagtail.blocks.StructBlock(
                                                                                                                                         [
                                                                                                                                             (
                                                                                                                                                 "custom_template",
-                                                                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                                                                     choices=[
                                                                                                                                                         (
                                                                                                                                                             "",
@@ -2975,7 +2974,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_css_class",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom CSS Class",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -2983,7 +2982,7 @@ class Migration(migrations.Migration):
                                                                                                                                             ),
                                                                                                                                             (
                                                                                                                                                 "custom_id",
-                                                                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                                                                wagtail.blocks.CharBlock(
                                                                                                                                                     label="Custom ID",
                                                                                                                                                     max_length=255,
                                                                                                                                                     required=False,
@@ -3001,7 +3000,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "name",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         label="Name",
                                                                                                                                         max_length=255,
                                                                                                                                         required=True,
@@ -3009,7 +3008,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "description",
-                                                                                                                                    wagtail.core.blocks.TextBlock(
+                                                                                                                                    wagtail.blocks.TextBlock(
                                                                                                                                         label="Description",
                                                                                                                                         required=False,
                                                                                                                                         rows=4,
@@ -3017,7 +3016,7 @@ class Migration(migrations.Migration):
                                                                                                                                 ),
                                                                                                                                 (
                                                                                                                                     "price",
-                                                                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                                                                    wagtail.blocks.CharBlock(
                                                                                                                                         help_text="Any text here. Include currency sign if desired.",
                                                                                                                                         label="Price",
                                                                                                                                         required=True,
@@ -3035,15 +3034,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "reusable_content",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -3056,7 +3055,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3064,7 +3063,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3084,15 +3083,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "item_image",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -3105,7 +3104,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3113,7 +3112,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3132,7 +3131,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "caption",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Leave blank for item name",
                                                                                                                 label="Title",
                                                                                                                 max_length=255,
@@ -3141,7 +3140,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "show_caption",
-                                                                                                            wagtail.core.blocks.BooleanBlock(
+                                                                                                            wagtail.blocks.BooleanBlock(
                                                                                                                 default=False,
                                                                                                                 help_text="Show caption beneath the image",
                                                                                                                 label="Show caption",
@@ -3150,7 +3149,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "link_item",
-                                                                                                            wagtail.core.blocks.BooleanBlock(
+                                                                                                            wagtail.blocks.BooleanBlock(
                                                                                                                 default=False,
                                                                                                                 help_text="Link to item in shop",
                                                                                                                 label="Link to item",
@@ -3176,15 +3175,15 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "cardgrid",
-                                                wagtail.core.blocks.StructBlock(
+                                                wagtail.blocks.StructBlock(
                                                     [
                                                         (
                                                             "settings",
-                                                            wagtail.core.blocks.StructBlock(
+                                                            wagtail.blocks.StructBlock(
                                                                 [
                                                                     (
                                                                         "custom_template",
-                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                        wagtail.blocks.ChoiceBlock(
                                                                             choices=[
                                                                                 (
                                                                                     "",
@@ -3209,7 +3208,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_css_class",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom CSS Class",
                                                                             max_length=255,
                                                                             required=False,
@@ -3217,7 +3216,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_id",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom ID",
                                                                             max_length=255,
                                                                             required=False,
@@ -3228,26 +3227,26 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "fluid",
-                                                            wagtail.core.blocks.BooleanBlock(
+                                                            wagtail.blocks.BooleanBlock(
                                                                 label="Full width",
                                                                 required=False,
                                                             ),
                                                         ),
                                                         (
                                                             "content",
-                                                            wagtail.core.blocks.StreamBlock(
+                                                            wagtail.blocks.StreamBlock(
                                                                 [
                                                                     (
                                                                         "card",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -3284,7 +3283,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3292,7 +3291,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3311,7 +3310,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Title",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -3319,7 +3318,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "subtitle",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Subtitle",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -3327,7 +3326,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "description",
-                                                                                    wagtail.core.blocks.RichTextBlock(
+                                                                                    wagtail.blocks.RichTextBlock(
                                                                                         features=[
                                                                                             "bold",
                                                                                             "italic",
@@ -3342,19 +3341,19 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "links",
-                                                                                    wagtail.core.blocks.StreamBlock(
+                                                                                    wagtail.blocks.StreamBlock(
                                                                                         [
                                                                                             (
                                                                                                 "Links",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -3367,7 +3366,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3375,7 +3374,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3383,7 +3382,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3391,7 +3390,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -3402,7 +3401,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -3416,7 +3415,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -3424,7 +3423,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -3432,7 +3431,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -3509,7 +3508,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -3549,7 +3548,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "html",
-                                                wagtail.core.blocks.RawHTMLBlock(
+                                                wagtail.blocks.RawHTMLBlock(
                                                     form_classname="monospace",
                                                     icon="code",
                                                     label="HTML",
@@ -3564,15 +3563,15 @@ class Migration(migrations.Migration):
                     ),
                     (
                         "row",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "settings",
-                                    wagtail.core.blocks.StructBlock(
+                                    wagtail.blocks.StructBlock(
                                         [
                                             (
                                                 "custom_template",
-                                                wagtail.core.blocks.ChoiceBlock(
+                                                wagtail.blocks.ChoiceBlock(
                                                     choices=[("", "Default")],
                                                     label="Template",
                                                     required=False,
@@ -3580,7 +3579,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "custom_css_class",
-                                                wagtail.core.blocks.CharBlock(
+                                                wagtail.blocks.CharBlock(
                                                     label="Custom CSS Class",
                                                     max_length=255,
                                                     required=False,
@@ -3588,7 +3587,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "custom_id",
-                                                wagtail.core.blocks.CharBlock(
+                                                wagtail.blocks.CharBlock(
                                                     label="Custom ID",
                                                     max_length=255,
                                                     required=False,
@@ -3599,25 +3598,25 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "fluid",
-                                    wagtail.core.blocks.BooleanBlock(
+                                    wagtail.blocks.BooleanBlock(
                                         label="Full width", required=False
                                     ),
                                 ),
                                 (
                                     "content",
-                                    wagtail.core.blocks.StreamBlock(
+                                    wagtail.blocks.StreamBlock(
                                         [
                                             (
                                                 "content",
-                                                wagtail.core.blocks.StructBlock(
+                                                wagtail.blocks.StructBlock(
                                                     [
                                                         (
                                                             "settings",
-                                                            wagtail.core.blocks.StructBlock(
+                                                            wagtail.blocks.StructBlock(
                                                                 [
                                                                     (
                                                                         "custom_template",
-                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                        wagtail.blocks.ChoiceBlock(
                                                                             choices=[
                                                                                 (
                                                                                     "",
@@ -3630,7 +3629,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_css_class",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom CSS Class",
                                                                             max_length=255,
                                                                             required=False,
@@ -3638,7 +3637,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_id",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom ID",
                                                                             max_length=255,
                                                                             required=False,
@@ -3646,7 +3645,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "column_breakpoint",
-                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                        wagtail.blocks.ChoiceBlock(
                                                                             choices=[
                                                                                 (
                                                                                     "",
@@ -3679,7 +3678,7 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "column_size",
-                                                            wagtail.core.blocks.ChoiceBlock(
+                                                            wagtail.blocks.ChoiceBlock(
                                                                 choices=[
                                                                     (
                                                                         "",
@@ -3737,7 +3736,7 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "content",
-                                                            wagtail.core.blocks.StreamBlock(
+                                                            wagtail.blocks.StreamBlock(
                                                                 [
                                                                     (
                                                                         "text",
@@ -3747,15 +3746,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "button",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -3768,7 +3767,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3776,7 +3775,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3784,7 +3783,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_category",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Category",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3792,7 +3791,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_label",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Label",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3803,7 +3802,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "page_link",
-                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                         label="Page link",
                                                                                         required=False,
                                                                                     ),
@@ -3817,7 +3816,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "other_link",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Other link",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -3825,7 +3824,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Button Title",
                                                                                         max_length=255,
                                                                                         required=True,
@@ -3833,7 +3832,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_style",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-primary",
@@ -3910,7 +3909,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_size",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-sm",
@@ -3934,15 +3933,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "image",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -3955,7 +3954,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3963,7 +3962,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -3983,15 +3982,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "image_link",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4004,7 +4003,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4012,7 +4011,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4020,7 +4019,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_category",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Category",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4028,7 +4027,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_label",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Label",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4039,7 +4038,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "page_link",
-                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                         label="Page link",
                                                                                         required=False,
                                                                                     ),
@@ -4053,7 +4052,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "other_link",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Other link",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -4067,7 +4066,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "alt_text",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         help_text="Alternate text to show if the image doesn’t load",
                                                                                         max_length=255,
                                                                                         required=True,
@@ -4078,7 +4077,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "html",
-                                                                        wagtail.core.blocks.RawHTMLBlock(
+                                                                        wagtail.blocks.RawHTMLBlock(
                                                                             form_classname="monospace",
                                                                             icon="code",
                                                                             label="HTML",
@@ -4086,15 +4085,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "download",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4107,7 +4106,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4115,7 +4114,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4123,7 +4122,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_category",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Category",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4131,7 +4130,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_label",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Label",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4142,7 +4141,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Button Title",
                                                                                         max_length=255,
                                                                                         required=True,
@@ -4150,7 +4149,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_style",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-primary",
@@ -4227,7 +4226,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_size",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-sm",
@@ -4248,7 +4247,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "automatic_download",
-                                                                                    wagtail.core.blocks.BooleanBlock(
+                                                                                    wagtail.blocks.BooleanBlock(
                                                                                         label="Auto download",
                                                                                         required=False,
                                                                                     ),
@@ -4265,15 +4264,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "embed_video",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4286,7 +4285,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4294,7 +4293,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4316,15 +4315,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "quote",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4337,7 +4336,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4345,7 +4344,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4356,7 +4355,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "text",
-                                                                                    wagtail.core.blocks.TextBlock(
+                                                                                    wagtail.blocks.TextBlock(
                                                                                         label="Quote Text",
                                                                                         required=True,
                                                                                         rows=4,
@@ -4364,7 +4363,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "author",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Author",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -4375,15 +4374,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "table",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4396,7 +4395,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4404,7 +4403,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4422,15 +4421,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "google_map",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4443,7 +4442,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4451,7 +4450,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4462,7 +4461,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "search",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         help_text="Address or search term used to find your location on the map.",
                                                                                         label="Search query",
                                                                                         max_length=255,
@@ -4471,7 +4470,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "map_title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         help_text='Map title for screen readers, ex: "Map to Goodale Park"',
                                                                                         label="Map title",
                                                                                         max_length=255,
@@ -4480,7 +4479,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "place_id",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         help_text="Requires API key to use place ID.",
                                                                                         label="Google place ID",
                                                                                         max_length=255,
@@ -4489,7 +4488,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "map_zoom_level",
-                                                                                    wagtail.core.blocks.IntegerBlock(
+                                                                                    wagtail.blocks.IntegerBlock(
                                                                                         default=14,
                                                                                         help_text="Requires API key to use zoom. 1: World, 5: Landmass/continent, 10: City, 15: Streets, 20: Buildings",
                                                                                         label="Map zoom level",
@@ -4501,15 +4500,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "page_list",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4546,7 +4545,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4554,7 +4553,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4565,7 +4564,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "indexed_by",
-                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                         help_text="Show a preview of pages that are children of the selected page. Uses ordering specified in the page’s LAYOUT tab.",
                                                                                         label="Parent page",
                                                                                         required=True,
@@ -4581,7 +4580,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "show_preview",
-                                                                                    wagtail.core.blocks.BooleanBlock(
+                                                                                    wagtail.blocks.BooleanBlock(
                                                                                         default=False,
                                                                                         label="Show body preview",
                                                                                         required=False,
@@ -4589,7 +4588,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "num_posts",
-                                                                                    wagtail.core.blocks.IntegerBlock(
+                                                                                    wagtail.blocks.IntegerBlock(
                                                                                         default=3,
                                                                                         label="Number of pages to show",
                                                                                     ),
@@ -4599,15 +4598,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "page_preview",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4628,7 +4627,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4636,7 +4635,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4647,7 +4646,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "page",
-                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                         help_text="Show a mini preview of the selected page.",
                                                                                         label="Page to preview",
                                                                                         required=True,
@@ -4658,15 +4657,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "card",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4703,7 +4702,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4711,7 +4710,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4730,7 +4729,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Title",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -4738,7 +4737,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "subtitle",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Subtitle",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -4746,7 +4745,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "description",
-                                                                                    wagtail.core.blocks.RichTextBlock(
+                                                                                    wagtail.blocks.RichTextBlock(
                                                                                         features=[
                                                                                             "bold",
                                                                                             "italic",
@@ -4761,19 +4760,19 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "links",
-                                                                                    wagtail.core.blocks.StreamBlock(
+                                                                                    wagtail.blocks.StreamBlock(
                                                                                         [
                                                                                             (
                                                                                                 "Links",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -4786,7 +4785,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -4794,7 +4793,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -4802,7 +4801,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -4810,7 +4809,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -4821,7 +4820,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -4835,7 +4834,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -4843,7 +4842,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -4851,7 +4850,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -4928,7 +4927,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -4961,15 +4960,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "carousel",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -4982,7 +4981,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -4990,7 +4989,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -5010,15 +5009,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "image_gallery",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -5031,7 +5030,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -5039,7 +5038,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -5060,15 +5059,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "modal",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -5081,7 +5080,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -5089,7 +5088,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -5100,7 +5099,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Button Title",
                                                                                         max_length=255,
                                                                                         required=True,
@@ -5108,7 +5107,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_style",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-primary",
@@ -5185,7 +5184,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_size",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-sm",
@@ -5206,7 +5205,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "header",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Modal heading",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -5214,7 +5213,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "content",
-                                                                                    wagtail.core.blocks.StreamBlock(
+                                                                                    wagtail.blocks.StreamBlock(
                                                                                         [
                                                                                             (
                                                                                                 "text",
@@ -5224,15 +5223,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "button",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5245,7 +5244,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5253,7 +5252,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5261,7 +5260,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5269,7 +5268,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5280,7 +5279,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -5294,7 +5293,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -5302,7 +5301,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -5310,7 +5309,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -5387,7 +5386,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -5411,15 +5410,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "image",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5432,7 +5431,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5440,7 +5439,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5460,15 +5459,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "image_link",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5481,7 +5480,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5489,7 +5488,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5497,7 +5496,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5505,7 +5504,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5516,7 +5515,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -5530,7 +5529,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -5544,7 +5543,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "alt_text",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Alternate text to show if the image doesn’t load",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -5555,7 +5554,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "html",
-                                                                                                wagtail.core.blocks.RawHTMLBlock(
+                                                                                                wagtail.blocks.RawHTMLBlock(
                                                                                                     form_classname="monospace",
                                                                                                     icon="code",
                                                                                                     label="HTML",
@@ -5563,15 +5562,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "download",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5584,7 +5583,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5592,7 +5591,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5600,7 +5599,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5608,7 +5607,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5619,7 +5618,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -5627,7 +5626,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -5704,7 +5703,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -5725,7 +5724,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "automatic_download",
-                                                                                                            wagtail.core.blocks.BooleanBlock(
+                                                                                                            wagtail.blocks.BooleanBlock(
                                                                                                                 label="Auto download",
                                                                                                                 required=False,
                                                                                                             ),
@@ -5742,15 +5741,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "embed_video",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5763,7 +5762,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5771,7 +5770,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5793,15 +5792,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "quote",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5814,7 +5813,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5822,7 +5821,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5833,7 +5832,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "text",
-                                                                                                            wagtail.core.blocks.TextBlock(
+                                                                                                            wagtail.blocks.TextBlock(
                                                                                                                 label="Quote Text",
                                                                                                                 required=True,
                                                                                                                 rows=4,
@@ -5841,7 +5840,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "author",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Author",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -5852,15 +5851,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "table",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5873,7 +5872,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5881,7 +5880,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5899,15 +5898,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "google_map",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -5920,7 +5919,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5928,7 +5927,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -5939,7 +5938,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "search",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Address or search term used to find your location on the map.",
                                                                                                                 label="Search query",
                                                                                                                 max_length=255,
@@ -5948,7 +5947,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "map_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text='Map title for screen readers, ex: "Map to Goodale Park"',
                                                                                                                 label="Map title",
                                                                                                                 max_length=255,
@@ -5957,7 +5956,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "place_id",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Requires API key to use place ID.",
                                                                                                                 label="Google place ID",
                                                                                                                 max_length=255,
@@ -5966,7 +5965,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "map_zoom_level",
-                                                                                                            wagtail.core.blocks.IntegerBlock(
+                                                                                                            wagtail.blocks.IntegerBlock(
                                                                                                                 default=14,
                                                                                                                 help_text="Requires API key to use zoom. 1: World, 5: Landmass/continent, 10: City, 15: Streets, 20: Buildings",
                                                                                                                 label="Map zoom level",
@@ -5978,15 +5977,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "page_list",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -6023,7 +6022,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6031,7 +6030,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6042,7 +6041,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "indexed_by",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 help_text="Show a preview of pages that are children of the selected page. Uses ordering specified in the page’s LAYOUT tab.",
                                                                                                                 label="Parent page",
                                                                                                                 required=True,
@@ -6058,7 +6057,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "show_preview",
-                                                                                                            wagtail.core.blocks.BooleanBlock(
+                                                                                                            wagtail.blocks.BooleanBlock(
                                                                                                                 default=False,
                                                                                                                 label="Show body preview",
                                                                                                                 required=False,
@@ -6066,7 +6065,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "num_posts",
-                                                                                                            wagtail.core.blocks.IntegerBlock(
+                                                                                                            wagtail.blocks.IntegerBlock(
                                                                                                                 default=3,
                                                                                                                 label="Number of pages to show",
                                                                                                             ),
@@ -6076,15 +6075,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "page_preview",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -6105,7 +6104,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6113,7 +6112,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6124,7 +6123,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 help_text="Show a mini preview of the selected page.",
                                                                                                                 label="Page to preview",
                                                                                                                 required=True,
@@ -6139,11 +6138,11 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "footer",
-                                                                                    wagtail.core.blocks.StreamBlock(
+                                                                                    wagtail.blocks.StreamBlock(
                                                                                         [
                                                                                             (
                                                                                                 "text",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     icon="fa-file-text-o",
                                                                                                     label="Simple Text",
                                                                                                     max_length=255,
@@ -6151,15 +6150,15 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "button",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -6172,7 +6171,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6180,7 +6179,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6188,7 +6187,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_category",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Category",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6196,7 +6195,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "ga_tracking_event_label",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Tracking Event Label",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6207,7 +6206,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "page_link",
-                                                                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                                                            wagtail.blocks.PageChooserBlock(
                                                                                                                 label="Page link",
                                                                                                                 required=False,
                                                                                                             ),
@@ -6221,7 +6220,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "other_link",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Other link",
                                                                                                                 max_length=255,
                                                                                                                 required=False,
@@ -6229,7 +6228,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_title",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Button Title",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -6237,7 +6236,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_style",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-primary",
@@ -6314,7 +6313,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "button_size",
-                                                                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                                                            wagtail.blocks.ChoiceBlock(
                                                                                                                 choices=[
                                                                                                                     (
                                                                                                                         "btn-sm",
@@ -6346,15 +6345,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "pricelist",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -6367,7 +6366,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6375,7 +6374,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6386,7 +6385,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "heading",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Heading",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -6394,19 +6393,19 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "items",
-                                                                                    wagtail.core.blocks.StreamBlock(
+                                                                                    wagtail.blocks.StreamBlock(
                                                                                         [
                                                                                             (
                                                                                                 "item",
-                                                                                                wagtail.core.blocks.StructBlock(
+                                                                                                wagtail.blocks.StructBlock(
                                                                                                     [
                                                                                                         (
                                                                                                             "settings",
-                                                                                                            wagtail.core.blocks.StructBlock(
+                                                                                                            wagtail.blocks.StructBlock(
                                                                                                                 [
                                                                                                                     (
                                                                                                                         "custom_template",
-                                                                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                                                                        wagtail.blocks.ChoiceBlock(
                                                                                                                             choices=[
                                                                                                                                 (
                                                                                                                                     "",
@@ -6419,7 +6418,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_css_class",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom CSS Class",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6427,7 +6426,7 @@ class Migration(migrations.Migration):
                                                                                                                     ),
                                                                                                                     (
                                                                                                                         "custom_id",
-                                                                                                                        wagtail.core.blocks.CharBlock(
+                                                                                                                        wagtail.blocks.CharBlock(
                                                                                                                             label="Custom ID",
                                                                                                                             max_length=255,
                                                                                                                             required=False,
@@ -6445,7 +6444,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "name",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 label="Name",
                                                                                                                 max_length=255,
                                                                                                                 required=True,
@@ -6453,7 +6452,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "description",
-                                                                                                            wagtail.core.blocks.TextBlock(
+                                                                                                            wagtail.blocks.TextBlock(
                                                                                                                 label="Description",
                                                                                                                 required=False,
                                                                                                                 rows=4,
@@ -6461,7 +6460,7 @@ class Migration(migrations.Migration):
                                                                                                         ),
                                                                                                         (
                                                                                                             "price",
-                                                                                                            wagtail.core.blocks.CharBlock(
+                                                                                                            wagtail.blocks.CharBlock(
                                                                                                                 help_text="Any text here. Include currency sign if desired.",
                                                                                                                 label="Price",
                                                                                                                 required=True,
@@ -6479,15 +6478,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "reusable_content",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -6500,7 +6499,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6508,7 +6507,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6528,15 +6527,15 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "item_image",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -6549,7 +6548,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6557,7 +6556,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6576,7 +6575,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "caption",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         help_text="Leave blank for item name",
                                                                                         label="Title",
                                                                                         max_length=255,
@@ -6585,7 +6584,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "show_caption",
-                                                                                    wagtail.core.blocks.BooleanBlock(
+                                                                                    wagtail.blocks.BooleanBlock(
                                                                                         default=False,
                                                                                         help_text="Show caption beneath the image",
                                                                                         label="Show caption",
@@ -6594,7 +6593,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "link_item",
-                                                                                    wagtail.core.blocks.BooleanBlock(
+                                                                                    wagtail.blocks.BooleanBlock(
                                                                                         default=False,
                                                                                         help_text="Link to item in shop",
                                                                                         label="Link to item",
@@ -6620,15 +6619,15 @@ class Migration(migrations.Migration):
                     ),
                     (
                         "cardgrid",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "settings",
-                                    wagtail.core.blocks.StructBlock(
+                                    wagtail.blocks.StructBlock(
                                         [
                                             (
                                                 "custom_template",
-                                                wagtail.core.blocks.ChoiceBlock(
+                                                wagtail.blocks.ChoiceBlock(
                                                     choices=[
                                                         ("", "Default"),
                                                         (
@@ -6650,7 +6649,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "custom_css_class",
-                                                wagtail.core.blocks.CharBlock(
+                                                wagtail.blocks.CharBlock(
                                                     label="Custom CSS Class",
                                                     max_length=255,
                                                     required=False,
@@ -6658,7 +6657,7 @@ class Migration(migrations.Migration):
                                             ),
                                             (
                                                 "custom_id",
-                                                wagtail.core.blocks.CharBlock(
+                                                wagtail.blocks.CharBlock(
                                                     label="Custom ID",
                                                     max_length=255,
                                                     required=False,
@@ -6669,25 +6668,25 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "fluid",
-                                    wagtail.core.blocks.BooleanBlock(
+                                    wagtail.blocks.BooleanBlock(
                                         label="Full width", required=False
                                     ),
                                 ),
                                 (
                                     "content",
-                                    wagtail.core.blocks.StreamBlock(
+                                    wagtail.blocks.StreamBlock(
                                         [
                                             (
                                                 "card",
-                                                wagtail.core.blocks.StructBlock(
+                                                wagtail.blocks.StructBlock(
                                                     [
                                                         (
                                                             "settings",
-                                                            wagtail.core.blocks.StructBlock(
+                                                            wagtail.blocks.StructBlock(
                                                                 [
                                                                     (
                                                                         "custom_template",
-                                                                        wagtail.core.blocks.ChoiceBlock(
+                                                                        wagtail.blocks.ChoiceBlock(
                                                                             choices=[
                                                                                 (
                                                                                     "",
@@ -6724,7 +6723,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_css_class",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom CSS Class",
                                                                             max_length=255,
                                                                             required=False,
@@ -6732,7 +6731,7 @@ class Migration(migrations.Migration):
                                                                     ),
                                                                     (
                                                                         "custom_id",
-                                                                        wagtail.core.blocks.CharBlock(
+                                                                        wagtail.blocks.CharBlock(
                                                                             label="Custom ID",
                                                                             max_length=255,
                                                                             required=False,
@@ -6751,7 +6750,7 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "title",
-                                                            wagtail.core.blocks.CharBlock(
+                                                            wagtail.blocks.CharBlock(
                                                                 label="Title",
                                                                 max_length=255,
                                                                 required=False,
@@ -6759,7 +6758,7 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "subtitle",
-                                                            wagtail.core.blocks.CharBlock(
+                                                            wagtail.blocks.CharBlock(
                                                                 label="Subtitle",
                                                                 max_length=255,
                                                                 required=False,
@@ -6767,7 +6766,7 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "description",
-                                                            wagtail.core.blocks.RichTextBlock(
+                                                            wagtail.blocks.RichTextBlock(
                                                                 features=[
                                                                     "bold",
                                                                     "italic",
@@ -6782,19 +6781,19 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "links",
-                                                            wagtail.core.blocks.StreamBlock(
+                                                            wagtail.blocks.StreamBlock(
                                                                 [
                                                                     (
                                                                         "Links",
-                                                                        wagtail.core.blocks.StructBlock(
+                                                                        wagtail.blocks.StructBlock(
                                                                             [
                                                                                 (
                                                                                     "settings",
-                                                                                    wagtail.core.blocks.StructBlock(
+                                                                                    wagtail.blocks.StructBlock(
                                                                                         [
                                                                                             (
                                                                                                 "custom_template",
-                                                                                                wagtail.core.blocks.ChoiceBlock(
+                                                                                                wagtail.blocks.ChoiceBlock(
                                                                                                     choices=[
                                                                                                         (
                                                                                                             "",
@@ -6807,7 +6806,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_css_class",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom CSS Class",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6815,7 +6814,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "custom_id",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Custom ID",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6823,7 +6822,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_category",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Category",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6831,7 +6830,7 @@ class Migration(migrations.Migration):
                                                                                             ),
                                                                                             (
                                                                                                 "ga_tracking_event_label",
-                                                                                                wagtail.core.blocks.CharBlock(
+                                                                                                wagtail.blocks.CharBlock(
                                                                                                     label="Tracking Event Label",
                                                                                                     max_length=255,
                                                                                                     required=False,
@@ -6842,7 +6841,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "page_link",
-                                                                                    wagtail.core.blocks.PageChooserBlock(
+                                                                                    wagtail.blocks.PageChooserBlock(
                                                                                         label="Page link",
                                                                                         required=False,
                                                                                     ),
@@ -6856,7 +6855,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "other_link",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Other link",
                                                                                         max_length=255,
                                                                                         required=False,
@@ -6864,7 +6863,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_title",
-                                                                                    wagtail.core.blocks.CharBlock(
+                                                                                    wagtail.blocks.CharBlock(
                                                                                         label="Button Title",
                                                                                         max_length=255,
                                                                                         required=True,
@@ -6872,7 +6871,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_style",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-primary",
@@ -6949,7 +6948,7 @@ class Migration(migrations.Migration):
                                                                                 ),
                                                                                 (
                                                                                     "button_size",
-                                                                                    wagtail.core.blocks.ChoiceBlock(
+                                                                                    wagtail.blocks.ChoiceBlock(
                                                                                         choices=[
                                                                                             (
                                                                                                 "btn-sm",
@@ -6989,13 +6988,14 @@ class Migration(migrations.Migration):
                     ),
                     (
                         "html",
-                        wagtail.core.blocks.RawHTMLBlock(
+                        wagtail.blocks.RawHTMLBlock(
                             form_classname="monospace", icon="code", label="HTML"
                         ),
                     ),
                 ],
                 blank=True,
                 null=True,
+                use_json_field=True,
             ),
         ),
     ]

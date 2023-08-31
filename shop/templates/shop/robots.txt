@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /django-admin
+Disallow: /admin
+Disallow: /staff
+
+Host: www.chinese-porcelain-art.com
+Sitemap: https://www.chinese-porcelain-art.com/sitemap.xml
