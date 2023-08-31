@@ -31,7 +31,9 @@ class ArticlePage(CoderedArticlePage):
         verbose_name = "Article"
         ordering = ["-first_published_at"]
 
-    body = StreamField(MY_CONTENT_STREAMBLOCKS, null=True, blank=True)
+    body = StreamField(
+        MY_CONTENT_STREAMBLOCKS, null=True, blank=True, use_json_field=True
+    )
     # Only allow this page to be created beneath an ArticleIndexPage.
     parent_page_types = ["website.ArticleIndexPage"]
 
