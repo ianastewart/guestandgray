@@ -142,9 +142,7 @@ urllib3==1.25.3
 w3lib==1.21.0
 wagtail==4.2.4
 wagtail-cache==2.2.0
-wagtail-robots==0.3.1
 wagtail-seo==2.3.0
-wagtailfontawesome==1.2.1
 waitress==1.4.4
 wcwidth==0.1.7
 webencodings==0.5.1
