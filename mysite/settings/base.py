@@ -27,8 +27,9 @@ INSTALLED_APPS = [
     "django_htmx",
     "honeypot",
     # CodeRed CMS
-    "coderedcms_bootstrap4",
+    # "coderedcms_bootstrap4",
     "coderedcms",
+    "django_bootstrap5",
     "bootstrap4",
     "modelcluster",
     "taggit",
@@ -176,14 +177,14 @@ WAGTAIL_CACHE = True
 WAGTAILADMIN_BASE_URL = "https://chinese-porcelain-art.com"
 
 
-# Bootstrap
-BOOTSTRAP4 = {
-    # set to blank since coderedcms already loads jquery and bootstrap
-    "jquery_url": "",
-    "base_url": "",
-    # remove green highlight on inputs
-    "success_css_class": "",
-}
+# # Bootstrap
+# BOOTSTRAP4 = {
+#     # set to blank since coderedcms already loads jquery and bootstrap
+#     "jquery_url": "",
+#     "base_url": "",
+#     # remove green highlight on inputs
+#     "success_css_class": "",
+# }
 
 MARKDOWNIFY = {
     "default": {

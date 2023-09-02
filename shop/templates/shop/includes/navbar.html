@@ -1,18 +1,18 @@
 {% load coderedcms_tags i18n shop_tags static %}
 
 <div class="bg-guest-dark">
-  <div class="container-fluid p-0">
+  <div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-dark bg-guest-dark">
       <a class="navbar-brand font-georgia p-0" href="/"><span style="font-size: 26px;">Guest & Gray&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <span class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Items
         </a>
@@ -22,7 +22,7 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Categories
         </a>
@@ -32,7 +32,7 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Contacts
         </a>
@@ -45,7 +45,7 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-bs-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Stock
         </a>
@@ -56,31 +56,31 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button" data-bs-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Books
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown4">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
           <a class="dropdown-item" href="{% url 'book_list' %}">Book list</a>
           <a class="dropdown-item" href="{% url 'compiler_list' %}">Compiler list</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown6" role="button" data-bs-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           Notes
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown6">
           <a class="dropdown-item" href="{% url 'notes:list' %}">Notes list</a>
         </div>
       </li>
     </ul>
-    <form class="form-inline ml-auto" action="{% url 'admin_search' %}" method="GET">
+    <form class="form-inline ms-auto" action="{% url 'admin_search' %}" method="GET">
 {#        {% load bootstrap4 %}#}
 {#        {% get_searchform request as form %}#}
 {#        {% bootstrap_form form layout='inline' %}#}
 {#        <div class="form-group">#}
-{#          <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">#}
+{#          <input class="btn btn-outline-white ms-2" type="submit" name="staff" value="Search">#}
 {#        </div>#}
       <div class="input-group" style="width: 250px">
             <input type="text" class="form-control" name="s" placeholder="Search">

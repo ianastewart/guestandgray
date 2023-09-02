@@ -7,7 +7,7 @@
         {% for level3 in level2.children %}
           {% if level3.shop and is_catalogue or level3.archive and is_archive or level3.children %}
             <li><a class="dropdown-item pb-0" href="{{ level3.link }}/"><span
-                class="pl-3">{{ level3.text }}</span></a></li>
+                class="ps-3">{{ level3.text }}</span></a></li>
           {% endif %}
         {% endfor %}
       </ul>

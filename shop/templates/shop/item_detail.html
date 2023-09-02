@@ -9,22 +9,22 @@
         <form method="post">{% csrf_token %}
           <div class="d-flex">
             <div>
-              <a class="btn btn-secondary mr-2" href="{% url 'item_update' pk=item.pk %}">Edit item <span
+              <a class="btn btn-secondary me-2" href="{% url 'item_update' pk=item.pk %}">Edit item <span
                   class="sr-only">(current)</span></a>
             </div>
             <div>
-              <a class="btn btn-secondary mr-2" href="{% url 'item_images' pk=item.pk %}">Manage images</a>
+              <a class="btn btn-secondary me-2" href="{% url 'item_images' pk=item.pk %}">Manage images</a>
             </div>
 
             {% if in_cart %}
-              <span class="badge badge-danger m-2 ml-auto">Added to sale</span>
+              <span class="badge badge-danger m-2 ms-auto">Added to sale</span>
             {% elif not item.archive %}
-              <div class="ml-auto">
-                <button type="submit" class="btn btn-secondary mr-2" name="add">Add to sale</button>
+              <div class="ms-auto">
+                <button type="submit" class="btn btn-secondary me-2" name="add">Add to sale</button>
               </div>
 
             {% endif %}
-            <div class="ml-auto" id="note-button">
+            <div class="ms-auto" id="note-button">
                 {% include "notes/_note_button.html" %}
               </div>
             <div>

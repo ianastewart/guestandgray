@@ -121,7 +121,7 @@ class ItemForm(ModelForm):
                 "minimum_price",
             ]:
                 raw = self.data[field].replace("£ ", "").replace(",", "")
-                if not raw:
+                if raw == "None":
                     raw = 0
                 self.cleaned_data[field] = Decimal(raw)
                 try:
@@ -148,7 +148,6 @@ class UpdateItemForm(ModelForm):
 
 
 class ImageForm(Form):
-
     limit = forms.ChoiceField(
         label="Resize image",
         required=False,
@@ -251,10 +250,14 @@ class MailListForm(Form):
 
 class EnquiryForm(MailListForm):
     phone = forms.CharField(max_length=20, required=False, label="Phone (optional)")
-    mail_consent = forms.BooleanField(required=False, label="Please add me to your mailing list")
+    mail_consent = forms.BooleanField(
+        required=False, label="Please add me to your mailing list"
+    )
     ref = forms.CharField(max_length=10, required=False)
     subject = forms.CharField(max_length=78, required=True)
-    message = forms.CharField(max_length=2000, required=True, widget=forms.Textarea(attrs={"rows": 3}))
+    message = forms.CharField(
+        max_length=2000, required=True, widget=forms.Textarea(attrs={"rows": 3})
+    )
 
 
 class BookForm(ModelForm):
@@ -272,7 +275,9 @@ class CompilerForm(ModelForm):
 
 
 class PurchaseVendorForm(forms.Form):
-    contact_id = forms.CharField(max_length=10, required=False, widget=forms.HiddenInput())
+    contact_id = forms.CharField(
+        max_length=10, required=False, widget=forms.HiddenInput()
+    )
 
 
 class PurchaseForm(ModelForm):
@@ -289,7 +294,9 @@ class PurchaseForm(ModelForm):
         )
 
     new_vendor = forms.BooleanField(
-        widget=forms.RadioSelect(choices=((False, "Search existing vendors"), ("True", "Create new vendor")))
+        widget=forms.RadioSelect(
+            choices=((False, "Search existing vendors"), ("True", "Create new vendor"))
+        )
     )
     vendor_search = forms.CharField(
         max_length=50,
@@ -355,7 +362,9 @@ class PurchaseDataForm(ModelForm):
                 vat = 0
                 cleaned_data["vat"] = 0
             if not cleaned_data["margin_scheme"] and vat == 0:
-                raise forms.ValidationError(f"VAT cannot be zero when outside the margin sheme.")
+                raise forms.ValidationError(
+                    f"VAT cannot be zero when outside the margin sheme."
+                )
             # sum = cost + premium + vat
             # if sum != total:
             #     raise forms.ValidationError(

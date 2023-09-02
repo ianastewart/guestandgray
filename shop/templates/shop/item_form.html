@@ -11,13 +11,13 @@
         <form method="post">{% csrf_token %}
           <div class="card-header bg-guest-lighter">
             <div class="d-flex">
-              <button type="submit" class="btn btn-secondary mr-2" name="save">Save</button>
-              <button type="submit" class="btn btn-secondary mr-2" name="preview">Save & preview</button>
+              <button type="submit" class="btn btn-secondary me-2" name="save">Save</button>
+              <button type="submit" class="btn btn-secondary me-2" name="preview">Save & preview</button>
               {% if allow_delete %}
                 <button class="btn btn-danger" type="submit" name="delete">Delete</button>
               {% endif %}
               {% if item %}
-                <div class="ml-auto">
+                <div class="ms-auto">
                   <div id="note-button">
                     {% include "notes/_note_button.html" %}
                   </div>

@@ -8,7 +8,7 @@
       <div class="container">
         <form method="post">{% csrf_token %}
           <div class="d-flex">
-            <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-secondary mr-2">Preview</a>
+            <a href="{% url 'item_detail' pk=item.pk %}" class="btn btn-secondary me-2">Preview</a>
             <div>
               <button type="button" class="btn btn-secondary js-upload-photos">Upload photos</button>
             </div>
@@ -16,7 +16,7 @@
                    style="display: none;"
                    data-url="{% url 'basic_upload' %}"
                    data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
-            <div class="ml-auto">
+            <div class="ms-auto">
               <div id="note-button">
                 {% include "notes/_note_button.html" %}
               </div>

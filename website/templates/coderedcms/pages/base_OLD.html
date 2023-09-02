@@ -1,5 +1,6 @@
 {% load coderedcms_tags i18n static wagtailcore_tags wagtailimages_tags wagtailsettings_tags wagtailuserbar %}
-{% load django_htmx %} <!-- customised-->
+{#{% load cookielaw_tags django_htmx %}{% cookielaw_banner %} <!-- customised -->#}
+{% load django_htmx %}
 {% get_settings %}
 {% get_current_language as LANGUAGE_CODE %}
 {% wagtail_site as site %}
@@ -79,7 +80,7 @@
   {% endblock %}
 
   {% block custom_assets %}
-   {#  Customised#}
+{#  Customised#}
       <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display:wght@500&display=swap"
           rel="stylesheet">
@@ -106,19 +107,19 @@
   {% endif %}
   {% endblock %}
 
-  {% block extra_head %}{% endblock %}
+  {% block extra_head %}
+  {% endblock %}
 </head>
 
 <body class="d-flex flex-column crx-{{page.content_type.model}} {% if page.get_parent %}parent-page-{{page.get_parent.id}}{% endif %} {% block body_class %}{% endblock %}" id="page-{{page.id}}">
-<div id="page-content"><!-- Customised for sticky footer with d-flex flex-column above -->
+<div id="page-content"> <!-- Customised for sticky footer with d-flex flex-column above -->
 {% include "coderedcms/includes/crx_banner.html" %}
-{##}
+
 {#  {% block ada_skip %}#}
 {#  <a class="visually-hidden-focusable" href="#content">Skip navigation</a>#}
 {#  {% endblock %}#}
 
   {% wagtailuserbar %}
-
   <!-- Customised Header and Navbar -->
   <div class="bg-guest">
     <div class="container">
@@ -162,46 +163,25 @@
     {% block content_post_body %}{% endblock %}
 
     {% block index_filters %}
-    <div class="container">
-      {% if page.index_show_subpages and page.index_classifiers.exists %}
-      {% include "coderedcms/includes/classifier_dropdowns.html" with formclass="d-flex" formid="filter" %}
-      {% endif %}
-    </div>
+    {% if page.index_show_subpages and page.index_classifiers.exists %}
+    {% include "coderedcms/includes/classifier_dropdowns.html" with formclass="d-flex" formid="filter" %}
+    {% endif %}
     {% endblock %}
 
     {% block index_content %}
     {% if page.index_show_subpages %}
-    <div class="container">
-      <div class="row">
-        {% for child in index_paginated %}
-        <div class="col-sm-6 col-lg-4">
-          {% include child.miniview_template with page=child %}
-        </div>
-        {% endfor %}
-      </div>
-    </div>
+    <ul>
+      {% for child in index_paginated %}
+      <li><a href="{% pageurl child %}">{{child.title}}</a></li>
+      {% endfor %}
+    </ul>
     {% include "coderedcms/includes/pagination.html" with items=index_paginated %}
-    {% endif %}
-    {% endblock %}
-      </div>
-    {% block related_content %}
-    {% if page.related_show %}
-    <div class="container">
-      <h2 class="text-center my-5">{% trans "Related" %}</h2>
-      <div class="row">
-        {% for rp in related_pages %}
-        <div class="col-sm-6 col-lg-4">
-          {% include rp.miniview_template with page=rp %}
-        </div>
-        {% endfor %}
-      </div>
-    </div>
     {% endif %}
     {% endblock %}
 
     {% endblock %}
   </div>
-
+</div> <!-- Customised end page-content -->
   <div id="content-walls">
     {% block content_walls %}
     {% for content_wall in content_walls %}
@@ -213,7 +193,9 @@
   {% block footer %}{% endblock %}
 
   {% block frontend_scripts %}
+    <script src="{% static 'coderedcms/vendor/jquery/jquery-3.5.1.min.js' %}" ></script> {# Customised #}
   <script src="{% static 'coderedcms/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}?v={% coderedcms_version %}"></script>
+{#  <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>{# Customised #}
   {% endblock %}
 
   {% block coderedcms_scripts %}
@@ -222,10 +204,7 @@
 
   {% block custom_scripts %}{% endblock %}
 
-  {% block struct_seo %}
-    {% include "wagtailseo/struct_data.html" %}
-    {% block struct_seo_extra %}{% endblock %}
-  {% endblock %}
+  {% include "wagtailseo/struct_data.html" %}
 
   {% block body_tracking_scripts %}
   {% if settings.coderedcms.AnalyticsSettings.gtm_id %}

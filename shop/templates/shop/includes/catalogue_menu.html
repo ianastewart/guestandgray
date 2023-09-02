@@ -1,9 +1,9 @@
 {% load shop_tags %}
 
 <li class="nav-item dropdown has-megamenu">
-  <a class="nav-link dropdown-toggle" href="/catalogue/" data-toggle="dropdown">{% if is_archive %}Archive{% else %}
-    Catalogue{% endif %}</a>
-  <div class="dropdown-menu megamenu" role="menu">
+  <a class="nav-link dropdown-toggle" href="/catalogue/" id="dropdown{% if is_archive %}Archive{% else %}Catalogue{%endif%}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {% if is_archive %}Archive{% else %}Catalogue{% endif %}</a>
+  <div class="dropdown-menu " role="menu" aria-labelledby="dropdown{% if is_archive %}Archive{% else %}Catalogue{%endif%}">
     <div class="row">
       <div class="col col-md-6">
           {% if is_archive %}{% archive_tree "Chinese" as tree %}{% else %}{% catalogue_tree "Chinese" as tree %}{% endif %}
