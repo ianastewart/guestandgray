@@ -1,18 +1,35 @@
 {% extends "shop/shop_base.html" %}
-{% load bootstrap4 static %}
+{% load bootstrap4 static django_tableaux %}
 {% block head %}
   {% include "django_tableaux/block_head.html" %}
 {% endblock %}
 {% block content %}
   <div class="container{% block size %}{% endblock %}">
   <h3>{{ view.title }}</h3>
-    <div id="messages">
+  <div id="messages">
     {% bootstrap_messages %}
-    </div>
-    <div class="bg-white" id="content">
-    {% include "django_tableaux/block_content.html" %}
-    </div>
-  <div id="modals-here"></div>
   </div>
+  <div class="bg-white">
+    {% if view.filterset and view.filter_style == 1 %}
+      <div class="{{ css_toolbar }}">
+        {% include "django_tableaux/filter_toolbar.html" %}
+      </div>
+    {% endif %}
+    {% if view.filter_pills and filters %}
+      <div class="{{ css_toolbar }} d-flex">
+        {% include "django_tableaux/toolbar/_filter_pills.html" %}
+      </div>
+    {% endif %}
+    {% if actions or buttons or table.column_states or view.filterset_class and view.filter_modal %}
+      <div class="{{ css_toolbar }}">
+        {% include "django_tableaux/toolbar/main.html" %}
+      </div>
+    {% endif %}
+    <div class="bg-white">
+      {% include "django_tableaux/bootstrap4/render_table.html" %}
+    </div>
+  </div>
+  <div id="modals-here"></div>
+
   <script src="{% static "django_tableaux/js/django_tableaux.js" %}"></script>
 {% endblock %}
