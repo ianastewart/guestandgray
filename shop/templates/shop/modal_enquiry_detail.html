@@ -1,0 +1,48 @@
+{% extends "django_tableaux/bootstrap4/modal_base.html" %}
+{% load bootstrap4 shop_tags %}
+{% block modal_header %}
+  {{ block.super }}
+{% endblock %}
+{% block modal_body %}
+  <div class="modal-body">
+    <table class="table table-sm table-borderless">
+      <tr>
+        <td>From:</td>
+        <td>{{ enquiry.contact.first_name }} {{ enquiry.contact.last_name }}</td>
+      </tr>
+      <tr>
+        <td>Received:</td>
+        <td>{{ enquiry.date }}</td>
+      </tr>
+      <tr>
+        <td>Email:</td>
+        <td>{{ enquiry.contact.main_address.email }}</td>
+      </tr>
+      <tr>
+        <td>Phone:</td>
+        <td>{{ enquiry.contact.main_address.phone }}</td>
+      </tr>
+      <tr>
+        <td>Subject:</td>
+        <td>{{ enquiry.subject }}</td>
+      </tr>
+      <tr>
+        <td>Message:</td>
+        <td>{{ enquiry.message }}</td>
+      </tr>
+      </tr>
+    </table>
+  </div>
+{% endblock %}
+{% block modal_footer %}
+  <div class="modal-footer">
+  <form>{% csrf_token %}
+    {% if enquiry.closed %}
+      <button name="open" class="btn btn-secondary" hx-post="{{ request.path }}">Reopen</button>
+    {% else %}
+      <button name="close" class="btn btn-secondary" hx-post="{{ request.path }}">Mark as closed</button>
+    {% endif %}
+    <button name="delete" class="btn btn-danger" hx-post="{{ request.path }}">Delete</button>
+  </form>
+  </div>
+{% endblock %}

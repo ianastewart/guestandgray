@@ -22,7 +22,7 @@ from shop.views.contact_views import (
     VendorListView,
     BuyerListView,
     EnquiryListView,
-    EnquiryDetailAjax,
+    EnquiryDetailView,
     MailListView,
     contact_lookup,
 )
@@ -82,18 +82,32 @@ staff_urls = [
     path("item/update/<int:pk>/", ItemUpdateView.as_view(), name="item_update"),
     path("item/images/<int:pk>/", ItemImagesView.as_view(), name="item_images"),
     path("image/assign/<int:image_pk>/", image_assign_view, name="image_assign"),
-    path("item/list/categorise/", ItemCategoriseModalView.as_view(), name="item_categorise"),
+    path(
+        "item/list/categorise/",
+        ItemCategoriseModalView.as_view(),
+        name="item_categorise",
+    ),
     # Categories
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
-    path("category/update/<int:pk>/", CategoryUpdateView.as_view(), name="category_update"),
+    path(
+        "category/update/<int:pk>/",
+        CategoryUpdateView.as_view(),
+        name="category_update",
+    ),
     path("category/tree/", CategoryTreeView.as_view(), name="category_tree"),
     path("category/images/", CategoryImagesView.as_view(), name="category_images"),
     path("category/list/", CategoryListView.as_view(), name="category_list"),
-    path("category/detail/<int:pk>/", CategoryDetailView.as_view(), name="category_detail"),
+    path(
+        "category/detail/<int:pk>/",
+        CategoryDetailView.as_view(),
+        name="category_detail",
+    ),
     # Contacts including vendors and buyers
     path("contact/list/", ContactListView.as_view(), name="contact_list"),
     path("contact/create/", ContactCreateView.as_view(), name="contact_create"),
-    path("contact/update/<int:pk>/", ContactUpdateView.as_view(), name="contact_update"),
+    path(
+        "contact/update/<int:pk>/", ContactUpdateView.as_view(), name="contact_update"
+    ),
     path("contact/update/", ContactUpdateView.as_view(), name="contact_update_htmx"),
     path("contact/lookup/", contact_lookup, name="contact_lookup"),
     # Mail list
@@ -102,31 +116,77 @@ staff_urls = [
     path("vendor/lookup/", contact_lookup, name="vendor_lookup"),
     path("vendor/list/", VendorListView.as_view(), name="vendor_list"),
     path("vendor/list/create/", ContactCreateView.as_view(), name="vendor_create"),
-    path("vendor/list/update/<int:pk>/", ContactUpdateView.as_view(), name="vendor_update"),
+    path(
+        "vendor/list/update/<int:pk>/",
+        ContactUpdateView.as_view(),
+        name="vendor_update",
+    ),
     path("buyer/list/", BuyerListView.as_view(), name="buyer_list"),
     path("buyer/list/create/", ContactCreateView.as_view(), name="buyer_create"),
-    path("buyer/list/update/<int:pk>/", ContactUpdateView.as_view(), name="buyer_update"),
+    path(
+        "buyer/list/update/<int:pk>/", ContactUpdateView.as_view(), name="buyer_update"
+    ),
     # Purchases
     path("purchase/list/", PurchaseListView.as_view(), name="purchase_list"),
-    path("purchase/detail/<int:pk>/", PurchaseDetailModal.as_view(), name="purchase_detail_modal"),
+    path(
+        "purchase/detail/<int:pk>/",
+        PurchaseDetailModal.as_view(),
+        name="purchase_detail_modal",
+    ),
     path("purchase/start/", PurchaseStartView.as_view(), name="purchase_start"),
-    path("purchase/create/<int:index>/", PurchaseVendorView.as_view(), name="purchase_vendor"),
-    path("purchase/create/<int:index>/vendor/", PurchaseVendorCreateView.as_view(), name="purchase_create_vendor"),
-    path("purchase/create/data/<int:index>/", PurchaseDataCreateView.as_view(), name="purchase_data_create"),
-    path("purchase/create/lot/<int:index>/", PurchaseLotCreateView.as_view(), name="purchase_lot_create"),
-    path("purchase/create/summary/<int:index>/", PurchaseSummaryCreateView.as_view(), name="purchase_summary"),
-    path("purchase/summary/ajax/<str:ref>/", PurchaseSummaryAjaxView.as_view(), name="purchase_summary_ajax"),
-    path("purchase/item/ajax/<int:pk>/", PurchaseItemAjax.as_view(), name="purchase_item_ajax"),
+    path(
+        "purchase/create/<int:index>/",
+        PurchaseVendorView.as_view(),
+        name="purchase_vendor",
+    ),
+    path(
+        "purchase/create/<int:index>/vendor/",
+        PurchaseVendorCreateView.as_view(),
+        name="purchase_create_vendor",
+    ),
+    path(
+        "purchase/create/data/<int:index>/",
+        PurchaseDataCreateView.as_view(),
+        name="purchase_data_create",
+    ),
+    path(
+        "purchase/create/lot/<int:index>/",
+        PurchaseLotCreateView.as_view(),
+        name="purchase_lot_create",
+    ),
+    path(
+        "purchase/create/summary/<int:index>/",
+        PurchaseSummaryCreateView.as_view(),
+        name="purchase_summary",
+    ),
+    path(
+        "purchase/summary/ajax/<str:ref>/",
+        PurchaseSummaryAjaxView.as_view(),
+        name="purchase_summary_ajax",
+    ),
+    path(
+        "purchase/item/ajax/<int:pk>/",
+        PurchaseItemAjax.as_view(),
+        name="purchase_item_ajax",
+    ),
     # Invoices
     path("invoice/list/", InvoiceListView.as_view(), name="invoice_list"),
-    path("invoice/list/detail/<int:pk>/", InvoiceDetailView.as_view(), name="invoice_detail"),
+    path(
+        "invoice/list/detail/<int:pk>/",
+        InvoiceDetailView.as_view(),
+        name="invoice_detail",
+    ),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
-    path("enquiry/list/detail/<int:pk>/", EnquiryDetailAjax.as_view(), name="enquiry_update"),
+    path("enquiry/<int:pk>/", EnquiryDetailView.as_view(), name="enquiry_detail"),
     # Compilers
     path("compilers/", CompilerListView.as_view(), name="compiler_list"),
     path("compilers/create/", CompilerCreateView.as_view(), name="compiler_create"),
-    path("compilers/update/<int:pk>/", CompilerUpdateView.as_view(), name="compiler_update"),
+    path(
+        "compilers/update/<int:pk>/",
+        CompilerUpdateView.as_view(),
+        name="compiler_update",
+    ),
     # Books
     path("books/", BookListView.as_view(), name="book_list"),
     path("books/create/", BookCreateView.as_view(), name="book_create"),
@@ -148,10 +208,22 @@ staff_urls = [
 public_urls = [
     path("", home_view, name="public_home"),
     path("search/", search_view, {"public": True}, name="crx_search"),
-    path("catalogue/", catalogue_view, {"archive": False}, name="public_catalogue_root"),
-    re_path(r"catalogue/(?P<slugs>[\w_/-]+)/$", catalogue_view, {"archive": False}, name="public_catalogue"),
+    path(
+        "catalogue/", catalogue_view, {"archive": False}, name="public_catalogue_root"
+    ),
+    re_path(
+        r"catalogue/(?P<slugs>[\w_/-]+)/$",
+        catalogue_view,
+        {"archive": False},
+        name="public_catalogue",
+    ),
     path("archive/", catalogue_view, {"archive": True}, name="public_archive_root"),
-    re_path(r"archive/(?P<slugs>[\.\w_/-]+)/$", catalogue_view, {"archive": True}, name="public_archive"),
+    re_path(
+        r"archive/(?P<slugs>[\.\w_/-]+)/$",
+        catalogue_view,
+        {"archive": True},
+        name="public_archive",
+    ),
     path("item/<str:ref>/<slug:slug>/", item_view, name="public_item"),
     path("item/<str:ref>/", item_view, {"slug": ""}, name="public_item_ref"),
     path("mail_add/", MailListModalView.as_view(), name="mail_add"),

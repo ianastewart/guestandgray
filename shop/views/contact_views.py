@@ -2,7 +2,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, DetailView
 from django_htmx.http import HttpResponseClientRefresh, trigger_client_event
 from shop.models import Contact, Enquiry, Address
 from shop.forms import ContactForm, EnquiryForm
@@ -66,7 +66,7 @@ class BuyerListView(ContactListView):
 class ContactCreateView(LoginRequiredMixin, ModalMixin, CreateView):
     model = Contact
     form_class = ContactForm
-    modal_template_name = "shop/includes/modal_contact_form.html"
+    modal_template_name = "shop/modal_contact_form.html"
     title = "Create contact"
 
     def form_valid(self, form):
@@ -87,7 +87,7 @@ class ContactCreateView(LoginRequiredMixin, ModalMixin, CreateView):
 class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
     model = Contact
     form_class = ContactForm
-    modal_template_name = "shop/includes/modal_contact_form.html"
+    modal_template_name = "shop/modal_contact_form.html"
     title = "Update contact"
     allow_delete = True
 
@@ -101,8 +101,8 @@ class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
         kwargs["initial"]["address"] = adr.address
         return kwargs
 
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         context["addresses"] = self.object.addresses()
         return context
 
@@ -120,7 +120,6 @@ class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
             adr.mobile_phone = data["mobile_phone"]
             adr.email = data["email"]
             adr.save()
-            messages.info(self.request, f"Address for {self.object.name} was updated")
         # create new record if address is really changed
         else:
             adr = Address.objects.create(
@@ -132,7 +131,7 @@ class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
             )
             contact.main_address = adr
             contact.save()
-        return self.reload_table()
+        return HttpResponseClientRefresh()
 
     @staticmethod
     def unformat(address):
@@ -142,8 +141,12 @@ class ContactUpdateView(LoginRequiredMixin, ModalMixin, UpdateView):
 class EnquiryListView(LoginRequiredMixin, TableauxView):
     table_class = EnquiryTable
     filterset_class = EnquiryFilter
-    allow_detail = True
-    template_name = "shop/table.html"
+    filter_style = TableauxView.FilterStyle.TOOLBAR
+    template_name = "shop/table_wide.html"
+    click_url_name = "enquiry_detail"
+    click_action = TableauxView.ClickAction.HX_GET
+    column_settings = True
+    row_settings = True
 
     def get_queryset(self):
         return Enquiry.objects.all().order_by("-id")
@@ -164,18 +167,20 @@ class EnquiryListView(LoginRequiredMixin, TableauxView):
             self.selected_objects.delete()
 
 
-class EnquiryDetailAjax(LoginRequiredMixin, AjaxCrudView):
+class EnquiryDetailView(LoginRequiredMixin, ModalMixin, DetailView):
     model = Enquiry
-    allow_delete = True
-    template_name = "shop/enquiry_detail.html"
+    title = "Enquiry"
+    modal_class = "modal-lg"
+    modal_template_name = "shop/modal_enquiry_detail.html"
 
-    def handle_action(self, action, **kwargs):
-        if action == "open":
-            self.object.closed = False
-        elif action == "close":
-            self.object.closed = True
-        self.object.save()
-        return
+    def post(self, request, *args, **kwargs):
+        enquiry = self.get_object()
+        if "open" in request.POST:
+            enquiry.closed = False
+        elif "close" in request.POST:
+            enquiry.closed = True
+        enquiry.save()
+        return HttpResponseClientRefresh()
 
 
 class ContactCreateAjax(LoginRequiredMixin, AjaxCrudView):
