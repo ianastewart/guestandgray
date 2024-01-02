@@ -1,41 +1,44 @@
 <!--Sets up the image array for photoswipe and handles the click action -->
 <script>
-var last_index = 0;
-    var pswpElement = document.querySelectorAll('.pswp')[0];
-    // build the json album images collection
-    var index = 0;
-    var items = [
-      {% for image in images %}
-        {
-          src: '{{ image.file.url }}',
-          w:  {{ image.width }},
-          h:  {{ image.height }},
-          title: '{{ image.name }}',
-          index: 0
-        },
-      {% endfor %}
-    ];
-    items.forEach(
-      function(item) {
-        item.index = index;
-        index += 1;
-      }
-    )
+  $(".thumb:first").addClass("opacity-50");
+  var last_index = 0;
+  var pswpElement = document.querySelectorAll('.pswp')[0];
+  // build the json album images collection
+  var index = 0;
+  var items = [
+    {% for image in images %}
+      {
+        src: '{{ image.file.url }}',
+        w:  {{ image.width }},
+        h:  {{ image.height }},
+        title: '{{ image.name }}',
+        index: 0
+      },
+    {% endfor %}
+  ];
+  items.forEach(
+    function (item) {
+      item.index = index;
+      index += 1;
+    }
+  )
 
-    $("figure").on("click", function (event) {
-      event.preventDefault();
-      var options = {
-        index: last_index - 1,
-        bgOpacity: 0.85,
-        showHideOpacity: true
-      }
-      // Initialize PhotoSwipe
-      var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
-      lightBox.init();
-    });
+  $("figure").on("click", function (event) {
+    event.preventDefault();
+    var options = {
+      index: last_index - 1,
+      bgOpacity: 0.85,
+      showHideOpacity: true
+    }
+    // Initialize PhotoSwipe
+    var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
+    lightBox.init();
+  });
 
-    $(".thumb").click(function () {
-      $("#main_image").attr("src", $(this).attr("full"));
-      last_index = parseInt($(this).attr("index"));
-    });
+  $(".thumb").click(function () {
+    $("#main_image").attr("src", $(this).attr("full"));
+    $(".thumb").removeClass("opacity-50");
+    $(this).addClass("opacity-50");
+    last_index = parseInt($(this).attr("index"));
+  });
 </script>
