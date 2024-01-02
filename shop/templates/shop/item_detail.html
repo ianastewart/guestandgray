@@ -1,5 +1,9 @@
 {% extends "shop/shop_base.html" %}
 {% load wagtailimages_tags static bootstrap4 %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'shop/css/photoswipe.css' %}">
+  <link rel="stylesheet" href="{% static 'shop/css/default-skin.css' %}">
+{% endblock %}
 {% block body_class %}bg-guest-light{% endblock %}
 {% block content %}
   {% bootstrap_messages %}
@@ -40,16 +44,21 @@
       </div>
       <div class="card-body">
         {% include 'shop/includes/partial_item_detail.html' with public=False %}
+        {% include 'shop/includes/photoswipe.html' %}
       </div>
     </div>
   </div>
   <div id="modals-here"></div>
 {% endblock %}
 {% block custom_scripts %}
+  {% include "shop/includes/photoswipe_images.html" %}
+  <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
+  <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
   <script src="{% static "shop/js/htmx_helper.js" %}"></script>
   <script>
     document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
   </script>
+
 {% endblock %}

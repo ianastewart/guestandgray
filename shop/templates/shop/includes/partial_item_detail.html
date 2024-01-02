@@ -42,6 +42,17 @@
         {% endfor %}
       </div>
     {% endif %}
+      {% if hidden_images|length > 1 %}
+      <div class="d-flex flex-wrap">
+        {% for image in hidden_images %}
+          <div class="d-flex flex-column pr-2 pb-2">
+            {% image image original as full_image %}
+            {% image image max-100x100 class="thumb" full=full_image.url index=forloop.counter %}
+            {% if not image.show %}<p class="text-center small p-0">Hidden</p>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
   <div class="col-lg-6 mb-2 px-4 ">
     <div class="d-flex justify-content-between flex-wrap">

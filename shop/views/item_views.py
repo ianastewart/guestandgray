@@ -179,6 +179,7 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
         if reverse("item_list") in self.request.META["HTTP_REFERER"]:
             self.request.session["referrer"] = self.request.META["HTTP_REFERER"]
         context["images"], context["bad_images"] = self.object.visible_images()
+        context["images"] = list(context["images"]) + list(self.object.hidden_images())
         context["image"] = (
             self.object.image if self.object.image in context["images"] else None
         )

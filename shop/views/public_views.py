@@ -469,29 +469,30 @@ def process_contact_response(request, data, mail_list):
     item = None
     if "ref" in request.POST:
         item = Item.objects.filter(ref=request.POST["ref"]).first()
+        data["subject"] += f" about {item.ref}"
     enquiry = Enquiry.objects.create(
         subject=data["subject"], message=data["message"], contact=contact, item=item
     )
     # Inform staff
     send_mail(
-        f"Enquiry:  {data['subject']}: ",
+        f"{data['subject']}",
         f"From {data['email']}\n{data['message']}",
         settings.DEFAULT_FROM_EMAIL,
         [settings.INFORM_EMAIL],
         fail_silently=False,
     )
-    connection = get_connection(
-        fail_silently=False,
-    )
-    email = EmailMessage(
-        subject=data["subject"],
-        body=data["message"],
-        from_email=data["email"],
-        to=[settings.INFORM_EMAIL],
-        reply_to=[data["email"]],
-        connection=connection,
-    )
-    email.send(fail_silently=False)
+    # connection = get_connection(
+    #     fail_silently=False,
+    # )
+    # email = EmailMessage(
+    #     subject=data["subject"],
+    #     body=data["message"],
+    #     from_email=data["email"],
+    #     to=[settings.INFORM_EMAIL],
+    #     reply_to=[data["email"]],
+    #     connection=connection,
+    # )
+    # email.send(fail_silently=False)
 
     message = "Thank you for your enquiry. We will respond as soon as possible."
     if data["mail_consent"]:

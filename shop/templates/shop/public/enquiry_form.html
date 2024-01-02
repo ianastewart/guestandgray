@@ -4,7 +4,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-guest-dark text-white">
-        <h5 class="modal-title">{% if item %}Enquiry Re: Item {{ item.ref }}{% else %}Send a message{% endif %}</h5>
+        <h5 class="modal-title">{% if ref %}Enquiry about {{ ref }}{% else %}Send a message{% endif %}</h5>
       </div>
       <div class="modal-body bg-guest-light">
         <form hx-post="{% if item %}{% url "item_enquiry" ref=item.ref %} {% else %} {% url "general_enquiry" %}{% endif %}"
@@ -12,9 +12,12 @@
               {% if not hcaptcha %}novalidate{% endif %}>
           {% csrf_token %}
           {% if subject %}
-            <input type="hidden" name="subject" value="subject">
+            <input type="hidden" name="subject" value={{ subject }}>
           {% else %}
             {% bootstrap_field form.subject show_label=False  %}
+          {% endif %}
+          {% if ref %}
+            <input type="hidden" name="ref" value={{ ref }}>
           {% endif %}
           {% bootstrap_field form.message show_label=False %}
           <div class="row">

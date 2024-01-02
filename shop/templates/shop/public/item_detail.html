@@ -19,48 +19,8 @@
   </div>
   <div id="modals-here"></div>
 {% endblock %}
-
 {% block custom_scripts %}
+  {% include "shop/includes/photoswipe_images.html" %}
   <script src="{% static "shop/js/photoswipe.min.js" %}"></script>
   <script src="{% static "shop/js/photoswipe-ui-default.min.js" %}"></script>
-  <script>
-    var last_index = 0;
-    var pswpElement = document.querySelectorAll('.pswp')[0];
-    // build the json album images collection
-    var items = [
-      {
-        src: '{{ item.image.file.url }}',
-        w:  {{ item.image.width }},
-        h:  {{ item.image.height }},
-        title: '{{ item.name }}',
-        index: 0
-      },
-      {% for item in images %}
-        {
-          src: '{{ item.file.url }}',
-          w:  {{ item.width }},
-          h:  {{ item.height }},
-          title: '{{ item.name }}',
-          index: {{ forloop.counter }}
-        },
-      {% endfor %}
-    ];
-
-    $("figure").on("click", function (event) {
-      event.preventDefault();
-      var options = {
-        index: last_index,
-        bgOpacity: 0.85,
-        showHideOpacity: true
-      }
-      // Initialize PhotoSwipe
-      var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
-      lightBox.init();
-    });
-
-    $(".thumb").click(function () {
-      $("#main_image").attr("src", $(this).attr("full"));
-      last_index = parseInt($(this).attr("index"));
-    });
-  </script>
 {% endblock %}

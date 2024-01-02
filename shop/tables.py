@@ -263,7 +263,7 @@ class PurchaseTable(tables.Table):
 class EnquiryTable(tables.Table):
     class Meta:
         model = Enquiry
-        fields = ("selection", "date", "subject", "message")
+        fields = ("selection", "date", "subject", "message", "item")
         attrs = {"class": "table table-sm table-hover hover-link table-responsive"}
         row_attrs = {"data-pk": lambda record: record.pk, "class": "table-row pl-4"}
 
@@ -299,6 +299,11 @@ class EnquiryTable(tables.Table):
         if len(value) > 200:
             return f"{value[:200]} ..."
         return value
+
+    @staticmethod
+    def render_item(value):
+        url = reverse("public_item_ref", kwargs={"ref": value.ref})
+        return mark_safe(f"<a href={url}>{value.ref}</a>")
 
 
 class BookTable(tables.Table):
