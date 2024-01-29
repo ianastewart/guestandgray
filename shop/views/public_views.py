@@ -469,7 +469,8 @@ def process_contact_response(request, data, mail_list):
     item = None
     if "ref" in request.POST:
         item = Item.objects.filter(ref=request.POST["ref"]).first()
-        data["subject"] += f" about {item.ref}"
+        if item:
+            data["subject"] += f" about {item.ref}"
     enquiry = Enquiry.objects.create(
         subject=data["subject"], message=data["message"], contact=contact, item=item
     )
