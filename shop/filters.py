@@ -25,11 +25,19 @@ class ItemFilter(FilterSet):
         empty_label="-- All categories --",
         method="cat_filter",
     )
-    archive = ChoiceFilter(
-        field_name="archive",
+
+    library = ChoiceFilter(
+        field_name="library",
         empty_label=None,
-        choices=(("", "Stock & Archive"), ("0", "Stock only"), ("1", "Archive only")),
+        choices=(
+            ("stock", "Stock only"),
+            ("archive", "Archive only"),
+            ("research", "Research only"),
+            ("all", "All libraries"),
+        ),
+        method="library_filter",
     )
+
     state = ChoiceFilter(
         field_name="state", empty_label="-- All --", choices=Item.State.choices()
     )
@@ -83,6 +91,17 @@ class ItemFilter(FilterSet):
         elif value == "1":
             return queryset.filter(image__isnull=False)
         return queryset.filter(image__isnull=True)
+
+    @staticmethod
+    def library_filter(queryset, name, value):
+        if value == "all":
+            return queryset
+        elif value == "stock":
+            return queryset.filter(library=Item.Library.STOCK)
+        elif value == "archive":
+            return queryset.filter(library=Item.Library.ARCHIVE)
+        elif value == "research":
+            return queryset.filter(library=Item.Library.RESEARCH)
 
 
 class CompilerFilter(FilterSet):

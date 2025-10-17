@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('shop', '0028_item_state'),
+        ("shop", "0028_item_state"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='sequence',
+            model_name="category",
+            name="sequence",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='item',
-            name='notes',
+            model_name="item",
+            name="notes",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='item',
-            name='provenance',
+            model_name="item",
+            name="provenance",
             field=models.TextField(blank=True, null=True),
         ),
     ]

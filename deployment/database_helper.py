@@ -27,7 +27,7 @@ def _create_database(dbuser, pw, db):
         'psql -p 5432 -c "CREATE DATABASE %s WITH OWNER %s"' % (db, dbuser),
         user="postgres",
     )
-    _grant_priviliges(dbuser, db)
+    _grant_privileges(dbuser, db)
     print(green(f"End create database {db}"))
 
 
@@ -46,7 +46,7 @@ def _create_user(dbuser, pw):
     print(green(f"User {dbuser} created"))
 
 
-def _grant_priviliges(dbuser, db):
+def _grant_privileges(dbuser, db):
     sudo(
         f'psql -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"',
         f'psql -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"',
@@ -72,7 +72,7 @@ def _download_database(local_dev_folder, app, db):
     sudo(f"mkdir -p {site_folder}/{BACKUP_FOLDER}", user="django")
     source_path = f"{site_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}"
     _create_user(dbuser, pw=dbuser)
-    _grant_priviliges("django", "gray")
+    _grant_privileges("django", "gray")
     sudo(f"pg_dump {db} -h localhost -Fc -x -U gray >{source_path}", user="django")
     get(source_path, local_path)
     print(green("End download database"))
@@ -104,15 +104,21 @@ def _upload_dev_db(local_dev_folder, db, venv):
     os.system(
         f"psql -U postgres -p 5432 -c \"CREATE USER gray WITH CREATEDB PASSWORD 'guest'\""
     )
-    os.system(
-        f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"'
-    ),
-    os.system(
-        f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"'
-    ),
-    os.system(
-        f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to {dbuser};"'
-    ),
+    (
+        os.system(
+            f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL TABLES IN SCHEMA public to {dbuser};"'
+        ),
+    )
+    (
+        os.system(
+            f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to {dbuser};"'
+        ),
+    )
+    (
+        os.system(
+            f'psql -U postgres -p 5432 -d {db} -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to {dbuser};"'
+        ),
+    )
     print(f"{local_dev_folder}/{BACKUP_FOLDER}/{BACKUP_FILE}")
     os.system(f'psql -U postgres -p 5432 -c "DROP DATABASE {db}"')
     os.system(f'psql -U postgres -p 5432 -c "CREATE DATABASE {db} WITH OWNER gray"')

@@ -42,7 +42,7 @@ class CartContentsView(LoginRequiredMixin, TemplateView):
 
     @classmethod
     def invoice_context(cls, items, charges, context):
-        """ Adds context data needed to display an invoice table"""
+        """Adds context data needed to display an invoice table"""
         total = Decimal(0)
         for item in items:
             total += item.agreed_price
@@ -123,7 +123,7 @@ class CartAddChargeView(LoginRequiredMixin, AjaxCrudView):
 
 
 class CartBuyerView(LoginRequiredMixin, FormView):
-    """ Add a buyer - ether existing or new to the cart """
+    """Add a buyer - ether existing or new to the cart"""
 
     template_name = "shop/cart_buyer.html"
     form_class = InvoiceBuyerForm

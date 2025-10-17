@@ -3,6 +3,7 @@ All Code for managing the tree of Categories
 A category is an instance of MPnode
 See https://django-treebeard.readthedocs.io/en/latest/api.html
 """
+
 import json
 from shop.models import Category
 from django.shortcuts import reverse
@@ -76,12 +77,12 @@ def tree(admin=False, archive=False, root="Catalogue"):
 
 
 def tree_json():
-    """ Tree in jqTree format """
+    """Tree in jqTree format"""
     return "[" + json.dumps(tree(admin=True)) + "]"
 
 
 def node_dict(node, admin, archive):
-    """ Define content of a tree node in the dictionary """
+    """Define content of a tree node in the dictionary"""
     dict = {"id": node.id}
     if admin:
         link = (
@@ -114,14 +115,14 @@ def node_dict(node, admin, archive):
     btn = "btn-outline-info" if node.is_leaf() else "btn-outline-primary"
     if not node.is_leaf() and items > 0:
         count_text = f'<span class="text-danger">{count_text}</span>'
-    dict[
-        "name"
-    ] = f' <a class="btn {btn} btn-sm py-0 mr-3" href="{link}">View</a><b>{node.name}</b> <i>{count_text}</i>'
+    dict["name"] = (
+        f' <a class="btn {btn} btn-sm py-0 mr-3" href="{link}">View</a><b>{node.name}</b> <i>{count_text}</i>'
+    )
     return dict
 
 
 def descend(parent, admin, archive):
-    """ Recursively expand the tree """
+    """Recursively expand the tree"""
     children = parent.get_children().order_by("sequence", "name")
     if children:
         kids = []
@@ -136,7 +137,7 @@ def descend(parent, admin, archive):
 
 
 def sequence_tree():
-    """ Initial traversal of the tree to add sequence numbers """
+    """Initial traversal of the tree to add sequence numbers"""
     node = Category.objects.get(name="Catalogue")
     node.sequence = 1
     node.save()
@@ -144,7 +145,7 @@ def sequence_tree():
 
 
 def sequence_kids(node):
-    """ Recursive function to add sequence numbers """
+    """Recursive function to add sequence numbers"""
     kids = node.get_children().order_by("sequence", "name")
     if kids:
         seq = 1
@@ -170,7 +171,7 @@ def print_kids(node, level):
 
 
 class Counter:
-    """ Traverse a hierarchical category tree and append the total count of items under each node """
+    """Traverse a hierarchical category tree and append the total count of items under each node"""
 
     def __init__(
         self, root, archive=False, exclude_no_image=True, exclude_not_visible=True

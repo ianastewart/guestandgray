@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("shop", "0013_remove_book_compiler")]
 
     operations = [

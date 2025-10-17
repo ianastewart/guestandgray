@@ -75,7 +75,9 @@ def load_columns(request, table_class):
 
 def toggle_column(request, column_name, table_class):
     columns = load_columns(request, table_class)
-    columns.remove(column_name) if column_name in columns else columns.append(column_name)
+    columns.remove(column_name) if column_name in columns else columns.append(
+        column_name
+    )
     save_columns(request, columns)
 
 
@@ -110,6 +112,7 @@ def update_url(url, value):
     else:
         url = f"{url}?{new_per_page}"
     return url
+
 
 def per_page_value(path):
     parsed = urlparse(path)

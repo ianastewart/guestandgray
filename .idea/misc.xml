@@ -4,12 +4,12 @@
     <option name="enabledOnReformat" value="true" />
     <option name="enabledOnSave" value="true" />
     <option name="pathToExecutable" value="C:\Users\is\AppData\Local\Programs\Python\Python39\Scripts\black.exe" />
-    <option name="sdkUUID" value="25f1c6ec-ba84-4498-988b-335c91328ac3" />
+    <option name="sdkName" value="Python 3.8 (gray38)" />
   </component>
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (gray38)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="uv (guestandgray)" project-jdk-type="Python SDK" />
   <component name="PythonCompatibilityInspectionAdvertiser">
     <option name="version" value="3" />
   </component>

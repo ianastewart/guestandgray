@@ -5,7 +5,15 @@ from django.template.loader import render_to_string
 
 class BsButton:
     def __init__(
-        self, content, button_type="", button_class="btn-primary", size="", href="", name="", value="", ajax=False
+        self,
+        content,
+        button_type="",
+        button_class="btn-primary",
+        size="",
+        href="",
+        name="",
+        value="",
+        ajax=False,
     ):
         self.content = content
         if button_type:
@@ -55,5 +63,7 @@ class Button:
         self.context.update(kwargs)
 
     def render(self):
-        html = mark_safe(render_to_string(template_name=self.template_name, context=self.context))
+        html = mark_safe(
+            render_to_string(template_name=self.template_name, context=self.context)
+        )
         return html

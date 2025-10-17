@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("shop", "0012_auto_20191019_0947")]
 
     operations = [migrations.RemoveField(model_name="book", name="compiler")]

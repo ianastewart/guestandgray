@@ -144,7 +144,9 @@ class PurchaseLotCreateView(LoginRequiredMixin, DispatchMixin, FormView):
     def form_valid(self, form):
         # allocate cost and ref to items in the lot
         cost = form.cleaned_data["cost"]
-        unit_cost = (cost / len(self.items)).quantize(Decimal("0.01"), rounding=ROUND_FLOOR)
+        unit_cost = (cost / len(self.items)).quantize(
+            Decimal("0.01"), rounding=ROUND_FLOOR
+        )
         diff = cost - (unit_cost * len(self.items))
         for item in self.items:
             item.cost_price = unit_cost
@@ -222,7 +224,9 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
                 i = 2
                 while i <= session.last_index(request):
                     data = session.get_data(i, request)
-                    lot = Lot.objects.create(number=data["number"], cost=data["cost"], purchase=purchase)
+                    lot = Lot.objects.create(
+                        number=data["number"], cost=data["cost"], purchase=purchase
+                    )
                     for item in data["items"]:
                         item.lot = lot
                         item.save()
@@ -242,7 +246,11 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
             data = session.get_data(i, request)
             for item in data["items"]:
                 item.ref = ref
-                ref = ItemRef.get_next(increment=True) if permanent else ItemRef.increment(ref)
+                ref = (
+                    ItemRef.get_next(increment=True)
+                    if permanent
+                    else ItemRef.increment(ref)
+                )
             i += 1
 
     @classmethod
@@ -253,7 +261,9 @@ class PurchaseSummaryCreateView(LoginRequiredMixin, DispatchMixin, TemplateView)
             message = f"There is still £{remaining} unallocated"
         elif remaining < 0:
             level = messages.ERROR
-            message = f"The allocated lot costs exceed the invoice total by £{-remaining}."
+            message = (
+                f"The allocated lot costs exceed the invoice total by £{-remaining}."
+            )
         else:
             level = messages.SUCCESS
             message = "Invoice total matches allocated item costs"

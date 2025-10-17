@@ -8,10 +8,10 @@ ROW_CHOICES = (
     (100, "100 rows"),
 )
 
-class PaginationFilter(ChoiceFilter):
 
+class PaginationFilter(ChoiceFilter):
     def __init__(self, *args, **kwargs):
-        kwargs['field_name'] = "id"
-        kwargs['empty_label']= None
-        kwargs['choices'] = ROW_CHOICES
+        kwargs["field_name"] = "id"
+        kwargs["empty_label"] = None
+        kwargs["choices"] = ROW_CHOICES
         super().__init__(*args, **kwargs)

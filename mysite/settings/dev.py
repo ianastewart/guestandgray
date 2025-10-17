@@ -22,6 +22,7 @@ SECRET_KEY = env.str("SECRET_KEY")
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = ["127.0.0.1"]
 
+
 WAGTAIL_CACHE = False
 
 try:

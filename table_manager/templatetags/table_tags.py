@@ -6,7 +6,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def attrs(context):
-    """ Convert context into a string of html attributes, converting '_' to '-'"""
+    """Convert context into a string of html attributes, converting '_' to '-'"""
     result = ""
     for key, value in context.flatten().items():
         if key not in ["True", "False", "None", "content", "element"]:
@@ -14,6 +14,7 @@ def attrs(context):
                 key = key.replace("_", "-")
             result += f' {key}="{value}"'
     return mark_safe(result)
+
 
 @register.filter
 def render_button(button):

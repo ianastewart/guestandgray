@@ -59,7 +59,7 @@ class ItemTable(tables.Table):
             "cost_price",
             "sale_price",
             "state",
-            "archive",
+            "library",
             "featured",
             "rank",
             "visible",

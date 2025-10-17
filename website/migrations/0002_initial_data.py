@@ -41,7 +41,6 @@ def initial_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("coderedcms", "0001_initial"),
         ("wagtailcore", "0002_initial_data"),

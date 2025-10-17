@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 
 def legacy_view(request, page):
-
     if ".html" in page:
         page = page.split(".")[0]
     try:

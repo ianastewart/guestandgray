@@ -125,41 +125,69 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     template_name = "shop/item_form.html"
     form_class = ItemForm
 
-    def get(self, request, *args, **kwargs):
-        if request.htmx:
-            item = self.get_object()
-            item.archive = request.htmx.trigger_name == "archive"
-            item.save()
-            template = "shop/item_form__pricing.html"
-            context = {"item": item}
-            return render(request, template, context)
-        return super().get(request, *args, **kwargs)
+    # def get(self, request, *args, **kwargs):
+    #     if request.htmx:
+    #         item = self.get_object()
+    #         item.archive = request.htmx.trigger_name == "archive"
+    #         item.save()
+    #         template = "shop/item_form__pricing.html"
+    #         context = {"item": item}
+    #         return render(request, template, context)
+    #     return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["item"] = self.object
+        context["STOCK"] = Item.Library.STOCK.value
+        context["ARCHIVE"] = Item.Library.ARCHIVE.value
+        context["RESEARCH"] = Item.Library.RESEARCH.value
         context["images"], context["bad_images"] = self.object.visible_images()
         context["image"] = (
             self.object.image if self.object.image in context["images"] else None
         )
-        # context["photos"] = CustomImage.objects.filter(item_id=self.object.id)
         context["allow_delete"] = not self.object.lot
         context["note"] = Note.objects.filter(item=self.object).first()
         return context
 
     def post(self, request, *args, **kwargs):
         item = self.get_object()
-        item.archive = request.POST["archive"] == "true"
-        item.save()
-        if request.htmx:
-            return HttpResponse("")
         if "delete" in request.POST:
             item.delete()
             messages.add_message(
                 request, messages.INFO, f"Item ref: {item.ref} has been deleted"
             )
             return redirect("item_list")
-        return super().post(request, *args, **kwargs)
+
+        save_state = False
+        save_featured = False
+        if request.POST["library"] == Item.Library.RESEARCH.value:
+            # missing fields when RESEARCH are retained
+            save_state = True
+            state = item.state
+            location = item.location
+            rank = item.rank
+        if request.POST["library"] != Item.Library.STOCK.value:
+            # missing when RESEARCH or ARCHIVE are retained
+            save_featured = True
+            featured = item.featured
+            show_price = item.show_price
+            done = item.done
+        result = super().post(request, *args, **kwargs)
+        item = self.object
+        if save_state:
+            item.state = state
+            item.location = location
+            item.rank = rank
+        if save_featured:
+            item.featured = featured
+            item.show_price = show_price
+            item.done = done
+        item.save()
+        return result
+        #     return HttpResponseClientRedirect(self.get_success_url())
+        # else:
+        #     return self.form_invalid(form)
+        # return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         if "preview" in self.request.POST:
@@ -187,6 +215,9 @@ class ItemDetailView(LoginRequiredMixin, StackMixin, DetailView):
         clean_description = unmarkdown(self.object.description).replace("\n", " ")
         context["seo"] = truncate(clean_description, 200)
         context["note"] = Note.objects.filter(item=self.object).first()
+        context["STOCK"] = Item.Library.STOCK.value
+        context["ARCHIVE"] = Item.Library.ARCHIVE.value
+        context["RESEARCH"] = Item.Library.RESEARCH.value
         return context
 
     def post(self, request, **kwargs):

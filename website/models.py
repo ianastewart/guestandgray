@@ -1,6 +1,7 @@
 """
 Createable pages used in CodeRed CMS.
 """
+
 from coderedcms.forms import CoderedFormField
 from coderedcms.models import (
     CoderedArticlePage,

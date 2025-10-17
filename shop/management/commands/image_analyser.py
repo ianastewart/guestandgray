@@ -7,11 +7,10 @@ from shop.models import Item
 from PIL import Image
 
 
-class Imagine():
-
+class Imagine:
     def __init__(self):
         self.used_count = 0
-        self.source ="H:/Large Images/"
+        self.source = "H:/Large Images/"
         self.target = "H:/Used Images/"
         self.name_dict = {}
 
@@ -46,7 +45,7 @@ class Imagine():
         return False, name
 
     def search_local(self, ref, index, copy=False):
-        """ Search 10 before and 10 after image for variant """
+        """Search 10 before and 10 after image for variant"""
         print(ref)
         for i in range(index - 10, index + 10):
             if ref in self.images[i]:
@@ -87,14 +86,18 @@ class Imagine():
                 missing_count += 1
                 print("Missing", item.ref)
 
-        print(f"{len(self.items)} items processed, {found_count} images found, {missing_count} images missing")
+        print(
+            f"{len(self.items)} items processed, {found_count} images found, {missing_count} images missing"
+        )
         print(f"{self.used_count} of {len(self.images)} large images used")
+
 
 def open_image(path=None):
     if not path:
         path = "H:\Large Images\W307c.JPG"
     im = Image.open(path)
     return im
+
 
 def save_image(im):
     name = im.filename.replace("Large Images", "Test images")
@@ -106,6 +109,7 @@ def save_image(im):
     im.save(name + "-high.JPG", quality="high")
     im.save(name + "-web_high.JPG", quality="maximum")
 
+
 class Command(BaseCommand):
     help = "Analyse images"
 
@@ -114,5 +118,3 @@ class Command(BaseCommand):
         im.load()
         im.clean()
         im.item_update()
-
-

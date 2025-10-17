@@ -7,7 +7,7 @@ from shop.models import Invoice, Item, InvoiceCharge, Contact
 
 
 def clear_data(request):
-    """ Clear session variables """
+    """Clear session variables"""
     request.session["posts"] = []
 
 
@@ -115,14 +115,14 @@ def update_kwargs(view, kwargs):
 
 
 def post_data(view):
-    """ Return POST data if it exists for a view"""
+    """Return POST data if it exists for a view"""
     if view.request.method == "GET":
         return get_data(view.index, view.request)
     return None
 
 
 def redirect_next(index, request, default):
-    """ Redirect to next page form if data exists for it else to the default """
+    """Redirect to next page form if data exists for it else to the default"""
     posts = request.session["posts"]
     max_index = len(posts) - 1
     i = index
@@ -145,7 +145,7 @@ def cart_clear(request):
 
 
 def cart_empty(request):
-    """ Restore state of any items in cart then clear it """
+    """Restore state of any items in cart then clear it"""
     cart = request.session.get("cart")
     if cart:
         items = cart_items(request)

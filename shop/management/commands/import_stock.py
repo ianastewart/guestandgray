@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Exception processing sheet \n{str(e)}")
 
     def import_buyers(self, ws):
-        """ Import buyers and create invoices """
+        """Import buyers and create invoices"""
         self.stdout.write(">> Start import buyers")
         try:
             rowgen = ws.rows
@@ -76,7 +76,6 @@ class Command(BaseCommand):
                                     buyer.save()
                                 break
                 if not buyer and adr:
-
                     buyer = Contact.objects.create(
                         first_name=first_name, company=name, buyer=True
                     )
@@ -144,7 +143,7 @@ class Command(BaseCommand):
         self.stdout.write(f"End import vendors: {count} contacts created")
 
     def import_stock(self, ws):
-        """ Read stock sheet, create missing items, update purchases and invoices """
+        """Read stock sheet, create missing items, update purchases and invoices"""
         self.stdout.write(">> Start import stock")
         # Item.objects.filter(category__isnull=True).delete()
         # Purchase.objects.all().delete()
@@ -321,7 +320,7 @@ class Command(BaseCommand):
 
 
 def parse_name_address(value, vendor=False):
-    """ Separate name and address by first comma or first numeral """
+    """Separate name and address by first comma or first numeral"""
 
     try:
         value = despace(value).replace("'", "")
@@ -429,7 +428,7 @@ def parse_special(value):
 
 
 def has_digit(string):
-    """ return 0 if no digit else position of first digit """
+    """return 0 if no digit else position of first digit"""
     for i, c in enumerate(string):
         if c.isdigit():
             return i
@@ -437,7 +436,7 @@ def has_digit(string):
 
 
 def parse_date(value):
-    """ Parse date in form dd.mm.yy """
+    """Parse date in form dd.mm.yy"""
     if value:
         if type(value) is datetime.datetime:
             return value

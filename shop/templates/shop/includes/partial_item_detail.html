@@ -1,6 +1,16 @@
 {% load static wagtailimages_tags shop_tags bootstrap4 humanize markdownify %}
 
-{% if not public %}<p>Category: {{ item.category.name }}</p>{% endif %}
+{% if not public %}<p>Category: {{ item.category.name }}</p>
+<span class="h3 float-right">
+{% if item.library == STOCK %}
+  <span class="badge badge-success m-2 ml-auto">In stock</span>
+    {% elif item.library == RESEARCH %}
+    <span class="badge badge-warning m-2 ml-auto">Research</span>
+    {% elif item.library == ARCHIVE %}
+    <span class="badge badge-info m-2 ml-auto">Archive</span>
+  {% endif %}
+</span>
+{% endif %}
 <h1 class="font-heading mb-4">{{ item.name|titler }}</h1>
 
 <div class="row">

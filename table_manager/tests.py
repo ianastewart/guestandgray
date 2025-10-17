@@ -15,7 +15,12 @@ def test_default_button():
 
 def test_button_renders_attributes():
     button = Button(
-        "Test button", css="btn btn-secondary", type="submit", name="test_name", hx_get="/test", hx_target="#target"
+        "Test button",
+        css="btn btn-secondary",
+        type="submit",
+        name="test_name",
+        hx_get="/test",
+        hx_target="#target",
     )
     html = button.render()
     assert 'class="btn btn-secondary"' in html

@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("coderedcms", "0015_coderedsessionformsubmission_coderedsubmissionrevision"),
         ("website", "0002_initial_data"),

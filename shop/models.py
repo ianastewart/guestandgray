@@ -139,7 +139,7 @@ class Category(MP_Node):
     def shop_items(self):
         return (
             self.item_set.filter(
-                archive=False,
+                library=Item.Library.STOCK,
                 visible=True,
                 image__isnull=False,
             )
@@ -153,7 +153,7 @@ class Category(MP_Node):
     def archive_items(self):
         return (
             self.item_set.filter(
-                archive=True,
+                library=Item.Library.ARCHIVE,
                 visible=True,
                 image__isnull=False,
             )
@@ -181,6 +181,11 @@ class Item(index.Indexed, models.Model):
     class Price_visibility(ModelEnum):
         NEVER = 0
 
+    class Library(ModelEnum):
+        STOCK = 0
+        ARCHIVE = 1
+        RESEARCH = 2
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(null=True, blank=True, max_length=200)
     ref = models.CharField(
@@ -195,8 +200,9 @@ class Item(index.Indexed, models.Model):
     dimensions = models.CharField(max_length=200, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     provenance = models.TextField(null=True, blank=True)
-    state = models.SmallIntegerField(choices=State.choices(), default=0)
+    state = models.SmallIntegerField(choices=State.choices(), default=0, blank=True)
     archive = models.BooleanField(default=False)
+    library = models.SmallIntegerField(choices=Library.choices(), default=0)
     cost_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
@@ -212,12 +218,11 @@ class Item(index.Indexed, models.Model):
     location = models.SmallIntegerField(
         choices=Location.choices(), default=0, null=True, blank=True
     )
-    # price_visibility = models.PositiveIntegerField(choice=)
     show_price = models.BooleanField(default=True)
     visible = models.BooleanField(default=True)
     featured = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
-    rank = models.SmallIntegerField(default=10)
+    rank = models.SmallIntegerField(default=10, blank=True)
     image = models.ForeignKey(
         "CustomImage",
         null=True,

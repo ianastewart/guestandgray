@@ -4,18 +4,46 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('shop', '0043_alter_customimage_file_hash'),
+        ("shop", "0043_alter_customimage_file_hash"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GlobalSettings',
+            name="GlobalSettings",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('show_prices', models.PositiveSmallIntegerField(choices=[(0, 'Use item settings'), (1, 'Show everywhere'), (2, 'Hide everywhere')], default=0)),
-                ('contact_options', models.PositiveSmallIntegerField(choices=[(0, 'Use recaptcha'), (1, 'Use hcaptcha'), (2, 'No captcha'), (3, 'No contact email')], default=0)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "show_prices",
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            (0, "Use item settings"),
+                            (1, "Show everywhere"),
+                            (2, "Hide everywhere"),
+                        ],
+                        default=0,
+                    ),
+                ),
+                (
+                    "contact_options",
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            (0, "Use recaptcha"),
+                            (1, "Use hcaptcha"),
+                            (2, "No captcha"),
+                            (3, "No contact email"),
+                        ],
+                        default=0,
+                    ),
+                ),
             ],
         ),
     ]

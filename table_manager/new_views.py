@@ -8,13 +8,18 @@ from django_tables2 import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 
 from table_manager.buttons import Button
-from table_manager.session import save_columns, load_columns, toggle_column, save_per_page, update_url
+from table_manager.session import (
+    save_columns,
+    load_columns,
+    toggle_column,
+    save_per_page,
+    update_url,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
-
     template_name = "table_manager/generic_table.html"
     filter_template_name = "table_manager/htmx_filter.html"
     columns_template_name = "table_manager/htmx_columns.html"
@@ -62,7 +67,9 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
         context["actions"] = self.get_actions()
         context["columns"] = self.column_states(self.request)
         context["rows"] = self.rows_list()
-        per_page = self.request.GET.get("per_page", self.table_pagination.get("per_page", 25))
+        per_page = self.request.GET.get(
+            "per_page", self.table_pagination.get("per_page", 25)
+        )
         context["per_page"] = f"{per_page} rows"
         context["header"] = self.header
 
@@ -90,9 +97,13 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
             return self.render_table_data(request, *args, **kwargs)
         # It's an action performed on a queryset
         if "select_all" in request.POST and "?" in request.htmx.current_url:
-            self.selected_objects = self.filtered_query_set(request, request.htmx.current_url)
+            self.selected_objects = self.filtered_query_set(
+                request, request.htmx.current_url
+            )
         else:
-            self.selected_objects = self.get_queryset().filter(pk__in=request.POST.getlist("select-checkbox"))
+            self.selected_objects = self.get_queryset().filter(
+                pk__in=request.POST.getlist("select-checkbox")
+            )
 
         path = request.path + request.POST["query"]
         if "export" in request.POST:
@@ -185,7 +196,9 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
                 qd = QueryDict(request.htmx.current_url).copy()
                 qd["page"] = request.GET.get("page", 1)
                 try:
-                    self.object_list = self.filterset_class(qd, queryset=self.get_queryset(), request=request).qs
+                    self.object_list = self.filterset_class(
+                        qd, queryset=self.get_queryset(), request=request
+                    ).qs
                 except Exception as e:
                     pass
                 context = self.get_context_data()
@@ -193,4 +206,8 @@ class ExtendedTableView(ExportMixin, SingleTableMixin, FilterView):
                 print(context["next_page"])
                 context["table"].before_render(request)  # sets column visibilty
                 return render(request, template_name, context)
-            return self.row_clicked(request.htmx.trigger.split("_")[1], request.htmx.target, request.htmx.current_url)
+            return self.row_clicked(
+                request.htmx.trigger.split("_")[1],
+                request.htmx.target,
+                request.htmx.current_url,
+            )
