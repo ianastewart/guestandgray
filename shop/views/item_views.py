@@ -119,21 +119,23 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
     form_class = ItemForm
     template_name = "shop/item_form.html"
 
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["library"] = Item.Library.STOCK.value
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["STOCK"] = Item.Library.STOCK.value
+        context["ARCHIVE"] = Item.Library.ARCHIVE.value
+        context["RESEARCH"] = Item.Library.RESEARCH.value
+        return context
+
 
 class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     model = Item
     template_name = "shop/item_form.html"
     form_class = ItemForm
-
-    # def get(self, request, *args, **kwargs):
-    #     if request.htmx:
-    #         item = self.get_object()
-    #         item.archive = request.htmx.trigger_name == "archive"
-    #         item.save()
-    #         template = "shop/item_form__pricing.html"
-    #         context = {"item": item}
-    #         return render(request, template, context)
-    #     return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

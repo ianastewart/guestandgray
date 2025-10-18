@@ -139,7 +139,7 @@ class Category(MP_Node):
     def shop_items(self):
         return (
             self.item_set.filter(
-                library=Item.Library.STOCK,
+                library=Item.Library.STOCK.value,
                 visible=True,
                 image__isnull=False,
             )
@@ -153,7 +153,7 @@ class Category(MP_Node):
     def archive_items(self):
         return (
             self.item_set.filter(
-                library=Item.Library.ARCHIVE,
+                library=Item.Library.ARCHIVE.value,
                 visible=True,
                 image__isnull=False,
             )

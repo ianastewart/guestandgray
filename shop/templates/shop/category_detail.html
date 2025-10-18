@@ -67,7 +67,7 @@
     <div class="row">
       <div class="col col-md-6">
         <span class="h4 mt-0">Shop items</span><span class="float-right"><a class="btn btn-sm btn-outline-primary"
-                                                                            href="{{ category.slug }}">Public view</a></span><br>
+                                                                            href="/{{ category.slug }}">Public view</a></span><br>
         <hr>
         {% if shop_items %}
           {% for item in shop_items %}
@@ -79,7 +79,7 @@
       </div>
       <div class="col col-md-6">
         <span class="h4 mt-0">Archive items</span><span class="float-right"><a class="btn btn-sm btn-outline-primary"
-                                                                               href="{{ category.archive_slug }}">Public view</a></span><br>
+                                                                               href="/{{ category.archive_slug }}">Public view</a></span><br>
         <hr>
         {% if archive_items %}
           {% for item in archive_items %}
