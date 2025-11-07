@@ -17,6 +17,7 @@ dependencies = [
     "coderedcms-bootstrap4==2.0.0",
     "django-jazzmin==3.0.1",
     "django-waitress==0.1.0",
+    "django-sass",
     "psycopg>=3.2.10",
     "django==4.2",
     "tablib==3.9.0",
