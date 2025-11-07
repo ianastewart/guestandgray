@@ -51,7 +51,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
     def get_queryset(self):
         return Item.objects.all().order_by("ref")
 
-    def get_actions(self):
+    def get_bulk_actions(self):
         return [
             ("show_price", "Show price"),
             ("hide_price", "Hide price"),

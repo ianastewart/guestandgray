@@ -18,7 +18,7 @@
   <div class="col-md-6 mb-2"><p>{{ invoice.date|date }}</p></div>
   <div class="col-md-6">
     {% if not invoice.proforma %}
-      <h5 class="float-right">{% if invoice.paid %}
+      <h5 class="float-end">{% if invoice.paid %}
         <span class="badge bg-success text-white">Paid</span>{% else %}
         <span class="badge bg-danger text-white">Unpaid</span> {% endif %}
       </h5>

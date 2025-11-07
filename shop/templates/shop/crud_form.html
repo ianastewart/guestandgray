@@ -1,5 +1,5 @@
 {% extends "shop/shop_base.html" %}
-{% load bootstrap4 django_htmx %}
+{% load django_bootstrap5 django_htmx %}
 {% block content %}
   <div class="container bg-light mt-2">
   <form hx-post="{{ request.path }}">{% csrf_token %}

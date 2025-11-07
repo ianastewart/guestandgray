@@ -1,4 +1,4 @@
-{% load bootstrap4 shop_tags %}
+{% load django_bootstrap5 shop_tags %}
 <form method="post" action="{{ submit_path }}">
   {% csrf_token %}
   <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">

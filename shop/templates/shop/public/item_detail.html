@@ -1,5 +1,5 @@
 {% extends 'coderedcms/pages/web_page_notitle.html' %}
-{% load static wagtailimages_tags shop_tags bootstrap4 humanize %}
+{% load static wagtailimages_tags shop_tags django_bootstrap5 humanize %}
 {% block canonical %}
   {{ self.get_url_parts.1 }}/item/{{ item.ref }}/{{ item.slug }}/
 {% endblock %}

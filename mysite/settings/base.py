@@ -25,11 +25,12 @@ INSTALLED_APPS = [
     # "robots",
     "markdownify.apps.MarkdownifyConfig",
     "django_htmx",
-    "honeypot",
+    # "honeypot",
     # CodeRed CMS
     "coderedcms_bootstrap4",
     "coderedcms",
     "bootstrap4",
+    "django_bootstrap5",
     "modelcluster",
     "taggit",
     # "wagtailfontawesome",
@@ -54,7 +55,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.sitemaps",
     "wagtail.admin",
     # Django
-    "jazzmin",
+    # "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -234,3 +235,5 @@ USE_RECAPTCHA = False
 #
 HONEYPOT_FIELD_NAME = "website"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+DJANGO_TABLEAUX_LIBRARY = "bootstrap4"

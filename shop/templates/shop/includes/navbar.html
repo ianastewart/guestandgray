@@ -3,99 +3,109 @@
 <div class="bg-guest-dark">
   <div class="container-fluid p-0">
     <nav class="navbar navbar-expand-lg navbar-dark bg-guest-dark">
-      <a class="navbar-brand font-georgia p-0" href="/"><span style="font-size: 26px;">Guest & Gray&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      <a class="navbar-brand font-georgia p-0" href="/">
+        <span style="font-size: 26px;">Guest & Gray&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      </a>
+
+      <!-- Updated data-bs-* attributes -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <span class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Items
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-          <a class="dropdown-item" href="{% url 'item_list' %}">Item list</a>
-          <a class="dropdown-item" href="{% url 'item_create' %}">Create new item</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Categories
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
-          <a class="dropdown-item" href="{% url 'category_tree' %}">Category tree</a>
-          <a class="dropdown-item" href="{% url 'category_list' %}">Category list</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Contacts
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown3">
-          <a class="dropdown-item" href="{% url 'contact_list' %}">All contacts</a>
-          <a class="dropdown-item" href="{% url 'vendor_list' %}">Vendors</a>
-          <a class="dropdown-item" href="{% url 'buyer_list' %}">Buyers</a>
-          <a class="dropdown-item" href="{% url 'enquiry_list' %}">Enquiries</a>
-          <a class="dropdown-item" href="{% url 'mail_list' %}">Mail list</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Stock
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown4">
-          <a class="dropdown-item" href="{% url 'invoice_list' %}">Invoices</a>
-          <a class="dropdown-item" href="{% url 'purchase_list' %}">Purchases</a>
-          <a class="dropdown-item" href="{% url 'purchase_start' %}">New purchase</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Books
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown4">
-          <a class="dropdown-item" href="{% url 'book_list' %}">Book list</a>
-          <a class="dropdown-item" href="{% url 'compiler_list' %}">Compiler list</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Notes
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
-          <a class="dropdown-item" href="{% url 'notes:list' %}">Notes list</a>
-        </div>
-      </li>
-    </ul>
-    <form class="form-inline ml-auto" action="{% url 'admin_search' %}" method="GET">
-{#        {% load bootstrap4 %}#}
-{#        {% get_searchform request as form %}#}
-{#        {% bootstrap_form form layout='inline' %}#}
-{#        <div class="form-group">#}
-{#          <input class="btn btn-outline-white ml-2" type="submit" name="staff" value="Search">#}
-{#        </div>#}
-      <div class="input-group" style="width: 250px">
+      <!-- Use div instead of span -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- Replaced mr-auto with me-auto (Bootstrap 5) -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+          <!-- Dropdown Example -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Items
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown1">
+              <li><a class="dropdown-item" href="{% url 'item_list' %}">Item list</a></li>
+              <li><a class="dropdown-item" href="{% url 'item_create' %}">Create new item</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Categories
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+              <li><a class="dropdown-item" href="{% url 'category_tree' %}">Category tree</a></li>
+              <li><a class="dropdown-item" href="{% url 'category_list' %}">Category list</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Contacts
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown3">
+              <li><a class="dropdown-item" href="{% url 'contact_list' %}">All contacts</a></li>
+              <li><a class="dropdown-item" href="{% url 'vendor_list' %}">Vendors</a></li>
+              <li><a class="dropdown-item" href="{% url 'buyer_list' %}">Buyers</a></li>
+              <li><a class="dropdown-item" href="{% url 'enquiry_list' %}">Enquiries</a></li>
+              <li><a class="dropdown-item" href="{% url 'mail_list' %}">Mail list</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Stock
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown4">
+              <li><a class="dropdown-item" href="{% url 'invoice_list' %}">Invoices</a></li>
+              <li><a class="dropdown-item" href="{% url 'purchase_list' %}">Purchases</a></li>
+              <li><a class="dropdown-item" href="{% url 'purchase_start' %}">New purchase</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBooks" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Books
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownBooks">
+              <li><a class="dropdown-item" href="{% url 'book_list' %}">Book list</a></li>
+              <li><a class="dropdown-item" href="{% url 'compiler_list' %}">Compiler list</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Notes
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown5">
+              <li><a class="dropdown-item" href="{% url 'notes:list' %}">Notes list</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <!-- Search Form -->
+        <form class="d-flex ms-auto" action="{% url 'admin_search' %}" method="GET">
+          <div class="input-group" style="width: 250px">
             <input type="text" class="form-control" name="s" placeholder="Search">
-            <div class=" input-group-append">
-              <button class="btn btn-light" type="submit" name="staff" value="refer">
-                <i class="fa fa-search"></i>
-              </button>
-            </div>
+            <button class="btn btn-light" type="submit" name="staff" value="refer">
+              <i class="fa fa-search"></i>
+            </button>
           </div>
-    </form>
-    <a href="{% url 'cart_contents' %}" class="nav-item px-2" style="font-size: 2.5em; color:white;"><i class="fa fa-shopping-cart"></i>
-      {% cart_count %}</a>
-      </span>
+        </form>
+
+        <a href="{% url 'cart_contents' %}" class="nav-item px-2" style="font-size: 2.5em; color:white;">
+          <i class="fa fa-shopping-cart"></i>
+          {% cart_count %}
+        </a>
+      </div>
     </nav>
   </div>
-  </div>
 </div>
+
 

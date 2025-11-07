@@ -115,9 +115,9 @@ def node_dict(node, admin, archive):
     btn = "btn-outline-info" if node.is_leaf() else "btn-outline-primary"
     if not node.is_leaf() and items > 0:
         count_text = f'<span class="text-danger">{count_text}</span>'
-    dict["name"] = (
-        f' <a class="btn {btn} btn-sm py-0 mr-3" href="{link}">View</a><b>{node.name}</b> <i>{count_text}</i>'
-    )
+    dict[
+        "name"
+    ] = f' <a class="btn {btn} btn-sm py-0 me-3" href="{link}">View</a><b>{node.name}</b> <i>{count_text}</i>'
     return dict
 
 

@@ -10,7 +10,7 @@
           <input type="hidden" name="image" value="{{ image.id }}"/>
           {% image image max-250x250 as card_image %}
           {% image image original as full_image %}
-          <div class="card p-0 mt-2 mr-3 mb-2" style="width:200px;">
+          <div class="card p-0 mt-2 me-3 mb-2" style="width:200px;">
             <a href="{{ full_image.url }}">
               <div class="image">
                 <img src="{{ card_image.url }}" class="img img-responsive full-width "/>
@@ -19,7 +19,7 @@
             <span class="text-center py-0" style="font-family: sans-serif">
               <p class="small text-muted mt-0 mb-0 px-1">{{ image.filename }}<br>
                   {{ image.width }}w x {{ image.height }}h
-                <button class="btn btn-secondary mb-1 mr-0 py-0 float-right" hx-post="" name="hide-{{ image.id }}"
+                <button class="btn btn-secondary mb-1 me-0 py-0 float-end" hx-post="" name="hide-{{ image.id }}"
                         hx-target="#images"><span class="small">Hide</span>
                 </button>
               </p>

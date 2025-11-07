@@ -1,5 +1,5 @@
 {% extends "shop/shop_base.html" %}
-{% load static bootstrap4 %}
+{% load static django_bootstrap5 %}
 {% block head %}
   <link rel="stylesheet" href="{% static "shop/css/jqtree.css" %}">
 {% endblock %}
@@ -7,7 +7,7 @@
   <div class="container py-2 bg-light">
     <div class="row">
       <div class="col my-2">
-        <span class="h3">Category tree</span><span class="float-right">
+        <span class="h3">Category tree</span><span class="float-end">
         <a class="btn btn-secondary" href="{% url "category_create" %}{{ return }}">Create new category</a>
       </span><br><hr>
         {% if errors %}
