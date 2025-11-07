@@ -1,0 +1,33 @@
+[project]
+name = "guestandgray"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.10.0"
+dependencies = [
+    "coderedcms==3.0.4",
+    "django-bootstrap4==22.2",
+    "django-tables2>=2.4.1",
+    "django-environ==0.12.0",
+    "django-import-export==4.3.13",
+    "django-tempus-dominus==5.1.2.13",
+    "django-cookie-law==2.0.5",
+    "django-markdownify==0.9.5",
+    "django-htmx",
+    "django-honeypot==1.0.4",
+    "coderedcms-bootstrap4==2.0.0",
+    "django-jazzmin==3.0.1",
+    "django-waitress==0.1.0",
+    "psycopg>=3.2.10",
+    "django==4.2",
+    "tablib==3.9.0",
+    "python-resize-image==1.1.20",
+    "bcrypt==3.1.7",
+    "django-bootstrap5>=23.3",
+    "django-tableaux>=0.7.5",
+]
+[dependency-groups]
+dev = [
+    "django-upgrade==1.22.2",
+    "django-sass>=1.1.0",
+    "fabric==3.2.2",
+    ]
