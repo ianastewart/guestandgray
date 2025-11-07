@@ -26,6 +26,7 @@ dependencies = [
     "django-bootstrap5>=23.3",
     "django-tableaux>=0.7.5",
     "sentry-sdk>=2.19.2",
+    "gunicorn",
 ]
 [dependency-groups]
 dev = [
