@@ -31,6 +31,10 @@ from fab.settings import get_connection, blue, green
 # Upload media to hetzner
 # rsync -a --info=progress2 cwltc/media django@sandbox.iskt.co.uk:sandbox
 
+# gunicorn_start is a shell command located in the gray directory
+# Unlike cwltc, gunicorn is managed by supervisorctl commands
+# whitenoise is serving the static files
+
 
 @task
 def deploy(c, host="", sandbox=False, live=False, fast=False):
