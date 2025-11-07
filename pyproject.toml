@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.10.0"
 dependencies = [
-    "coderedcms==3.0.4",
+    "coderedcms==4.1.1",
     "django-bootstrap4==22.2",
     "django-tables2>=2.4.1",
     "django-environ==0.12.0",
@@ -30,4 +30,5 @@ dev = [
     "django-upgrade==1.22.2",
     "django-sass>=1.1.0",
     "fabric==3.2.2",
+    "pytest>=1.0.0",
     ]

@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import FormView, ListView
 from wagtail.models import Page, Site
 from wagtail.search.backends import get_search_backend
-from wagtail.search.models import Query
+from wagtail.contrib.search_promotions.models import Query
 from wagtailseo.utils import StructDataEncoder, get_struct_data_images
 
 from shop.cat_tree import Counter

@@ -282,7 +282,7 @@ class EnquiryTable(tables.Table):
     first_name = tables.Column(accessor="contact__first_name")
     last_name = tables.Column(accessor="contact__last_name", verbose_name="Last name")
     # email = tables.Column(accessor="contact__main_address__email")
-    mail_consent = tables.Column(accessor="contact.mail_consent")
+    mail_consent = tables.Column(accessor="contact__mail_consent")
     state = tables.Column(accessor="closed")
     selection = SelectionColumn()
 
@@ -309,7 +309,7 @@ class EnquiryTable(tables.Table):
 class BookTable(tables.Table):
     class Meta:
         model = Book
-        fields = ("title", "author", "description", "compiler.name")
+        fields = ("title", "author", "description", "compiler__name")
         attrs = {"class": "table table-sm table-hover"}
         row_attrs = {"class": "table-row pl-4"}
 

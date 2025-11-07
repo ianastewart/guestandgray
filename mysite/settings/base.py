@@ -49,10 +49,11 @@ INSTALLED_APPS = [
     "wagtail",
     "wagtail.contrib.settings",
     "wagtail.contrib.styleguide",
-    "wagtail.contrib.modeladmin",
+    # "wagtail.contrib.modeladmin",
     "wagtail.contrib.table_block",
     "wagtail.contrib.routable_page",
     "wagtail.contrib.sitemaps",
+    "wagtail.contrib.search_promotions",
     "wagtail.admin",
     # Django
     # "jazzmin",
@@ -129,7 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-GB"
 TIME_ZONE = "Europe/London"
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 USE_THOUSAND_SEPARATOR = False  # Note need to use unlocalise for pks if True
 
@@ -143,7 +143,14 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"

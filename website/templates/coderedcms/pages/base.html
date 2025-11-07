@@ -72,7 +72,8 @@
   {% endblock %}
 
   {% block coderedcms_assets %}
-  {% if "DEBUG"|django_settings %}
+    {% django_setting "DEBUG" as debug %}
+  {% if debug %}
   <link rel="stylesheet" href="{% static 'coderedcms/css/crx-front.css' %}?v={% coderedcms_version %}">
   {% else %}
   <link rel="stylesheet" href="{% static 'coderedcms/css/crx-front.min.css' %}?v={% coderedcms_version %}">
