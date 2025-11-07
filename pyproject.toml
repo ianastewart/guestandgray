@@ -27,6 +27,7 @@ dependencies = [
     "django-tableaux>=0.7.5",
     "sentry-sdk>=2.19.2",
     "gunicorn",
+    "whitenoise",
 ]
 [dependency-groups]
 dev = [

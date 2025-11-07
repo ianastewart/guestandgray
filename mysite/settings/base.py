@@ -70,7 +70,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # Save pages to cache. Must be FIRST.
     "django.middleware.security.SecurityMiddleware",
-    # "whitenoise.middleware.WhiteNoiseMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "wagtailcache.cache.UpdateCacheMiddleware",
     # Common functionality
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -142,15 +142,20 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
+    # ...
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "django.core.files.storage.FileSystemStorage",
+#     },
+#     "staticfiles": {
+#         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+#     },
+# }
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
