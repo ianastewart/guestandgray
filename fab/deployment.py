@@ -38,12 +38,15 @@ def clear_sessions(c):
 
 def stop_all(c):
     # stop_background(c)
-    stop_gunicorn(c)
+    # stop_gunicorn(c)
+    # Gray uses supervisorctl NOT systemctl
+    c.sudo(f"supervisorctl stop {c.app}")
 
 
 def start_all(c):
-    start_gunicorn(c)
+    # start_gunicorn(c)
     # start_background(c)
+    c.sudo(f"supervisorctl start {c.app}")
 
 
 # def stop_background(c):

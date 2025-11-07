@@ -62,14 +62,6 @@ def get_connection(
     # if no /venv folder this is hertzner server with uv and .venv
     c.venv = ".venv/bin"
     c.uv = True
-    if not c.dev:
-        result = c.run(
-            f"test -d {c.folder}/venv && echo 'exists' || echo 'missing'", hide=True
-        )
-        if "exists" in result.stdout:
-            c.venv = "/venv/bin"  # digital ocean server with pip
-            c.uv = False
-        # c.command_list = COMMAND_LIST
     return c
 
 
