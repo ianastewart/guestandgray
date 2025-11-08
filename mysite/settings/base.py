@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     # "robots",
     "markdownify.apps.MarkdownifyConfig",
     "django_htmx",
-    # "honeypot",
+    "honeypot",
     # CodeRed CMS
     "coderedcms_bootstrap4",
     "coderedcms",
