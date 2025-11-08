@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "honeypot",
     # CodeRed CMS
-    "coderedcms_bootstrap4",
+    # "coderedcms_bootstrap4",
     "coderedcms",
     "bootstrap4",
     "django_bootstrap5",

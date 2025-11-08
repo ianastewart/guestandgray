@@ -160,31 +160,31 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
             )
             return redirect("item_list")
 
-        save_state = False
-        save_featured = False
-        if request.POST["library"] == Item.Library.RESEARCH.value:
-            # missing fields when RESEARCH are retained
-            save_state = True
-            state = item.state
-            location = item.location
-            rank = item.rank
-        if request.POST["library"] != Item.Library.STOCK.value:
-            # missing when RESEARCH or ARCHIVE are retained
-            save_featured = True
-            featured = item.featured
-            show_price = item.show_price
-            done = item.done
+        # save_state = False
+        # save_featured = False
+        # if request.POST["library"] == Item.Library.RESEARCH.value:
+        #     # missing fields when RESEARCH are retained
+        #     save_state = True
+        #     state = item.state
+        #     location = item.location
+        #     rank = item.rank
+        # if request.POST["library"] != Item.Library.STOCK.value:
+        #     # missing when RESEARCH or ARCHIVE are retained
+        #     save_featured = True
+        #     featured = item.featured
+        #     show_price = item.show_price
+        #     done = item.done
         result = super().post(request, *args, **kwargs)
-        item = self.object
-        if save_state:
-            item.state = state
-            item.location = location
-            item.rank = rank
-        if save_featured:
-            item.featured = featured
-            item.show_price = show_price
-            item.done = done
-        item.save()
+        # item = self.object
+        # if save_state:
+        #     item.state = state
+        #     item.location = location
+        #     item.rank = rank
+        # if save_featured:
+        #     item.featured = featured
+        #     item.show_price = show_price
+        #     item.done = done
+        # item.save()
         return result
         #     return HttpResponseClientRedirect(self.get_success_url())
         # else:
@@ -194,7 +194,7 @@ class ItemUpdateView(LoginRequiredMixin, StackMixin, UpdateView):
     def get_success_url(self):
         if "preview" in self.request.POST:
             return reverse("item_detail", kwargs={"pk": self.object.pk})
-        referrer = self.request.session.pop("referrer", None)
+        referrer = self.request.session.get("referrer", None)
         return referrer if referrer else reverse("staff_home")
 
 
