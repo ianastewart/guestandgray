@@ -1,7 +1,7 @@
 {% extends "shop/shop_base.html" %}
 {% load django_bootstrap5 wagtailimages_tags shop_tags static %}
 {% block content_body %}
-  <div class="container bg-light my-2 p-4">
+  <div class="container bg-white my-2 p-4">
     <h3 class="my-2">{{ category.name }}</h3>
     {% breadcrumb category.breadcrumb_nodes %}
     <div class="row">

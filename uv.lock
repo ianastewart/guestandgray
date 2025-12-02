@@ -628,7 +628,8 @@ wheels = [
 
 [[package]]
 name = "django-tableaux"
-source = { editable = "../django_tableaux" }
+version = "0.7.6"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "django-filter" },
@@ -636,20 +637,9 @@ dependencies = [
     { name = "django-tables2" },
     { name = "tablib" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "django", specifier = ">=4.2" },
-    { name = "django-filter", specifier = ">=24.3" },
-    { name = "django-htmx", specifier = ">=1.26.0" },
-    { name = "django-tables2", specifier = ">=2.4.1" },
-    { name = "tablib", specifier = ">=3.5.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-django" },
+sdist = { url = "https://files.pythonhosted.org/packages/b7/a7/86a3e403b2420085bdc682f4c7e8466fb5d8eb843e0bcfabf5a680ecaf2e/django_tableaux-0.7.6.tar.gz", hash = "sha256:ef19fa48f5780cf7887df49cc32e51dcf3f7d8d5cf292d96e1c219d0d9d61c09", size = 44347, upload-time = "2025-12-02T16:37:12.614Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b1/d3/b7f993809cf65f0b9d8308d066e56fd42f39a673ce1d4ece7d45a70574c6/django_tableaux-0.7.6-py3-none-any.whl", hash = "sha256:26890ad5467e2bf587eaf101bfe737521bfd4776402fa95ab46de67b45dedb55", size = 75579, upload-time = "2025-12-02T16:37:11.5Z" },
 ]
 
 [[package]]
@@ -724,18 +714,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f3/46/24e32ffdad682df8c273e2f434096246c89d265948a2fd214307f31eeeec/django_upgrade-1.22.2.tar.gz", hash = "sha256:8643abdde2961e3c60173ebee84f48371ffbec5181095a38cac080947af0d2ae", size = 67932, upload-time = "2024-12-02T15:11:00.875Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/98/64/7b1432a7eca9e8e24b27ef89b9badca59add35a6dc785a63aa886b167c9d/django_upgrade-1.22.2-py3-none-any.whl", hash = "sha256:fb76b183b2e8186bb1157734083569a4b754dce2e812c2a723454bd248fb1373", size = 69114, upload-time = "2024-12-02T15:10:58.967Z" },
-]
-
-[[package]]
-name = "django-waitress"
-version = "0.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "waitress" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/7f/ce68a69dac97dc84d0e9a41ec3c5167de117e117d5d0fb13433826ff6698/django-waitress-0.1.0.tar.gz", hash = "sha256:befb3cd608c3b10ded724fcaa3940459796eeeb1551fef0610d66dfdb5772b49", size = 5009, upload-time = "2018-08-03T04:48:32.573Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/83/05/a0a66ae36057d95c6d438d533b36a61b4198de43d6e433fb61eb94408e20/django_waitress-0.1.0-py2.py3-none-any.whl", hash = "sha256:c24bcd90e9134979b23c046c64c94cab5a224fe5d6d1f5449dd27e3559c5245d", size = 10338, upload-time = "2018-08-03T04:48:34.425Z" },
 ]
 
 [[package]]
@@ -845,10 +823,8 @@ dependencies = [
     { name = "django-import-export" },
     { name = "django-jazzmin" },
     { name = "django-markdownify" },
-    { name = "django-sass" },
     { name = "django-tableaux" },
     { name = "django-tempus-dominus" },
-    { name = "django-waitress" },
     { name = "gunicorn" },
     { name = "psycopg" },
     { name = "python-resize-image" },
@@ -877,10 +853,8 @@ requires-dist = [
     { name = "django-import-export", specifier = "==4.3.13" },
     { name = "django-jazzmin", specifier = "==3.0.1" },
     { name = "django-markdownify", specifier = "==0.9.5" },
-    { name = "django-sass" },
-    { name = "django-tableaux", editable = "../django_tableaux" },
+    { name = "django-tableaux", specifier = ">=0.7.6" },
     { name = "django-tempus-dominus", specifier = "==5.1.2.13" },
-    { name = "django-waitress", specifier = "==0.1.0" },
     { name = "gunicorn" },
     { name = "psycopg", specifier = ">=3.2.10" },
     { name = "python-resize-image", specifier = "==1.1.20" },
@@ -890,6 +864,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "django-sass" },
     { name = "django-sass", specifier = ">=1.1.0" },
     { name = "django-upgrade", specifier = "==1.22.2" },
     { name = "fabric", specifier = "==3.2.2" },
@@ -1546,15 +1521,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ef/86/a21a7a87df142385064c8ed14e68de74f05e9519cb6783557af902ff92e3/wagtail_seo-2.5.1.tar.gz", hash = "sha256:bfc0a382e34630edebc1a21e12db9feee0e4a159898789a36d541e8551b3d7df", size = 14852, upload-time = "2025-07-11T16:05:51.137Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/b0/f2269e15adc171d1f418ce941851be2d972c4117e9284bbfdab062d18078/wagtail_seo-2.5.1-py3-none-any.whl", hash = "sha256:d9d5dd6ff241ced8fed303e1a7813da911c6936c1d1300fd2319c79baf4debc5", size = 17395, upload-time = "2025-07-11T16:05:49.02Z" },
-]
-
-[[package]]
-name = "waitress"
-version = "1.4.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9a/32/90a74e5ab5fd4fa4bd051a51eb9a8f63bbbf3e00a00dc5cf73ebd4ddb46a/waitress-1.4.4.tar.gz", hash = "sha256:1bb436508a7487ac6cb097ae7a7fe5413aefca610550baf58f0940e51ecfb261", size = 173124, upload-time = "2020-06-01T23:38:34.299Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/26/d1/5209fb8c764497a592363c47054436a515b47b8c3e4970ddd7184f088857/waitress-1.4.4-py2.py3-none-any.whl", hash = "sha256:3d633e78149eb83b60a07dfabb35579c29aac2d24bb803c18b26fb2ab1a584db", size = 58438, upload-time = "2020-06-01T23:38:32.828Z" },
 ]
 
 [[package]]

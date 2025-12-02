@@ -8,7 +8,7 @@ if DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE.insert(3, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
-INSTALLED_APPS += ["django_waitress", "django_sass"]
+INSTALLED_APPS += ["django_sass"]
 
 if LIVE_EMAIL:
     INFORM_EMAIL = "is@iskt.co.uk"

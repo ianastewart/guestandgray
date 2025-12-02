@@ -364,14 +364,21 @@ body {
 /*}*/
 
 span.page-link {
-  background: #587d71;
+  color: black;
 }
 
 .page-item.active .page-link {
   z-index: 3;
   color: #fff;
-  background-color: #587d71;
+  background-color: #a4ccbb;
   border-color: #000000;
+}
+
+.sr-only {
+    display: none;
+}
+.no-radius {
+    border-radius: 0 !important;
 }
 
 .cart-badge {

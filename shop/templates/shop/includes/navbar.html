@@ -90,18 +90,18 @@
         </ul>
 
         <!-- Search Form -->
-{#        <form class="d-flex ms-auto" action="{% url 'admin_search' %}" method="GET">#}
-{#          <div class="input-group" style="width: 250px">#}
-{#            <input type="text" class="form-control" name="s" placeholder="Search">#}
-{#            <button class="btn btn-light" type="submit" name="staff" value="refer">#}
-{#              <i class="fa fa-search"></i>#}
-{#            </button>#}
-{#          </div>#}
-{#        </form>#}
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
+        <form class="d-flex ms-auto" action="{% url 'admin_search' %}" method="GET">
+          <div class="input-group" style="width: 250px">
+            <input type="text" class="form-control no-radius" name="s" placeholder="Search">
+            <button class="btn bg-light " type="submit" name="staff" value="refer">
+              <i class="fa fa-search text-white bg-light"></i>
+            </button>
+          </div>
+        </form>
+{#      <form class="d-flex">#}
+{#        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">#}
+{#        <button class="btn btn-outline-success" type="submit">Search</button>#}
+{#      </form>#}
         <a href="{% url 'cart_contents' %}" class="nav-item px-2" style="font-size: 2.5em; color:white;">
           <i class="fa fa-shopping-cart"></i>
           {% cart_count %}
