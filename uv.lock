@@ -500,14 +500,14 @@ wheels = [
 
 [[package]]
 name = "django-filter"
-version = "23.5"
+version = "25.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1c/ce/e874b30a66684e3e79b183b0197dd3d08f842a8674972e47a90c09a6ec9c/django-filter-23.5.tar.gz", hash = "sha256:67583aa43b91fe8c49f74a832d95f4d8442be628fd4c6d65e9f811f5153a4e5c", size = 141058, upload-time = "2023-12-05T08:15:31.888Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/40/c702a6fe8cccac9bf426b55724ebdf57d10a132bae80a17691d0cf0b9bac/django_filter-25.1.tar.gz", hash = "sha256:1ec9eef48fa8da1c0ac9b411744b16c3f4c31176c867886e4c48da369c407153", size = 143021, upload-time = "2025-02-14T16:30:53.238Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/ff/4ae79361e09c3803562368700bc56672cca37bab7c1a8a91e7a225ce8fa0/django_filter-23.5-py3-none-any.whl", hash = "sha256:99122a201d83860aef4fe77758b69dda913e874cc5e0eaa50a86b0b18d708400", size = 94402, upload-time = "2023-12-05T08:15:29.191Z" },
+    { url = "https://files.pythonhosted.org/packages/07/a6/70dcd68537c434ba7cb9277d403c5c829caf04f35baf5eb9458be251e382/django_filter-25.1-py3-none-any.whl", hash = "sha256:4fa48677cf5857b9b1347fed23e355ea792464e0fe07244d1fdfb8a806215b80", size = 94114, upload-time = "2025-02-14T16:30:50.435Z" },
 ]
 
 [[package]]
@@ -628,19 +628,28 @@ wheels = [
 
 [[package]]
 name = "django-tableaux"
-version = "0.7.5"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../django_tableaux" }
 dependencies = [
     { name = "django" },
-    { name = "django-bootstrap4" },
     { name = "django-filter" },
     { name = "django-htmx" },
     { name = "django-tables2" },
     { name = "tablib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/17/aa/d68edc48132001f25d1257b5b382f79f48eade0530e2ca1a9cabe4dbd35e/django_tableaux-0.7.5.tar.gz", hash = "sha256:ada18352e12fbcfa261ffda3870a2b290f239c3771b7f98f691d5d7b9176154b", size = 32863, upload-time = "2025-03-23T12:46:18.647Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cd/5e/9b5da0722acea010d26c0661e90bdac17f6e8452ec55b0ddf0ee6d333f02/django_tableaux-0.7.5-py3-none-any.whl", hash = "sha256:48e23d81a5f2b545ae073487b55a1b1bb410adce42e4cce5f2d3bd6bff63aa18", size = 57358, upload-time = "2025-03-23T12:46:17.28Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "django", specifier = ">=4.2" },
+    { name = "django-filter", specifier = ">=24.3" },
+    { name = "django-htmx", specifier = ">=1.26.0" },
+    { name = "django-tables2", specifier = ">=2.4.1" },
+    { name = "tablib", specifier = ">=3.5.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-django" },
 ]
 
 [[package]]
@@ -828,7 +837,7 @@ dependencies = [
     { name = "bcrypt" },
     { name = "coderedcms" },
     { name = "coderedcms-bootstrap4" },
-    { name = "django-bootstrap4" },
+    { name = "django-bootstrap5" },
     { name = "django-cookie-law" },
     { name = "django-environ" },
     { name = "django-honeypot" },
@@ -860,7 +869,7 @@ requires-dist = [
     { name = "bcrypt", specifier = "==3.1.7" },
     { name = "coderedcms", specifier = "==4.1.1" },
     { name = "coderedcms-bootstrap4", specifier = "==2.0.0" },
-    { name = "django-bootstrap4", specifier = "==22.2" },
+    { name = "django-bootstrap5" },
     { name = "django-cookie-law", specifier = "==2.0.5" },
     { name = "django-environ", specifier = "==0.12.0" },
     { name = "django-honeypot", specifier = "==1.0.4" },
@@ -869,7 +878,7 @@ requires-dist = [
     { name = "django-jazzmin", specifier = "==3.0.1" },
     { name = "django-markdownify", specifier = "==0.9.5" },
     { name = "django-sass" },
-    { name = "django-tableaux", specifier = ">=0.7.5" },
+    { name = "django-tableaux", editable = "../django_tableaux" },
     { name = "django-tempus-dominus", specifier = "==5.1.2.13" },
     { name = "django-waitress", specifier = "==0.1.0" },
     { name = "gunicorn" },

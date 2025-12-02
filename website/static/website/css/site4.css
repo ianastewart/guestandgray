@@ -84,7 +84,7 @@ h4 {
 .banner-position {
   position: absolute;
   top: 25%;
-  left: 15px;
+  /*left: 15px;*/
 }
 
 @media all and (min-width: 992px) {

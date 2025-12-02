@@ -246,4 +246,4 @@ USE_RECAPTCHA = False
 HONEYPOT_FIELD_NAME = "website"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-DJANGO_TABLEAUX_LIBRARY = "bootstrap4"
+DJANGO_TABLEAUX_LIBRARY = "bootstrap5"

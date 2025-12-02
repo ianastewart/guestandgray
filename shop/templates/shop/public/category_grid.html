@@ -12,8 +12,8 @@
       {% for category in categories %}
         {% image category.image width-250 as card_image %}
         <div class="col-sm-6 col-md-4 col-lg-3 align-content-center">
-          <div class="card p-2 mb-3 border-1 bg-white shadow d-none d-sm-block " style="height:22rem;">
-            <div class="h5 text-dark m-0 text-center" style="height:4rem;">{{ category.name }}</div>
+          <div class="card p-2 mb-3 border-1 bg-white shadow d-none d-sm-block " style="height:23rem;">
+            <div class="h5 text-dark m-0 text-center" style="height:3rem;">{{ category.name }}</div>
             <p class="text-center pt-1 mb-0">({{ category.count }} objects)</p>
             <a href="
                 {% if archive %}{{ category.get_archive_url }}{% else %}{{ category.get_absolute_url }}{% endif %}">

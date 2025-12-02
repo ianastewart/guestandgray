@@ -1,44 +1,54 @@
 <!--Sets up the image array for photoswipe and handles the click action -->
 <script>
-  $(".thumb:first").addClass("opacity-50");
-  var last_index = 0;
-  var pswpElement = document.querySelectorAll('.pswp')[0];
-  // build the json album images collection
-  var index = 0;
-  var items = [
+  // Add opacity class to first thumb
+  const firstThumb = document.querySelector(".thumb");
+  if (firstThumb) firstThumb.classList.add("opacity-50");
+
+  let last_index = 0;
+  const pswpElement = document.querySelector('.pswp');
+
+  // Build items array
+  const items = [
     {% for image in images %}
-      {
-        src: '{{ image.file.url }}',
-        w:  {{ image.width }},
-        h:  {{ image.height }},
-        title: '{{ image.name }}',
-        index: 0
-      },
+    {
+      src: '{{ image.file.url }}',
+      w:  {{ image.width }},
+      h:  {{ image.height }},
+      title: '{{ image.name }}',
+      index: {{ forloop.counter0 }}
+    },
     {% endfor %}
   ];
-  items.forEach(
-    function (item) {
-      item.index = index;
-      index += 1;
-    }
-  )
 
-  $("figure").on("click", function (event) {
-    event.preventDefault();
-    var options = {
-      index: last_index - 1,
-      bgOpacity: 0.85,
-      showHideOpacity: true
-    }
-    // Initialize PhotoSwipe
-    var lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
-    lightBox.init();
+  // Click handler for all <figure>
+  document.querySelectorAll("figure").forEach(figure => {
+    figure.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      const options = {
+        index: last_index - 1,
+        bgOpacity: 0.85,
+        showHideOpacity: true
+      };
+
+      const lightBox = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
+      lightBox.init();
+    });
   });
 
-  $(".thumb").click(function () {
-    $("#main_image").attr("src", $(this).attr("full"));
-    $(".thumb").removeClass("opacity-50");
-    $(this).addClass("opacity-50");
-    last_index = parseInt($(this).attr("index"));
+  // Thumb click
+  document.querySelectorAll(".thumb").forEach(thumb => {
+    thumb.addEventListener("click", function () {
+      const mainImage = document.querySelector("#main_image");
+      if (mainImage) {
+        mainImage.src = this.getAttribute("full");
+      }
+
+      // Remove opacity on all, add to clicked
+      document.querySelectorAll(".thumb").forEach(t => t.classList.remove("opacity-50"));
+      this.classList.add("opacity-50");
+
+      last_index = parseInt(this.getAttribute("index"));
+    });
   });
 </script>

@@ -13,7 +13,7 @@
         <a href="{% block url %}#{% endblock %}"
            {% if value.settings.custom_id %}id="{{ value.settings.custom_id }}"{% endif %}
            class="{{ aclass }} {% if has_dropdown %}dropdown-toggle{% endif %} {% if is_active_url %}active{% endif %} {{ value.settings.custom_css_class }}"
-           {% if has_dropdown %}data-toggle="dropdown"
+           {% if has_dropdown %}data-bs-toggle="dropdown"
            role="button"
            aria-haspopup="true"
            aria-expanded="false"

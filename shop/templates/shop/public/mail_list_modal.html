@@ -10,7 +10,7 @@
       <p>Sign up below to receive our occasional newsletter highlighting recently acquired objects.</p>
         <form hx-post="{% url "mail_add" %}" hx-target="#modals-here" id="modalForm" {% if not hcaptcha %}novalidate{% endif %}>{% csrf_token %}
           <div class="row">
-          <div class="col my-1 pr-1">
+          <div class="col my-1 pe-1">
             {% bootstrap_field form.first_name show_label=False %}
           </div>
           <div class="col my-1 pl-1">
