@@ -595,6 +595,22 @@ span.twitter-typeahead .disabled.tt-suggestion:focus, span.twitter-typeahead .di
   padding-right: 15px;
   font-size: 1rem;
 }
+/* Bootstrap 5 text-bg-* badge variants excluded from the custom SASS build */
+.text-bg-success {
+  color: #fff !important;
+  background-color: #198754 !important;
+}
+
+.text-bg-warning {
+  color: #000 !important;
+  background-color: #ffc107 !important;
+}
+
+.text-bg-info {
+  color: #000 !important;
+  background-color: #0dcaf0 !important;
+}
+
 /* Bootstrap 5 button colour variants excluded from the custom SASS build */
 .btn-secondary {
   --bs-btn-color: #fff;

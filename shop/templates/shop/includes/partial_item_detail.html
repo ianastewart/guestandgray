@@ -3,11 +3,11 @@
 {% if not public %}<p>Category: {{ item.category.name }}</p>
 <span class="h3 float-end">
 {% if item.library == STOCK %}
-  <span class="badge badge-success m-2 ms-auto">In stock</span>
+  <span class="badge text-bg-success m-2 ms-auto">In stock</span>
     {% elif item.library == RESEARCH %}
-    <span class="badge badge-warning m-2 ms-auto">Research</span>
+    <span class="badge text-bg-warning m-2 ms-auto">Research</span>
     {% elif item.library == ARCHIVE %}
-    <span class="badge badge-info m-2 ms-auto">Archive</span>
+    <span class="badge text-bg-info m-2 ms-auto">Archive</span>
   {% endif %}
 </span>
 {% endif %}
