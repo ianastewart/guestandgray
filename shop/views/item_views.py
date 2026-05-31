@@ -44,9 +44,7 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
         return super().get(request, *args, **kwargs)
 
     def get_initial_data(self):
-        initial = super().get_initial_data()
-        initial["archive"] = "0"
-        return initial
+        return super().get_initial_data()
 
     def get_queryset(self):
         return Item.objects.all().order_by("ref")
@@ -85,9 +83,9 @@ class ItemTableView(LoginRequiredMixin, StackMixin, TableauxView):
         elif "feature_off" in action:
             self.selected_objects.update(featured=False)
         elif "archive_on" in action:
-            self.selected_objects.update(archive=True)
+            self.selected_objects.update(library=Item.Library.ARCHIVE)
         elif "archive_off" in action:
-            self.selected_objects.update(archive=False)
+            self.selected_objects.update(library=Item.Library.STOCK)
         elif "change_category" in action:
             request.session["selected_objects"] = self.selected_objects
             # simulate return redirect("item_categorise")

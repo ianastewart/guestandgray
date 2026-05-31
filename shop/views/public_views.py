@@ -216,10 +216,10 @@ def search_view(request, public):
         backend = get_search_backend()
 
         # Custom search code
-        items_1 = Item.objects.filter(image__isnull=False, archive=False)
-        items_3 = Item.objects.filter(image__isnull=False, archive=True)
-        items_2 = Item.objects.filter(image__isnull=True, archive=False)
-        items_4 = Item.objects.filter(image__isnull=True, archive=True)
+        items_1 = Item.objects.filter(image__isnull=False, library=Item.Library.STOCK)
+        items_3 = Item.objects.filter(image__isnull=False, library=Item.Library.ARCHIVE)
+        items_2 = Item.objects.filter(image__isnull=True, library=Item.Library.STOCK)
+        items_4 = Item.objects.filter(image__isnull=True, library=Item.Library.ARCHIVE)
         if public:
             items_1 = items_1.filter(visible=True)
             items_2 = items_2.filter(visible=True)

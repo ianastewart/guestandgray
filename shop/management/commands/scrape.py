@@ -175,7 +175,7 @@ def parse(page, options):
                                         description=description,
                                         sale_price=Decimal(price),
                                         category=cat_db,
-                                        archive=sold,
+                                        library=Item.Library.ARCHIVE if sold else Item.Library.STOCK,
                                     )
                                     item.image_file = image_file
                                     item.save()

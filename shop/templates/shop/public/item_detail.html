@@ -12,7 +12,7 @@
 {% block content %}
   <div class="container-lg p-0">
     <div class="card card-body border-0">
-      {% breadcrumb breadcrumb item.archive %}
+      {% breadcrumb breadcrumb item.is_archive %}
       {% include 'shop/includes/partial_item_detail.html' with public=True %}
       {% include 'shop/includes/photoswipe.html' %}
     </div>

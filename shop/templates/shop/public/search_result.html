@@ -26,7 +26,7 @@
       {% else %}
         <a href="{% url "item_detail" pk=item.pk %}">
       {% endif %}
-        <h5>{{ item.name }}{% if item.archive %} (Archive item){% endif %}</h5></a>
+        <h5>{{ item.name }}{% if item.is_archive %} (Archive item){% endif %}</h5></a>
       {% if item.description %}
         <p>{{ item.description|truncatewords:30 }}</p>
       {% endif %}

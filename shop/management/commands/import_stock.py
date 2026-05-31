@@ -238,7 +238,7 @@ class Command(BaseCommand):
                     if not item.sale_price:
                         item.sale_price = 0
                     if item.sale_price != price:
-                        if not item.archive:
+                        if item.library != Item.Library.ARCHIVE:
                             self.stdout.write(
                                 f"Info row: {row_number} Web price: {item.sale_price} Excel price: {price}"
                             )
@@ -252,7 +252,7 @@ class Command(BaseCommand):
                         sale_price=Decimal(price),
                         category=None,
                         image=None,
-                        archive=archive,
+                        library=Item.Library.ARCHIVE if archive else Item.Library.STOCK,
                         visible=False,
                     )
                     created += 1

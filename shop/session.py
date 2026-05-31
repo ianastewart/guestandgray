@@ -254,7 +254,7 @@ def cart_session_to_invoice(request, date=None):
         item.sale_price = item.agreed_price
         item.state = Item.State.SOLD
         item.invoice = invoice
-        item.archive = True
+        item.library = Item.Library.ARCHIVE
         item.save()
     for charge in cart_charges(request):
         total += charge.amount

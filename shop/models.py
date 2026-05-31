@@ -201,7 +201,6 @@ class Item(index.Indexed, models.Model):
     notes = models.TextField(null=True, blank=True)
     provenance = models.TextField(null=True, blank=True)
     state = models.SmallIntegerField(choices=State.choices(), default=0, blank=True)
-    archive = models.BooleanField(default=False)
     library = models.SmallIntegerField(choices=Library.choices(), default=0)
     cost_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
@@ -239,7 +238,7 @@ class Item(index.Indexed, models.Model):
         index.SearchField("ref"),
         index.FilterField("image_id"),
         index.FilterField("category_id"),
-        index.FilterField("archive"),
+        index.FilterField("library"),
         index.FilterField("visible"),
     ]
     book = models.ForeignKey("Book", null=True, blank=True, on_delete=models.SET_NULL)
@@ -291,12 +290,16 @@ class Item(index.Indexed, models.Model):
             return last.position + 1
         return 0
 
+    @property
+    def is_archive(self):
+        return self.library == Item.Library.ARCHIVE
+
     def is_price_visible(self):
         setting = GlobalSettings.record().show_prices
         if setting == ShowPrices.SHOW_EVERYWHERE:
-            return self.sale_price and not self.archive
+            return self.sale_price and self.library != Item.Library.ARCHIVE
         elif setting == ShowPrices.USE_ITEM_SETTINGS:
-            return self.show_price and self.sale_price and not self.archive
+            return self.show_price and self.sale_price and self.library != Item.Library.ARCHIVE
         elif setting == ShowPrices.HIDE_EVERYWHERE:
             return False
 

@@ -5,7 +5,7 @@ See https://django-treebeard.readthedocs.io/en/latest/api.html
 """
 
 import json
-from shop.models import Category
+from shop.models import Category, Item
 from django.shortcuts import reverse
 from django.db import transaction
 
@@ -188,7 +188,8 @@ class Counter:
 
     def _count(self, cat):
         # recursive count function
-        items = cat.item_set.filter(archive=self.archive)
+        library = Item.Library.ARCHIVE if self.archive else Item.Library.STOCK
+        items = cat.item_set.filter(library=library)
         if self.no_image:
             items = items.filter(image__isnull=False)
         if self.not_visible:

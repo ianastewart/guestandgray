@@ -76,7 +76,6 @@ class ItemForm(ModelForm):
             "restoration_cost",
             "sale_price",
             "minimum_price",
-            "archive",
             "library",
             "state",
             "location",
@@ -138,7 +137,7 @@ class ArchiveItemForm(ItemForm):
 
     class Meta(ItemForm.Meta):
         model = Item
-        exclude = ("minimum_price", "archive", "location", "show_price", "featured")
+        exclude = ("minimum_price", "location", "show_price", "featured")
 
 
 class UpdateItemForm(ModelForm):

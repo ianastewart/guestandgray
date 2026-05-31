@@ -70,7 +70,7 @@
         {% if item.is_price_visible %}
           <h5> £ {{ item.sale_price|integer|intcomma }}</h5>
           <div class="text-black-50 small">Price is subject to availability and market conditions.</div>
-        {% elif item.archive %}
+        {% elif item.is_archive %}
           <h5> Archive item - not for sale</h5>
         {% endif %}
       </div>
@@ -90,7 +90,7 @@
           {% endif %}
         </div>
       {% endif %}
-      {% if public and not item.archive %}
+      {% if public and not item.is_archive %}
         <div>
           <button class="btn btn-guest float-end" hx-get="{% url "item_enquiry" ref=item.ref %}"
                   hx-target="#modals-here">Enquire about this item
