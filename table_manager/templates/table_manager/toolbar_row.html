@@ -41,7 +41,7 @@
     {% endif %}
   </div>
   <div class="d-flex justify-content-center">
-    <div class="button-group p-1 mr-4">
+    <div class="button-group p-1 me-4">
       {% for button in buttons %}
       {{ button|render_button }}
       {% endfor %}
@@ -49,7 +49,7 @@
   </div>
   <div class="d-flex justify-content-end pt-1">
 <div class="button-group">
-    <button type="button" class="btn btn-outline-primary mr-1" hx-get="" hx-target="#modals-here" name="filter">Filter
+    <button type="button" class="btn btn-outline-primary me-1" hx-get="" hx-target="#modals-here" name="filter">Filter
     </button>
 </div>
     {% include "table_manager/column_dropdown.html" %}
