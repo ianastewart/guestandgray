@@ -17,6 +17,14 @@ from invoke.context import Context, Config
 # Note can set passwd for default postgres user using: sudo passwd postgres
 
 
+def grant_public_schema(db_name, db_user, db_port=5432):
+    """PostgreSQL 15+ no longer grants CREATE on public schema by default. Required for migrations."""
+    print(blue(f"Granting CREATE on public schema to {db_user}"))
+    os.system(
+        f'psql -U postgres -p {db_port} -d {db_name} -c "GRANT CREATE ON SCHEMA public TO {db_user};"'
+    )
+
+
 def create_database(c):
     """Creates role and database"""
     print(blue(f"Start create database {c.db_name}"))
@@ -69,6 +77,7 @@ def upload_database(c, backup_file=BACKUP_FILE):
         os.system(
             f"pg_restore -U postgres -p {c.db_port} -d {c.db_name} {BACKUP_FOLDER}/{backup_file}"
         )
+        grant_public_schema(c.db_name, c.db_user, c.db_port)
         # print(green("Database uploaded"))
         # os.system(
         #     "python manage.py wagtail_site localhost 8000 --settings=mysite.settings.dev"
@@ -83,6 +92,7 @@ def upload_database(c, backup_file=BACKUP_FILE):
         run(
             f"PGPASSWORD=ian pg_restore -U ian -h localhost -p 5432 -d {c.db_name} {BACKUP_FOLDER}/{BACKUP_FILE}"
         )
+        grant_public_schema(c.db_name, c.db_user)
     else:
         c.run(f"cd {c.folder} && mkdir -p {BACKUP_FOLDER}")
         c.put(
@@ -120,6 +130,7 @@ def download_database(c):
 
     source_path = dump_db(c)
     c.get(source_path, local_path)
+    grant_public_schema(c.db_name, c.db_user)
     print(green(f"End download database {c.db_name}"))
 
 

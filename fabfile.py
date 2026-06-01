@@ -1,4 +1,4 @@
-from fabric import task
+
 
 from fab.database import (
     # copy_database_to_sandbox,
@@ -6,6 +6,7 @@ from fab.database import (
     upload_database,
     create_database,
     download_database,
+    grant_public_schema,
     do_terminate,
 )
 from fab.deployment import (
@@ -156,6 +157,18 @@ def terminate(c, host="", sandbox=False, dev=False, live=False, win=False):
     c = get_connection(host=host, sandbox=sandbox, dev=dev, live=live)
     c.win = win
     do_terminate(c)
+
+
+@task
+def grant(c, host="", sandbox=False, dev=False, live=False):
+    """Grant CREATE on public schema to DB user (required on PostgreSQL 15+)"""
+    c = get_connection(host=host, sandbox=sandbox, dev=dev, live=live)
+    if live or sandbox:
+        c.run(
+            f'psql -U postgres -d {c.db_name} -c "GRANT CREATE ON SCHEMA public TO {c.db_user};"'
+        )
+    else:
+        grant_public_schema(c.db_name, c.db_user)
 
 
 #
