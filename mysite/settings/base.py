@@ -167,7 +167,7 @@ LOGIN_URL = "wagtailadmin_login"
 LOGIN_REDIRECT_URL = "wagtailadmin_home"
 
 # Use pickle serializer so we can store Decimals and dates in sessions
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+SESSION_SERIALIZER = "mysite.serializers.PickleSerializer"
 
 # Wagtail settings
 WAGTAIL_SITE_NAME = "Guest and Gray"
