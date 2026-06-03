@@ -10,6 +10,7 @@ def initial_data(apps, schema_editor):
     Page = apps.get_model("wagtailcore.Page")
     Site = apps.get_model("wagtailcore.Site")
     WebPage = apps.get_model("website.WebPage")
+    Locale = apps.get_model("wagtailcore.Locale")
 
     # Create page content type
     webpage_content_type, created = ContentType.objects.get_or_create(
@@ -20,6 +21,8 @@ def initial_data(apps, schema_editor):
     # and replace it with a more useful page type.
     curr_homepage = Page.objects.filter(slug="home").delete()
 
+    default_locale, _ = Locale.objects.get_or_create(language_code="en")
+
     homepage = WebPage.objects.create(
         title="Home",
         slug="home",
@@ -29,6 +32,7 @@ def initial_data(apps, schema_editor):
         depth=2,
         numchild=0,
         url_path="/home/",
+        locale=default_locale,
     )
 
     # Create a new default site

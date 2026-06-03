@@ -23094,60 +23094,63 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_carouselslide_image_id_47e5d4bd;",
-                "ALTER TABLE coderedcms_carouselslide DROP CONSTRAINT coderedcms_carousels_image_id_47e5d4bd_fk_wagtailim;",
-                "ALTER TABLE coderedcms_carouselslide ADD CONSTRAINT coderedcms_carousels_image_id_fk_image              FOREIGN KEY (image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_carouselslide_image_id_47e5d4bd on coderedcms_carouselslide (image_id);",
-            ],
-        ),
-        migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_coderedpage_cover_image_id_07449f7d;",
-                "ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT coderedcms_coderedpa_cover_image_id_07449f7d_fk_wagtailim;",
-                "ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_cover_image_id_fk_image              FOREIGN KEY (cover_image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_coderedpage_cover_image_id_07449f7d on coderedcms_coderedpage (cover_image_id);",
-            ],
-        ),
-        migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_coderedpage_og_image_id_ded00310;",
-                "ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT coderedcms_coderedpa_og_image_id_ded00310_fk_wagtailim;",
-                "ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_og_image_id_fk_image              FOREIGN KEY (og_image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_coderedpage_og_image_id_ded00310 on coderedcms_coderedpage (og_image_id);",
-            ],
-        ),
-        migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_coderedpage_struct_org_logo_id_98229fdd;",
-                "ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT coderedcms_coderedpa_struct_org_logo_id_98229fdd_fk_wagtailim;",
-                "ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_struct_org_logo_id_fk_image              FOREIGN KEY (struct_org_logo_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_coderedpage_struct_org_logo_id_98229fdd on coderedcms_coderedpage (struct_org_logo_id);",
-            ],
-        ),
-        migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_coderedpage_struct_org_image_id_567d6591;",
-                "ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT coderedcms_coderedpa_struct_org_image_id_567d6591_fk_wagtailim;",
-                "ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_struct_org_image_id_fk_image              FOREIGN KEY (struct_org_image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_coderedpage_struct_org_image_id_567d6591 on coderedcms_coderedpage (struct_org_image_id);",
-            ],
-        ),
-        migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_layoutsettings_logo_id_ef53b3c9;",
-                "ALTER TABLE coderedcms_layoutsettings DROP CONSTRAINT coderedcms_layoutset_logo_id_ef53b3c9_fk_wagtailim;",
-                "ALTER TABLE coderedcms_layoutsettings ADD CONSTRAINT coderedcms_layoutset_logo_id_fk_image              FOREIGN KEY (logo_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_layoutsettings_logo_id_ef53b3c9 on coderedcms_layoutsettings (logo_id);",
-            ],
-        ),
-        migrations.RunSQL(
-            sql=[
-                "DROP INDEX coderedcms_layoutsettings_favicon_id_bdb026a2;",
-                "ALTER TABLE coderedcms_layoutsettings DROP CONSTRAINT coderedcms_layoutset_favicon_id_bdb026a2_fk_wagtailim;",
-                "ALTER TABLE coderedcms_layoutsettings ADD CONSTRAINT coderedcms_layoutset_favicon_id_fk_image              FOREIGN KEY (favicon_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;",
-                "CREATE UNIQUE INDEX coderedcms_layoutsettings_favicon_id_bdb026a2 on coderedcms_layoutsettings (favicon_id);",
-            ],
+            # Re-point coderedcms image FKs to shop_customimage.
+            # Wrapped in column-existence checks so this is safe on fresh installs
+            # where coderedcms 6+ may have already removed or renamed columns.
+            sql="""
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_carouselslide' AND column_name='image_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_carouselslide_image_id_47e5d4bd;
+                        ALTER TABLE coderedcms_carouselslide DROP CONSTRAINT IF EXISTS coderedcms_carousels_image_id_47e5d4bd_fk_wagtailim;
+                        ALTER TABLE coderedcms_carouselslide DROP CONSTRAINT IF EXISTS coderedcms_carousels_image_id_fk_image;
+                        ALTER TABLE coderedcms_carouselslide ADD CONSTRAINT coderedcms_carousels_image_id_fk_image FOREIGN KEY (image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_carouselslide_image_id_47e5d4bd ON coderedcms_carouselslide (image_id);
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_coderedpage' AND column_name='cover_image_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_coderedpage_cover_image_id_07449f7d;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_cover_image_id_07449f7d_fk_wagtailim;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_cover_image_id_fk_image;
+                        ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_cover_image_id_fk_image FOREIGN KEY (cover_image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_coderedpage_cover_image_id_07449f7d ON coderedcms_coderedpage (cover_image_id);
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_coderedpage' AND column_name='og_image_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_coderedpage_og_image_id_ded00310;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_og_image_id_ded00310_fk_wagtailim;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_og_image_id_fk_image;
+                        ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_og_image_id_fk_image FOREIGN KEY (og_image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_coderedpage_og_image_id_ded00310 ON coderedcms_coderedpage (og_image_id);
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_coderedpage' AND column_name='struct_org_logo_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_coderedpage_struct_org_logo_id_98229fdd;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_struct_org_logo_id_98229fdd_fk_wagtailim;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_struct_org_logo_id_fk_image;
+                        ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_struct_org_logo_id_fk_image FOREIGN KEY (struct_org_logo_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_coderedpage_struct_org_logo_id_98229fdd ON coderedcms_coderedpage (struct_org_logo_id);
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_coderedpage' AND column_name='struct_org_image_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_coderedpage_struct_org_image_id_567d6591;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_struct_org_image_id_567d6591_fk_wagtailim;
+                        ALTER TABLE coderedcms_coderedpage DROP CONSTRAINT IF EXISTS coderedcms_coderedpa_struct_org_image_id_fk_image;
+                        ALTER TABLE coderedcms_coderedpage ADD CONSTRAINT coderedcms_coderedpa_struct_org_image_id_fk_image FOREIGN KEY (struct_org_image_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_coderedpage_struct_org_image_id_567d6591 ON coderedcms_coderedpage (struct_org_image_id);
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_layoutsettings' AND column_name='logo_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_layoutsettings_logo_id_ef53b3c9;
+                        ALTER TABLE coderedcms_layoutsettings DROP CONSTRAINT IF EXISTS coderedcms_layoutset_logo_id_ef53b3c9_fk_wagtailim;
+                        ALTER TABLE coderedcms_layoutsettings DROP CONSTRAINT IF EXISTS coderedcms_layoutset_logo_id_fk_image;
+                        ALTER TABLE coderedcms_layoutsettings ADD CONSTRAINT coderedcms_layoutset_logo_id_fk_image FOREIGN KEY (logo_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_layoutsettings_logo_id_ef53b3c9 ON coderedcms_layoutsettings (logo_id);
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='coderedcms_layoutsettings' AND column_name='favicon_id') THEN
+                        DROP INDEX IF EXISTS coderedcms_layoutsettings_favicon_id_bdb026a2;
+                        ALTER TABLE coderedcms_layoutsettings DROP CONSTRAINT IF EXISTS coderedcms_layoutset_favicon_id_bdb026a2_fk_wagtailim;
+                        ALTER TABLE coderedcms_layoutsettings DROP CONSTRAINT IF EXISTS coderedcms_layoutset_favicon_id_fk_image;
+                        ALTER TABLE coderedcms_layoutsettings ADD CONSTRAINT coderedcms_layoutset_favicon_id_fk_image FOREIGN KEY (favicon_id) REFERENCES shop_customimage(id) DEFERRABLE INITIALLY DEFERRED;
+                        CREATE UNIQUE INDEX IF NOT EXISTS coderedcms_layoutsettings_favicon_id_bdb026a2 ON coderedcms_layoutsettings (favicon_id);
+                    END IF;
+                END$$;
+            """,
         ),
         migrations.AlterField(
             model_name="webpage",
