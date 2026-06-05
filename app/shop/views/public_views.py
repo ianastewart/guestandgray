@@ -68,12 +68,12 @@ def item_view(request, ref, slug):
     )
     page = context["page"]
     context["item"] = item
-    images, _ = item.visible_images()
-    if images:
-        image = images[0]
-        context["images"] = images
-    else:
-        image = None
+    images = list(item.images.filter(show=True).order_by("position", "title"))
+    if item.image:
+        images = [i for i in images if i.pk != item.image_id]
+        images.insert(0, item.image)
+    image = images[0] if images else None
+    context["images"] = images
     if item.category_id:
         category = get_object_or_404(Category, id=item.category_id)
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)

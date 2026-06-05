@@ -1,11 +1,12 @@
 import os
 import environ
 
-root = environ.Path(__file__) - 3  # three folder back (/a/b/c/ - 3 = /)
+#root = environ.Path(__file__) - 3  # three folder back (/a/b/c/ - 3 = /)
 env = environ.Env(DEBUG=(bool, False))  # set default values and casting
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
-env_path = os.path.join(BASE_DIR, ".env")
+REPO_DIR = os.path.dirname(BASE_DIR)
+env_path = os.path.join(REPO_DIR, ".env")
 environ.Env.read_env(env_path)
 
 INSTALLED_APPS = [
@@ -15,14 +16,10 @@ INSTALLED_APPS = [
     "notes",
     "table_manager",
     "django_tableaux",
-    # "tables_plus",
-    # "import_export",
     "treebeard",
     "django_tables2",
-    # "django_tables2_column_shifter",
     "tempus_dominus",
     "cookielaw",
-    # "robots",
     "markdownify.apps.MarkdownifyConfig",
     "django_htmx",
     "honeypot",
@@ -33,7 +30,6 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "modelcluster",
     "taggit",
-    # "wagtailfontawesome",
     "wagtailcache",
     "wagtailseo",
     # Wagtail
@@ -70,7 +66,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # Save pages to cache. Must be FIRST.
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "wagtailcache.cache.UpdateCacheMiddleware",
     # Common functionality
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -147,11 +142,8 @@ STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
-    # "staticfiles": {
-    #     "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-    # },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
     },
 }
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static")]

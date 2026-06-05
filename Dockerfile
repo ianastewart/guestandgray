@@ -9,14 +9,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends libpq5 && rm -r
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
+# Create user first so subsequent files are owned correctly — avoids a slow chown -R at the end
+RUN useradd --create-home --system appuser
+
 WORKDIR /app
+RUN chown appuser /app
+USER appuser
 
 # Install dependencies before copying app code so this layer is cached
-COPY pyproject.toml uv.lock ./
+COPY --chown=appuser:appuser pyproject.toml uv.lock ./
 RUN uv sync --no-dev --frozen --no-cache
 
 # Copy application code
-COPY . .
+COPY --chown=appuser:appuser app/ .
 
 # Collect static files at build time.
 # Dummy env vars satisfy django-environ; no real secrets end up in the image.
@@ -31,9 +36,6 @@ RUN touch .env && \
     HCAPTCHA_SITE=x \
     python manage.py collectstatic --noinput && \
     rm .env
-
-RUN useradd --create-home --system appuser && chown -R appuser /app
-USER appuser
 
 EXPOSE 8000
 CMD ["gunicorn", "mysite.wsgi:application", \

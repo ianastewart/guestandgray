@@ -2,10 +2,13 @@ from .base import *
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(dsn=env.str("SENTRY"), integrations=[DjangoIntegration()])
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+sentry_sdk.init(
+    dsn=env.str("SENTRY"),
+    integrations=[DjangoIntegration()],
+    enable_logs=True
+)
 
+DEBUG = False
 SECRET_KEY = env.str("SECRET_KEY")
 ALLOWED_HOSTS = [
     "77.68.81.128",

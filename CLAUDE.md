@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Dev server (uses mysite.settings.dev automatically via manage.py)
-python manage.py runserver
+python app/manage.py runserver
 
 # Tests (uses mysite.settings.test, runs without migrations)
 pytest
-pytest path/to/tests.py::ClassName::test_method   # single test
+pytest app/path/to/tests.py::ClassName::test_method   # single test
 
 # Lint
 ruff check .
