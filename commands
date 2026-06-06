@@ -1,0 +1,11 @@
+python manage.py sass website/static/website/src/custom.scss out website/static/website/css/custom.css
+
+  ┌─────────────┬──────────────────────────────────────────────────────────────────────────┬────────────────────────────────────────────┬────────────┐
+  │ Environment │                                 Command                                  │                Nginx config                │  Certbot   │
+  ├─────────────┼──────────────────────────────────────────────────────────────────────────┼────────────────────────────────────────────┼────────────┤
+  │ Local       │ docker compose up                                                        │ nginx.conf (HTTP only)                     │ none       │
+  ├─────────────┼──────────────────────────────────────────────────────────────────────────┼────────────────────────────────────────────┼────────────┤
+  │ Staging     │ docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d │ nginx-staging.conf (gray.iskt.co.uk)       │ --staging  │
+  ├─────────────┼──────────────────────────────────────────────────────────────────────────┼────────────────────────────────────────────┼────────────┤
+  │ Live        │ docker compose -f docker-compose.yml -f docker-compose.live.yml up -d    │ nginx-ssl.conf (chinese-porcelain-art.com) │ production │
+  └─────────────┴──────────────────────────────────────────────────────────────────────────┴────────────────────────────────────────────┴────────────┘

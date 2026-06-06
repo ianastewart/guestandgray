@@ -1,0 +1,30 @@
+# Large data directories — must never go into the image
+media/
+database_backup/
+static/
+app/static/
+
+# Python / build artefacts
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Secrets and local config
+.env
+
+# Version control
+.git/
+.gitignore
+.idea/
+
+# Dev / test files
+*.dump
+pytest.ini
+requirements-dev.txt
+
+# Docker files themselves
+docker-compose.yml
+Dockerfile
+.dockerignore

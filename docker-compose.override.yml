@@ -1,0 +1,15 @@
+services:
+  web:
+    environment:
+      DJANGO_SETTINGS_MODULE: mysite.settings.docker
+    volumes:
+      - ./app:/app
+      - /app/.venv        # preserve venv built in image
+      - /app/static       # preserve collectstatic output built in image
+      - ./media:/app/media
+
+  nginx:
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
