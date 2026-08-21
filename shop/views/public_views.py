@@ -7,6 +7,7 @@ import requests
 from coderedcms.forms import SearchForm
 from coderedcms.models import LayoutSettings
 from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import EmailMessage, get_connection, send_mail
 from django.core.paginator import EmptyPage, InvalidPage, PageNotAnInteger, Paginator
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
@@ -41,7 +42,6 @@ logger = logging.getLogger(__name__)
 
 
 def home_view(request):
-    clear_bad_ip(request)
     if "page_id" in request.GET:
         return legacy_view(request, request.GET["page_id"])
     return redirect("/pages/")
@@ -100,7 +100,6 @@ def item_view(request, ref, slug):
 
 
 def catalogue_view(request, slugs=None, archive=False):
-    clear_bad_ip(request)
     slug = "catalogue"
     if slugs:
         slug += "/" + slugs
@@ -157,7 +156,6 @@ def catalogue_view(request, slugs=None, archive=False):
 
 def add_page_context(request, context, path, title="", description=""):
     """add wagtail host page to context. Raise 404 if slug not found"""
-    clear_bad_ip(request)
     if not title:
         title = "Guest and Gray"
     if not description:
@@ -310,6 +308,10 @@ class CaptchaHoneyPotMixin:
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        if is_rate_limited(request):
+            return HttpResponse(
+                "Too many requests. Please try again later.", status=429
+            )
         # Explicit handling of honeypot instead of @method_decorator(check_honeypot, name="post")
         field = settings.HONEYPOT_FIELD_NAME
         if field not in request.POST or request.POST[field] != "":
@@ -348,10 +350,6 @@ class CaptchaHoneyPotMixin:
         return True
 
     def captcha_invalid(self, form):
-        """Allow only 1 retry for omitted captcha"""
-        if is_same_bad_ip(self.request):
-            return HttpResponse("failed")
-        save_bad_ip(self.request)
         context = self.get_context_data(form=form)
         context["captcha_error"] = True
         return self.render_to_response(context)
@@ -407,32 +405,34 @@ class EnquiryModalView(CaptchaHoneyPotMixin, FormView):
 
 # ==== All following code is support logic for enquiries ====
 def get_client_ip(request):
+    # nginx is configured with proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for,
+    # which *appends* the real client IP to whatever the client already sent, so the
+    # trustworthy address is the last entry, not the first (which the client controls).
     x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
-        ip = x_forwarded_for.split(",")[0]
+        ip = x_forwarded_for.split(",")[-1].strip()
     else:
         ip = request.META.get("REMOTE_ADDR")
     return ip
 
 
-def clear_bad_ip(request):
-    if request.session.get("bad_ip", None):
-        del request.session["bad_ip"]
-
-
-def save_bad_ip(request):
-    request.session["bad_ip"] = get_client_ip(request)
-
-
-def is_same_bad_ip(request):
-    client_ip = get_client_ip(request)
-    bad_ip = request.session.get("bad_ip", None)
-    return client_ip == bad_ip
+def is_rate_limited(request):
+    """Server-side per-IP throttle for the public mail-sending forms, backed by the
+    cache framework so it holds across sessions/cookies and worker processes."""
+    limit = settings.CONTACT_FORM_RATE_LIMIT
+    period = settings.CONTACT_FORM_RATE_PERIOD
+    key = f"contact-form-throttle:{get_client_ip(request)}"
+    cache.add(key, 0, period)
+    try:
+        count = cache.incr(key)
+    except ValueError:
+        cache.set(key, 1, period)
+        count = 1
+    return count > limit
 
 
 def process_contact_response(request, data, mail_list):
     """Mail list is True if it is just a request to add to the mail list"""
-    clear_bad_ip(request)
     contact = Contact.objects.filter(main_address__email=data["email"]).first()
     if not "phone" in data.keys():
         data["phone"] = ""

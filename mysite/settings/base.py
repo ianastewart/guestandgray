@@ -246,4 +246,9 @@ USE_RECAPTCHA = False
 HONEYPOT_FIELD_NAME = "website"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+# Server-side throttle for the public mail-list/enquiry forms: at most
+# CONTACT_FORM_RATE_LIMIT submissions per CONTACT_FORM_RATE_PERIOD seconds, per IP.
+CONTACT_FORM_RATE_LIMIT = 5
+CONTACT_FORM_RATE_PERIOD = 600  # seconds
+
 DJANGO_TABLEAUX_LIBRARY = "bootstrap5"
