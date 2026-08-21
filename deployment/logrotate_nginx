@@ -1,0 +1,20 @@
+# template file before modification (sed) - XXapp is app name
+# Install on the server as /etc/logrotate.d/XXapp-nginx
+#
+# nginx's own /etc/logrotate.d/nginx package config only covers /var/log/nginx/*,
+# not the per-site logs configured in deployment/nginx_site
+# (/home/django/XXapp/logs/nginx-*.log), so they need their own rule.
+
+/home/django/XXapp/logs/nginx-*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 0640 www-data adm
+    sharedscripts
+    postrotate
+        [ -f /run/nginx.pid ] && kill -USR1 `cat /run/nginx.pid`
+    endscript
+}
