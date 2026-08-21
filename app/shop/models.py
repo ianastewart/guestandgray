@@ -298,7 +298,7 @@ class Item(index.Indexed, models.Model):
     def is_price_visible(self):
         setting = GlobalSettings.record().show_prices
         if setting == ShowPrices.SHOW_EVERYWHERE:
-            return self.sale_price and self.library != Item.Library.ARCHIVE
+            return self.sale_price > 0 and self.library != Item.Library.ARCHIVE
         elif setting == ShowPrices.USE_ITEM_SETTINGS:
             return self.show_price and self.sale_price and self.library != Item.Library.ARCHIVE
         elif setting == ShowPrices.HIDE_EVERYWHERE:
