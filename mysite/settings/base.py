@@ -235,6 +235,60 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = DJANGO_EMAIL  # "sitemail@chinese-porcelain-art.com"
 EMAIL_HOST_PASSWORD = env.str("SITEMAIL")
 
+# Cap on how many admin-error emails (Django's built-in mail_admins on
+# unhandled 500s) go out per rolling window, so a recurring exception can't
+# flood ADMINS with duplicate mail sent via the django@ SMTP account.
+ADMIN_ERROR_EMAIL_LIMIT = 5
+ADMIN_ERROR_EMAIL_PERIOD = 600  # seconds
+
+# Reproduces Django's default LOGGING config, with a throttling filter added
+# to the mail_admins handler. Without this override the default is applied
+# as-is, which has no way to rate-limit repeated error emails.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+        "throttle_admin_emails": {"()": "shop.logging_filters.ThrottleAdminEmails"},
+    },
+    "formatters": {
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}] {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+        },
+        "django.server": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false", "throttle_admin_emails"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "mail_admins"],
+            "level": "INFO",
+        },
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
 GOOGLE_RECAPTCHA_SECRET_KEY = env.str("CAPTCHA_SECRET")
 GOOGLE_RECAPTCHA_SITE_KEY = env.str("CAPTCHA_SITE")
 HCAPTCHA_SECRET_KEY = env.str("HCAPTCHA_SECRET")
