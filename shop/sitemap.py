@@ -10,8 +10,10 @@ class ItemSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Item.objects.filter(visible=True, image__isnull=False).select_related(
-            "image"
+        return (
+            Item.objects.filter(visible=True, image__isnull=False)
+            .select_related("image")
+            .order_by("pk")
         )
 
     def lastmod(self, item):
