@@ -78,7 +78,8 @@ def item_view(request, ref, slug):
         category = get_object_or_404(Category, id=item.category_id)
         context["breadcrumb"] = category.breadcrumb_nodes(item_view=True)
         context["category"] = category
-        page.title = f"{category.seo_prefix()} {item.ref}"
+        page.title = f"{item.name} | {category.seo_prefix()}"
+        page.seo_title = page.title
         # SEO data when category and image exist
         if image:
             sd_dict = {
@@ -117,6 +118,7 @@ def catalogue_view(request, slugs=None, archive=False):
     page = context["page"]
     prefix = "Archive of" if archive else "Catalogue of"
     page.title = f"{prefix} {category.seo_prefix()}"
+    page.seo_title = page.title
     page.og_image = category.image if category.image else None
     context["category"] = category
     context["archive"] = archive
@@ -166,6 +168,10 @@ def add_page_context(request, context, path, title="", description=""):
         raise Http404
     # page.cover_image = None
     page.title = title
+    # wagtailseo's seo_pagetitle prefers seo_title over title, so it must be
+    # overridden too or every page falls back to the HostPage record's own
+    # seo_title instead of the per-view title computed here.
+    page.seo_title = title
     page.canonical_url = page.get_full_url().replace("/pages/host-page/", path)
     page.search_description = description
     context["page"] = page

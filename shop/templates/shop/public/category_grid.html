@@ -18,7 +18,7 @@
             <a href="
                 {% if archive %}{{ category.get_archive_url }}{% else %}{{ category.get_absolute_url }}{% endif %}">
               <div class="image image-hover-zoom">
-                <img src="{{ card_image.url }}" class="img img-responsive full-width ">
+                <img src="{{ card_image.url }}" alt="{{ category.name }}" class="img img-responsive full-width ">
               </div>
             </a>
           </div>
@@ -29,7 +29,7 @@
               <p class="caption text-center pt-1">({{ category.count }} objects)</p>
               <a href="
                   {% if archive %}{{ category.get_archive_url }}{% else %}{{ category.get_absolute_url }}{% endif %}">
-                <img src="{{ card_image.url }}">
+                <img src="{{ card_image.url }}" alt="{{ category.name }}">
               </a>
             </div>
           </div>
