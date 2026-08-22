@@ -53,7 +53,6 @@ from shop.views.cart_views import (
     CartBuyerView,
     CartCheckoutView,
 )
-from shop.views.invoice_views import InvoiceListView, InvoiceDetailView
 from shop.views.staff_views import StaffHomeView, GlobalSettingsView
 from shop.views.public_views import (
     home_view,
@@ -170,12 +169,12 @@ staff_urls = [
         name="purchase_item_ajax",
     ),
     # Invoices
-    path("invoice/list/", InvoiceListView.as_view(), name="invoice_list"),
-    path(
-        "invoice/list/detail/<int:pk>/",
-        InvoiceDetailView.as_view(),
-        name="invoice_detail",
-    ),
+    # path("invoice/list/", InvoiceListView.as_view(), name="invoice_list"),
+    # path(
+    #     "invoice/list/detail/<int:pk>/",
+    #     InvoiceDetailView.as_view(),
+    #     name="invoice_detail",
+    # ),
     # Enquiries
     path("enquiry/list/", EnquiryListView.as_view(), name="enquiry_list"),
     path("enquiry/<int:pk>/", EnquiryDetailView.as_view(), name="enquiry_detail"),

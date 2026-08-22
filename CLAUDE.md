@@ -69,7 +69,6 @@ Database URL, secret key, and API keys come from `.env` via `django-environ`.
 - `contact_views.py` — contacts, vendors, buyers, enquiries
 - `purchase_views.py` — multi-step purchase recording wizard
 - `cart_views.py` — cart / checkout flow
-- `invoice_views.py` — invoice list and detail
 - `image_views.py` — image upload and assignment
 - `book_views.py` — bibliography management
 - `staff_views.py` — staff home dashboard, global settings
