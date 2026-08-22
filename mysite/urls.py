@@ -7,6 +7,7 @@ from django.urls import include, path, re_path
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap as WagtailSitemap
 from wagtail.documents import urls as wagtaildocs_urls
 from django.views.generic import TemplateView
+from wagtailcache.cache import nocache_page
 from shop.sitemap import ItemSitemap
 from shop.urls import public_urls, staff_urls
 
@@ -26,7 +27,7 @@ urlpatterns = [
     # sitemap and robots
     path(
         "sitemap.xml",
-        sitemap,
+        nocache_page(sitemap),
         {"sitemaps": {"wagtail": WagtailSitemap, "items": ItemSitemap}},
     ),
     path(
